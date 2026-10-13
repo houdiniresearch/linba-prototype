@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { pollResults } from "@/lib/activities";
 import type { Course, CourseState, User } from "@/lib/types";
 import { Auth } from "./auth";
 import {
@@ -271,22 +272,23 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
                 <h3>{s.activity?.question}</h3>
                 <p className="small muted">{rs.length} yanıt</p>
                 {s.activity?.type === "poll"
-                  ? s.activity.options.map((option) => {
-                      const count = rs.filter((r) => r.value === option).length;
-                      return (
-                        <div className="result-row" key={option}>
-                          <span>{option}</span>
-                          <div className="result-track">
-                            <i
-                              style={{
-                                width: `${rs.length ? (count / rs.length) * 100 : 0}%`,
-                              }}
-                            />
+                  ? pollResults(s.activity.options, rs).map(
+                      ({ option, count, percentage }) => {
+                        return (
+                          <div className="result-row" key={option}>
+                            <span>{option}</span>
+                            <div className="result-track">
+                              <i
+                                style={{
+                                  width: `${percentage}%`,
+                                }}
+                              />
+                            </div>
+                            <strong>{count}</strong>
                           </div>
-                          <strong>{count}</strong>
-                        </div>
-                      );
-                    })
+                        );
+                      },
+                    )
                   : rs.map((r) => (
                       <div className="question-record" key={r.id}>
                         <span className="small muted">{r.userName}</span>

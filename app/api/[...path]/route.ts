@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { localAddresses, joinOrigin } from "@/lib/network";
+import { hasDuplicateOptions } from "@/lib/activities";
 import { get, all, put, DATA_DIR } from "@/lib/db";
 import {
   AppError,
@@ -68,6 +69,10 @@ function activity(value: Activity): Activity {
     : [];
   if (value.type === "poll" && options.length < 2)
     throw new AppError("Anket için en az iki seçenek yaz.");
+  if (value.type === "poll" && hasDuplicateOptions(options))
+    throw new AppError(
+      "Anket seçenekleri birbirinden farklı olmalı. Tekrar eden seçeneği değiştir.",
+    );
   return {
     type: value.type,
     question: text(value.question),
