@@ -699,9 +699,15 @@ export function Dashboard() {
     </div>
   );
 }
-export function JoinForm({ onJoin }: { onJoin?: (id: string) => void }) {
+export function JoinForm({
+  onJoin,
+  initialCode = "",
+}: {
+  onJoin?: (id: string) => void;
+  initialCode?: string;
+}) {
   const router = useRouter(),
-    [code, setCode] = useState(""),
+    [code, setCode] = useState(initialCode),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   return (

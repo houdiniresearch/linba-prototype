@@ -9,6 +9,8 @@ export function Participant() {
   const auth = useResource<{ user?: User }>("auth");
   const [id, setId] = useState(""),
     [code, setCode] = useState("");
+  const [joinError, setJoinError] = useState("");
+  const [joining, setJoining] = useState(false);
   useEffect(() => {
     const p = new URLSearchParams(location.search);
     setId(p.get("egitim") || "");
@@ -16,16 +18,38 @@ export function Participant() {
   }, []);
   useEffect(() => {
     if (auth.data?.user?.role === "participant" && code && !id) {
+      let active = true;
+      setJoining(true);
+      setJoinError("");
       api("join", { code })
-        .then((r) => setId(r.id))
-        .catch(() => {});
+        .then((r) => {
+          if (active) {
+            setJoining(false);
+            setId(r.id);
+            history.replaceState(null, "", `/katil?egitim=${r.id}`);
+          }
+        })
+        .catch((error: Error) => {
+          if (active) setJoinError(error.message);
+        })
+        .finally(() => {
+          if (active) setJoining(false);
+        });
+      return () => {
+        active = false;
+      };
     }
-  }, [auth.data, code, id]);
+  }, [auth.data?.user?.id, auth.data?.user?.role, code, id]);
   if (!auth.data)
     return (
       <>
         <ErrorNote message={auth.error} />
         {!auth.error && <Loading />}
+        {auth.error && (
+          <button className="button" onClick={() => void auth.refresh()}>
+            Yeniden dene
+          </button>
+        )}
       </>
     );
   if (!auth.data.user)
@@ -60,6 +84,7 @@ export function Participant() {
         </button>
       </div>
     );
+  if (!id && joining) return <Loading label="Eğitimine katılıyorsun…" />;
   if (!id)
     return (
       <div className="participant-gate">
@@ -68,8 +93,12 @@ export function Participant() {
         <p className="muted">
           Merhaba {auth.data.user.name}. Eğitmeninin paylaştığı kodu yaz.
         </p>
+        <ErrorNote message={joinError} />
         <JoinForm
+          initialCode={code}
           onJoin={(id) => {
+            setJoinError("");
+            setJoining(false);
             setId(id);
             history.replaceState(null, "", `/katil?egitim=${id}`);
           }}
@@ -83,7 +112,13 @@ export function Participant() {
     <ParticipantCourse
       id={id}
       user={auth.data.user}
-      onLeave={() => setId("")}
+      onLeave={() => {
+        setId("");
+        setCode("");
+        setJoinError("");
+        setJoining(false);
+        history.replaceState(null, "", "/katil");
+      }}
     />
   );
 }
