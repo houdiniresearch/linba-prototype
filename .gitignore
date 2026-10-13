@@ -1,0 +1,16 @@
+node_modules/
+.next/
+out/
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+*.tsbuildinfo
+.linba/
+.playwright-cli/
+output/playwright/
+output/design-probes/
+tmp/
+docs/LINBA_URUN_BILGISI.md
+docs/ACIK_KARARLAR.md
