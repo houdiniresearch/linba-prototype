@@ -1,6 +1,6 @@
 # LİNBA ile GitHub'a başlangıç
 
-Hesap: `houdiniresearch`. Yeni depo adı: `linba-prototype`. Görünürlük: özel. Bu rehber depo oluşturulduğunda gerçek bağlantıyla tamamlanacaktır.
+Hesap: `houdiniresearch`. Depo: [linba-prototype](https://github.com/houdiniresearch/linba-prototype). Görünürlük: özel. Ana dal: `main`. İlk arayüz sürümü 13 Ekim 2026'da `da5114a` commit'iyle kaydedilip GitHub'a gönderildi.
 
 ## Dört kavram
 

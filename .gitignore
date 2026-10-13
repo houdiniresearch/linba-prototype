@@ -11,6 +11,7 @@ out/
 .playwright-cli/
 output/playwright/
 output/design-probes/
+output/design-v2/
 tmp/
 docs/LINBA_URUN_BILGISI.md
 docs/ACIK_KARARLAR.md

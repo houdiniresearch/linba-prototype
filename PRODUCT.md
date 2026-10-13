@@ -34,4 +34,4 @@ WCAG AA hedefi: okunabilir kontrast, klavye ve görünür odak, anlamlı etiketl
 
 ## Project Sources
 
-Ürün kapsamı: `docs/LINBA_URUN_BILGISI.md`. Açık kararlar: `docs/ACIK_KARARLAR.md`. GitHub hesabı kullanıcı tarafından `houdiniresearch` olarak doğrulanmıştır. Yeni proje için özel depo planlanmaktadır; hesap yeniden bağlanma aşamasındadır.
+Yerel ürün kapsamı: `docs/LINBA_URUN_BILGISI.md`. Yerel açık kararlar: `docs/ACIK_KARARLAR.md`. GitHub hesabı kullanıcı tarafından `houdiniresearch` olarak doğrulanmıştır. Hesap bağlanmış ve `https://github.com/houdiniresearch/linba-prototype` özel deposuna ilk arayüz sürümü yüklenmiştir.
