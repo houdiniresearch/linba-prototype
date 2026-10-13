@@ -1,2 +1,4 @@
-import { Participant } from '@/components/workspace';
-export default function Join() { return <Participant />; }
+import { Participant } from "@/components/participant";
+export default function Page() {
+  return <Participant />;
+}
