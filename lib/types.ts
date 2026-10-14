@@ -79,6 +79,10 @@ export type Persona = {
   name: string;
   background: string;
   behavior: string;
+  priorKnowledge?: string;
+  learningGoal?: string;
+  misconception?: string;
+  speakingStyle?: string;
   gender?: import("./voices").VoiceStyle;
   voice?: import("./voices").VoiceId;
 };
@@ -86,6 +90,7 @@ export type Rehearsal = {
   id: string;
   courseId: string;
   audience: string;
+  promptVersion?: string;
   personas: Persona[];
   createdAt: string;
   endedAt?: string;

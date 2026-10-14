@@ -8,6 +8,7 @@ Sunum merkezli Türkçe eğitim prototipi. Eğitmen sunumunu yükler, araya akti
 - PDF/PPTX yükleme: orijinal sayfalar görsel olarak korunur, metin yanıt kaynağı olarak çıkarılır. İlk sürümde sunum içeriği düzenlenmez.
 - Anket, açık uçlu soru ve senaryo aktiviteleri; AI ile hazırlama, slaytların arasına ekleme ve aktivite taşıma.
 - Eğitmenin serbest metinle tarif ettiği kitleye göre oluşturulan personalarla gerçek WebRTC sesli prova. Prova sonunda aynı oturumdan geri bildirim.
+- Prova katılımcıları kendi geçmişi, ön bilgisi ve öğrenme hedefiyle konuşur; isimle hitabı ve takip sorularını izler. Canlı katılımcı repliği ile yazılı değerlendirme ayrı fonksiyon çağrılarıyla alınır; değerlendirme konuşma geçmişine eklenmez. Etkin promptlar ve davranış sözleşmesi: [Prova promptları](docs/PROVA_PROMPTLARI.md).
 - Ayrı eğitmen kontrol ekranı ve yansıtma ekranı. Eğitim kodu / QR ile katılım.
 - Katılımcının özel sohbeti; dokümana dayanan yanıtlar ve kaynak slaytlar. Yanıtlanamayan sorular eğitmene iletilir. Eğitmenden yazılı cevap girmesi istenmez.
 - Benzer soruların AI ile gruplanması. Canlı otomatik yanıtı eğitim ayarından açılıp kapatılabilir.

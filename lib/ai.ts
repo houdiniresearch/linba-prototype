@@ -2,6 +2,7 @@ import WebSocket from "ws";
 import type { Course, Page, Question, Persona } from "./types";
 import { assignVoices } from "./voices";
 import type { TokenUsage } from "./voice-usage";
+import { PERSONA_CREATION_PROMPT } from "./rehearsal-prompts";
 export type UsageCallback = (id: string, usage: TokenUsage) => void;
 export function aiReady() {
   return Boolean(process.env.OPENAI_API_KEY?.trim());
@@ -254,7 +255,7 @@ export async function createPersonas(
   onUsage?: UsageCallback,
 ) {
   const data = await modelJson<{ personas: Persona[] }>(
-    'Eğitmenin tarif ettiği kitle için doğal ve birbirinden farklı 3 KURGUSAL katılımcı personası oluştur. Hazır etiket seçtirme. Mesleki geçmiş, ön bilgi, olası yanlış anlama ve katılım davranışı farklı olsun; cinsiyete göre meslek veya davranış kalıbı atama. Kitle tarifi belirtiyorsa cinsiyet dağılımını koru; belirtmiyorsa kadın ve erkek karakterler oluştur. Her kurgusal karakterin gender alanını female, male veya neutral olarak açıkça yaz; isimle tutarlı olsun. Gerçek kişi hakkında çıkarım yapma. Yalnız JSON: {"personas":[{"name":"...","gender":"female|male|neutral","background":"...","behavior":"..."}]}. Türkçe.',
+    PERSONA_CREATION_PROMPT,
     JSON.stringify({
       audience,
       course: course.name,
@@ -273,6 +274,10 @@ export async function createPersonas(
       background: String(p.background).slice(0, 500),
       behavior: String(p.behavior).slice(0, 500),
       gender: p.gender,
+      priorKnowledge: String(p.priorKnowledge || "").slice(0, 180),
+      learningGoal: String(p.learningGoal || "").slice(0, 180),
+      misconception: String(p.misconception || "").slice(0, 180),
+      speakingStyle: String(p.speakingStyle || "").slice(0, 180),
     })),
   );
 }

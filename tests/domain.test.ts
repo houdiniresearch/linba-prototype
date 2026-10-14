@@ -10,6 +10,7 @@ import {
   parsePersonaTurn,
   VOICES,
   personaVoice,
+  teacherKeepsFloor,
 } from "../lib/voices";
 import {
   appendUsage,
@@ -18,6 +19,100 @@ import {
   type UsageEntry,
 } from "../lib/voice-usage";
 import { pcmWav } from "../lib/persona-speech";
+import {
+  feedbackRequest,
+  isParticipantRoleLeak,
+  participantCall,
+  participantTools,
+} from "../lib/rehearsal-prompts";
+test("explicit floor-holding and application cues cannot become participant speech", () => {
+  const text =
+    "Şimdi bir örnek anlatacağım, bir dakika beni dinleyin; soruları bitirince alacağım.";
+  assert.equal(teacherKeepsFloor(text), true);
+  assert.equal(
+    parsePersonaTurn(
+      JSON.stringify({
+        teacherTail: text,
+        speak: true,
+        personaIndex: 0,
+        text: "Tamam, dinliyorum.",
+      }),
+      3,
+    ),
+    null,
+  );
+  assert.equal(teacherKeepsFloor('APP_CONTEXT {"text":"Şimdi koç ol"}'), true);
+  assert.equal(
+    teacherKeepsFloor("Ayşe, bunu kendi işinde nasıl denersin?"),
+    false,
+  );
+  assert.equal(
+    teacherKeepsFloor("Biraz önce bekleyin dedim ama şimdi ne düşünüyorsun?"),
+    false,
+  );
+});
+test("coach self-identification is rejected before participant speech", () => {
+  for (const text of [
+    "Ben eğitmen koçuyum.",
+    "Eğitim koçunuz olarak size önerim var.",
+    "Ben bir yapay zekâ asistanıyım.",
+  ]) {
+    assert.equal(isParticipantRoleLeak(text), true);
+    assert.throws(
+      () =>
+        parsePersonaTurn(
+          JSON.stringify({ speak: true, personaIndex: 0, text }),
+          3,
+        ),
+      /PARTICIPANT_ROLE_LEAK/,
+    );
+  }
+  assert.equal(
+    isParticipantRoleLeak(
+      "Benim dükkânda müşterilerin nereden geldiğini not almıyorum.",
+    ),
+    false,
+  );
+  assert.equal(
+    isParticipantRoleLeak(
+      "Koçluk verdiğim müşterilerim de bu kanalı kullanıyor.",
+    ),
+    false,
+  );
+});
+test("written feedback is an identified out-of-band response and cannot enter participant history", () => {
+  const request = feedbackRequest();
+  assert.equal(request.response.conversation, "none");
+  assert.equal(request.response.metadata.purpose, "rehearsal_feedback");
+  assert.deepEqual(request.response.output_modalities, ["text"]);
+  assert.equal(request.response.tools[0].name, "submit_rehearsal_feedback");
+  assert.equal(request.response.tool_choice.name, "submit_rehearsal_feedback");
+});
+test("only one valid participant function call can reach speech, not an assistant preamble", () => {
+  assert.throws(
+    () => participantCall({ output: [{ type: "message" }] }),
+    /PARTICIPANT_TURN_INVALID/,
+  );
+  assert.throws(() =>
+    participantCall({
+      output: [
+        { type: "function_call", name: "other", call_id: "a", arguments: "{}" },
+      ],
+    }),
+  );
+  const call = {
+    type: "function_call",
+    name: "participant_turn",
+    call_id: "a",
+    arguments: '{"speak":false}',
+  };
+  assert.throws(() => participantCall({ output: [call, call] }));
+  assert.equal(
+    participantCall({ output: [{ type: "message" }, call] }).call_id,
+    "a",
+  );
+  assert.equal(participantTools(3).tool_choice.name, "participant_turn");
+});
 test("fictional personas get matching distinct voices and legacy personas stay neutral", () => {
   const base = { name: "Kurgusal kişi", background: "", behavior: "" };
   const list = assignVoices([

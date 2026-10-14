@@ -4,6 +4,12 @@ import type { CourseState, Rehearsal } from "@/lib/types";
 import { api, Icon, Logo, Loading, ErrorNote, useResource } from "./ui";
 import { SlideView } from "./slides";
 import {
+  feedbackRequest,
+  roleRepairRequest,
+  participantCall,
+  feedbackArguments,
+} from "@/lib/rehearsal-prompts";
+import {
   assignVoices,
   parsePersonaTurn,
   voicesFor,
@@ -43,16 +49,30 @@ export function RehearsalView({ id }: { id: string }) {
     allRemarks = useRef<string[]>([]),
     responseActive = useRef(false),
     pendingFeedback = useRef(false),
-    feedbackBuffer = useRef(""),
     feedbackResolver = useRef<((value: string) => void) | null>(null),
-    activeSession = useRef(0);
+    activeSession = useRef(0),
+    finishing = useRef(false),
+    feedbackResponseId = useRef(""),
+    turnResponseId = useRef(""),
+    roleRepairUsed = useRef(false);
   const clip = useRef<HTMLAudioElement | null>(null),
     clipUrl = useRef(""),
-    clipVersion = useRef(0),
-    turnBuffer = useRef("");
+    clipVersion = useRef(0);
+  const clipTurn = useRef<{
+    personaIndex: number;
+    text: string;
+    started: boolean;
+  } | null>(null);
   const usagePending = useRef(new Set<Promise<unknown>>()),
     speechPending = useRef(new Set<Promise<unknown>>());
   function stopClip() {
+    if (clipTurn.current) {
+      playbackContext(
+        clipTurn.current,
+        clipTurn.current.started ? "interrupted" : "not_played",
+      );
+      clipTurn.current = null;
+    }
     clipVersion.current++;
     if (clip.current) {
       clip.current.pause();
@@ -75,6 +95,10 @@ export function RehearsalView({ id }: { id: string }) {
     peer.current?.close();
     peer.current = null;
     channel.current = null;
+    responseActive.current = false;
+    pendingFeedback.current = false;
+    feedbackResponseId.current = "";
+    turnResponseId.current = "";
     if (speaker.current) {
       speaker.current.pause();
       speaker.current.srcObject = null;
@@ -85,6 +109,24 @@ export function RehearsalView({ id }: { id: string }) {
   function send(value: unknown) {
     if (channel.current?.readyState === "open")
       channel.current.send(JSON.stringify(value));
+  }
+  function playbackContext(
+    turn: { personaIndex: number; text: string },
+    status: string,
+  ) {
+    send({
+      type: "conversation.item.create",
+      item: {
+        type: "message",
+        role: "user",
+        content: [
+          {
+            type: "input_text",
+            text: `APP_PLAYBACK ${JSON.stringify({ ...turn, status })}`,
+          },
+        ],
+      },
+    });
   }
   function captureUsage(event: any) {
     if (!rehearsal || !event.response?.usage) return;
@@ -120,6 +162,7 @@ export function RehearsalView({ id }: { id: string }) {
     const version = clipVersion.current;
     if (preview) setPreviewing(personaIndex);
     else {
+      clipTurn.current = { personaIndex, text: line, started: false };
       setSpeakingPersona(personaIndex);
       setVoice("rendering");
     }
@@ -159,8 +202,27 @@ export function RehearsalView({ id }: { id: string }) {
       clipUrl.current = URL.createObjectURL(blob);
       const audio = new Audio(clipUrl.current);
       clip.current = audio;
+      audio.onplaying = () => {
+        if (
+          version === clipVersion.current &&
+          !preview &&
+          clipTurn.current &&
+          !clipTurn.current.started
+        ) {
+          clipTurn.current.started = true;
+          playbackContext(clipTurn.current, "started");
+          allRemarks.current.push(
+            `${rehearsal.personas[personaIndex].name}: ${line}`,
+          );
+          setRemarks([...allRemarks.current]);
+        }
+      };
       audio.onended = () => {
         if (version === clipVersion.current) {
+          if (clipTurn.current) {
+            playbackContext(clipTurn.current, "completed");
+            clipTurn.current = null;
+          }
           stopClip();
           if (!preview) setVoice("listening");
         }
@@ -213,7 +275,7 @@ export function RehearsalView({ id }: { id: string }) {
         content: [
           {
             type: "input_text",
-            text: `Güncel slayt ${i + 1}: ${page?.text || slide.activity?.question}. Bu bir slayt değişimi bildirimidir; buna yanıt verme, eğitmenin konuşmasını bekle.`,
+            text: `APP_CONTEXT ${JSON.stringify({ slideNumber: i + 1, title: page?.title, text: page?.text || slide.activity?.question })}`,
           },
         ],
       },
@@ -221,16 +283,7 @@ export function RehearsalView({ id }: { id: string }) {
   }
   function requestFeedback() {
     pendingFeedback.current = false;
-    feedbackBuffer.current = "";
-    send({
-      type: "response.create",
-      response: {
-        output_modalities: ["text"],
-        max_output_tokens: 2000,
-        instructions:
-          'Persona rolünü bırak. Bu oturumda gerçekten duyduğun eğitmen anlatımı ve sorduğun sorulara dayanan değerlendirme üret. Konuşma azsa dürüstçe belirt. Başarı puanı, duyulmayan söz veya olay uydurma. Yalnız Türkçe JSON: {"summary":"kısa özet","suggestions":["somut iyileştirme"],"questions":["bu provada gerçekten sorulmuş soru"]}.',
-      },
-    });
+    send(feedbackRequest());
   }
   async function personas(e: React.FormEvent) {
     e.preventDefault();
@@ -254,6 +307,8 @@ export function RehearsalView({ id }: { id: string }) {
     if (!rehearsal) return;
     setNotice("");
     setVoice("connecting");
+    finishing.current = false;
+    roleRepairUsed.current = false;
     const attempt = ++activeSession.current;
     try {
       const mic = await navigator.mediaDevices.getUserMedia({
@@ -288,6 +343,7 @@ export function RehearsalView({ id }: { id: string }) {
         contextForSlide(index);
       };
       dc.onmessage = (e) => {
+        if (attempt !== activeSession.current) return;
         let event;
         try {
           event = JSON.parse(e.data);
@@ -295,52 +351,73 @@ export function RehearsalView({ id }: { id: string }) {
           return;
         }
         if (event.type === "input_audio_buffer.speech_started") {
+          if (finishing.current) return;
+          roleRepairUsed.current = false;
           stopClip();
           setVoice("listening");
         }
         if (event.type === "response.created") {
+          if (event.response?.metadata?.purpose === "rehearsal_feedback") {
+            feedbackResponseId.current = event.response.id;
+            return;
+          }
           responseActive.current = true;
-          turnBuffer.current = "";
+          turnResponseId.current = event.response.id;
           if (!feedbackResolver.current) setVoice("thinking");
         }
-        if (event.type === "response.output_text.delta")
-          turnBuffer.current += event.delta || "";
-        if (
-          event.type === "response.output_text.delta" &&
-          feedbackResolver.current
-        )
-          feedbackBuffer.current += event.delta || "";
         if (event.type === "response.done") {
           captureUsage(event);
+          if (
+            event.response?.metadata?.purpose === "rehearsal_feedback" ||
+            event.response?.id === feedbackResponseId.current
+          ) {
+            if (feedbackResolver.current) {
+              try {
+                feedbackResolver.current(feedbackArguments(event.response));
+              } catch {
+                feedbackResolver.current("");
+              }
+              feedbackResolver.current = null;
+            }
+            return;
+          }
+          if (event.response?.id !== turnResponseId.current) return;
           responseActive.current = false;
           if (pendingFeedback.current) requestFeedback();
-          else if (feedbackResolver.current) {
-            const result =
-              feedbackBuffer.current ||
-              (event.response?.output || [])
-                .flatMap((item: any) => item.content || [])
-                .map((c: any) => c.text || "")
-                .join("");
-            feedbackResolver.current(result);
-            feedbackResolver.current = null;
-          } else if (event.response?.status === "completed") {
+          else if (finishing.current) return;
+          else if (event.response?.status === "completed") {
             try {
-              const raw =
-                turnBuffer.current ||
-                (event.response?.output || [])
-                  .flatMap((item: any) => item.content || [])
-                  .map((c: any) => c.text || "")
-                  .join("");
+              const call = participantCall(event.response);
+              send({
+                type: "conversation.item.create",
+                item: {
+                  type: "function_call_output",
+                  call_id: call.call_id,
+                  output: JSON.stringify({
+                    received: true,
+                    playback: "not_started",
+                  }),
+                },
+              });
+              const raw = call.arguments!;
               const turn = parsePersonaTurn(raw, rehearsal.personas.length);
               if (turn) {
-                allRemarks.current.push(
-                  `${rehearsal.personas[turn.personaIndex].name}: ${turn.text}`,
-                );
-                setRemarks([...allRemarks.current]);
                 speak(turn.personaIndex, turn.text);
               } else setVoice("listening");
             } catch (e) {
-              setNotice((e as Error).message);
+              if (
+                ["PARTICIPANT_ROLE_LEAK", "PARTICIPANT_TURN_INVALID"].includes(
+                  (e as Error).message,
+                ) &&
+                !roleRepairUsed.current
+              ) {
+                roleRepairUsed.current = true;
+                send(roleRepairRequest(rehearsal.audience, rehearsal.personas));
+                return;
+              }
+              setNotice(
+                "Bir katılımcının yanıtı tamamlanamadı. Anlatımına devam edebilir veya sorunu yeniden sorabilirsin.",
+              );
               setVoice("listening");
             }
           } else setVoice("listening");
@@ -356,6 +433,7 @@ export function RehearsalView({ id }: { id: string }) {
         }
       };
       pc.onconnectionstatechange = () => {
+        if (attempt !== activeSession.current) return;
         if (["failed", "disconnected"].includes(pc.connectionState)) {
           setNotice("Ses bağlantısı kesildi. Yeniden bağlanabilirsin.");
           close();
@@ -389,6 +467,7 @@ export function RehearsalView({ id }: { id: string }) {
   async function finish() {
     if (!rehearsal) return;
     setBusy(true);
+    finishing.current = true;
     setVoice("feedback");
     setNotice("");
     stopClip();
@@ -656,13 +735,21 @@ export function RehearsalView({ id }: { id: string }) {
             </div>
             <ErrorNote message={notice} />
             {retryLine && voice === "listening" && (
-              <button
-                className="button"
-                onClick={() => speak(retryLine.personaIndex, retryLine.text)}
-              >
-                <Icon name="play" />
-                Katılımcı repliğini yeniden seslendir
-              </button>
+              <div>
+                <p>
+                  <strong>
+                    {rehearsal.personas[retryLine.personaIndex].name}:
+                  </strong>{" "}
+                  {retryLine.text}
+                </p>
+                <button
+                  className="button"
+                  onClick={() => speak(retryLine.personaIndex, retryLine.text)}
+                >
+                  <Icon name="play" />
+                  Katılımcı repliğini yeniden seslendir
+                </button>
+              </div>
             )}
             <details className="rehearsal-cost" open={voice === "ended"}>
               <summary>Prova kullanımı ve tahmini ücret</summary>

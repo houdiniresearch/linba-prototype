@@ -5,6 +5,11 @@ import { get, all, remove, DATA_DIR } from "../lib/db";
 import { VOICES, parsePersonaTurn } from "../lib/voices";
 import { usageSummary } from "../lib/voice-usage";
 import type { CourseState, Rehearsal } from "../lib/types";
+import {
+  feedbackRequest,
+  participantCall,
+  feedbackArguments,
+} from "../lib/rehearsal-prompts";
 const base = process.env.LINBA_TEST_URL || "http://localhost:3000";
 let cookie = "";
 async function api(
@@ -89,7 +94,7 @@ async function main() {
               content: [
                 {
                   type: "input_text",
-                  text: "Otomatik test: mikrofon kullanılmıyor. Örnek eğitmen anlatımı: Hedef kitle, ortak ihtiyaçları ve davranışları olan müşteri grubudur. Persona bu grubun araştırmaya dayalı temsilidir. Şimdi bir katılımcı tek kısa soru sorsun. JSON personaIndex ve text ile yanıtla.",
+                  text: `Bu otomatik bağlantı testinde gerçek mikrofon kullanılmıyor. Örnek ders anlatımı: Hedef kitle, ortak ihtiyaçları ve davranışları olan müşteri grubudur. ${rehearsal.personas[1].name}, sen kendi işletmende müşterilerinin nereden geldiğini soruyor musun?`,
                 },
               ],
             },
@@ -108,7 +113,11 @@ async function main() {
             const e = JSON.parse(event.data.toString());
             if (e.type === "error")
               throw new Error(`Realtime ${e.error?.code}: ${e.error?.message}`);
-            if (e.type === "response.output_text.delta") text += e.delta || "";
+            if (
+              e.type === "response.output_text.delta" ||
+              e.type === "response.function_call_arguments.delta"
+            )
+              text += e.delta || "";
             if (e.type === "response.done") {
               if (e.response?.usage)
                 jobs.push(
@@ -119,7 +128,21 @@ async function main() {
                   }),
                 );
               if (phase === "turn") {
-                const turn = parsePersonaTurn(text, rehearsal.personas.length);
+                const call = participantCall(e.response);
+                dc.send(
+                  JSON.stringify({
+                    type: "conversation.item.create",
+                    item: {
+                      type: "function_call_output",
+                      call_id: call.call_id,
+                      output: '{"received":true}',
+                    },
+                  }),
+                );
+                const turn = parsePersonaTurn(
+                  call.arguments!,
+                  rehearsal.personas.length,
+                );
                 assert.ok(turn);
                 console.log("Coordinator persona:", turn.personaIndex);
                 const r = await api(`courses/${courseId}/rehearsal-speech`, {
@@ -129,21 +152,9 @@ async function main() {
                 assert.ok((await r.arrayBuffer()).byteLength > 1000);
                 phase = "feedback";
                 text = "";
-                dc.send(
-                  JSON.stringify({
-                    type: "response.create",
-                    response: {
-                      output_modalities: ["text"],
-                      max_output_tokens: 700,
-                      instructions:
-                        'Gerçek mikrofon kullanılmayan otomatik testi dürüstçe değerlendir. Yalnız JSON: {"summary":"kısa özet","suggestions":[],"questions":[]}',
-                    },
-                  }),
-                );
+                dc.send(JSON.stringify(feedbackRequest()));
               } else {
-                const feedback = JSON.parse(
-                  text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1),
-                );
+                const feedback = JSON.parse(feedbackArguments(e.response));
                 assert.ok(feedback.summary);
                 await Promise.all(jobs);
                 await api(

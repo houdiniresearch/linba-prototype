@@ -10,6 +10,8 @@
     "test": "node --import tsx --test tests/domain.test.ts",
     "test:integration": "node --import tsx tests/integration.ts",
     "test:voice": "node --import tsx tests/voice-smoke.ts",
+    "test:rehearsal": "node --env-file=.env.local --import tsx tests/rehearsal-dialogue-eval.ts",
+    "test:rehearsal:audio": "node --env-file=.env.local --import tsx tests/rehearsal-audio-smoke.ts",
     "format": "prettier --write app components lib tests *.md docs/*.md"
   },
   "dependencies": {
