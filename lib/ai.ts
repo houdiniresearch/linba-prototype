@@ -1,5 +1,8 @@
 import WebSocket from "ws";
 import type { Course, Page, Question, Persona } from "./types";
+import { assignVoices } from "./voices";
+import type { TokenUsage } from "./voice-usage";
+export type UsageCallback = (id: string, usage: TokenUsage) => void;
 export function aiReady() {
   return Boolean(process.env.OPENAI_API_KEY?.trim());
 }
@@ -10,6 +13,7 @@ export function modelName() {
 export async function modelText(
   instructions: string,
   input: string,
+  onUsage?: UsageCallback,
 ): Promise<string> {
   if (!aiReady()) throw new Error("AI_NOT_CONFIGURED");
   return new Promise((resolve, reject) => {
@@ -68,6 +72,8 @@ export async function modelText(
         if (event.type === "response.output_text.delta")
           output += event.delta || "";
         if (event.type === "response.done") {
+          if (event.response?.usage)
+            onUsage?.(event.response.id, event.response.usage);
           if (!output)
             output = (event.response?.output || [])
               .flatMap(
@@ -99,8 +105,9 @@ export function parseJson<T>(text: string): T {
 export async function modelJson<T>(
   instructions: string,
   input: string,
+  onUsage?: UsageCallback,
 ): Promise<T> {
-  const output = await modelText(instructions, input);
+  const output = await modelText(instructions, input, onUsage);
   try {
     return parseJson<T>(output);
   } catch {
@@ -108,6 +115,7 @@ export async function modelJson<T>(
       await modelText(
         `${instructions}\nYanıt tüketicisi yalnız geçerli bir JSON nesnesi kabul ediyor. Giriş cümlesi, XML etiketi ve açıklama ekleme. JSON alanlarıyla yanıtla.`,
         input,
+        onUsage,
       ),
     );
   }
@@ -240,9 +248,13 @@ export async function groupQuestion(question: string, prior: Question[]) {
     groupTitle: String(result.groupTitle || question).slice(0, 100),
   };
 }
-export async function createPersonas(audience: string, course: Course) {
+export async function createPersonas(
+  audience: string,
+  course: Course,
+  onUsage?: UsageCallback,
+) {
   const data = await modelJson<{ personas: Persona[] }>(
-    'Eğitmenin tarif ettiği kitle için doğal ve birbirinden farklı 3 katılımcı personası oluştur. Hazır etiket seçtirme. Mesleki geçmiş, ön bilgi, olası yanlış anlama ve katılım davranışı farklı olsun. Yalnız JSON: {"personas":[{"name":"...","background":"...","behavior":"..."}]}. Türkçe.',
+    'Eğitmenin tarif ettiği kitle için doğal ve birbirinden farklı 3 KURGUSAL katılımcı personası oluştur. Hazır etiket seçtirme. Mesleki geçmiş, ön bilgi, olası yanlış anlama ve katılım davranışı farklı olsun; cinsiyete göre meslek veya davranış kalıbı atama. Kitle tarifi belirtiyorsa cinsiyet dağılımını koru; belirtmiyorsa kadın ve erkek karakterler oluştur. Her kurgusal karakterin gender alanını female, male veya neutral olarak açıkça yaz; isimle tutarlı olsun. Gerçek kişi hakkında çıkarım yapma. Yalnız JSON: {"personas":[{"name":"...","gender":"female|male|neutral","background":"...","behavior":"..."}]}. Türkçe.',
     JSON.stringify({
       audience,
       course: course.name,
@@ -251,12 +263,16 @@ export async function createPersonas(audience: string, course: Course) {
         .join("\n")
         .slice(0, 18000),
     }),
+    onUsage,
   );
   if (!Array.isArray(data.personas) || !data.personas.length)
     throw new Error("INVALID_PERSONAS");
-  return data.personas.slice(0, 4).map((p) => ({
-    name: String(p.name).slice(0, 40),
-    background: String(p.background).slice(0, 500),
-    behavior: String(p.behavior).slice(0, 500),
-  }));
+  return assignVoices(
+    data.personas.slice(0, 4).map((p) => ({
+      name: String(p.name).slice(0, 40),
+      background: String(p.background).slice(0, 500),
+      behavior: String(p.behavior).slice(0, 500),
+      gender: p.gender,
+    })),
+  );
 }

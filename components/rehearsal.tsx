@@ -3,6 +3,21 @@ import { useEffect, useRef, useState } from "react";
 import type { CourseState, Rehearsal } from "@/lib/types";
 import { api, Icon, Logo, Loading, ErrorNote, useResource } from "./ui";
 import { SlideView } from "./slides";
+import {
+  assignVoices,
+  parsePersonaTurn,
+  voicesFor,
+  VOICE_STYLE_LABELS,
+  voiceStyle,
+  type VoiceId,
+  type VoiceStyle,
+} from "@/lib/voices";
+import {
+  appendUsage,
+  usageSummary,
+  PRICE_DATE,
+  type UsageEntry,
+} from "@/lib/voice-usage";
 type Feedback = NonNullable<Rehearsal["feedback"]>;
 export function RehearsalView({ id }: { id: string }) {
   const { data, error } = useResource<CourseState>(`courses/${id}`);
@@ -14,6 +29,13 @@ export function RehearsalView({ id }: { id: string }) {
     [remarks, setRemarks] = useState<string[]>([]),
     [index, setIndex] = useState(0),
     [feedback, setFeedback] = useState<Feedback>();
+  const [speakingPersona, setSpeakingPersona] = useState<number | null>(null),
+    [previewing, setPreviewing] = useState<number | null>(null),
+    [editingVoice, setEditingVoice] = useState(false),
+    [retryLine, setRetryLine] = useState<{
+      personaIndex: number;
+      text: string;
+    }>();
   const peer = useRef<RTCPeerConnection | null>(null),
     channel = useRef<RTCDataChannel | null>(null),
     stream = useRef<MediaStream | null>(null),
@@ -24,7 +46,28 @@ export function RehearsalView({ id }: { id: string }) {
     feedbackBuffer = useRef(""),
     feedbackResolver = useRef<((value: string) => void) | null>(null),
     activeSession = useRef(0);
+  const clip = useRef<HTMLAudioElement | null>(null),
+    clipUrl = useRef(""),
+    clipVersion = useRef(0),
+    turnBuffer = useRef("");
+  const usagePending = useRef(new Set<Promise<unknown>>()),
+    speechPending = useRef(new Set<Promise<unknown>>());
+  function stopClip() {
+    clipVersion.current++;
+    if (clip.current) {
+      clip.current.pause();
+      clip.current.src = "";
+      clip.current = null;
+    }
+    if (clipUrl.current) {
+      URL.revokeObjectURL(clipUrl.current);
+      clipUrl.current = "";
+    }
+    setSpeakingPersona(null);
+    setPreviewing(null);
+  }
   function close() {
+    stopClip();
     activeSession.current++;
     stream.current?.getTracks().forEach((t) => t.stop());
     stream.current = null;
@@ -42,6 +85,121 @@ export function RehearsalView({ id }: { id: string }) {
   function send(value: unknown) {
     if (channel.current?.readyState === "open")
       channel.current.send(JSON.stringify(value));
+  }
+  function captureUsage(event: any) {
+    if (!rehearsal || !event.response?.usage) return;
+    const job = api(`courses/${id}/rehearsal-usage`, {
+      rehearsalId: rehearsal.id,
+      responseId: event.response.id,
+      usage: event.response.usage,
+    })
+      .then((r) =>
+        setRehearsal((prev) =>
+          prev?.id === rehearsal.id
+            ? {
+                ...prev,
+                usage: (r.usage as UsageEntry[]).reduce(
+                  appendUsage,
+                  prev.usage || [],
+                ),
+              }
+            : prev,
+        ),
+      )
+      .catch(() =>
+        setNotice(
+          "Kullanım kaydının bir bölümü kaydedilemedi; gösterilen tahmin eksik olabilir.",
+        ),
+      );
+    usagePending.current.add(job);
+    void job.finally(() => usagePending.current.delete(job));
+  }
+  async function playLine(personaIndex: number, line: string, preview = false) {
+    if (!rehearsal) return;
+    stopClip();
+    const version = clipVersion.current;
+    if (preview) setPreviewing(personaIndex);
+    else {
+      setSpeakingPersona(personaIndex);
+      setVoice("rendering");
+    }
+    setNotice("");
+    setRetryLine(undefined);
+    try {
+      const response = await fetch(`/api/courses/${id}/rehearsal-speech`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rehearsalId: rehearsal.id,
+          personaIndex,
+          text: line,
+          preview,
+        }),
+        signal: AbortSignal.timeout(55000),
+      });
+      if (!response.ok) {
+        const result = await response.json();
+        throw new Error(result.error);
+      }
+      const entry = response.headers.get("X-Linba-Usage");
+      if (entry)
+        setRehearsal((prev) =>
+          prev?.id === rehearsal.id
+            ? {
+                ...prev,
+                usage: appendUsage(
+                  prev.usage || [],
+                  JSON.parse(entry) as UsageEntry,
+                ),
+              }
+            : prev,
+        );
+      const blob = await response.blob();
+      if (version !== clipVersion.current) return;
+      clipUrl.current = URL.createObjectURL(blob);
+      const audio = new Audio(clipUrl.current);
+      clip.current = audio;
+      audio.onended = () => {
+        if (version === clipVersion.current) {
+          stopClip();
+          if (!preview) setVoice("listening");
+        }
+      };
+      if (!preview) setVoice("speaking");
+      await audio.play();
+    } catch (e) {
+      if (version !== clipVersion.current) return;
+      setNotice(
+        (e as Error).message ||
+          "Ses oynatılamadı. Tarayıcıda ses iznini kontrol et.",
+      );
+      if (!preview) setRetryLine({ personaIndex, text: line });
+      stopClip();
+      if (!preview) setVoice("listening");
+    }
+  }
+  function speak(personaIndex: number, line: string, preview = false) {
+    const job = playLine(personaIndex, line, preview);
+    speechPending.current.add(job);
+    void job.finally(() => speechPending.current.delete(job));
+  }
+  async function changeVoice(i: number, gender: VoiceStyle, voice: VoiceId) {
+    if (!rehearsal) return;
+    stopClip();
+    setEditingVoice(true);
+    setNotice("");
+    try {
+      const result = await api(
+        `courses/${id}/rehearsal`,
+        { id: rehearsal.id, action: "voice", personaIndex: i, gender, voice },
+        "PATCH",
+      );
+      setRehearsal(result.rehearsal);
+    } catch (e) {
+      setNotice((e as Error).message);
+    } finally {
+      setEditingVoice(false);
+    }
   }
   function contextForSlide(i: number) {
     if (!data) return;
@@ -84,6 +242,8 @@ export function RehearsalView({ id }: { id: string }) {
       setFeedback(undefined);
       setRemarks([]);
       allRemarks.current = [];
+      setVoice("idle");
+      setRetryLine(undefined);
     } catch (e) {
       setNotice((e as Error).message);
     } finally {
@@ -134,25 +294,24 @@ export function RehearsalView({ id }: { id: string }) {
         } catch {
           return;
         }
-        if (event.type === "input_audio_buffer.speech_started")
+        if (event.type === "input_audio_buffer.speech_started") {
+          stopClip();
           setVoice("listening");
+        }
         if (event.type === "response.created") {
           responseActive.current = true;
-          if (!feedbackResolver.current) setVoice("speaking");
+          turnBuffer.current = "";
+          if (!feedbackResolver.current) setVoice("thinking");
         }
-        if (
-          event.type === "response.output_audio_transcript.done" &&
-          event.transcript
-        ) {
-          allRemarks.current.push(event.transcript);
-          setRemarks([...allRemarks.current]);
-        }
+        if (event.type === "response.output_text.delta")
+          turnBuffer.current += event.delta || "";
         if (
           event.type === "response.output_text.delta" &&
           feedbackResolver.current
         )
           feedbackBuffer.current += event.delta || "";
         if (event.type === "response.done") {
+          captureUsage(event);
           responseActive.current = false;
           if (pendingFeedback.current) requestFeedback();
           else if (feedbackResolver.current) {
@@ -164,6 +323,26 @@ export function RehearsalView({ id }: { id: string }) {
                 .join("");
             feedbackResolver.current(result);
             feedbackResolver.current = null;
+          } else if (event.response?.status === "completed") {
+            try {
+              const raw =
+                turnBuffer.current ||
+                (event.response?.output || [])
+                  .flatMap((item: any) => item.content || [])
+                  .map((c: any) => c.text || "")
+                  .join("");
+              const turn = parsePersonaTurn(raw, rehearsal.personas.length);
+              if (turn) {
+                allRemarks.current.push(
+                  `${rehearsal.personas[turn.personaIndex].name}: ${turn.text}`,
+                );
+                setRemarks([...allRemarks.current]);
+                speak(turn.personaIndex, turn.text);
+              } else setVoice("listening");
+            } catch (e) {
+              setNotice((e as Error).message);
+              setVoice("listening");
+            }
           } else setVoice("listening");
         }
         if (event.type === "error") {
@@ -212,6 +391,7 @@ export function RehearsalView({ id }: { id: string }) {
     setBusy(true);
     setVoice("feedback");
     setNotice("");
+    stopClip();
     stream.current?.getTracks().forEach((t) => t.stop());
     if (speaker.current) speaker.current.muted = true;
     send({
@@ -249,6 +429,10 @@ export function RehearsalView({ id }: { id: string }) {
               : [],
           };
       }
+      await Promise.allSettled([
+        ...usagePending.current,
+        ...speechPending.current,
+      ]);
       const saved = await api(
         `courses/${id}/rehearsal`,
         { id: rehearsal.id, remarks: allRemarks.current, feedback: result },
@@ -277,6 +461,8 @@ export function RehearsalView({ id }: { id: string }) {
     );
   const c = data.course,
     slide = c.slides[index];
+  const meter = usageSummary(rehearsal?.usage || []),
+    editable = voice === "idle" && !editingVoice && previewing === null;
   return (
     <div className="rehearsal-page">
       <header className="editor-header">
@@ -331,31 +517,32 @@ export function RehearsalView({ id }: { id: string }) {
               <ErrorNote message="Model bağlantısı ayarlanmadan sesli prova başlatılamaz." />
             )}
           </form>
-          {data.rehearsals.some((r) => r.endedAt) && (
+          {data.rehearsals.length > 0 && (
             <section className="rehearsal-history">
-              <h2>Önceki provaların</h2>
-              {data.rehearsals
-                .filter((r) => r.endedAt)
-                .map((r) => (
-                  <button
-                    className="joined-course"
-                    key={r.id}
-                    onClick={() => {
-                      setRehearsal(r);
-                      setVoice("ended");
-                      setFeedback(r.feedback);
-                      setRemarks(r.remarks);
-                      allRemarks.current = r.remarks;
-                    }}
-                  >
-                    <Icon name="mic" />
-                    <span>
-                      {new Date(r.createdAt).toLocaleDateString("tr-TR")}
-                      <small>{r.audience.slice(0, 110)}</small>
-                    </span>
-                    <Icon name="right" />
-                  </button>
-                ))}
+              <h2>Provaların</h2>
+              {data.rehearsals.map((r) => (
+                <button
+                  className="joined-course"
+                  key={r.id}
+                  onClick={() => {
+                    setRehearsal(r);
+                    setVoice(r.endedAt ? "ended" : "idle");
+                    setAudience(r.audience);
+                    setFeedback(r.feedback);
+                    setRemarks(r.remarks);
+                    allRemarks.current = r.remarks;
+                  }}
+                >
+                  <Icon name="mic" />
+                  <span>
+                    {new Date(r.createdAt).toLocaleDateString("tr-TR")}
+                    {" · "}
+                    {r.endedAt ? "Tamamlandı" : "Devam et"}
+                    <small>{r.audience.slice(0, 110)}</small>
+                  </span>
+                  <Icon name="right" />
+                </button>
+              ))}
             </section>
           )}
         </main>
@@ -397,7 +584,7 @@ export function RehearsalView({ id }: { id: string }) {
               </button>
             </div>
             <div
-              className={`voice-console ${voice === "listening" || voice === "speaking" ? "connected" : ""}`}
+              className={`voice-console ${["listening", "speaking", "thinking", "rendering"].includes(voice) ? "connected" : ""}`}
             >
               <span className="mic-orb">
                 <Icon name="mic" size={28} />
@@ -408,13 +595,17 @@ export function RehearsalView({ id }: { id: string }) {
                     ? "Ses bağlantısı kuruluyor…"
                     : voice === "listening"
                       ? "Seni dinliyorlar"
-                      : voice === "speaking"
-                        ? "Bir katılımcı söz aldı"
-                        : voice === "feedback"
-                          ? "Prova değerlendiriliyor…"
-                          : voice === "ended"
-                            ? "Prova tamamlandı"
-                            : "Katılımcıların hazır"}
+                      : voice === "thinking"
+                        ? "Katılımcılar düşünüyor"
+                        : voice === "rendering"
+                          ? `${rehearsal.personas[speakingPersona ?? 0]?.name} söz alıyor…`
+                          : voice === "speaking"
+                            ? `${rehearsal.personas[speakingPersona ?? 0]?.name} konuşuyor`
+                            : voice === "feedback"
+                              ? "Prova değerlendiriliyor…"
+                              : voice === "ended"
+                                ? "Prova tamamlandı"
+                                : "Katılımcıların hazır"}
                 </strong>
                 <p>
                   {voice === "idle"
@@ -425,11 +616,21 @@ export function RehearsalView({ id }: { id: string }) {
                 </p>
               </div>
               {voice === "idle" ? (
-                <button className="button primary" onClick={connect}>
+                <button
+                  className="button primary"
+                  onClick={connect}
+                  disabled={previewing !== null || editingVoice}
+                >
                   <Icon name="mic" />
                   Provayı başlat
                 </button>
-              ) : ["connecting", "listening", "speaking"].includes(voice) ? (
+              ) : [
+                  "connecting",
+                  "listening",
+                  "speaking",
+                  "thinking",
+                  "rendering",
+                ].includes(voice) ? (
                 <button
                   className="button danger"
                   onClick={finish}
@@ -454,6 +655,62 @@ export function RehearsalView({ id }: { id: string }) {
               )}
             </div>
             <ErrorNote message={notice} />
+            {retryLine && voice === "listening" && (
+              <button
+                className="button"
+                onClick={() => speak(retryLine.personaIndex, retryLine.text)}
+              >
+                <Icon name="play" />
+                Katılımcı repliğini yeniden seslendir
+              </button>
+            )}
+            <details className="rehearsal-cost" open={voice === "ended"}>
+              <summary>Prova kullanımı ve tahmini ücret</summary>
+              <div className="usage-figures">
+                <span>
+                  Ölçülen toplam
+                  <strong>
+                    {rehearsal.usage && meter.known
+                      ? `$${meter.total.toFixed(5)}`
+                      : "Kullanım kaydı yetersiz"}
+                  </strong>
+                </span>
+                <span>
+                  Toplama dahil ek karakter sesleri
+                  <strong>
+                    {rehearsal.usage && meter.known
+                      ? `$${meter.extra.toFixed(5)}`
+                      : "—"}
+                  </strong>
+                </span>
+                <span>
+                  Toplama dahil ses örnekleri
+                  <strong>
+                    {rehearsal.usage && meter.known
+                      ? `$${meter.previews.toFixed(5)}`
+                      : "—"}
+                  </strong>
+                </span>
+              </div>
+              {!rehearsal.usage && (
+                <p className="small muted">
+                  Bu eski prova için kullanım kaydı bulunmuyor.
+                </p>
+              )}
+              <p className="small muted">
+                {meter.input.toLocaleString("tr-TR")} giriş ·{" "}
+                {meter.output.toLocaleString("tr-TR")} çıkış tokenı. Katılımcı
+                oluşturma, konuşma, değerlendirme ve dinlenen ses örnekleri
+                ölçüme dahildir.
+              </p>
+              <p className="small muted">
+                Ses üretimi satırı, farklı sesler için ek çağrıları gösterir;
+                eski sürümle toplam fiyat farkı değildir. Alınabilen kullanım
+                kayıtları üzerinden USD tahminidir, fatura değildir. Bağlantı
+                kesintilerinde kayıtlar eksik kalabilir. Birim fiyat kontrolü:{" "}
+                {PRICE_DATE}.
+              </p>
+            </details>
             {feedback && (
               <section className="report-section rehearsal-feedback">
                 <span className="ai-label">
@@ -507,8 +764,11 @@ export function RehearsalView({ id }: { id: string }) {
               <span className="count">{rehearsal.personas.length}</span>
             </div>
             <p className="small muted">Tarif ettiğin kitleden oluşturuldu.</p>
-            {rehearsal.personas.map((p, i) => (
-              <div className="persona" key={i}>
+            {assignVoices(rehearsal.personas).map((p, i) => (
+              <div
+                className={`persona ${speakingPersona === i ? "persona-speaking" : ""}`}
+                key={i}
+              >
                 <div className="persona-title">
                   <span className={`avatar persona-${i}`}>
                     {p.name.slice(0, 1)}
@@ -517,8 +777,70 @@ export function RehearsalView({ id }: { id: string }) {
                 </div>
                 <p>{p.background}</p>
                 <span className="small muted">{p.behavior}</span>
+                <div className="persona-voice-controls">
+                  <label>
+                    Ses türü
+                    <select
+                      aria-label={`${p.name} ses türü`}
+                      value={p.gender}
+                      disabled={!editable || !!rehearsal.endedAt}
+                      onChange={(e) => {
+                        const gender = voiceStyle(e.target.value);
+                        void changeVoice(i, gender, voicesFor(gender)[0].id);
+                      }}
+                    >
+                      {Object.entries(VOICE_STYLE_LABELS).map(
+                        ([value, label]) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ),
+                      )}
+                    </select>
+                  </label>
+                  <label>
+                    Ses
+                    <select
+                      aria-label={`${p.name} sesi`}
+                      value={p.voice}
+                      disabled={!editable || !!rehearsal.endedAt}
+                      onChange={(e) =>
+                        void changeVoice(
+                          i,
+                          voiceStyle(p.gender),
+                          e.target.value as VoiceId,
+                        )
+                      }
+                    >
+                      {voicesFor(voiceStyle(p.gender)).map((v) => (
+                        <option key={v.id} value={v.id}>
+                          {v.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {!rehearsal.endedAt && (
+                    <button
+                      className="button"
+                      disabled={
+                        (!editable && previewing !== i) || previewing !== null
+                      }
+                      onClick={() => speak(i, "", true)}
+                    >
+                      <Icon name={previewing === i ? "spinner" : "play"} />
+                      {previewing === i
+                        ? "Hazırlanıyor / çalıyor…"
+                        : "Sesi dinle"}
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
+            <p className="small muted">
+              Sesler yapay zekâ tarafından üretilir. Ses türü tınıyı belirtir;
+              prova öncesinde dinleyip değiştirebilirsin. Ses örnekleri de API
+              kullanımına dahildir.
+            </p>
             <details className="audience-details">
               <summary>Kitle tarifim</summary>
               <p>{rehearsal.audience}</p>

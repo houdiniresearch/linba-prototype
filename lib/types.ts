@@ -75,7 +75,13 @@ export type ActivityResponse = {
   value: string;
   createdAt: string;
 };
-export type Persona = { name: string; background: string; behavior: string };
+export type Persona = {
+  name: string;
+  background: string;
+  behavior: string;
+  gender?: import("./voices").VoiceStyle;
+  voice?: import("./voices").VoiceId;
+};
 export type Rehearsal = {
   id: string;
   courseId: string;
@@ -84,6 +90,7 @@ export type Rehearsal = {
   createdAt: string;
   endedAt?: string;
   remarks: string[];
+  usage?: import("./voice-usage").UsageEntry[];
   feedback?: { summary: string; suggestions: string[]; questions: string[] };
 };
 export type CourseState = {
