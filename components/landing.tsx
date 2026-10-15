@@ -366,7 +366,7 @@ export function Landing() {
           <nav className="landing-nav" aria-label={t("Ana gezinme")}>
             <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
             <a href="#sorular">{t("Sık sorulanlar")}</a>
-            <a href="#egitime-katil">{t("Eğitime katıl")}</a>
+            <a href="#entegrasyonlar">{t("Bekleme listesine katıl")}</a>
           </nav>
           <div className="landing-header-actions">
             <LandingLanguage />
@@ -401,7 +401,7 @@ export function Landing() {
           >
             <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
             <a href="#sorular">{t("Sık sorulanlar")}</a>
-            <a href="#egitime-katil">{t("Eğitime katıl")}</a>
+            <a href="#entegrasyonlar">{t("Bekleme listesine katıl")}</a>
           </nav>
         </header>
       </div>
@@ -510,7 +510,7 @@ export function Landing() {
         </div>
         <nav className="landing-footer-links" aria-label={t("Alt gezinme")}>
           <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
-          <Link href="/katil">{t("Eğitime katıl")}</Link>
+          <a href="#entegrasyonlar">{t("Bekleme listesine katıl")}</a>
           <Link href="/giris">{t("Giriş yap")}</Link>
         </nav>
         <span>© {new Date().getFullYear()} LİNBA</span>

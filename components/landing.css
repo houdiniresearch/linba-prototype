@@ -333,8 +333,7 @@ html:has(.landing-page) {
 }
 .landing-stage-card:nth-child(2) {
   --stage-index: 1;
-  background: var(--primary);
-  color: var(--primary-ink);
+  background: color-mix(in oklch, var(--mint) 16%, var(--bg));
 }
 .landing-stage-card:nth-child(3) {
   --stage-index: 2;
@@ -365,9 +364,9 @@ html:has(.landing-page) {
   opacity: calc(var(--stack-progress, 0) * 0.6);
   pointer-events: none;
 }
-.landing-stage-card:nth-child(2) .landing-stage-copy > p,
+.landing-stage-card:nth-child(2) .landing-stage-copy > .landing-stage-label,
 .landing-stage-card:nth-child(2) .landing-stage-copy li svg {
-  color: inherit;
+  color: var(--green);
 }
 .landing-stage-art img {
   width: 100%;
@@ -479,9 +478,21 @@ html:has(.landing-page) {
   width: 30px;
   height: 30px;
 }
+.integration-waitlist-modal .modal-heading h2 {
+  width: 100%;
+  max-width: none;
+}
+.integration-waitlist-modal .modal-heading > .icon-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  margin: 0;
+}
 .integration-connection {
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 100%;
   gap: 16px;
   padding-block: 4px;
 }
