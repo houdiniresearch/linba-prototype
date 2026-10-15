@@ -1,3 +1,6 @@
+html:has(.landing-page) {
+  scroll-behavior: smooth;
+}
 .landing-page {
   background: var(--bg);
   color: var(--ink);
@@ -54,12 +57,21 @@
   clip-path: none;
   padding: 12px 16px;
 }
+.landing-header-shell {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-dropdown);
+  background: color-mix(in oklch, var(--bg) 78%, transparent);
+  border-bottom: 1px solid color-mix(in oklch, var(--line) 65%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(1.1);
+  backdrop-filter: blur(18px) saturate(1.1);
+}
 .landing-header {
   height: 80px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 32px;
+  justify-content: flex-start;
+  gap: 48px;
 }
 .landing-brand {
   display: inline-flex;
@@ -75,7 +87,7 @@
   gap: 30px;
 }
 .landing-nav {
-  margin-left: auto;
+  margin-left: 0;
 }
 .landing-nav a,
 .landing-login {
@@ -91,12 +103,8 @@
   color: var(--accent);
 }
 .landing-header-actions {
+  margin-left: auto;
   gap: 18px;
-}
-.landing-header-actions .theme-trigger {
-  width: 36px;
-  height: 36px;
-  background: transparent;
 }
 .landing-language {
   display: flex;
@@ -107,7 +115,7 @@
 }
 .landing-language select {
   border: 0;
-  background: var(--bg);
+  background: transparent;
   padding: 6px 0;
   min-height: 36px;
   font-size: 12px;
@@ -155,6 +163,47 @@
   align-items: center;
   gap: 26px;
 }
+.landing-join {
+  max-width: 350px;
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 112px;
+}
+.landing-join > label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.landing-join-fields {
+  display: flex;
+  gap: 8px;
+}
+.landing-join-fields input {
+  min-width: 0;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  font-size: 15px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.landing-join-fields input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+.landing-page .landing-join-submit {
+  flex-shrink: 0;
+  background: var(--mint);
+  color: var(--mint-ink);
+  border-color: transparent;
+}
+.landing-page .landing-join-submit:hover {
+  background: var(--mint-hover);
+}
 .landing-page .button {
   min-height: 48px;
   padding: 13px 20px;
@@ -184,7 +233,7 @@
 }
 .landing-flow {
   padding-top: 42px;
-  scroll-margin-top: 32px;
+  scroll-margin-top: 112px;
 }
 .landing-flow-intro {
   text-align: center;
@@ -343,7 +392,7 @@
   grid-template-columns: 1fr 1.55fr;
   gap: 80px;
   padding-block: 112px;
-  scroll-margin-top: 32px;
+  scroll-margin-top: 112px;
 }
 .landing-faq-intro {
   padding-top: 20px;
@@ -525,10 +574,6 @@
     margin-left: auto;
     gap: 5px;
   }
-  .landing-header-actions .theme-trigger {
-    width: 32px;
-    height: 32px;
-  }
   .landing-language {
     gap: 0;
   }
@@ -559,6 +604,15 @@
   }
   .landing-hero-actions {
     gap: 22px;
+  }
+  .landing-join {
+    max-width: 100%;
+    margin-top: 26px;
+    scroll-margin-top: 100px;
+  }
+  .landing-join-fields input {
+    font-size: 16px;
+    min-height: 46px;
   }
   .landing-page .button {
     min-height: 46px;
@@ -720,6 +774,9 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  html:has(.landing-page) {
+    scroll-behavior: auto;
+  }
   .landing-page *,
   .landing-page *::after {
     transition: none !important;

@@ -73,6 +73,8 @@ AhaSlides rapor asistanı referansı: bağımsız yeni sekme, solda rapor listes
 
 ## Tanıtım sayfası
 
+Üst çubuk kaydırmada sabittir; kullanıcının isteğiyle yarı saydam, arkasını bulanıklaştıran cam yüzey kullanılır. Logo ve gezinme solda, dil ve giriş sağdadır. Bu yüzeyde görünüm menüsü yoktur. Bölüm bağlantıları yumuşak kayar, azaltılmış harekette anlık gider; başlıklar sabit çubuğun altında kalmaz. İlk ekranda sade bir katılım kodu formu bulunur; mint Katıl düğmesi fuşya hesap oluşturma eyleminden ayrılır.
+
 Arka planda özgün izometrik görsellerin açılarını sürdüren ince lila çizgi deseni kullanılır. Desen görsellerin çevresinde ve bölüm kenarlarında belirir, metin çevresinde silikleşir. Mobilde yoğunluğu azaltılır. CSS maskesi dekoratiftir; tıklamaları engellemez, hareket içermez ve ürün ekranlarına taşınmaz.
 
 Markayı koruyan, düşük yoğunluklu tasarım. Tasarım varyansı 6, hareket 3, görsel yoğunluk 2: ilk ekranda solda iki satırlı mesaj, sağda tek izometrik sahne. Yalnızca sekme seçimi ve soru açılışında hareket var. Genel font Inter, yüzeyler mevcut açık/koyu tokenlar; fuşya kayıt eylemleri, görsellerde sınırlı lila/mint ayrıntılar. Gölgeler raster nesnelerin fiziksel derinliği ve mevcut menülerle sınırlı.

@@ -24,7 +24,7 @@ export default async function RootLayout({
   const theme =
     savedTheme === "light" || savedTheme === "dark" ? savedTheme : "system";
   return (
-    <html lang={locale} data-theme={theme}>
+    <html lang={locale} data-theme={theme} data-scroll-behavior="smooth">
       <body>
         <LocaleProvider initialLocale={locale}>
           <ThemeProvider initialTheme={theme}>{children}</ThemeProvider>

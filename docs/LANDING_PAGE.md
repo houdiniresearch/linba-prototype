@@ -3,6 +3,8 @@
 ## Kararlar
 
 - Marka korundu: özgün logo, Inter, fuşya eylemler ve lila/mint ayrıntılar.
+- Üst çubuk cam yüzeyle sayfada sabit kalır; gezinme logonun yanında, dil ve giriş sağdadır. Tanıtımda tema seçici gösterilmez, mevcut görünüm tercihi korunur. Bölüm bağlantıları sabit çubuğun altında boşluk bırakarak yumuşak kayar; azaltılmış hareket tercihinde doğrudan gider.
+- İlk ekrandaki “Katılımcı mısın?” formu altı rakamı doğrular ve `/katil?kod=…` adresine aktarır. Hesabı olmayan katılımcı mevcut giriş/kayıt akışında ilerler; kod sayfa adresinde korunur. Üstteki katılım bağlantısı bu forma gider.
 - Arka plandaki ince izometrik çizgi deseni, üst görselin ve alt bölümün kenarlarında yumuşakça belirir. Metin çevresinde silikleşir; ortak lila tokenı iki temaya uyum sağlar. Küçük, yerel SVG yalnız dekoratif CSS maskesidir; hareket veya ek bağımlılık içermez.
 - Tasarım varyansı 6, hareket yoğunluğu 3, içerik yoğunluğu 2. İki satırlı ana mesaj ve tek izometrik sahne; uzun özellik ızgaraları yok.
 - Aşamalar kısa açıklamalı üç sekme ile ortak bir çerçevede değişir. Yön tuşları, Home/End, doğru tab-panel bağlantıları ve azaltılmış hareket desteklenir.

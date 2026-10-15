@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useId, useState } from "react";
 import { Icon, Logo } from "./ui";
-import { ThemeMenu } from "./theme-menu";
 import { useLocale } from "./locale-provider";
 
 const stages = [
@@ -78,57 +77,58 @@ export function Landing() {
       <a className="landing-skip" href="#landing-main">
         {t("İçeriğe geç")}
       </a>
-      <header className="landing-header landing-container">
-        <Link
-          href="/"
-          className="landing-brand"
-          aria-label={t("LİNBA ana sayfa")}
-        >
-          <Logo />
-        </Link>
-        <nav className="landing-nav" aria-label={t("Ana gezinme")}>
-          <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
-          <a href="#sorular">{t("Sık sorulanlar")}</a>
-          <Link href="/katil">{t("Eğitime katıl")}</Link>
-        </nav>
-        <div className="landing-header-actions">
-          <ThemeMenu />
-          <label className="landing-language">
-            <Icon name="globe" size={17} />
-            <select
-              aria-label={t("Dil")}
-              value={locale}
-              onChange={(event) =>
-                setLocale(event.target.value === "en" ? "en" : "tr")
-              }
-            >
-              <option value="tr">TR</option>
-              <option value="en">EN</option>
-            </select>
-          </label>
-          <Link className="landing-login" href="/giris">
-            {t("Giriş yap")}
-          </Link>
-          <button
-            className="icon-button landing-menu-trigger"
-            popoverTarget={mobileMenuId}
-            aria-label={t("Menüyü aç")}
+      <div className="landing-header-shell">
+        <header className="landing-header landing-container">
+          <Link
+            href="/"
+            className="landing-brand"
+            aria-label={t("LİNBA ana sayfa")}
           >
-            <Icon name="menu" size={21} />
-          </button>
-        </div>
-        <nav
-          id={mobileMenuId}
-          popover="auto"
-          className="landing-mobile-nav"
-          aria-label={t("Ana gezinme")}
-          onClick={() => document.getElementById(mobileMenuId)?.hidePopover()}
-        >
-          <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
-          <a href="#sorular">{t("Sık sorulanlar")}</a>
-          <Link href="/katil">{t("Eğitime katıl")}</Link>
-        </nav>
-      </header>
+            <Logo />
+          </Link>
+          <nav className="landing-nav" aria-label={t("Ana gezinme")}>
+            <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
+            <a href="#sorular">{t("Sık sorulanlar")}</a>
+            <a href="#egitime-katil">{t("Eğitime katıl")}</a>
+          </nav>
+          <div className="landing-header-actions">
+            <label className="landing-language">
+              <Icon name="globe" size={17} />
+              <select
+                aria-label={t("Dil")}
+                value={locale}
+                onChange={(event) =>
+                  setLocale(event.target.value === "en" ? "en" : "tr")
+                }
+              >
+                <option value="tr">TR</option>
+                <option value="en">EN</option>
+              </select>
+            </label>
+            <Link className="landing-login" href="/giris">
+              {t("Giriş yap")}
+            </Link>
+            <button
+              className="icon-button landing-menu-trigger"
+              popoverTarget={mobileMenuId}
+              aria-label={t("Menüyü aç")}
+            >
+              <Icon name="menu" size={21} />
+            </button>
+          </div>
+          <nav
+            id={mobileMenuId}
+            popover="auto"
+            className="landing-mobile-nav"
+            aria-label={t("Ana gezinme")}
+            onClick={() => document.getElementById(mobileMenuId)?.hidePopover()}
+          >
+            <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
+            <a href="#sorular">{t("Sık sorulanlar")}</a>
+            <a href="#egitime-katil">{t("Eğitime katıl")}</a>
+          </nav>
+        </header>
+      </div>
 
       <main id="landing-main" tabIndex={-1}>
         <section
@@ -154,6 +154,39 @@ export function Landing() {
                 <Icon name="down" size={17} />
               </a>
             </div>
+            <form
+              id="egitime-katil"
+              className="landing-join"
+              action="/katil"
+              method="get"
+              tabIndex={-1}
+              aria-labelledby="landing-join-label"
+            >
+              <label id="landing-join-label" htmlFor="landing-join-code">
+                {t("Katılımcı mısın?")}
+              </label>
+              <div className="landing-join-fields">
+                <input
+                  id="landing-join-code"
+                  name="kod"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]{6}"
+                  minLength={6}
+                  maxLength={6}
+                  required
+                  autoComplete="off"
+                  spellCheck={false}
+                  aria-label={t("Eğitim kodu")}
+                  placeholder={t("6 haneli kod")}
+                  title={t("Eğitmeninin paylaştığı 6 haneli kodu gir.")}
+                />
+                <button type="submit" className="button landing-join-submit">
+                  {t("Katıl")}
+                  <Icon name="arrow" size={18} />
+                </button>
+              </div>
+            </form>
           </div>
           <div className="landing-hero-art">
             <Image

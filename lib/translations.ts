@@ -1,5 +1,9 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Katılımcı mısın?": "Are you a participant?",
+  Katıl: "Join",
+  "Eğitmeninin paylaştığı 6 haneli kodu gir.":
+    "Enter the 6-digit code shared by your instructor.",
   "Kitlene göre sesli prova": "Voice rehearsal for your audience",
   "Sunumla birlikte katılım": "Participation as you present",
   "Kaynaklı yanıtlar ve rapor": "Sourced answers and reporting",
