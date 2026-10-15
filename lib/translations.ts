@@ -1,5 +1,18 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  Tamam: "Done",
+  "Yeni planlarda yerini al.": "Be part of what’s next.",
+  "İletişimde kalalım.": "Let’s stay in touch.",
+  "LİNBA’nın yeni planları hazır olduğunda seni haberdar edeceğiz.":
+    "We’ll let you know when LİNBA’s new plans are ready.",
+  "Haberleri almak istediğin e-posta adresini güncelle.":
+    "Update the email address where you’d like to hear from us.",
+  "LİNBA’nın bir sonraki adımına birlikte geçelim. Yeni planlarımız duyurulduğunda sana haber verelim.":
+    "Take the next step with LİNBA. Leave your email to hear when our new plans are announced.",
+  "Kayıtlı e-posta adresin": "Your registered email",
+  "E-posta adresin": "Your email address",
+  "E-posta adresini daha sonra değiştirebilirsin.":
+    "You can change your email address later.",
   "Eğitimin hazırlanıyor": "Preparing your training",
   "Sunumun işleniyor ve slaytların eğitim akışına hazırlanıyor.":
     "Your presentation is being processed and its slides prepared for your training.",

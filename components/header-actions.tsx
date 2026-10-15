@@ -53,6 +53,7 @@ export function HeaderActions({
   }
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (busy) return;
     setBusy(true);
     setError("");
     try {
@@ -68,6 +69,7 @@ export function HeaderActions({
       setBusy(false);
     }
   }
+  const registered = !!waitlist.data?.entry && !editing;
   return (
     <>
       <div className="header-actions">
@@ -224,50 +226,78 @@ export function HeaderActions({
       </div>
       <Modal
         open={open}
-        onClose={() => setOpen(false)}
-        title={t(
-          waitlist.data?.entry && !editing
-            ? "Bekleme listesindesin"
-            : "Bekleme listesi",
-        )}
+        onClose={() => !busy && setOpen(false)}
+        closeDisabled={busy}
+        className="waitlist-modal"
+        title={
+          <span className="waitlist-heading">
+            <span
+              className={`waitlist-emblem ${registered ? "is-registered" : ""}`}
+              aria-hidden="true"
+            >
+              <Icon name={registered ? "check" : "star"} size={27} />
+              {!registered && (
+                <span className="waitlist-emblem-spark">
+                  <Icon name="sparkle" size={17} />
+                </span>
+              )}
+            </span>
+            <span>
+              {t(
+                registered
+                  ? "Bekleme listesindesin"
+                  : editing
+                    ? "İletişimde kalalım."
+                    : "Yeni planlarda yerini al.",
+              )}
+            </span>
+          </span>
+        }
         description={t(
-          waitlist.data?.entry && !editing
-            ? "E-posta adresin kaydedildi."
-            : "Yeni planlar hazır olduğunda haberdar olmak için e-postanı bırak.",
+          registered
+            ? "LİNBA’nın yeni planları hazır olduğunda seni haberdar edeceğiz."
+            : editing
+              ? "Haberleri almak istediğin e-posta adresini güncelle."
+              : "LİNBA’nın bir sonraki adımına birlikte geçelim. Yeni planlarımız duyurulduğunda sana haber verelim.",
         )}
       >
-        {waitlist.data?.entry && !editing ? (
-          <div className="waitlist-success" role="status">
-            <span className="waitlist-success-icon">
-              <Icon name="check" size={26} />
-            </span>
-            <strong>{waitlist.data.entry.email}</strong>
-            <button
-              className="text-button"
-              onClick={() => {
-                setEmail(waitlist.data!.entry!.email);
-                setEditing(true);
-              }}
-            >
-              {t("E-postayı değiştir")}
-            </button>
-            <button
-              className="button primary full"
-              onClick={() => setOpen(false)}
-            >
-              {t("Kapat")}
-            </button>
+        {registered ? (
+          <div className="waitlist-confirmation" role="status">
+            <div className="waitlist-email-record">
+              <Icon name="send" size={21} />
+              <div>
+                <span>{t("Kayıtlı e-posta adresin")}</span>
+                <strong>{waitlist.data!.entry!.email}</strong>
+              </div>
+            </div>
+            <div className="waitlist-confirmation-actions">
+              <button
+                className="text-button"
+                onClick={() => {
+                  setEmail(waitlist.data!.entry!.email);
+                  setError("");
+                  setEditing(true);
+                }}
+              >
+                {t("E-postayı değiştir")}
+              </button>
+              <button className="button mint" onClick={() => setOpen(false)}>
+                {t("Tamam")}
+                <Icon name="check" size={18} />
+              </button>
+            </div>
           </div>
         ) : (
-          <form onSubmit={submit}>
+          <form className="waitlist-form" onSubmit={submit}>
             <label>
-              {t("E-posta")}
+              {t("E-posta adresin")}
               <input
                 type="email"
                 name="email"
                 autoComplete="email"
                 required
                 maxLength={254}
+                disabled={busy}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder={t("sen@ornek.com")}
@@ -275,6 +305,7 @@ export function HeaderActions({
             </label>
             <ErrorNote message={error || waitlist.error} />
             <button className="button primary full" disabled={busy}>
+              {busy && <Icon name="spinner" className="spin" size={18} />}
               {busy
                 ? t("Kaydediliyor…")
                 : t(
@@ -282,7 +313,11 @@ export function HeaderActions({
                       ? "Değişiklikleri kaydet"
                       : "Bekleme listesine katıl",
                   )}
+              {!busy && <Icon name="arrow" size={19} />}
             </button>
+            <p className="waitlist-footnote">
+              {t("E-posta adresini daha sonra değiştirebilirsin.")}
+            </p>
           </form>
         )}
       </Modal>

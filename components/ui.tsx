@@ -213,14 +213,16 @@ export function Modal({
   children,
   wide = false,
   closeDisabled = false,
+  className = "",
 }: {
   open: boolean;
   onClose: () => void;
-  title: string;
+  title: React.ReactNode;
   description?: string;
   children: React.ReactNode;
   wide?: boolean;
   closeDisabled?: boolean;
+  className?: string;
 }) {
   const { t } = useLocale();
 
@@ -229,7 +231,7 @@ export function Modal({
       <Dialog.Portal>
         <Dialog.Overlay className="modal-overlay" />
         <Dialog.Content
-          className={`modal ${wide ? "wide" : ""}`}
+          className={`modal ${wide ? "wide" : ""} ${className}`}
           aria-describedby={description ? "modal-description" : undefined}
         >
           <div className="modal-heading">
