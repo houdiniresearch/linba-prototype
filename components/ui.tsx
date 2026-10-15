@@ -212,6 +212,7 @@ export function Modal({
   description,
   children,
   wide = false,
+  closeDisabled = false,
 }: {
   open: boolean;
   onClose: () => void;
@@ -219,6 +220,7 @@ export function Modal({
   description?: string;
   children: React.ReactNode;
   wide?: boolean;
+  closeDisabled?: boolean;
 }) {
   const { t } = useLocale();
 
@@ -232,7 +234,11 @@ export function Modal({
         >
           <div className="modal-heading">
             <Dialog.Title>{title}</Dialog.Title>
-            <Dialog.Close className="icon-button" aria-label={t("Kapat")}>
+            <Dialog.Close
+              className="icon-button"
+              aria-label={t("Kapat")}
+              disabled={closeDisabled}
+            >
               <Icon name="close" />
             </Dialog.Close>
           </div>

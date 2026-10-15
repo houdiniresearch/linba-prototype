@@ -1,4 +1,5 @@
 "use client";
+import { OperationProgress } from "./operation-progress";
 import { ThemeMenu } from "./theme-menu";
 import { EditorSkeleton } from "./skeletons";
 import { useLocale } from "./locale-provider";
@@ -11,7 +12,6 @@ import {
   Icon,
   Logo,
   Modal,
-  Loading,
   ErrorNote,
   Status,
   useResource,
@@ -43,9 +43,12 @@ function ActivityEditor({
     ),
     [ai, setAI] = useState(!!slide?.activity?.aiGenerated),
     [busy, setBusy] = useState(false),
+    [generating, setGenerating] = useState(false),
     [error, setError] = useState("");
   async function generate() {
+    if (busy) return;
     setBusy(true);
+    setGenerating(true);
     setError("");
     try {
       const active = course.slides.find((s) => s.id === course.activeSlideId);
@@ -61,12 +64,14 @@ function ActivityEditor({
       setError((e as Error).message);
     } finally {
       setBusy(false);
+      setGenerating(false);
     }
   }
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={() => !busy && onClose()}
+      closeDisabled={busy}
       title={slide ? t("Aktiviteyi düzenle") : t("Aktivite ekle")}
       description={t("Aktivite, seçili slayttan sonra sunum akışına yerleşir.")}
       wide
@@ -97,6 +102,7 @@ function ActivityEditor({
               <button
                 className={type === value ? "selected" : ""}
                 key={value}
+                disabled={busy}
                 onClick={() => setType(value as Activity["type"])}
               >
                 <Icon name={icon as "chart"} size={24} />
@@ -122,7 +128,9 @@ function ActivityEditor({
             )}
           </p>
         </div>
+        {generating && <OperationProgress kind="activity" compact />}
         <form
+          hidden={generating}
           onSubmit={async (e) => {
             e.preventDefault();
             setBusy(true);
@@ -151,6 +159,7 @@ function ActivityEditor({
           <label>
             {t("Aktivite sorusu")}
             <textarea
+              disabled={busy}
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder={t("Katılımcılarına ne sormak istersin?")}
@@ -163,6 +172,7 @@ function ActivityEditor({
             <label>
               {t("Seçenekler")}
               <textarea
+                disabled={busy}
                 value={options}
                 onChange={(e) => setOptions(e.target.value)}
                 rows={4}
@@ -722,22 +732,21 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
       <Modal
         open={end}
         onClose={() => !busy && setEnd(false)}
+        closeDisabled={busy}
         title={t("Eğitimi bitir")}
         description={t(
           "Canlı aktiviteler kapanır. Katılımcıların doküman asistanına erişimi {days} gün boyunca devam eder.",
           { days: c.accessDays },
         )}
       >
-        <p>
+        <p hidden={busy}>
           {t(
             "Sorular ve aktivite sonuçları raporuna aktarılır. Bu eğitim oturumu yeniden başlatılamaz.",
           )}
         </p>
-        {busy && (
-          <Loading label={t("Eğitim kapatılıyor, rapor hazırlanıyor…")} />
-        )}
+        {busy && <OperationProgress kind="report" />}
         <ErrorNote message={notice} />
-        <div className="modal-actions">
+        <div className="modal-actions" hidden={busy}>
           <button
             className="button"
             onClick={() => setEnd(false)}

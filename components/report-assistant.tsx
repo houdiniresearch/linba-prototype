@@ -1,4 +1,5 @@
 "use client";
+import { ThinkingDots } from "./operation-progress";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { User } from "@/lib/types";
@@ -417,7 +418,7 @@ function ReportConversation({ report }: { report: ReportItem }) {
                 >
                   <Icon name="sparkle" size={23} />
                   <span>{t("Raporun inceleniyor…")}</span>
-                  <Icon name="spinner" size={17} className="spin" />
+                  <ThinkingDots />
                 </div>
               </div>
             )}

@@ -1,5 +1,20 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Eğitimin hazırlanıyor": "Preparing your training",
+  "Sunumun işleniyor ve slaytların eğitim akışına hazırlanıyor.":
+    "Your presentation is being processed and its slides prepared for your training.",
+  "Prova katılımcıların hazırlanıyor": "Creating your rehearsal participants",
+  "Tarif ettiğin kitleye göre farklı deneyimleri, beklentileri ve soruları olan katılımcılar oluşturuluyor.":
+    "Participants with different experiences, expectations and questions are being created based on your audience description.",
+  "Eğitimin tamamlanıyor": "Completing your training",
+  "Sorular ve aktivite sonuçları raporun için bir araya getiriliyor.":
+    "Questions and activity results are being brought together for your report.",
+  "Provan değerlendiriliyor": "Reviewing your rehearsal",
+  "Konuşman ve katılımcı yorumları üzerinden geri bildirimin hazırlanıyor.":
+    "Your feedback is being prepared from your conversation and participant comments.",
+  "Aktiviten hazırlanıyor": "Preparing your activity",
+  "Seçili slaydın içeriğinden bir aktivite taslağı oluşturuluyor.":
+    "An activity draft is being created from the selected slide’s content.",
   "Slayt görseli yüklenemedi.": "The slide image could not be loaded.",
   "Rapor asistanı": "Report assistant",
   "Rapor asistanı eğitmen hesabında kullanılabilir.":

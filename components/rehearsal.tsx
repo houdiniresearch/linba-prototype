@@ -1,4 +1,5 @@
 "use client";
+import { OperationProgress } from "./operation-progress";
 import { ThemeMenu } from "./theme-menu";
 import { RehearsalSkeleton } from "./skeletons";
 import { useLocale } from "./locale-provider";
@@ -294,6 +295,7 @@ export function RehearsalView({ id }: { id: string }) {
   }
   async function personas(e: React.FormEvent) {
     e.preventDefault();
+    if (busy) return;
     setBusy(true);
     setNotice("");
     try {
@@ -586,7 +588,8 @@ export function RehearsalView({ id }: { id: string }) {
               "Kimlere eğitim vereceksin? Deneyimlerini, konuya ne kadar hâkim olduklarını ve beklentilerini kendi sözlerinle anlat.",
             )}
           </p>
-          <form onSubmit={personas}>
+          {busy && <OperationProgress kind="personas" />}
+          <form onSubmit={personas} hidden={busy}>
             <label>
               {t("Katılımcı kitlen")}
               <textarea
@@ -627,6 +630,7 @@ export function RehearsalView({ id }: { id: string }) {
               {data.rehearsals.map((r) => (
                 <button
                   className="joined-course"
+                  disabled={busy}
                   key={r.id}
                   onClick={() => {
                     setRehearsal(r);
@@ -772,6 +776,9 @@ export function RehearsalView({ id }: { id: string }) {
                 <Icon name="spinner" className="spin" />
               )}
             </div>
+            {voice === "feedback" && (
+              <OperationProgress kind="feedback" compact />
+            )}
             <ErrorNote message={notice} />
             {retryLine && voice === "listening" && (
               <div>
@@ -961,7 +968,10 @@ export function RehearsalView({ id }: { id: string }) {
                       }
                       onClick={() => speak(i, "", true)}
                     >
-                      <Icon name={previewing === i ? "spinner" : "play"} />
+                      <Icon
+                        name={previewing === i ? "spinner" : "play"}
+                        className={previewing === i ? "spin" : undefined}
+                      />
                       {previewing === i
                         ? t("Hazırlanıyor / çalıyor…")
                         : t("Sesi dinle")}

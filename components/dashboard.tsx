@@ -1,4 +1,5 @@
 "use client";
+import { OperationProgress } from "./operation-progress";
 import { ThemeMenu } from "./theme-menu";
 import { ReportAssistantLink } from "./report-assistant";
 import {
@@ -20,7 +21,6 @@ import {
   Logo,
   Modal,
   ErrorNote,
-  Loading,
   ResourceFailure,
   Empty,
   Status,
@@ -47,6 +47,7 @@ export function CreateTraining({
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   async function create(demo = false) {
+    if (busy) return;
     setError("");
     setBusy(true);
     try {
@@ -73,10 +74,13 @@ export function CreateTraining({
     <Modal
       open={open}
       onClose={() => !busy && onClose()}
+      closeDisabled={busy}
       title={t("Yeni eğitim oluştur")}
       description={t("Sunumunu yükle ve katılımcı erişimini belirle.")}
     >
+      {busy && <OperationProgress kind="training" />}
       <form
+        hidden={busy}
         onSubmit={(e) => {
           e.preventDefault();
           void create();
@@ -145,9 +149,6 @@ export function CreateTraining({
           />
         </label>
         <ErrorNote message={error} />
-        {busy && (
-          <Loading label={t("Sunum işleniyor, slaytlar hazırlanıyor…")} />
-        )}
         <div className="modal-actions">
           <button
             type="button"

@@ -3765,6 +3765,186 @@ tbody tr:hover {
   color: var(--muted);
   font-size: 13px;
 }
+.operation-progress {
+  display: flex;
+  min-height: 320px;
+  padding: 32px 20px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  text-align: center;
+}
+.operation-scene {
+  position: relative;
+  width: 136px;
+  height: 112px;
+  flex-shrink: 0;
+}
+.operation-tile {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  width: 72px;
+  height: 88px;
+  color: var(--lilac-ink);
+  background: var(--lilac-soft);
+}
+.operation-tile-back {
+  left: 10px;
+  top: 5px;
+  transform: rotate(-12deg);
+  animation: operation-back 3s ease-in-out infinite;
+}
+.operation-tile-front {
+  left: 47px;
+  top: 18px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  flex-direction: column;
+  gap: 10px;
+  transform: rotate(7deg);
+  animation: operation-front 3s ease-in-out infinite;
+}
+.operation-mini-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 32px;
+}
+.operation-mini-lines i {
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.25;
+}
+.operation-mini-lines i:last-child {
+  width: 65%;
+}
+.operation-spark {
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: var(--accent);
+  animation: operation-spark 3s ease-in-out infinite;
+}
+.operation-personas .operation-tile {
+  width: 68px;
+  height: 76px;
+}
+.operation-personas .operation-tile-back {
+  top: 18px;
+}
+.operation-personas .operation-tile-front {
+  top: 28px;
+}
+.operation-copy {
+  max-width: 44ch;
+}
+.operation-copy strong {
+  font-size: 18px;
+  color: var(--ink);
+}
+.operation-copy p {
+  margin: 9px 0 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.operation-pulse {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 16px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.operation-pulse i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.4;
+  animation: operation-dot 1.5s ease-in-out infinite;
+}
+.operation-pulse i:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.operation-pulse i:nth-child(3) {
+  animation-delay: 0.36s;
+}
+.operation-compact {
+  min-height: 210px;
+  padding: 24px 16px;
+  gap: 14px;
+  background: var(--workspace);
+  border-radius: 12px;
+}
+.operation-compact .operation-scene {
+  zoom: 0.75;
+}
+.operation-compact .operation-copy strong {
+  font-size: 15px;
+}
+.operation-compact .operation-copy p {
+  font-size: 13px;
+}
+.rehearsal-layout .operation-progress {
+  margin: 20px 0;
+}
+form[hidden],
+.modal-actions[hidden] {
+  display: none;
+}
+@keyframes operation-front {
+  0%,
+  100% {
+    transform: translateY(0) rotate(7deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(3deg);
+  }
+}
+@keyframes operation-back {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-12deg);
+  }
+  50% {
+    transform: translateY(3px) rotate(-7deg);
+  }
+}
+@keyframes operation-spark {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes operation-dot {
+  0%,
+  70%,
+  100% {
+    opacity: 0.35;
+  }
+  35% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .operation-progress *,
+  .operation-pulse i {
+    animation: none !important;
+  }
+}
 .report-chat-fallback {
   flex: 1;
   min-height: 0;
