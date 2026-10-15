@@ -3,7 +3,7 @@ import "./landing.css";
 
 import Image from "next/image";
 import Link from "next/link";
-import { useId, useState } from "react";
+import { useCallback, useId, useLayoutEffect, useRef, useState } from "react";
 import { Icon, Logo } from "./ui";
 import { useLocale } from "./locale-provider";
 
@@ -49,6 +49,106 @@ const stages = [
   },
 ] as const;
 
+function LandingLanguage() {
+  const { locale, setLocale, t } = useLocale();
+  const id = useId();
+  const trigger = useRef<HTMLButtonElement>(null);
+  const panel = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const position = useCallback(() => {
+    if (!trigger.current || !panel.current) return;
+    const rect = trigger.current.getBoundingClientRect();
+    const width = panel.current.getBoundingClientRect().width || 184;
+    panel.current.style.left = `${Math.max(12, Math.min(rect.left, window.innerWidth - width - 12))}px`;
+    panel.current.style.top = `${rect.bottom + 8}px`;
+  }, []);
+  useLayoutEffect(() => {
+    if (!open) return;
+    position();
+    window.addEventListener("resize", position);
+    window.addEventListener("scroll", position, true);
+    return () => {
+      window.removeEventListener("resize", position);
+      window.removeEventListener("scroll", position, true);
+    };
+  }, [open, position]);
+  return (
+    <>
+      <button
+        ref={trigger}
+        className="landing-language"
+        popoverTarget={id}
+        onClick={position}
+        aria-expanded={open}
+        aria-controls={id}
+        aria-label={`${t("Dil")}: ${locale === "tr" ? "Türkçe" : "English"}`}
+      >
+        <Icon name="globe" size={17} />
+        <span>{locale.toUpperCase()}</span>
+        <Icon name="downCaret" size={12} />
+      </button>
+      <div
+        id={id}
+        ref={panel}
+        popover="auto"
+        role="group"
+        aria-label={t("Dil")}
+        className="landing-language-menu"
+        onToggle={(event) => {
+          const expanded = event.newState === "open";
+          setOpen(expanded);
+          if (expanded)
+            panel.current
+              ?.querySelector<HTMLButtonElement>('[aria-pressed="true"]')
+              ?.focus();
+        }}
+        onKeyDown={(event) => {
+          if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key))
+            return;
+          event.preventDefault();
+          const buttons = Array.from(
+            event.currentTarget.querySelectorAll("button"),
+          );
+          const current = buttons.indexOf(
+            document.activeElement as HTMLButtonElement,
+          );
+          const next =
+            event.key === "Home"
+              ? 0
+              : event.key === "End"
+                ? buttons.length - 1
+                : (current +
+                    (event.key === "ArrowDown" ? 1 : -1) +
+                    buttons.length) %
+                  buttons.length;
+          buttons[next]?.focus();
+        }}
+      >
+        {(
+          [
+            { value: "tr", label: "Türkçe" },
+            { value: "en", label: "English" },
+          ] as const
+        ).map((choice) => (
+          <button
+            key={choice.value}
+            type="button"
+            aria-pressed={locale === choice.value}
+            onClick={() => {
+              setLocale(choice.value);
+              panel.current?.hidePopover();
+              trigger.current?.focus();
+            }}
+          >
+            <span>{choice.label}</span>
+            {locale === choice.value && <Icon name="check" size={17} />}
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}
+
 const questions = [
   [
     "Hangi sunumları yükleyebilirim?",
@@ -69,7 +169,7 @@ const questions = [
 ] as const;
 
 export function Landing() {
-  const { locale, setLocale, t } = useLocale();
+  const { t } = useLocale();
   const mobileMenuId = useId();
   const [stage, setStage] = useState(0);
   return (
@@ -77,6 +177,48 @@ export function Landing() {
       <a className="landing-skip" href="#landing-main">
         {t("İçeriğe geç")}
       </a>
+      <aside
+        className="landing-participant-strip"
+        aria-label={t("Eğitime katıl")}
+      >
+        <div className="landing-container">
+          <form
+            id="egitime-katil"
+            className="landing-join"
+            action="/katil"
+            method="get"
+            tabIndex={-1}
+            aria-labelledby="landing-join-label"
+          >
+            <label id="landing-join-label" htmlFor="landing-join-code">
+              {t("Katılımcı mısın?")}
+            </label>
+            <div className="landing-join-fields">
+              <span className="landing-join-prefix" aria-hidden="true">
+                linba /
+              </span>
+              <input
+                id="landing-join-code"
+                name="kod"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]{6}"
+                minLength={6}
+                maxLength={6}
+                required
+                autoComplete="off"
+                spellCheck={false}
+                aria-label={t("Eğitim kodu")}
+                placeholder={t("6 haneli kod")}
+                title={t("Eğitmeninin paylaştığı 6 haneli kodu gir.")}
+              />
+              <button type="submit" className="button landing-join-submit">
+                {t("Katıl")}
+              </button>
+            </div>
+          </form>
+        </div>
+      </aside>
       <div className="landing-header-shell">
         <header className="landing-header landing-container">
           <Link
@@ -92,19 +234,7 @@ export function Landing() {
             <a href="#egitime-katil">{t("Eğitime katıl")}</a>
           </nav>
           <div className="landing-header-actions">
-            <label className="landing-language">
-              <Icon name="globe" size={17} />
-              <select
-                aria-label={t("Dil")}
-                value={locale}
-                onChange={(event) =>
-                  setLocale(event.target.value === "en" ? "en" : "tr")
-                }
-              >
-                <option value="tr">TR</option>
-                <option value="en">EN</option>
-              </select>
-            </label>
+            <LandingLanguage />
             <Link className="landing-login" href="/giris">
               {t("Giriş yap")}
             </Link>
@@ -118,6 +248,11 @@ export function Landing() {
               className="icon-button landing-menu-trigger"
               popoverTarget={mobileMenuId}
               aria-label={t("Menüyü aç")}
+              onClick={(event) => {
+                const menu = document.getElementById(mobileMenuId);
+                if (menu)
+                  menu.style.top = `${event.currentTarget.getBoundingClientRect().bottom + 12}px`;
+              }}
             >
               <Icon name="menu" size={21} />
             </button>
@@ -156,39 +291,6 @@ export function Landing() {
                 <Icon name="arrow" size={19} />
               </Link>
             </div>
-            <form
-              id="egitime-katil"
-              className="landing-join"
-              action="/katil"
-              method="get"
-              tabIndex={-1}
-              aria-labelledby="landing-join-label"
-            >
-              <label id="landing-join-label" htmlFor="landing-join-code">
-                {t("Katılımcı mısın?")}
-              </label>
-              <div className="landing-join-fields">
-                <input
-                  id="landing-join-code"
-                  name="kod"
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]{6}"
-                  minLength={6}
-                  maxLength={6}
-                  required
-                  autoComplete="off"
-                  spellCheck={false}
-                  aria-label={t("Eğitim kodu")}
-                  placeholder={t("6 haneli kod")}
-                  title={t("Eğitmeninin paylaştığı 6 haneli kodu gir.")}
-                />
-                <button type="submit" className="button landing-join-submit">
-                  {t("Katıl")}
-                  <Icon name="arrow" size={18} />
-                </button>
-              </div>
-            </form>
           </div>
           <div className="landing-hero-art">
             <Image
