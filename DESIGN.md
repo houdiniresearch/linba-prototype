@@ -73,7 +73,7 @@ AhaSlides rapor asistanı referansı: bağımsız yeni sekme, solda rapor listes
 
 ## Tanıtım sayfası
 
-Kart akışının altında ortalanmış bir başlık ve çerçevesiz beş entegrasyon logosu bulunur. Planlanan durum açıkça belirtilir; düğmeler araca özel e-posta bekleme listesi açar. Entegrasyonlar ayrı özellik kartlarına dönüştürülmez. Akış başlığı 40 px, aşama etiketleri 23 px ve daha belirgin ikonlarla sunulur; mobilde 30/20 px'e uyarlanır.
+Kart akışının altında ortalanmış bir başlık ve çerçevesiz beş entegrasyon logosu bulunur. Planlanan durum açıkça belirtilir; düğmeler araca özel e-posta bekleme listesi açar. Entegrasyonlar ayrı özellik kartlarına dönüştürülmez. Üst/alt gezinme ve mobil menüdeki Bekleme listesine katıl düğmesi sayfayı kaydırmadan altında araç seçimi açar; seçim ortak formu açar. Yerel popover, görünür odak ve klavye gezinmesi kullanılır. Akış başlığı 40 px, aşama etiketleri 23 px ve daha belirgin ikonlarla sunulur; mobilde 30/20 px'e uyarlanır.
 
 Üst çubuk kaydırmada sabittir; kullanıcının isteğiyle yarı saydam, arkasını bulanıklaştıran cam yüzey kullanılır. Logo ve gezinme solda, dil ve giriş sağdadır. Bu yüzeyde görünüm menüsü yoktur. Bölüm bağlantıları yumuşak kayar, azaltılmış harekette anlık gider; başlıklar sabit çubuğun altında kalmaz. Katılım kodu formu ana menünün üstündeki ince lila şeritte ortalanır; önek içermeyen kod alanı ve nötr Katıl düğmesiyle tek yüzeyde birleşir. Dil düğmesi ince çerçeveli ve kompakt, seçenekleri düğmenin altında açılan markaya uyumlu bir popover'dır.
 

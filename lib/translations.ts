@@ -1,5 +1,6 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Planlanan entegrasyonlar": "Planned integrations",
   "Sık sorulan sorular.": "Frequently asked questions.",
   "İlk sunumundan eğitim sonrasına, merak ettiklerin burada.":
     "From your first presentation to the follow-up, find your answers here.",

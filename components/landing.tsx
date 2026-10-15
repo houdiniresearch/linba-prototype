@@ -13,7 +13,11 @@ import {
 } from "react";
 import { Icon, Logo } from "./ui";
 import { useLocale } from "./locale-provider";
-import { LandingIntegrations } from "./landing-integrations";
+import {
+  LandingIntegrations,
+  LandingWaitlistMenu,
+  LandingWaitlistProvider,
+} from "./landing-integrations";
 
 const stages = [
   {
@@ -307,7 +311,7 @@ const questions = [
   ],
 ] as const;
 
-export function Landing() {
+function LandingContent() {
   const { t } = useLocale();
   const mobileMenuId = useId();
   return (
@@ -366,7 +370,7 @@ export function Landing() {
           <nav className="landing-nav" aria-label={t("Ana gezinme")}>
             <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
             <a href="#sorular">{t("Sık sorulanlar")}</a>
-            <a href="#entegrasyonlar">{t("Bekleme listesine katıl")}</a>
+            <LandingWaitlistMenu />
           </nav>
           <div className="landing-header-actions">
             <LandingLanguage />
@@ -397,11 +401,14 @@ export function Landing() {
             popover="auto"
             className="landing-mobile-nav"
             aria-label={t("Ana gezinme")}
-            onClick={() => document.getElementById(mobileMenuId)?.hidePopover()}
+            onClick={(event) => {
+              if ((event.target as Element).closest("a"))
+                document.getElementById(mobileMenuId)?.hidePopover();
+            }}
           >
             <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
             <a href="#sorular">{t("Sık sorulanlar")}</a>
-            <a href="#entegrasyonlar">{t("Bekleme listesine katıl")}</a>
+            <LandingWaitlistMenu />
           </nav>
         </header>
       </div>
@@ -510,11 +517,19 @@ export function Landing() {
         </div>
         <nav className="landing-footer-links" aria-label={t("Alt gezinme")}>
           <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
-          <a href="#entegrasyonlar">{t("Bekleme listesine katıl")}</a>
+          <LandingWaitlistMenu />
           <Link href="/giris">{t("Giriş yap")}</Link>
         </nav>
         <span>© {new Date().getFullYear()} LİNBA</span>
       </footer>
     </div>
+  );
+}
+
+export function Landing() {
+  return (
+    <LandingWaitlistProvider>
+      <LandingContent />
+    </LandingWaitlistProvider>
   );
 }
