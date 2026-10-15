@@ -100,7 +100,7 @@ export function LandingIntegrations() {
             <span className="integration-connection" aria-hidden="true">
               <Logo />
               <span className="integration-connection-link">
-                <Icon name={registered ? "check" : "link"} size={22} />
+                <Icon name={registered ? "check" : "link"} size={36} />
               </span>
               <span className="waitlist-emblem">
                 {selected && <IntegrationLogo id={selected.id} size={32} />}

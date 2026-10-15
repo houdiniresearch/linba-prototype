@@ -506,15 +506,16 @@ html:has(.landing-page) {
   background: var(--workspace);
 }
 .landing-questions {
-  padding-block: 96px 112px;
+  max-width: 1040px;
+  padding-block: 80px 96px;
   scroll-margin-top: 96px;
 }
 .landing-faq-intro {
-  margin-bottom: 48px;
+  margin-bottom: 36px;
 }
 .landing-questions h2 {
-  margin-bottom: 16px;
-  font-size: 40px;
+  margin-bottom: 12px;
+  font-size: 32px;
 }
 .landing-faq-intro > p {
   max-width: 60ch;
@@ -536,10 +537,10 @@ html:has(.landing-page) {
   justify-content: space-between;
   gap: 32px;
   align-items: center;
-  padding: 32px 4px;
+  padding: 24px 2px;
   cursor: pointer;
-  font-size: 23px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 500;
   line-height: 1.45;
   transition: color 160ms ease-out;
 }
@@ -552,7 +553,9 @@ html:has(.landing-page) {
 }
 .landing-faq-list summary svg {
   flex-shrink: 0;
-  color: var(--ink);
+  width: 20px;
+  height: 20px;
+  color: var(--muted);
   transition: transform 180ms ease-out;
 }
 .landing-faq-list details[open] summary svg {
@@ -561,11 +564,11 @@ html:has(.landing-page) {
 }
 .landing-faq-list details p {
   color: var(--muted);
-  line-height: 1.85;
-  font-size: 16px;
-  max-width: 75ch;
-  padding: 0 4px 32px;
-  margin: -8px 0 0;
+  line-height: 1.8;
+  font-size: 15px;
+  max-width: 72ch;
+  padding: 0 2px 24px;
+  margin: -4px 0 0;
   text-wrap: pretty;
 }
 .landing-closing {
@@ -832,6 +835,12 @@ html:has(.landing-page) {
     width: 26px;
     height: 26px;
   }
+  .integration-waitlist-modal .modal-heading > .icon-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    margin: 0;
+  }
   .integration-connection {
     gap: 10px;
   }
@@ -839,7 +848,11 @@ html:has(.landing-page) {
     width: 110px;
   }
   .integration-connection-link {
-    gap: 5px;
+    gap: 4px;
+  }
+  .integration-connection-link > svg {
+    width: 32px;
+    height: 32px;
   }
   .integration-connection-link::before,
   .integration-connection-link::after {
@@ -857,20 +870,20 @@ html:has(.landing-page) {
     margin-bottom: 28px;
   }
   .landing-questions h2 {
-    font-size: 30px;
-    margin: 0 0 14px;
+    font-size: 28px;
+    margin: 0 0 12px;
   }
   .landing-faq-intro > p {
     font-size: 14px;
   }
   .landing-faq-list summary {
-    font-size: 18px;
-    padding-block: 24px;
+    font-size: 17px;
+    padding-block: 22px;
     gap: 20px;
   }
   .landing-faq-list summary svg {
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
   }
   .landing-faq-list details p {
     font-size: 14px;
