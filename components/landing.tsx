@@ -108,6 +108,12 @@ export function Landing() {
             <Link className="landing-login" href="/giris">
               {t("Giriş yap")}
             </Link>
+            <Link
+              className="button primary landing-signup"
+              href="/giris?mod=kayit"
+            >
+              {t("Kayıt ol")}
+            </Link>
             <button
               className="icon-button landing-menu-trigger"
               popoverTarget={mobileMenuId}
@@ -146,13 +152,9 @@ export function Landing() {
             </p>
             <div className="landing-hero-actions">
               <Link href="/giris?mod=kayit" className="button primary">
-                {t("Hesap oluştur")}
+                {t("Ücretsiz başla")}
                 <Icon name="arrow" size={19} />
               </Link>
-              <a href="#nasil-calisir" className="landing-text-link">
-                {t("Nasıl çalışır?")}
-                <Icon name="down" size={17} />
-              </a>
             </div>
             <form
               id="egitime-katil"
@@ -338,7 +340,7 @@ export function Landing() {
             <p>{t("İlk adım, elindeki sunum.")}</p>
           </div>
           <Link href="/giris?mod=kayit" className="button primary">
-            {t("Hesap oluştur")}
+            {t("Ücretsiz başla")}
             <Icon name="arrow" size={19} />
           </Link>
         </section>

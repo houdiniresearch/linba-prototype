@@ -2,6 +2,8 @@
 
 ## Kararlar
 
+- Ana kayıt çağrısı “Ücretsiz başla”dır. Üst çubuk masaüstünde 68 px, mobilde 64 px; girişin sağında ayrı kayıt bağlantısı vardır. İlk ekranda yinelenen “Nasıl çalışır?” bağlantısı kaldırılmıştır, üst gezinmede korunur.
+
 - Marka korundu: özgün logo, Inter, fuşya eylemler ve lila/mint ayrıntılar.
 - Üst çubuk cam yüzeyle sayfada sabit kalır; gezinme logonun yanında, dil ve giriş sağdadır. Tanıtımda tema seçici gösterilmez, mevcut görünüm tercihi korunur. Bölüm bağlantıları sabit çubuğun altında boşluk bırakarak yumuşak kayar; azaltılmış hareket tercihinde doğrudan gider.
 - İlk ekrandaki “Katılımcı mısın?” formu altı rakamı doğrular ve `/katil?kod=…` adresine aktarır. Hesabı olmayan katılımcı mevcut giriş/kayıt akışında ilerler; kod sayfa adresinde korunur. Üstteki katılım bağlantısı bu forma gider.

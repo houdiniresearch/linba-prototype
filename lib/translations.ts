@@ -1,5 +1,7 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Ücretsiz başla": "Start for free",
+  "Kayıt ol": "Sign up",
   "Katılımcı mısın?": "Are you a participant?",
   Katıl: "Join",
   "Eğitmeninin paylaştığı 6 haneli kodu gir.":
