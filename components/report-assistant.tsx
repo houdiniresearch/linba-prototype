@@ -5,6 +5,12 @@ import type { User } from "@/lib/types";
 import type { ReportChat, ReportItem, ReportTurn } from "@/lib/report-chat";
 import { Auth } from "./auth";
 import { ThemeMenu } from "./theme-menu";
+import {
+  ReportConversationSkeleton,
+  ReportListSkeleton,
+  ReportWorkspaceSkeleton,
+  Skeleton,
+} from "./skeletons";
 import { useLocale } from "./locale-provider";
 import {
   api,
@@ -12,7 +18,7 @@ import {
   Empty,
   ErrorNote,
   Icon,
-  Loading,
+  ResourceFailure,
   Logo,
   useResource,
 } from "./ui";
@@ -37,11 +43,10 @@ export function ReportAssistant() {
   const { t } = useLocale();
   const auth = useResource<{ user?: User }>("auth");
   if (!auth.data)
-    return (
-      <>
-        <ErrorNote message={auth.error} />
-        <Loading />
-      </>
+    return auth.error ? (
+      <ResourceFailure error={auth.error} onRetry={auth.refresh} />
+    ) : (
+      <ReportWorkspaceSkeleton />
     );
   if (!auth.data.user) return <Auth onDone={() => void auth.refresh()} />;
   if (auth.data.user.role !== "teacher")
@@ -165,8 +170,10 @@ function ReportWorkspace({ user }: { user: User }) {
               </button>
             </>
           )}
-          {!reports.data && !reports.error ? (
-            <Loading />
+          {!reports.data ? (
+            reports.error ? null : (
+              <ReportListSkeleton />
+            )
           ) : list.length ? (
             list.map((r) => (
               <button
@@ -219,7 +226,13 @@ function ReportWorkspace({ user }: { user: User }) {
           </button>
           <div>
             <span className="small muted">{t("Rapor asistanı")}</span>
-            <h1>{selected?.name || t("Raporlarını birlikte inceleyelim")}</h1>
+            <h1>
+              {!reports.data ? (
+                <Skeleton className="sk-subtitle" />
+              ) : (
+                selected?.name || t("Raporlarını birlikte inceleyelim")
+              )}
+            </h1>
           </div>
           <div className="report-header-tools">
             {selected && (
@@ -238,10 +251,11 @@ function ReportWorkspace({ user }: { user: User }) {
           </div>
         </header>
         {!reports.data ? (
-          <div className="report-chat-fallback">
-            <ErrorNote message={reports.error} />
-            {!reports.error && <Loading />}
-          </div>
+          reports.error ? (
+            <ResourceFailure error={reports.error} onRetry={reports.refresh} />
+          ) : (
+            <ReportConversationSkeleton />
+          )
         ) : selected ? (
           <ReportConversation key={selected.id} report={selected} />
         ) : (
@@ -344,17 +358,10 @@ function ReportConversation({ report }: { report: ReportItem }) {
     }
   }
   if (!chat.data)
-    return (
-      <div className="report-chat-fallback">
-        <ErrorNote message={chat.error} />
-        {chat.error ? (
-          <button className="button" onClick={() => void chat.refresh()}>
-            {t("Yeniden dene")}
-          </button>
-        ) : (
-          <Loading />
-        )}
-      </div>
+    return chat.error ? (
+      <ResourceFailure error={chat.error} onRetry={chat.refresh} />
+    ) : (
+      <ReportConversationSkeleton />
     );
   return (
     <div className="report-conversation">

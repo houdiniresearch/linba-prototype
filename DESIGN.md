@@ -64,3 +64,9 @@ Açık, Koyu ve Sistem seçenekleri ortak görünüm menüsündedir. İlk tercih
 ## Rapor sohbet alanı
 
 AhaSlides rapor asistanı referansı: bağımsız yeni sekme, solda rapor listesi, üstte seçili eğitim, ortada sade konuşma ve altta sabit mesaj alanı. Boş durumda kısa karşılama ve dört gerçek soru önerisi. Yeni sohbet düğmesi yerine raporlar seçilir; seçili rapor açık pembe vurgulanır. Asistan yanıtları geniş metin alanında, eğitmen mesajları sağa hizalı nötr yüzeyde yer alır. Kaynaklar açık lila bağlantılardır. Tema tokenları ve özgün logo kullanılır. Mobilde sol liste menüye dönüşür.
+
+## Yükleme durumları
+
+İlk sayfa/veri yüklemesinde içerik düzenine uygun gri iskeletler kullanılır: eğitmen paneli, eğitim kartları, rapor tablosu ve detayı, düzenleyici, prova, önizleme, yansıtma, katılımcı ve rapor sohbeti. Ortak bileşenler components/skeletons.tsx içindedir; Next loading.tsx sınırları ile istemci veri bekleme durumları aynı bileşenleri kullanır. Sonuç boş olduğu doğrulanmadan boş durum gösterilmez. Arka plan yenilemesi mevcut içeriği kaldırmaz. Görsellerin oranı yüklenmeden ayrılır; görsel gelene kadar kendi yerinde iskelet görünür.
+
+İskeletler sahte veri veya tıklanabilir sahte kontrol içermez. Ekran okuyucu için tek yüklenme durumu duyurulur, dekoratif parçalar gizlenir. Hareket tercihi azaltıldığında animasyon kapalıdır. Yapay bekleme süresi yoktur. Veri hatasında iskelet durur, hata ve yeniden deneme gösterilir. Sunum işleme, eğitimi bitirme ve model yanıtı üretme gibi işlemlerde açıklayıcı durum mesajları korunur.

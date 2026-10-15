@@ -1,6 +1,8 @@
 "use client";
 import { useLocale } from "./locale-provider";
-import type { Course, Slide } from "@/lib/types";
+import type { Course, Slide, Page } from "@/lib/types";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { SlideSkeleton } from "./skeletons";
 import { Icon } from "./ui";
 import { translate, type Locale } from "@/lib/translations";
 export function slideTitle(
@@ -30,11 +32,11 @@ export function SlideView({
     const page = course.pages.find((p) => p.id === slide.pageId);
     if (!page) return null;
     return (
-      <img
-        className={`slide-image ${small ? "small" : ""}`}
+      <DocumentSlide
+        key={`${course.id}:${page.number}:${displayKey || ""}`}
+        page={page}
+        small={small}
         src={`/api/courses/${course.id}/page/${page.number}${displayKey ? `?key=${displayKey}` : ""}`}
-        alt={page.title}
-        draggable={false}
       />
     );
   }
@@ -63,6 +65,57 @@ export function SlideView({
         <p>{t("Yanıtını telefonundaki Aktiviteler alanından paylaş.")}</p>
       )}
       <span className="slide-footer">{t("linba · Birlikte öğrenelim")}</span>
+    </div>
+  );
+}
+
+function DocumentSlide({
+  page,
+  src,
+  small,
+}: {
+  page: Page;
+  src: string;
+  small: boolean;
+}) {
+  const { t } = useLocale();
+  const image = useRef<HTMLImageElement>(null);
+  const [ready, setReady] = useState(false),
+    [failed, setFailed] = useState(false);
+  useEffect(() => {
+    if (image.current?.complete) {
+      if (image.current.naturalWidth > 0) setReady(true);
+      else setFailed(true);
+    }
+  }, []);
+  const ratio =
+    Number.isFinite(page.ratio) && page.ratio > 0 ? page.ratio : 16 / 9;
+  return (
+    <div
+      className={`slide-frame ${small ? "small" : ""}`}
+      style={{ "--slide-ratio": ratio } as CSSProperties}
+    >
+      {!ready && !failed && <SlideSkeleton small={small} />}
+      <img
+        ref={image}
+        className={`slide-image ${ready ? "is-ready" : ""}`}
+        src={src}
+        alt={page.title}
+        aria-hidden={!ready || undefined}
+        draggable={false}
+        onLoad={() => setReady(true)}
+        onError={() => setFailed(true)}
+      />
+      {failed && (
+        <div
+          className="slide-image-error"
+          role={small ? undefined : "alert"}
+          aria-hidden={small || undefined}
+        >
+          <Icon name="warning" />
+          {!small && <span>{t("Slayt görseli yüklenemedi.")}</span>}
+        </div>
+      )}
     </div>
   );
 }

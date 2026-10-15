@@ -154,11 +154,11 @@ export async function api<T = any>(
   if (!response.ok) throw new Error(result.error || "İşlem tamamlanamadı.");
   return result;
 }
-export function useResource<T>(url: string, interval = 0) {
+export function useResource<T>(url: string, interval = 0, enabled = true) {
   const [record, setRecord] = useState<{ url: string; value: T }>();
   const [failure, setFailure] = useState<{ url: string; message: string }>();
   const currentUrl = useRef(url);
-  currentUrl.current = url;
+  currentUrl.current = enabled ? url : "";
   const setData = useCallback(
     (value: T | undefined) => {
       if (currentUrl.current === url)
@@ -166,24 +166,30 @@ export function useResource<T>(url: string, interval = 0) {
     },
     [url],
   );
-  const refresh = useCallback(async () => {
-    try {
-      const result = await api<T>(url);
-      if (currentUrl.current !== url) return;
-      setData(result);
-      setFailure(undefined);
-      return result;
-    } catch (e) {
-      if (currentUrl.current === url)
-        setFailure({ url, message: (e as Error).message });
-    }
-  }, [url, setData]);
+  const refresh = useCallback(
+    async (clearError = true) => {
+      if (!enabled) return;
+      if (clearError && currentUrl.current === url) setFailure(undefined);
+      try {
+        const result = await api<T>(url);
+        if (currentUrl.current !== url) return;
+        setData(result);
+        setFailure(undefined);
+        return result;
+      } catch (e) {
+        if (currentUrl.current === url)
+          setFailure({ url, message: (e as Error).message });
+      }
+    },
+    [url, setData, enabled],
+  );
   useEffect(() => {
+    if (!enabled) return;
     let stopped = false;
     let timer: ReturnType<typeof setTimeout>;
     const tick = async () => {
       if (stopped) return;
-      await refresh();
+      await refresh(false);
       if (interval && !stopped) timer = setTimeout(tick, interval);
     };
     void tick();
@@ -191,11 +197,11 @@ export function useResource<T>(url: string, interval = 0) {
       stopped = true;
       clearTimeout(timer);
     };
-  }, [refresh, interval]);
+  }, [refresh, interval, enabled]);
   return {
-    data: record?.url === url ? record.value : undefined,
+    data: enabled && record?.url === url ? record.value : undefined,
     setData,
-    error: failure?.url === url ? failure.message : "",
+    error: enabled && failure?.url === url ? failure.message : "",
     refresh,
   };
 }
@@ -256,6 +262,23 @@ export function Loading({ label = "Yükleniyor…" }: { label?: string }) {
     <div className="loading" role="status">
       <Icon name="spinner" className="spin" />
       {t(label)}
+    </div>
+  );
+}
+export function ResourceFailure({
+  error,
+  onRetry,
+}: {
+  error: string;
+  onRetry: () => unknown;
+}) {
+  const { t } = useLocale();
+  return (
+    <div className="resource-failure">
+      <ErrorNote message={error} />
+      <button className="button" onClick={() => void onRetry()}>
+        {t("Yeniden dene")}
+      </button>
     </div>
   );
 }

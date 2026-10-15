@@ -1,9 +1,10 @@
 "use client";
 import { useLocale } from "./locale-provider";
+import { PreviewSkeleton, ProjectionSkeleton } from "./skeletons";
 import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import type { Course, CourseState } from "@/lib/types";
-import { api, Icon, Logo, Loading, ErrorNote, useResource } from "./ui";
+import { api, Icon, Logo, ResourceFailure, useResource } from "./ui";
 import { SlideView } from "./slides";
 
 export function Projection({ id }: { id: string }) {
@@ -40,11 +41,10 @@ export function Projection({ id }: { id: string }) {
     };
   }, [id]);
   if (!data)
-    return (
-      <>
-        <ErrorNote message={error} />
-        {!error && <Loading />}
-      </>
+    return error ? (
+      <ResourceFailure error={error} onRetry={() => location.reload()} />
+    ) : (
+      <ProjectionSkeleton />
     );
   const slide =
     data.slides.find((s) => s.id === data.activeSlideId) || data.slides[0];
@@ -88,14 +88,13 @@ export function Projection({ id }: { id: string }) {
 export function Preview({ id }: { id: string }) {
   const { t } = useLocale();
 
-  const { data, error } = useResource<CourseState>(`courses/${id}`),
+  const { data, error, refresh } = useResource<CourseState>(`courses/${id}`),
     [index, setIndex] = useState(0);
   if (!data)
-    return (
-      <>
-        <ErrorNote message={error} />
-        <Loading />
-      </>
+    return error ? (
+      <ResourceFailure error={error} onRetry={refresh} />
+    ) : (
+      <PreviewSkeleton />
     );
   const c = data.course,
     slide = c.slides[index];

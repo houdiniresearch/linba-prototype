@@ -1,11 +1,21 @@
 "use client";
 import { ThemeMenu } from "./theme-menu";
+import { ParticipantSkeleton } from "./skeletons";
 import { useLocale } from "./locale-provider";
 import { useEffect, useRef, useState } from "react";
 import type { CourseState, User } from "@/lib/types";
 import { Auth } from "./auth";
 import { JoinForm } from "./dashboard";
-import { api, useResource, Icon, Logo, Loading, ErrorNote, Empty } from "./ui";
+import {
+  api,
+  useResource,
+  Icon,
+  Logo,
+  Loading,
+  ErrorNote,
+  Empty,
+  ResourceFailure,
+} from "./ui";
 
 export function Participant() {
   const { t } = useLocale();
@@ -45,16 +55,10 @@ export function Participant() {
     }
   }, [auth.data?.user?.id, auth.data?.user?.role, code, id]);
   if (!auth.data)
-    return (
-      <>
-        <ErrorNote message={auth.error} />
-        {!auth.error && <Loading />}
-        {auth.error && (
-          <button className="button" onClick={() => void auth.refresh()}>
-            {t("Yeniden dene")}
-          </button>
-        )}
-      </>
+    return auth.error ? (
+      <ResourceFailure error={auth.error} onRetry={auth.refresh} />
+    ) : (
+      <ParticipantSkeleton />
     );
   if (!auth.data.user)
     return (
@@ -201,14 +205,18 @@ function ParticipantCourse({
     }
   }
   if (!data)
-    return (
+    return !error ? (
+      <ParticipantSkeleton />
+    ) : (
       <div className="participant-gate">
         <header>
           <Logo />
           <ThemeMenu />
         </header>
         <ErrorNote message={error} />
-        {!error && <Loading />}
+        <button className="button" onClick={() => void refresh()}>
+          {t("Yeniden dene")}
+        </button>
         {error && (
           <button className="button" onClick={onLeave}>
             {t("Başka eğitime katıl")}

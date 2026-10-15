@@ -1,9 +1,10 @@
 "use client";
 import { ThemeMenu } from "./theme-menu";
+import { RehearsalSkeleton } from "./skeletons";
 import { useLocale } from "./locale-provider";
 import { useEffect, useRef, useState } from "react";
 import type { CourseState, Rehearsal } from "@/lib/types";
-import { api, Icon, Logo, Loading, ErrorNote, useResource } from "./ui";
+import { api, Icon, Logo, ResourceFailure, ErrorNote, useResource } from "./ui";
 import { SlideView } from "./slides";
 import {
   feedbackRequest,
@@ -30,7 +31,7 @@ type Feedback = NonNullable<Rehearsal["feedback"]>;
 export function RehearsalView({ id }: { id: string }) {
   const { t, locale } = useLocale();
 
-  const { data, error } = useResource<CourseState>(`courses/${id}`);
+  const { data, error, refresh } = useResource<CourseState>(`courses/${id}`);
   const [audience, setAudience] = useState(""),
     [rehearsal, setRehearsal] = useState<Rehearsal>(),
     [busy, setBusy] = useState(false),
@@ -548,11 +549,10 @@ export function RehearsalView({ id }: { id: string }) {
     }
   }
   if (!data)
-    return (
-      <>
-        <ErrorNote message={error} />
-        <Loading />
-      </>
+    return error ? (
+      <ResourceFailure error={error} onRetry={refresh} />
+    ) : (
+      <RehearsalSkeleton />
     );
   const c = data.course,
     slide = c.slides[index];

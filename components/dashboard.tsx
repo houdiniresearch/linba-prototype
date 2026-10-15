@@ -1,6 +1,13 @@
 "use client";
 import { ThemeMenu } from "./theme-menu";
 import { ReportAssistantLink } from "./report-assistant";
+import {
+  CardListSkeleton,
+  DashboardSkeleton,
+  ParticipantListSkeleton,
+  ReportDetailSkeleton,
+  ReportTableSkeleton,
+} from "./skeletons";
 import { useLocale } from "./locale-provider";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -14,6 +21,7 @@ import {
   Modal,
   ErrorNote,
   Loading,
+  ResourceFailure,
   Empty,
   Status,
   api,
@@ -162,7 +170,10 @@ export function CreateTraining({
 export function Report({ id, onBack }: { id: string; onBack: () => void }) {
   const { t, locale } = useLocale();
 
-  const { data, error } = useResource<CourseState>(`courses/${id}`, 5000);
+  const { data, error, refresh } = useResource<CourseState>(
+    `courses/${id}`,
+    5000,
+  );
   const loaded = !!data;
   useEffect(() => {
     const section = location.hash.slice(1);
@@ -175,11 +186,10 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
       document.getElementById(section)?.scrollIntoView({ block: "start" });
   }, [loaded, id]);
   if (!data)
-    return (
-      <>
-        <ErrorNote message={error} />
-        <Loading />
-      </>
+    return error ? (
+      <ResourceFailure error={error} onRetry={refresh} />
+    ) : (
+      <ReportDetailSkeleton />
     );
   const { course: c, questions, participants, responses } = data;
   const groups = [
@@ -347,6 +357,8 @@ export function Dashboard() {
   );
   const courses = useResource<{ courses: Course[] }>(
     `courses?account=${auth.data?.user?.id || ""}`,
+    0,
+    !!auth.data?.user,
   );
   const [view, setView] = useState("home"),
     [search, setSearch] = useState(""),
@@ -362,11 +374,10 @@ export function Dashboard() {
     }
   }, []);
   if (!auth.data)
-    return (
-      <>
-        <ErrorNote message={auth.error} />
-        {!auth.error && <Loading />}
-      </>
+    return auth.error ? (
+      <ResourceFailure error={auth.error} onRetry={auth.refresh} />
+    ) : (
+      <DashboardSkeleton view={view} />
     );
   if (!auth.data.user)
     return (
@@ -402,21 +413,32 @@ export function Dashboard() {
             {t("Eğitmeninin paylaştığı kodla eğitime katıl.")}
           </p>
           <JoinForm />
-          {courses.data?.courses.map((c) => (
-            <button
-              className="joined-course"
-              key={c.id}
-              onClick={() => router.push(`/katil?egitim=${c.id}`)}
-            >
-              <Icon name="presentation" />
-              <span>
-                {c.name}
-                <small>{date(c.createdAt, locale)}</small>
-              </span>
-              <Status status={c.status} />
-              <Icon name="arrow" />
-            </button>
-          ))}
+          {!courses.data ? (
+            courses.error ? (
+              <ResourceFailure
+                error={courses.error}
+                onRetry={courses.refresh}
+              />
+            ) : (
+              <ParticipantListSkeleton />
+            )
+          ) : (
+            courses.data.courses.map((c) => (
+              <button
+                className="joined-course"
+                key={c.id}
+                onClick={() => router.push(`/katil?egitim=${c.id}`)}
+              >
+                <Icon name="presentation" />
+                <span>
+                  {c.name}
+                  <small>{date(c.createdAt, locale)}</small>
+                </span>
+                <Status status={c.status} />
+                <Icon name="arrow" />
+              </button>
+            ))
+          )}
         </div>
       </div>
     );
@@ -572,7 +594,16 @@ export function Dashboard() {
                 </div>
                 <ReportAssistantLink />
               </div>
-              {reports.length ? (
+              {!courses.data ? (
+                courses.error ? (
+                  <ResourceFailure
+                    error={courses.error}
+                    onRetry={courses.refresh}
+                  />
+                ) : (
+                  <ReportTableSkeleton />
+                )
+              ) : reports.length ? (
                 <div className="table-wrap">
                   <table>
                     <thead>
@@ -649,7 +680,9 @@ export function Dashboard() {
                 {t("PDF veya PPTX sunumundan oluştur.")}
               </span>
             </div>
-            {courses.error && <ErrorNote message={courses.error} />}
+            {courses.data && courses.error && (
+              <ErrorNote message={courses.error} />
+            )}
             <section className="training-section">
               <div className="section-title">
                 <h2>
@@ -669,7 +702,16 @@ export function Dashboard() {
                   </button>
                 )}
               </div>
-              {list.length ? (
+              {!courses.data ? (
+                courses.error ? (
+                  <ResourceFailure
+                    error={courses.error}
+                    onRetry={courses.refresh}
+                  />
+                ) : (
+                  <CardListSkeleton />
+                )
+              ) : list.length ? (
                 <div className="training-grid">
                   {list.slice(0, view === "home" ? 6 : undefined).map((c) => (
                     <button

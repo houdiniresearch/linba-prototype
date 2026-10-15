@@ -1,5 +1,6 @@
 "use client";
 import { ThemeMenu } from "./theme-menu";
+import { EditorSkeleton } from "./skeletons";
 import { useLocale } from "./locale-provider";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -219,14 +220,18 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
     } catch {}
   }
   if (!data)
-    return (
+    return !error ? (
+      <EditorSkeleton live={live} />
+    ) : (
       <div className="editor-loading">
         <a className="text-button" href="/">
           <Icon name="back" />
           {t("Çalışma alanına dön")}
         </a>
         <ErrorNote message={error} />
-        {!error && <Loading label={t("Eğitimin açılıyor…")} />}
+        <button className="button" onClick={() => void resource.refresh()}>
+          {t("Yeniden dene")}
+        </button>
       </div>
     );
   const c = data.course,

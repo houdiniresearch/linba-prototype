@@ -1,5 +1,6 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Slayt görseli yüklenemedi.": "The slide image could not be loaded.",
   "Rapor asistanı": "Report assistant",
   "Rapor asistanı eğitmen hesabında kullanılabilir.":
     "The report assistant is available to instructor accounts.",
