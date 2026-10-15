@@ -329,17 +329,13 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                 {t("Prova yap")}
               </button>
               {draft ? (
-                <button
-                  className="button primary"
-                  disabled={busy}
-                  onClick={start}
-                >
+                <button className="button mint" disabled={busy} onClick={start}>
                   <Icon name="play" />
                   {t("Eğitimi başlat")}
                 </button>
               ) : c.status === "live" ? (
                 <button
-                  className="button primary"
+                  className="button mint"
                   onClick={() => router.push(`/egitim/${id}/canli`)}
                 >
                   <Icon name="play" />
@@ -347,7 +343,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                 </button>
               ) : (
                 <button
-                  className="button primary"
+                  className="button report"
                   onClick={() => router.push(`/?view=reports&report=${id}`)}
                 >
                   <Icon name="chart" />

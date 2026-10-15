@@ -197,12 +197,14 @@ small,
   border-color: oklch(0.86 0.055 25);
   background: oklch(0.99 0.006 25);
 }
-.button.ai-button {
+.button.ai-button,
+.button.report {
   color: var(--lilac-ink);
   background: var(--lilac-soft);
   border-color: transparent;
 }
-.button.ai-button:hover:not(:disabled) {
+.button.ai-button:hover:not(:disabled),
+.button.report:hover:not(:disabled) {
   background: color-mix(in oklch, var(--brand-lilac) 22%, white);
   border-color: transparent;
 }
@@ -543,12 +545,14 @@ label small {
   min-height: 40px;
   padding: 9px 17px;
 }
-.button.upgrade {
+.button.upgrade,
+.button.mint {
   background: var(--mint);
   color: var(--mint-ink);
   border-color: transparent;
 }
-.button.upgrade:hover:not(:disabled) {
+.button.upgrade:hover:not(:disabled),
+.button.mint:hover:not(:disabled) {
   background: var(--mint-hover);
   border-color: transparent;
 }
@@ -977,8 +981,8 @@ label small {
   border-radius: 50%;
 }
 .status.ended {
-  color: var(--accent);
-  background: var(--accent-soft);
+  color: var(--lilac-ink);
+  background: var(--lilac-soft);
 }
 .home-guide {
   display: grid;
@@ -1194,14 +1198,14 @@ tbody tr:hover {
 }
 .result-track {
   height: 8px;
-  background: var(--lilac-soft);
+  background: var(--accent-soft);
   border-radius: 10px;
   overflow: hidden;
 }
 .result-track i {
   display: block;
   height: 100%;
-  background: var(--lilac-ink);
+  background: var(--primary);
   border-radius: 10px;
 }
 .auth-screen > header {
