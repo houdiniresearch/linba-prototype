@@ -55,9 +55,8 @@ const stages = [
 
 function LandingFlow() {
   const { t } = useLocale();
-  const steps = useRef<HTMLDivElement>(null);
+  const stack = useRef<HTMLDivElement>(null);
   const [enhanced, setEnhanced] = useState(false);
-  const [stage, setStage] = useState(0);
 
   useEffect(() => {
     const media = window.matchMedia(
@@ -70,87 +69,104 @@ function LandingFlow() {
   }, []);
 
   useEffect(() => {
-    if (!enhanced || !steps.current) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.find((entry) => entry.isIntersecting);
-        if (visible)
-          setStage(Number(visible.target.getAttribute("data-stage")));
-      },
-      { rootMargin: "-40% 0px -40% 0px", threshold: 0 },
+    const container = stack.current;
+    if (!enhanced || !container) return;
+    const cards = Array.from(
+      container.querySelectorAll<HTMLElement>(".landing-stage-card"),
     );
-    for (const step of steps.current.children) observer.observe(step);
-    return () => observer.disconnect();
+    let frame = 0;
+    let inView = false;
+    const paint = () => {
+      frame = 0;
+      if (!inView) return;
+      // Read the stack together before writing compositor-only visual changes.
+      const positions = cards.map((card) => ({
+        top: card.getBoundingClientRect().top,
+        height: card.offsetHeight,
+      }));
+      cards.forEach((card, index) => {
+        const current = positions[index];
+        const next = positions[index + 1];
+        const progress = next
+          ? Math.max(
+              0,
+              Math.min(
+                1,
+                (current.top + current.height - next.top) / current.height,
+              ),
+            )
+          : 0;
+        card.style.setProperty("--stack-progress", progress.toFixed(4));
+      });
+    };
+    const schedule = () => {
+      if (inView && !frame) frame = window.requestAnimationFrame(paint);
+    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting;
+        schedule();
+      },
+      { rootMargin: "160px" },
+    );
+    observer.observe(container);
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      window.cancelAnimationFrame(frame);
+      cards.forEach((card) => card.style.removeProperty("--stack-progress"));
+    };
   }, [enhanced]);
 
   return (
-    <div className="landing-flow-story" data-scroll-enhanced={enhanced}>
-      <div className="landing-flow-visual" aria-hidden="true">
-        <div className="landing-flow-image-stack">
-          {stages.map((item, index) => (
+    <div
+      className="landing-flow-stack"
+      ref={stack}
+      data-stack-enhanced={enhanced}
+    >
+      {stages.map((item, index) => (
+        <article
+          key={item.label}
+          className="landing-stage-card"
+          data-stage={index}
+          aria-labelledby={`stage-heading-${index}`}
+        >
+          <div className="landing-stage-copy">
+            <p className="landing-stage-label">
+              <Icon
+                name={
+                  index === 0 ? "mic" : index === 1 ? "presentation" : "chat"
+                }
+                size={20}
+              />
+              <span>{t(item.label)}</span>
+            </p>
+            <h3 id={`stage-heading-${index}`}>{t(item.title)}</h3>
+            <p>{t(item.text)}</p>
+            <ul>
+              {item.details.map((detail, detailIndex) => (
+                <li key={detail}>
+                  <Icon name={item.detailIcons[detailIndex]} size={21} />
+                  <span>{t(detail)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="landing-stage-art">
             <img
-              key={item.image}
               src={item.image}
-              alt=""
+              alt={t(item.alt)}
               width={1448}
               height={1086}
               loading="lazy"
               decoding="async"
-              data-active={stage === index}
             />
-          ))}
-        </div>
-        <div className="landing-flow-position">
-          <span>{t(stages[stage].label)}</span>
-          <div className="landing-flow-dots">
-            {stages.map((item, index) => (
-              <i key={item.label} data-active={stage === index} />
-            ))}
           </div>
-        </div>
-      </div>
-      <div className="landing-flow-steps" ref={steps}>
-        {stages.map((item, index) => (
-          <article
-            key={item.label}
-            className="landing-stage-panel"
-            data-stage={index}
-            aria-labelledby={`stage-heading-${index}`}
-          >
-            <div className="landing-stage-art">
-              <img
-                src={item.image}
-                alt={t(item.alt)}
-                width={1448}
-                height={1086}
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-            <div className="landing-stage-copy">
-              <p className="landing-stage-label">
-                <Icon
-                  name={
-                    index === 0 ? "mic" : index === 1 ? "presentation" : "chat"
-                  }
-                  size={20}
-                />
-                <span>{t(item.label)}</span>
-              </p>
-              <h3 id={`stage-heading-${index}`}>{t(item.title)}</h3>
-              <p>{t(item.text)}</p>
-              <ul>
-                {item.details.map((detail, detailIndex) => (
-                  <li key={detail}>
-                    <Icon name={item.detailIcons[detailIndex]} size={21} />
-                    <span>{t(detail)}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </article>
-        ))}
-      </div>
+        </article>
+      ))}
     </div>
   );
 }
