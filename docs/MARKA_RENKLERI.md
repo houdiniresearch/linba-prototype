@@ -19,11 +19,10 @@
 | Ana eylem mint    | #42E8C7 | Oluştur, başlat, kaydet ve gönder eylemleri   |
 | Mint hover        | #30D7B6 | Ana eylemin üzerine gelme hali                |
 | Mint üzeri yazı   | #123C34 | Mint butonun yazı ve ikonları                 |
-| Mint sınır        | #168571 | Beyaz zeminde buton sınırını belirginleştirme |
 
 CSS tanımları OKLCH biçimindedir; yukarıdaki HEX değerlerinin yuvarlanmış karşılıklarıdır. Başarı, hata ve uyarı renkleri marka vurgularından ayrı durum anlamlarını taşır. Logo haricinde tüm kontroller aynı semantik renk değişkenlerini kullanır.
 
-Kontrol edilen kontrastlar: ikincil metin/beyaz 5,73:1; etkileşim fuşyası/açık pembe 5,36:1; koyu yazı/mint 7,90:1; mint sınır/beyaz 4,54:1. Parlak marka fuşyası küçük metinde beyaz üzerine kullanılmaz.
+Kontrol edilen metin kontrastları: ikincil metin/beyaz 5,73:1; etkileşim fuşyası/açık pembe 5,36:1; koyu yazı/mint 7,90:1. Parlak marka fuşyası küçük metinde beyaz üzerine kullanılmaz. Kullanıcı tercihiyle mint dolgulu butonlarda görünür çerçeve kullanılmaz; hover dolgu değişimi ve klavye odak çizgisi korunur.
 
 ## Logo dosyaları
 

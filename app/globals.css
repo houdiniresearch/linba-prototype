@@ -14,7 +14,6 @@
   --primary: oklch(0.8394 0.1416 176.11);
   --primary-hover: oklch(0.7897 0.139 175.38);
   --primary-ink: oklch(0.3243 0.0485 178.27);
-  --primary-border: oklch(0.5537 0.0979 176.54);
   --green: oklch(0.4 0.09 165);
   --red: oklch(0.45 0.18 25);
   --radius: 10px;
@@ -184,11 +183,11 @@ small,
 .button.primary {
   background: var(--primary);
   color: var(--primary-ink);
-  border-color: var(--primary-border);
+  border-color: transparent;
 }
 .button.primary:hover:not(:disabled) {
   background: var(--primary-hover);
-  border-color: var(--primary-border);
+  border-color: transparent;
 }
 .button.danger {
   color: var(--red);
@@ -1938,7 +1937,7 @@ tbody tr:hover {
   flex-shrink: 0;
   background: var(--primary);
   color: var(--primary-ink);
-  border: 1px solid var(--primary-border);
+  border: 1px solid transparent;
   display: flex;
   align-items: center;
   justify-content: center;
