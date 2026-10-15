@@ -1,5 +1,5 @@
 "use client";
-import { useId, useRef } from "react";
+import { useCallback, useId, useLayoutEffect, useRef, useState } from "react";
 import { useLocale } from "./locale-provider";
 import { useTheme } from "./theme-provider";
 import { Icon } from "./ui";
@@ -14,13 +14,44 @@ export function ThemeMenu() {
   const { theme, setTheme } = useTheme();
   const { t } = useLocale();
   const id = useId();
+  const trigger = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const positionMenu = useCallback(() => {
+    if (!trigger.current || !menu.current) return;
+    const button = trigger.current.getBoundingClientRect();
+    const panel = menu.current.getBoundingClientRect();
+    const width = panel.width || Math.min(220, window.innerWidth - 24);
+    const left = Math.max(
+      12,
+      Math.min(button.left, window.innerWidth - width - 12),
+    );
+    const below = button.bottom + 8;
+    const top =
+      panel.height && below + panel.height > window.innerHeight - 12
+        ? Math.max(12, button.top - panel.height - 8)
+        : below;
+    menu.current.style.left = `${left}px`;
+    menu.current.style.top = `${top}px`;
+  }, []);
+  useLayoutEffect(() => {
+    if (!open) return;
+    positionMenu();
+    window.addEventListener("resize", positionMenu);
+    window.addEventListener("scroll", positionMenu, true);
+    return () => {
+      window.removeEventListener("resize", positionMenu);
+      window.removeEventListener("scroll", positionMenu, true);
+    };
+  }, [open, positionMenu]);
   const current = choices.find((choice) => choice.value === theme)!;
   return (
     <>
       <button
+        ref={trigger}
         className="header-round theme-trigger"
         popoverTarget={id}
+        onClick={positionMenu}
         aria-label={`${t("Görünüm")}: ${t(current.label)}`}
         title={t("Görünüm")}
       >
@@ -30,6 +61,7 @@ export function ThemeMenu() {
         id={id}
         ref={menu}
         popover="auto"
+        onToggle={(event) => setOpen(event.newState === "open")}
         className="header-popover theme-popover"
         aria-label={t("Görünüm")}
       >
