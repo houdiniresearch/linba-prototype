@@ -29,7 +29,7 @@ Sunum merkezli platform. Kullanıcının 13 Ekim 2026 konuşmasındaki kararlar�
 
 ## Brand Personality
 
-15 Ekim 2026'da onaylanan AhaSlides referanslı yaklaşım: beyaz sidebar/üst çubuk, açık gri çalışma alanı, mint ana eylemler ve koyu yazı, açık pembe seçimler ve fuşya vurgular, lila hafif yüzeyler, okunaklı sans ve hafif yuvarlatılmış kontroller. Sitede kullanılan özgün katlanmış sayfa sembolü ve linba yazısının geometrisi korunur; yalnız renkleri lila–fuşya ve koyu mürekkebe uyarlanır. Alternatif logo sembolleri uygulanmaz. Renk rolleri DESIGN.md ve docs/MARKA_RENKLERI.md'de kayıtlıdır.
+15 Ekim 2026'da onaylanan AhaSlides referanslı yaklaşım: beyaz sidebar/üst çubuk, açık gri çalışma alanı, fuşya ana eylemler ve beyaz yazı, mint plan yükseltme butonları ve koyu yazı, açık pembe seçimler ve fuşya vurgular, lila hafif yüzeyler, okunaklı sans ve hafif yuvarlatılmış kontroller. Sitede kullanılan özgün katlanmış sayfa sembolü ve linba yazısının geometrisi korunur; yalnız renkleri lila–fuşya ve koyu mürekkebe uyarlanır. Alternatif logo sembolleri uygulanmaz. Renk rolleri DESIGN.md ve docs/MARKA_RENKLERI.md'de kayıtlıdır.
 
 ## Design Principles
 
@@ -45,7 +45,7 @@ Türkçe/İngilizce arayüz; görünür odak; klavye/dokunma; azaltılmış hare
 
 ## Header & Account
 
-Sağ üst sıra: dil seçimi, lila Planı yükselt butonu (İngilizce: Upgrade), bildirim simgesi ve profil avatarı. Profil menüsü ad/e-posta, ücretsiz plan etiketi, Upgrade alanı, hesap ayarları, plan/bekleme listesi ve çıkış içerir. Var olmayan faturalama veya ekip yönetimi ekranları eklenmez. Upgrade bekleme listesi kaydını açar; kayıt hesaba bağlı ve SQLite'da kalıcıdır, tekrar gönderimde güncellenir. Bildirim listesi kullanıcıya ait tamamlanan eğitim raporlarından türetilir. Otomatik e-posta gönderimi henüz bağlı değildir.
+Sağ üst sıra: dil seçimi, mint Planı yükselt butonu (İngilizce: Upgrade), bildirim simgesi ve profil avatarı. Profil menüsü ad/e-posta, ücretsiz plan etiketi, Upgrade alanı, hesap ayarları, plan/bekleme listesi ve çıkış içerir. Var olmayan faturalama veya ekip yönetimi ekranları eklenmez. Upgrade bekleme listesi kaydını açar; kayıt hesaba bağlı ve SQLite'da kalıcıdır, tekrar gönderimde güncellenir. Bildirim listesi kullanıcıya ait tamamlanan eğitim raporlarından türetilir. Otomatik e-posta gönderimi henüz bağlı değildir.
 
 ## Project
 

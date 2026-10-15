@@ -1,9 +1,9 @@
 ---
 name: LİNBA — Lila, fuşya ve mint
-description: 15 Ekim 2026'da onaylanan beyaz ağırlıklı, lila–fuşya kimliği ve mint ana eylemler.
+description: 15 Ekim 2026'da onaylanan beyaz ağırlıklı, lila–fuşya kimliği fuşya ana eylemler ve mint plan yükseltme.
 colors:
-  primary: "oklch(0.8394 0.1416 176.11)"
-  primary-foreground: "oklch(0.3243 0.0485 178.27)"
+  primary: "oklch(0.5943 0.2394 3.26)"
+  primary-foreground: "oklch(1 0 0)"
   accent: "oklch(0.531 0.214 3.02)"
   accent-soft: "oklch(0.9673 0.0167 343.61)"
   brand-lilac: "oklch(0.7044 0.1301 304.43)"
@@ -31,7 +31,7 @@ Kullanıcının paylaştığı beş AhaSlides ekranı görsel sözleşmedir. Ana
 
 ## Colors
 
-Beyaz ana yüzeyler ve açık gri sahne baskındır. Mint ana eylem butonlarında koyu yeşil yazıyla kullanılır. Seçimler açık pembe, etkileşimli metin ve odak çizgileri okunaklı koyu fuşyadır. Lila logo, avatarlar ve hafif yardımcı yüzeylerde yer alır. Parlak fuşya logo/marka detayları içindir; küçük metinde daha koyu erişilebilir tonu kullanılır. Durum renkleri mevcut anlamlarını korur. Tam palet ve kullanım rolleri docs/MARKA_RENKLERI.md'dedir.
+Beyaz ana yüzeyler ve açık gri sahne baskındır. Fuşya ana eylem butonlarında beyaz yazıyla kullanılır; Planı yükselt butonları mint zemin ve koyu yeşil yazıyla ayrılır. Seçimler açık pembe, etkileşimli metin ve odak çizgileri okunaklı koyu fuşyadır. Lila logo, avatarlar ve hafif yardımcı yüzeylerde yer alır. Parlak fuşya logo/marka detayları içindir; küçük metinde daha koyu erişilebilir tonu kullanılır. Durum renkleri mevcut anlamlarını korur. Tam palet ve kullanım rolleri docs/MARKA_RENKLERI.md'dedir.
 
 ## Logo
 

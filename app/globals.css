@@ -11,9 +11,12 @@
   --accent: oklch(0.531 0.214 3.02);
   --accent-hover: oklch(0.4788 0.1934 1.86);
   --accent-soft: oklch(0.9673 0.0167 343.61);
-  --primary: oklch(0.8394 0.1416 176.11);
-  --primary-hover: oklch(0.7897 0.139 175.38);
-  --primary-ink: oklch(0.3243 0.0485 178.27);
+  --mint: oklch(0.8394 0.1416 176.11);
+  --mint-hover: oklch(0.7897 0.139 175.38);
+  --mint-ink: oklch(0.3243 0.0485 178.27);
+  --primary: oklch(0.5943 0.2394 3.26);
+  --primary-hover: oklch(0.5451 0.2198 2.89);
+  --primary-ink: oklch(1 0 0);
   --green: oklch(0.4 0.09 165);
   --red: oklch(0.45 0.18 25);
   --radius: 10px;
@@ -541,12 +544,12 @@ label small {
   padding: 9px 17px;
 }
 .button.upgrade {
-  background: var(--brand-lilac);
-  color: var(--ink);
+  background: var(--mint);
+  color: var(--mint-ink);
   border-color: transparent;
 }
 .button.upgrade:hover:not(:disabled) {
-  background: color-mix(in oklch, var(--brand-lilac) 85%, var(--lilac-ink));
+  background: var(--mint-hover);
   border-color: transparent;
 }
 .header-round,
@@ -745,8 +748,8 @@ label small {
   font-weight: 500;
 }
 .waitlist-success-icon {
-  background: var(--primary);
-  color: var(--primary-ink);
+  background: var(--mint);
+  color: var(--mint-ink);
   width: 52px;
   height: 52px;
 }
