@@ -80,12 +80,12 @@ export function HeaderActions({
           <Icon name="downCaret" size={12} />
         </button>
         <button
-          className="button primary upgrade-trigger"
+          className="button upgrade upgrade-trigger"
           onClick={upgrade}
-          aria-label="Upgrade"
+          aria-label={t("Planı yükselt")}
         >
           <Icon name="star" size={18} />
-          <span>Upgrade</span>
+          <span>{t("Planı yükselt")}</span>
         </button>
         <button
           className="header-round"
@@ -183,8 +183,8 @@ export function HeaderActions({
         </div>
         <div className="profile-upgrade">
           <p>{t("LİNBA’nın yeni planlarını ilk deneyenlerden ol.")}</p>
-          <button className="button primary" onClick={upgrade}>
-            Upgrade
+          <button className="button upgrade" onClick={upgrade}>
+            {t("Planı yükselt")}
             <Icon name="arrow" size={17} />
           </button>
         </div>

@@ -540,6 +540,15 @@ label small {
   min-height: 40px;
   padding: 9px 17px;
 }
+.button.upgrade {
+  background: var(--brand-lilac);
+  color: var(--ink);
+  border-color: transparent;
+}
+.button.upgrade:hover:not(:disabled) {
+  background: color-mix(in oklch, var(--brand-lilac) 85%, var(--lilac-ink));
+  border-color: transparent;
+}
 .header-round,
 .profile-trigger {
   display: flex;

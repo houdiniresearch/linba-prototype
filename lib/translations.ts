@@ -1,5 +1,6 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Planı yükselt": "Upgrade",
   "Geçerli bir e-posta ve en az 8 karakterli şifre yaz.":
     "Enter a valid email and a password of at least 8 characters.",
   "Bu e-posta zaten kayıtlı. Giriş yapabilirsin.":
