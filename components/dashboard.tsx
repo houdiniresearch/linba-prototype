@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { pollResults } from "@/lib/activities";
 import type { Course, CourseState, User } from "@/lib/types";
-import { Auth } from "./auth";
+import { Landing } from "./landing";
 import { HeaderActions } from "./header-actions";
 import {
   Icon,
@@ -380,14 +380,7 @@ export function Dashboard() {
     ) : (
       <DashboardSkeleton view={view} />
     );
-  if (!auth.data.user)
-    return (
-      <Auth
-        onDone={() => {
-          void auth.refresh();
-        }}
-      />
-    );
+  if (!auth.data.user) return <Landing />;
   const user = auth.data.user;
   if (user.role === "participant")
     return (

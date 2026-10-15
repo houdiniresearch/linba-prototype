@@ -1,5 +1,68 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "LİNBA ana sayfa": "LİNBA home",
+  "İçeriğe geç": "Skip to content",
+  "Ana gezinme": "Main navigation",
+  "Nasıl çalışır?": "How it works",
+  "Sık sorulanlar": "FAQs",
+  "Sunumunu yükle.": "Upload your slides.",
+  "Birlikte öğrenin.": "Learn together.",
+  "Kitlene göre prova yap. Eğitimde etkileşim kur. Sonrasında, sunumuna dayanan asistanınla öğrenmeyi sürdür.":
+    "Rehearse with your audience. Bring training to life. Keep learning with an assistant grounded in your slides.",
+  "Bir sunumdan etkileşimli eğitime: slaytlar, katılımcı telefonu ve aktivite yanıtları":
+    "From a presentation to interactive training: slides, a participant’s phone and activity responses",
+  "Bir sunum. Baştan sona bir eğitim.":
+    "One presentation. A complete training journey.",
+  "Hazırlık, katılım ve takip aynı akışta buluşur.":
+    "Preparation, participation and follow-up in one flow.",
+  "Eğitimin aşamaları": "Training stages",
+  "Eğitimden önce": "Before training",
+  "Eğitim sırasında": "During training",
+  "Eğitimden sonra": "After training",
+  "Kitleni tanı. Anlatımını dene.":
+    "Meet your audience. Rehearse your delivery.",
+  "Sunumunu yükle, katılımcı kitleni tarif et. Farklı sorular soran yapay zekâ katılımcılarıyla sesli prova yap.":
+    "Upload your slides and describe your audience. Rehearse out loud with AI participants who ask different questions.",
+  "Sunumuna bağlı bir çalışma alanı": "A workspace built around your slides",
+  "Kitlene göre sesli prova ve geri bildirim":
+    "Voice rehearsal and feedback tailored to your audience",
+  "Bir sunumun etrafındaki farklı katılımcı profilleri ve sesli konuşma akışının izometrik görünümü":
+    "An isometric illustration of participant profiles and a voice conversation around a presentation",
+  "Sunumun ilerlesin. Herkes katılsın.": "Keep presenting. Bring everyone in.",
+  "Aktivitelerini slaytlarının arasına yerleştir. İlgili slayta geldiğinde katılımcılar telefonlarından yanıtlasın, sorularını kişisel sohbetlerinde sorsun.":
+    "Place activities between your slides. Participants respond on their phones when you reach each activity and ask questions in private chats.",
+  "Sunum akışında anket, açık uçlu soru ve senaryo":
+    "Polls, open questions and scenarios within your presentation",
+  "Kaynak slaytları gösteren asistan yanıtları":
+    "Assistant answers grounded in your document, with sources",
+  "Eğitmen sunumu, katılımcı telefonu ve aktivite yanıtlarının izometrik görünümü":
+    "An isometric illustration of a presenter’s slides, a participant’s phone and activity responses",
+  "Eğitim biter. Öğrenme devam eder.": "Training ends. Learning continues.",
+  "Katılımcıların, belirlediğin süre boyunca dokümana soru sormayı sürdürsün. Sen de soruları ve aktivite sonuçlarını raporundan incele.":
+    "Let participants keep asking your document questions for a period you choose. Review their questions and activity results in your report.",
+  "Süresini senin belirlediğin asistan erişimi":
+    "Assistant access for a duration you choose",
+  "Her eğitime özel rapor ve rapor sohbeti":
+    "A report and report conversation for each training",
+  "Sunum kaynaklarıyla bağlantılı bir sohbet ve eğitim raporunun izometrik görünümü":
+    "An isometric illustration of a conversation and training report linked to presentation sources",
+  "Aklındaki birkaç soru.": "A few things you might ask.",
+  "Hangi sunumları yükleyebilirim?": "Which presentations can I upload?",
+  "PDF ve PPTX dosyalarını yükleyebilirsin. LİNBA, sunumunun özgün içeriğini korur; aktivitelerini slaytların arasına ekleyebilirsin. Dosya sınırı 30 MB ve 80 slayttır.":
+    "Upload PDF or PPTX files. LİNBA preserves your original presentation; you can add activities between its slides. The limit is 30 MB and 80 slides.",
+  "Provada kimlerle konuşuyorum?": "Who am I talking to in rehearsal?",
+  "Tarif ettiğin kitleye göre oluşturulan yapay zekâ katılımcılarıyla konuşursun. Eğitimini sesli anlatırken sorular ve yorumlarla katılırlar; prova sonunda geri bildirim alırsın.":
+    "You talk to AI participants created from your audience description. They ask questions and comment while you teach out loud, and you receive feedback at the end.",
+  "Katılımcılar eğitime nasıl katılır?": "How do participants join training?",
+  "Katılımcılar hesaplarıyla, paylaştığın bağlantı veya eğitim kodunu kullanarak tarayıcıdan katılır. Sunumu, aktiviteleri ve kişisel sohbetlerini telefonlarından takip edebilirler.":
+    "Participants sign in and join in their browser using your link or training code. They can follow the presentation, activities and their private chat on their phones.",
+  "Asistan her soruyu yanıtlar mı?":
+    "Does the assistant answer every question?",
+  "Asistan yüklediğin dokümana dayanarak yanıt verir ve kaynak slaytları gösterir. Dokümanda yanıt bulunamayan sorular eğitmene iletilir. Canlı eğitimde otomatik yanıtı açıp kapatabilirsin.":
+    "The assistant answers from your uploaded document and cites source slides. Questions it cannot answer are forwarded to the instructor. You can turn automatic answers on or off during live training.",
+  "Bir sonraki eğitimini birlikte hazırlayalım.":
+    "Let’s prepare your next training together.",
+  "Sunumdan birlikte öğrenmeye.": "From presenting to learning together.",
   Tamam: "Done",
   "Yeni planlarda yerini al.": "Be part of what’s next.",
   "İletişimde kalalım.": "Let’s stay in touch.",

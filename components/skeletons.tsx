@@ -70,6 +70,31 @@ export function CardListSkeleton() {
     </Region>
   );
 }
+export function AuthSkeleton() {
+  return (
+    <Region className="auth-screen">
+      <header>
+        <Logo />
+      </header>
+      <div className="auth-layout" aria-hidden="true">
+        <div className="auth-copy">
+          <Skeleton className="sk-auth-display" />
+          <Lines />
+        </div>
+        <div className="auth-form">
+          <Title />
+          {[0, 1, 2].map((index) => (
+            <div key={index} className="sk-auth-field">
+              <Skeleton className="sk-line sk-short" />
+              <Skeleton className="sk-auth-input" />
+            </div>
+          ))}
+          <Skeleton className="sk-auth-input" />
+        </div>
+      </div>
+    </Region>
+  );
+}
 export function ReportTableSkeleton() {
   return (
     <Region className="table-wrap sk-table">

@@ -70,3 +70,9 @@ AhaSlides rapor asistanı referansı: bağımsız yeni sekme, solda rapor listes
 İlk sayfa/veri yüklemesinde içerik düzenine uygun gri iskeletler kullanılır: eğitmen paneli, eğitim kartları, rapor tablosu ve detayı, düzenleyici, prova, önizleme, yansıtma, katılımcı ve rapor sohbeti. Ortak bileşenler components/skeletons.tsx içindedir; Next loading.tsx sınırları ile istemci veri bekleme durumları aynı bileşenleri kullanır. Sonuç boş olduğu doğrulanmadan boş durum gösterilmez. Arka plan yenilemesi mevcut içeriği kaldırmaz. Görsellerin oranı yüklenmeden ayrılır; görsel gelene kadar kendi yerinde iskelet görünür.
 
 İskeletler sahte veri veya tıklanabilir sahte kontrol içermez. Ekran okuyucu için tek yüklenme durumu duyurulur, dekoratif parçalar gizlenir. Hareket tercihi azaltıldığında animasyon kapalıdır. Yapay bekleme süresi yoktur. Veri hatasında iskelet durur, hata ve yeniden deneme gösterilir. Sunum işleme, eğitimi bitirme ve model yanıtı üretme gibi işlemlerde açıklayıcı durum mesajları korunur.
+
+## Tanıtım sayfası
+
+Markayı koruyan, düşük yoğunluklu tasarım. Tasarım varyansı 6, hareket 3, görsel yoğunluk 2: ilk ekranda solda iki satırlı mesaj, sağda tek izometrik sahne. Yalnızca sekme seçimi ve soru açılışında hareket var. Genel font Inter, yüzeyler mevcut açık/koyu tokenlar; fuşya kayıt eylemleri, görsellerde sınırlı lila/mint ayrıntılar. Gölgeler raster nesnelerin fiziksel derinliği ve mevcut menülerle sınırlı.
+
+Üç ayrı WebP görsel hazırlık, canlı eğitim ve eğitim sonrası aşamalarını anlatır; yazılar HTML'dir. İkinci bölüm aynı alanda üç erişilebilir sekmeyle değişir. Devamında dört kapalı soru ve tek kapanış çağrısı vardır. Küçük ekranda başlık, görsel ve bölüm içeriği tek sütuna geçer; gezinme yerel popover menüsüne dönüşür. Sahte müşteri referansları, ölçümler veya fiyatlandırma kullanılmaz.

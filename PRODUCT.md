@@ -62,3 +62,7 @@ Raporlar ve rapor detayından yeni sekmede açılır. Solda yalnız eğitmene ai
 ## Yükleme deneyimi
 
 Sayfa ve veri bekleme durumlarında gerçek ekranın düzenini izleyen iskeletler gösterilir; veri geldiğinde içerikle yer değiştirir. Eğitim/rapor listeleri sonuç gelmeden boş sayılmaz. Oturum doğrulanmadan eğitim listesi istenmez. Arka plandaki veri yenilemeleri mevcut içeriği korur. Sunum görselleri yüklenirken oranları ayrılır; hata varsa sonsuz iskelet yerine hata durumu görünür. Açık/koyu tema ve azaltılmış hareket tercihi desteklenir.
+
+## Tanıtım sayfası
+
+Oturum açmamış kullanıcı `/` adresinde izometrik görsellerle ürün akışını anlatan landing page görür; oturum açmış kullanıcı aynı adreste çalışma alanına girer. `/kesfet` tanıtımın her zaman erişilebilir önizlemesidir. Giriş `/giris`, kayıt `/giris?mod=kayit` adresindedir; var olan hesabın oturumu varsa bu adresler çalışma alanına döner. Katılımcı bağlantısı `/katil` olarak korunur. Görünüm ve TR/EN dil seçimi ortak tercihlerle çalışır.

@@ -1,5 +1,6 @@
 "use client";
 import { ThemeMenu } from "./theme-menu";
+import Link from "next/link";
 import { useLocale } from "./locale-provider";
 import { useState } from "react";
 import type { User } from "@/lib/types";
@@ -8,13 +9,15 @@ import { Logo, Icon, ErrorNote, api } from "./ui";
 export function Auth({
   onDone,
   participant = false,
+  initialRegister = true,
 }: {
   onDone: (user: User) => void;
   participant?: boolean;
+  initialRegister?: boolean;
 }) {
   const { t } = useLocale();
 
-  const [register, setRegister] = useState(true),
+  const [register, setRegister] = useState(initialRegister),
     [role, setRole] = useState(participant ? "participant" : "teacher"),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
@@ -52,7 +55,9 @@ export function Auth({
   return (
     <div className="auth-screen">
       <header>
-        <Logo />
+        <Link href="/" aria-label={t("LİNBA ana sayfa")}>
+          <Logo />
+        </Link>
         <div className="auth-header-actions">
           <span className="muted">{t("Eğitimin her aşamasında yanında.")}</span>
           <ThemeMenu />
