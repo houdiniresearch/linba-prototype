@@ -214,6 +214,7 @@ export function Modal({
   wide = false,
   closeDisabled = false,
   className = "",
+  returnFocusRef,
 }: {
   open: boolean;
   onClose: () => void;
@@ -223,6 +224,7 @@ export function Modal({
   wide?: boolean;
   closeDisabled?: boolean;
   className?: string;
+  returnFocusRef?: React.RefObject<HTMLElement | null>;
 }) {
   const { t } = useLocale();
 
@@ -233,6 +235,14 @@ export function Modal({
         <Dialog.Content
           className={`modal ${wide ? "wide" : ""} ${className}`}
           aria-describedby={description ? "modal-description" : undefined}
+          onCloseAutoFocus={
+            returnFocusRef
+              ? (event) => {
+                  event.preventDefault();
+                  returnFocusRef.current?.focus();
+                }
+              : undefined
+          }
         >
           <div className="modal-heading">
             <Dialog.Title>{title}</Dialog.Title>

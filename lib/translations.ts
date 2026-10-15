@@ -1,5 +1,15 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Çalıştığın araçlarla birlikte.": "With the tools you already use.",
+  "Planlanan entegrasyonlar için bekleme listesine katıl.":
+    "Join the waitlist for our planned integrations.",
+  "{name} için bekleme listesine katıl": "Join the waitlist for {name}",
+  "{name} entegrasyonu henüz kullanıma açık değil. Hazır olduğunda haber almak için e-postanı bırak.":
+    "The {name} integration is not available yet. Leave your email to hear when it’s ready.",
+  "{name} için talebin kaydedildi.": "Your request for {name} has been saved.",
+  "Yalnızca seçtiğin entegrasyonla ilgili haberler için.":
+    "Only for updates about your selected integration.",
+  "Geçerli bir entegrasyon seç.": "Select a valid integration.",
   "Ücretsiz başla": "Start for free",
   "Kayıt ol": "Sign up",
   "Katılımcı mısın?": "Are you a participant?",

@@ -10,6 +10,7 @@
     "test": "node --import tsx --test tests/domain.test.ts",
     "test:integration": "node --import tsx tests/integration.ts",
     "test:header": "node --import tsx --test tests/header.test.ts",
+    "test:integration-waitlist": "node --import tsx --test tests/integration-waitlist.test.ts",
     "test:voice": "node --import tsx tests/voice-smoke.ts",
     "test:rehearsal": "node --env-file=.env.local --import tsx tests/rehearsal-dialogue-eval.ts",
     "test:rehearsal:audio": "node --env-file=.env.local --import tsx tests/rehearsal-audio-smoke.ts",

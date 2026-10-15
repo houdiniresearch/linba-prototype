@@ -13,6 +13,7 @@ import {
 } from "react";
 import { Icon, Logo } from "./ui";
 import { useLocale } from "./locale-provider";
+import { LandingIntegrations } from "./landing-integrations";
 
 const stages = [
   {
@@ -140,7 +141,7 @@ function LandingFlow() {
                 name={
                   index === 0 ? "mic" : index === 1 ? "presentation" : "chat"
                 }
-                size={20}
+                size={28}
               />
               <span>{t(item.label)}</span>
             </p>
@@ -437,6 +438,8 @@ export function Landing() {
           </div>
           <LandingFlow />
         </section>
+
+        <LandingIntegrations />
 
         <section
           className="landing-questions landing-container"

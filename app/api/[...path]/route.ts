@@ -3,7 +3,11 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { localAddresses, joinOrigin } from "@/lib/network";
 import { hasDuplicateOptions } from "@/lib/activities";
-import { joinWaitlist, waitlistEntry } from "@/lib/waitlist";
+import {
+  joinIntegrationWaitlist,
+  joinWaitlist,
+  waitlistEntry,
+} from "@/lib/waitlist";
 import { get, all, put, DATA_DIR } from "@/lib/db";
 import {
   AppError,
@@ -215,6 +219,12 @@ async function handle(request: Request, context: Context): Promise<Response> {
           },
         },
       );
+    }
+    if (parts[0] === "integration-waitlist" && parts.length === 1) {
+      if (method !== "POST") throw new AppError("İşlem desteklenmiyor.", 405);
+      const body = await request.json();
+      joinIntegrationWaitlist(body.integration, body.email, body.locale);
+      return json({ ok: true });
     }
     const user = await requireUser();
     if (parts[0] === "report-assistant") {
