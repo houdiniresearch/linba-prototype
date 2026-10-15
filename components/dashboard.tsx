@@ -632,7 +632,7 @@ export function Dashboard() {
                           <i />
                           <i />
                         </div>
-                        <span>linba.</span>
+                        <Logo />
                         <strong>{c.name}</strong>
                         <Icon name="presentation" size={25} />
                       </div>

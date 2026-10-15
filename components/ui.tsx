@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
@@ -96,12 +97,14 @@ export function Icon({
 export function Logo() {
   return (
     <span className="logo">
-      <span className="brand-symbol">
-        <i />
-        <i />
-        <i />
-      </span>
-      linba<span className="logo-dot">.</span>
+      <Image
+        className="logo-image"
+        src="/brand/linba-logo-color.svg"
+        alt="LİNBA"
+        width={700}
+        height={214}
+        unoptimized
+      />
     </span>
   );
 }

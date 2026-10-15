@@ -1,13 +1,20 @@
 :root {
   --bg: oklch(1 0 0);
-  --workspace: oklch(0.976 0.003 295);
-  --ink: oklch(0.235 0.018 285);
-  --muted: oklch(0.49 0.013 285);
-  --line: oklch(0.905 0.008 285);
-  --purple: oklch(0.46 0.23 300);
-  --purple-hover: oklch(0.4 0.21 300);
-  --lilac: oklch(0.948 0.034 302);
-  --lilac-ink: oklch(0.43 0.19 300);
+  --workspace: oklch(0.9797 0.0026 286.35);
+  --ink: oklch(0.2616 0.0223 284.75);
+  --muted: oklch(0.5117 0.022 285.6);
+  --line: oklch(0.9294 0.0067 286.27);
+  --brand-lilac: oklch(0.7044 0.1301 304.43);
+  --brand-fuchsia: oklch(0.6021 0.2426 3.28);
+  --lilac-soft: oklch(0.9561 0.0155 306.41);
+  --lilac-ink: oklch(0.4434 0.1144 305.67);
+  --accent: oklch(0.531 0.214 3.02);
+  --accent-hover: oklch(0.4788 0.1934 1.86);
+  --accent-soft: oklch(0.9673 0.0167 343.61);
+  --primary: oklch(0.8394 0.1416 176.11);
+  --primary-hover: oklch(0.7897 0.139 175.38);
+  --primary-ink: oklch(0.3243 0.0485 178.27);
+  --primary-border: oklch(0.5537 0.0979 176.54);
   --green: oklch(0.4 0.09 165);
   --red: oklch(0.45 0.18 25);
   --radius: 10px;
@@ -133,61 +140,25 @@ small,
   color: var(--red);
 }
 :focus-visible {
-  outline: 3px solid oklch(0.69 0.17 300);
+  outline: 3px solid var(--accent);
   outline-offset: 3px;
 }
 ::selection {
-  background: var(--lilac);
+  background: var(--accent-soft);
 }
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  flex-shrink: 0;
   font-size: 31px;
   line-height: 1;
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  color: var(--ink);
 }
-.logo-dot {
-  color: var(--purple);
-  margin-left: -6px;
-}
-.brand-symbol {
-  display: inline-flex;
-  position: relative;
-  align-items: center;
-  justify-content: center;
-  width: 29px;
-  height: 33px;
-  margin-right: 3px;
-  transform: rotate(-10deg);
-}
-.brand-symbol i {
-  position: absolute;
-  width: 6px;
-  border-radius: 4px;
-  background: var(--purple);
-  height: 23px;
-  transform: rotate(35deg);
-}
-.brand-symbol i:nth-child(1) {
-  height: 17px;
-  left: 5px;
-  top: 2px;
-  background: oklch(0.62 0.21 345);
-  transform: rotate(-35deg);
-}
-.brand-symbol i:nth-child(2) {
-  left: 15px;
-  top: 1px;
-}
-.brand-symbol i:nth-child(3) {
-  height: 13px;
-  left: 17px;
-  bottom: 0;
-  background: oklch(0.68 0.14 300);
-  transform: rotate(-40deg);
+.logo-image {
+  display: block;
+  width: auto;
+  height: 1.16em;
+  max-width: 100%;
+  object-fit: contain;
 }
 .button {
   display: inline-flex;
@@ -208,16 +179,16 @@ small,
 }
 .button:hover:not(:disabled) {
   background: var(--workspace);
-  border-color: oklch(0.8 0.025 300);
+  border-color: var(--muted);
 }
 .button.primary {
-  background: var(--purple);
-  color: white;
-  border-color: var(--purple);
+  background: var(--primary);
+  color: var(--primary-ink);
+  border-color: var(--primary-border);
 }
 .button.primary:hover:not(:disabled) {
-  background: var(--purple-hover);
-  border-color: var(--purple-hover);
+  background: var(--primary-hover);
+  border-color: var(--primary-border);
 }
 .button.danger {
   color: var(--red);
@@ -225,8 +196,12 @@ small,
   background: oklch(0.99 0.006 25);
 }
 .button.ai-button {
-  color: var(--purple);
-  background: var(--lilac);
+  color: var(--lilac-ink);
+  background: var(--lilac-soft);
+  border-color: transparent;
+}
+.button.ai-button:hover:not(:disabled) {
+  background: color-mix(in oklch, var(--brand-lilac) 22%, white);
   border-color: transparent;
 }
 .text-button {
@@ -235,7 +210,7 @@ small,
   align-items: center;
   font-weight: 500;
   padding: 6px 0;
-  color: var(--purple);
+  color: var(--accent);
 }
 .text-button:hover {
   text-decoration: underline;
@@ -253,8 +228,8 @@ small,
 }
 .icon-button:hover:not(:disabled),
 .mini-button:hover:not(:disabled) {
-  background: var(--lilac);
-  color: var(--purple);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 .mini-button {
   width: 22px;
@@ -266,8 +241,8 @@ small,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--purple);
-  background: var(--lilac);
+  color: var(--lilac-ink);
+  background: var(--lilac-soft);
   border-radius: 50%;
   font-weight: 600;
   flex-shrink: 0;
@@ -313,8 +288,8 @@ textarea::placeholder {
 input:focus,
 textarea:focus {
   outline: 0;
-  border-color: oklch(0.67 0.18 300);
-  box-shadow: 0 0 0 3px var(--lilac);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 textarea {
   resize: vertical;
@@ -380,7 +355,7 @@ label small {
   transition: transform 0.15s;
 }
 .toggle-field input:checked {
-  background: var(--purple);
+  background: var(--accent);
 }
 .toggle-field input:checked:after {
   transform: translateX(17px);
@@ -465,7 +440,7 @@ label small {
   padding: 26px 18px;
   position: relative;
   background: var(--workspace);
-  border: 1px dashed oklch(0.77 0.06 300);
+  border: 1px dashed var(--brand-lilac);
   border-radius: 10px;
   text-align: center;
   align-items: center;
@@ -473,7 +448,7 @@ label small {
   cursor: pointer;
 }
 .upload-zone svg {
-  color: var(--purple);
+  color: var(--accent);
 }
 .upload-zone strong {
   font-size: 14px;
@@ -492,7 +467,7 @@ label small {
   cursor: pointer;
 }
 .upload-zone:focus-within {
-  outline: 3px solid var(--lilac);
+  outline: 3px solid var(--accent);
 }
 .app-shell {
   display: grid;
@@ -586,9 +561,12 @@ label small {
   background: var(--workspace);
 }
 .sidebar button.active {
-  background: var(--lilac);
-  color: var(--lilac-ink);
+  background: var(--accent-soft);
+  color: var(--ink);
   font-weight: 500;
+}
+.sidebar button.active > svg {
+  color: var(--accent);
 }
 .sidebar-bottom {
   margin-top: auto;
@@ -600,7 +578,7 @@ label small {
   margin: 30px 4px 16px;
 }
 .sidebar-note > svg {
-  color: var(--purple);
+  color: var(--accent);
   margin-bottom: 10px;
 }
 .sidebar-note strong {
@@ -628,7 +606,7 @@ label small {
   margin-bottom: 24px;
 }
 .page-title h1 span {
-  color: var(--purple);
+  color: var(--accent);
 }
 .page-title p {
   margin: 0;
@@ -673,12 +651,11 @@ label small {
   min-width: 0;
 }
 .training-card:hover {
-  border-color: oklch(0.74 0.11 300);
-  box-shadow: 0 6px 24px oklch(0.4 0.1 300/0.07);
+  border-color: var(--brand-lilac);
 }
 .training-cover {
   aspect-ratio: 1.75;
-  background: oklch(0.95 0.025 310);
+  background: var(--lilac-soft);
   padding: 22px;
   position: relative;
   overflow: hidden;
@@ -691,7 +668,7 @@ label small {
   letter-spacing: -0.04em;
   font-weight: 700;
   position: relative;
-  color: var(--purple);
+  color: var(--accent);
 }
 .training-cover > strong {
   position: relative;
@@ -709,7 +686,7 @@ label small {
   position: absolute;
   right: 20px;
   bottom: 20px;
-  color: var(--purple);
+  color: var(--accent);
 }
 .cover-decoration {
   position: absolute;
@@ -719,7 +696,7 @@ label small {
 .cover-decoration i {
   position: absolute;
   border-radius: 50%;
-  border: 28px solid oklch(0.87 0.05 300/0.7);
+  border: 28px solid color-mix(in oklch, var(--brand-lilac) 18%, transparent);
   width: 180px;
   height: 180px;
   right: -62px;
@@ -730,14 +707,14 @@ label small {
   height: 225px;
   right: -86px;
   top: 67px;
-  border-color: oklch(0.91 0.04 300/0.9);
+  border-color: color-mix(in oklch, var(--brand-lilac) 12%, transparent);
 }
 .cover-decoration i:nth-child(3) {
   width: 90px;
   height: 90px;
   right: 30px;
   top: 70px;
-  border-color: oklch(0.86 0.055 300/0.45);
+  border-color: color-mix(in oklch, var(--brand-fuchsia) 8%, transparent);
 }
 .training-card-content {
   padding: 18px 20px;
@@ -778,8 +755,8 @@ label small {
   border-radius: 50%;
 }
 .status.ended {
-  color: var(--purple);
-  background: var(--lilac);
+  color: var(--accent);
+  background: var(--accent-soft);
 }
 .home-guide {
   display: grid;
@@ -792,7 +769,7 @@ label small {
 }
 .guide-number {
   font-size: 11px;
-  color: var(--purple);
+  color: var(--accent);
   font-weight: 600;
   margin-bottom: 11px;
   display: inline-block;
@@ -821,8 +798,8 @@ label small {
   width: 68px;
   height: 68px;
   border-radius: 18px;
-  color: var(--purple);
-  background: var(--lilac);
+  color: var(--accent);
+  background: var(--accent-soft);
   margin-bottom: 22px;
 }
 .empty h3 {
@@ -884,7 +861,7 @@ td {
   font-size: 13px;
 }
 tbody tr:hover {
-  background: oklch(0.985 0.007 300);
+  background: var(--workspace);
   cursor: pointer;
 }
 .table-link {
@@ -976,7 +953,7 @@ tbody tr:hover {
 }
 .source {
   font-size: 11px;
-  color: var(--purple);
+  color: var(--accent);
 }
 .forwarded {
   color: oklch(0.48 0.085 60);
@@ -995,14 +972,14 @@ tbody tr:hover {
 }
 .result-track {
   height: 8px;
-  background: var(--lilac);
+  background: var(--lilac-soft);
   border-radius: 10px;
   overflow: hidden;
 }
 .result-track i {
   display: block;
   height: 100%;
-  background: var(--purple);
+  background: var(--lilac-ink);
   border-radius: 10px;
 }
 .auth-screen > header {
@@ -1033,7 +1010,7 @@ tbody tr:hover {
   letter-spacing: -0.035em;
 }
 .auth-copy h1 span {
-  color: var(--purple);
+  color: var(--accent);
 }
 .auth-copy > p {
   font-size: 16px;
@@ -1043,11 +1020,11 @@ tbody tr:hover {
 .auth-preview {
   display: flex;
   gap: 20px;
-  background: var(--lilac);
+  background: var(--lilac-soft);
   padding: 28px;
   margin-top: 36px;
   border-radius: 14px;
-  color: var(--purple);
+  color: var(--lilac-ink);
 }
 .auth-preview > div {
   display: flex;
@@ -1098,7 +1075,7 @@ tbody tr:hover {
 .segmented button.active {
   background: white;
   box-shadow: 0 1px 4px oklch(0.1 0 0/0.07);
-  color: var(--purple);
+  color: var(--accent);
   font-weight: 500;
 }
 .auth-form label {
@@ -1112,7 +1089,7 @@ tbody tr:hover {
   color: var(--muted);
 }
 .auth-switch button {
-  color: var(--purple);
+  color: var(--accent);
   font-weight: 500;
   padding: 0;
 }
@@ -1232,7 +1209,7 @@ tbody tr:hover {
   color: var(--muted);
 }
 .selected > .slide-number {
-  color: var(--purple);
+  color: var(--accent);
   font-weight: 600;
 }
 .thumbnail {
@@ -1247,7 +1224,7 @@ tbody tr:hover {
   outline-offset: 3px;
 }
 .selected > .thumbnail {
-  outline: 3px solid oklch(0.67 0.22 300);
+  outline: 3px solid var(--accent);
   border-color: transparent;
 }
 .thumbnail .slide-image {
@@ -1314,9 +1291,9 @@ tbody tr:hover {
   color: var(--muted);
 }
 .add-slide:hover {
-  color: var(--purple);
-  border-color: var(--purple);
-  background: var(--lilac);
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
 }
 .rail-bottom {
   padding: 24px 20px;
@@ -1325,10 +1302,6 @@ tbody tr:hover {
 }
 .rail-bottom .logo {
   font-size: 20px;
-}
-.rail-bottom .brand-symbol {
-  transform: scale(0.7);
-  margin-right: -3px;
 }
 .editor-stage {
   overflow: auto;
@@ -1385,11 +1358,6 @@ tbody tr:hover {
   font-size: 21px;
   flex-shrink: 0;
 }
-.canvas-join .brand-symbol {
-  transform: scale(0.65);
-  width: 22px;
-  height: 23px;
-}
 .slide-image {
   width: 100%;
   height: auto;
@@ -1410,7 +1378,7 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--purple);
+  color: var(--accent);
   font-size: 12px;
   margin-bottom: 16px;
 }
@@ -1441,12 +1409,12 @@ tbody tr:hover {
   font-size: 14px;
 }
 .poll-options > div > span {
-  color: var(--purple);
+  color: var(--accent);
   font-size: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--lilac);
+  background: var(--accent-soft);
   width: 28px;
   height: 28px;
   border-radius: 6px;
@@ -1528,7 +1496,7 @@ tbody tr:hover {
   margin-top: 22px;
 }
 .tool-block > svg {
-  color: var(--purple);
+  color: var(--accent);
   display: block;
   margin-bottom: 10px;
 }
@@ -1585,7 +1553,7 @@ tbody tr:hover {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: var(--purple);
+  color: var(--accent);
   font-size: 11px;
   margin-bottom: 15px;
 }
@@ -1611,8 +1579,8 @@ tbody tr:hover {
   border: 1px solid transparent;
 }
 .activity-type-list button.selected {
-  background: var(--lilac);
-  color: var(--purple);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 .activity-type-list button:hover {
   border-color: var(--line);
@@ -1692,7 +1660,7 @@ tbody tr:hover {
 .join-share > strong {
   font-size: 42px;
   letter-spacing: 0.15em;
-  color: var(--purple);
+  color: var(--accent);
 }
 .join-share > span {
   font-size: 13px;
@@ -1827,12 +1795,12 @@ tbody tr:hover {
   border-bottom: 2px solid transparent;
 }
 .participant-tabs .active {
-  color: var(--purple);
-  border-color: var(--purple);
+  color: var(--accent);
+  border-color: var(--accent);
   font-weight: 500;
 }
 .participant-tabs i {
-  background: var(--purple);
+  background: var(--accent);
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -1850,8 +1818,8 @@ tbody tr:hover {
 }
 .assistant-avatar {
   display: inline-flex;
-  background: var(--lilac);
-  color: var(--purple);
+  background: var(--accent-soft);
+  color: var(--accent);
   width: 43px;
   height: 43px;
   border-radius: 14px;
@@ -1880,7 +1848,7 @@ tbody tr:hover {
 .chat-user {
   align-self: flex-end;
   max-width: 85%;
-  background: var(--lilac);
+  background: var(--accent-soft);
   color: var(--ink);
   border-radius: 12px 12px 2px 12px;
   padding: 12px 15px;
@@ -1909,7 +1877,7 @@ tbody tr:hover {
   align-items: center;
   font-size: 11px;
   font-weight: 500;
-  color: var(--purple);
+  color: var(--accent);
 }
 .chat-answer.forward {
   padding: 12px 14px;
@@ -1936,7 +1904,7 @@ tbody tr:hover {
   border: 1px solid var(--line);
   border-radius: 5px;
   font-size: 10px;
-  color: var(--purple);
+  color: var(--accent);
 }
 .chat-input-area {
   padding: 14px 20px 18px;
@@ -1968,13 +1936,17 @@ tbody tr:hover {
   width: 35px;
   height: 35px;
   flex-shrink: 0;
-  background: var(--purple);
-  color: white;
+  background: var(--primary);
+  color: var(--primary-ink);
+  border: 1px solid var(--primary-border);
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 8px;
   margin: 1px;
+}
+.send-button:hover:not(:disabled) {
+  background: var(--primary-hover);
 }
 .chat-input-area > small {
   display: block;
@@ -2003,7 +1975,7 @@ tbody tr:hover {
   align-items: center;
   gap: 6px;
   font-size: 10px;
-  color: var(--purple);
+  color: var(--accent);
   letter-spacing: 0.06em;
   font-weight: 500;
   margin-bottom: 18px;
@@ -2031,15 +2003,15 @@ tbody tr:hover {
   cursor: pointer;
 }
 .participant-options label input {
-  accent-color: var(--purple);
+  accent-color: var(--accent);
 }
 .participant-options label > span {
   color: var(--muted);
   font-size: 11px;
 }
 .participant-options .selected {
-  border-color: var(--purple);
-  background: var(--lilac);
+  border-color: var(--accent);
+  background: var(--accent-soft);
 }
 .submitted {
   padding: 32px 15px;
@@ -2140,7 +2112,7 @@ tbody tr:hover {
   gap: 10px;
 }
 .preview-option > span {
-  color: var(--purple);
+  color: var(--accent);
 }
 .preview-activity .button {
   font-size: 12px;
@@ -2189,7 +2161,7 @@ tbody tr:hover {
   flex-shrink: 0;
 }
 .projection header b {
-  color: var(--purple);
+  color: var(--accent);
   letter-spacing: 0.08em;
 }
 .projection > .slide-image {
@@ -2231,7 +2203,7 @@ tbody tr:hover {
   align-items: center;
 }
 .projection-end > svg {
-  color: var(--purple);
+  color: var(--accent);
   margin-bottom: 28px;
 }
 .rehearsal-page {
@@ -2336,20 +2308,21 @@ tbody tr:hover {
   display: flex;
   width: 56px;
   height: 56px;
-  background: var(--lilac);
+  background: var(--lilac-soft);
   border-radius: 50%;
-  color: var(--purple);
+  color: var(--lilac-ink);
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 .voice-console.connected .mic-orb {
-  box-shadow: 0 0 0 6px oklch(0.948 0.034 302/0.6);
+  box-shadow: 0 0 0 6px color-mix(in oklch, var(--brand-lilac) 24%, transparent);
   animation: voice-pulse 2s ease-in-out infinite;
 }
 @keyframes voice-pulse {
   50% {
-    box-shadow: 0 0 0 12px oklch(0.948 0.034 302/0.2);
+    box-shadow: 0 0 0 12px
+      color-mix(in oklch, var(--brand-lilac) 8%, transparent);
   }
 }
 .rehearsal-feedback {
@@ -2386,7 +2359,7 @@ tbody tr:hover {
 }
 .rehearsal-remarks > p > svg {
   flex-shrink: 0;
-  color: var(--purple);
+  color: var(--accent);
   margin-top: 3px;
 }
 .audience-details {
@@ -2759,9 +2732,6 @@ tbody tr:hover {
     font-size: 15px;
     gap: 3px;
   }
-  .canvas-join .brand-symbol {
-    display: none;
-  }
   .activity-slide {
     padding: 15px;
     min-height: 200px;
@@ -2885,9 +2855,6 @@ tbody tr:hover {
   }
   .rehearsal-page .editor-header > .logo {
     font-size: 22px;
-  }
-  .rehearsal-page .editor-header .brand-symbol {
-    display: none;
   }
   .rehearsal-setup {
     margin: 40px auto;
@@ -3075,7 +3042,7 @@ tbody tr:hover {
   font-size: 12px;
 }
 .persona-speaking {
-  background: var(--lilac);
+  background: var(--accent-soft);
 }
 .rehearsal-cost {
   margin: 22px 0;

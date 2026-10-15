@@ -29,7 +29,7 @@ Sunum merkezli platform. Kullanıcının 13 Ekim 2026 konuşmasındaki kararlar�
 
 ## Brand Personality
 
-Kullanıcının AhaSlides ekranlarına sadık: beyaz sidebar/üst çubuk, açık gri çalışma alanı, mor ana işlemler, lila seçimler, okunaklı sans ve hafif yuvarlatılmış kontroller. Eski turuncu/grafit/kobalt taslaklar geçersiz.
+15 Ekim 2026'da onaylanan AhaSlides referanslı yaklaşım: beyaz sidebar/üst çubuk, açık gri çalışma alanı, mint ana eylemler ve koyu yazı, açık pembe seçimler ve fuşya vurgular, lila hafif yüzeyler, okunaklı sans ve hafif yuvarlatılmış kontroller. Sitede kullanılan özgün katlanmış sayfa sembolü ve linba yazısının geometrisi korunur; yalnız renkleri lila–fuşya ve koyu mürekkebe uyarlanır. Alternatif logo sembolleri uygulanmaz. Renk rolleri DESIGN.md ve docs/MARKA_RENKLERI.md'de kayıtlıdır.
 
 ## Design Principles
 
