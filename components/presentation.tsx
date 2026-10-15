@@ -1,4 +1,5 @@
 "use client";
+import { useLocale } from "./locale-provider";
 import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import type { Course, CourseState } from "@/lib/types";
@@ -6,6 +7,8 @@ import { api, Icon, Logo, Loading, ErrorNote, useResource } from "./ui";
 import { SlideView } from "./slides";
 
 export function Projection({ id }: { id: string }) {
+  const { t } = useLocale();
+
   const [data, setData] = useState<Course>(),
     [key, setKey] = useState(""),
     [error, setError] = useState(""),
@@ -49,17 +52,18 @@ export function Projection({ id }: { id: string }) {
     <main className="projection">
       <header>
         <span>
-          Katıl: <strong>{host}/katil</strong> · Kod <b>{data.code}</b>
+          {t("Katıl:")} <strong>{host}/katil</strong> {t("· Kod")}{" "}
+          <b>{data.code}</b>
         </span>
         <Logo />
       </header>
       {data.status === "ended" ? (
         <div className="projection-end">
           <Icon name="success" size={58} />
-          <h1>Katılımın için teşekkürler.</h1>
+          <h1>{t("Katılımın için teşekkürler.")}</h1>
           <p>
-            Eğitimin tamamlandı. Doküman asistanına {data.accessDays} gün
-            erişebilirsin.
+            {t("Eğitimin tamamlandı. Doküman asistanına")} {data.accessDays}{" "}
+            {t("gün erişebilirsin.")}
           </p>
         </div>
       ) : (
@@ -72,7 +76,7 @@ export function Projection({ id }: { id: string }) {
         </span>
         <button
           className="icon-button"
-          aria-label="Tam ekran"
+          aria-label={t("Tam ekran")}
           onClick={() => document.documentElement.requestFullscreen()}
         >
           <Icon name="expand" />
@@ -82,6 +86,8 @@ export function Projection({ id }: { id: string }) {
   );
 }
 export function Preview({ id }: { id: string }) {
+  const { t } = useLocale();
+
   const { data, error } = useResource<CourseState>(`courses/${id}`),
     [index, setIndex] = useState(0);
   if (!data)
@@ -99,22 +105,23 @@ export function Preview({ id }: { id: string }) {
         <a
           className="icon-button"
           href={`/egitim/${id}`}
-          aria-label="Eğitime dön"
+          aria-label={t("Eğitime dön")}
         >
           <Icon name="back" />
         </a>
         <span>
-          “<strong>{c.name}</strong>” eğitiminin önizlemesi
+          “<strong>{c.name}</strong>
+          {t("” eğitiminin önizlemesi")}
         </span>
         <Logo />
       </header>
       <div className="preview-layout">
         <section>
-          <h2>Yansıtılan ekran</h2>
+          <h2>{t("Yansıtılan ekran")}</h2>
           <div className="presentation-canvas">
             <div className="canvas-join">
               <span>
-                Katılım kodu: <strong>{c.code}</strong>
+                {t("Katılım kodu:")} <strong>{c.code}</strong>
               </span>
               <Logo />
             </div>
@@ -124,7 +131,7 @@ export function Preview({ id }: { id: string }) {
             <button
               className="icon-button"
               disabled={index === 0}
-              aria-label="Önceki slayt"
+              aria-label={t("Önceki slayt")}
               onClick={() => setIndex(index - 1)}
             >
               <Icon name="left" />
@@ -135,7 +142,7 @@ export function Preview({ id }: { id: string }) {
             <button
               className="icon-button"
               disabled={index === c.slides.length - 1}
-              aria-label="Sonraki slayt"
+              aria-label={t("Sonraki slayt")}
               onClick={() => setIndex(index + 1)}
             >
               <Icon name="right" />
@@ -143,20 +150,20 @@ export function Preview({ id }: { id: string }) {
           </div>
         </section>
         <section>
-          <h2>Katılımcı ekranı</h2>
+          <h2>{t("Katılımcı ekranı")}</h2>
           <div className="phone-preview">
             <Logo />
             <div className="participant-tabs">
               <span className={slide.kind === "document" ? "active" : ""}>
-                Sohbet
+                {t("Sohbet")}
               </span>
               <span className={slide.kind === "activity" ? "active" : ""}>
-                Aktiviteler
+                {t("Aktiviteler")}
               </span>
             </div>
             {slide.activity ? (
               <div className="preview-activity">
-                <span className="activity-label">AKTİF AKTİVİTE</span>
+                <span className="activity-label">{t("AKTİF AKTİVİTE")}</span>
                 <h3>{slide.activity.question}</h3>
                 {slide.activity.type === "poll" ? (
                   slide.activity.options.map((o, i) => (
@@ -166,24 +173,28 @@ export function Preview({ id }: { id: string }) {
                     </div>
                   ))
                 ) : (
-                  <div className="preview-textarea">Yanıtını yaz…</div>
+                  <div className="preview-textarea">{t("Yanıtını yaz…")}</div>
                 )}
-                <div className="button primary full">Yanıtımı gönder</div>
+                <div className="button primary full">
+                  {t("Yanıtımı gönder")}
+                </div>
               </div>
             ) : (
               <div className="preview-chat">
                 <span className="assistant-avatar">
                   <Icon name="sparkle" />
                 </span>
-                <h3>Sunumun içinden, soruna yanıt.</h3>
-                <p>Bu eğitimin dokümanına ilişkin sorularını sorabilirsin.</p>
+                <h3>{t("Sunumun içinden, soruna yanıt.")}</h3>
+                <p>
+                  {t("Bu eğitimin dokümanına ilişkin sorularını sorabilirsin.")}
+                </p>
                 <div className="preview-textarea">
-                  Eğitimle ilgili sorunu yaz…
+                  {t("Eğitimle ilgili sorunu yaz…")}
                 </div>
               </div>
             )}
             <span className="small muted center">
-              Önizleme · Gerçek yanıt gönderilmez
+              {t("Önizleme · Gerçek yanıt gönderilmez")}
             </span>
           </div>
         </section>

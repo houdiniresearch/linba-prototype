@@ -1,9 +1,11 @@
 "use client";
+import { useLocale } from "./locale-provider";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { pollResults } from "@/lib/activities";
 import type { Course, CourseState, User } from "@/lib/types";
 import { Auth } from "./auth";
+import { HeaderActions } from "./header-actions";
 import {
   Icon,
   Logo,
@@ -26,6 +28,8 @@ export function CreateTraining({
   onClose: () => void;
   onCreated: (course: Course) => void;
 }) {
+  const { t } = useLocale();
+
   const [file, setFile] = useState<File>(),
     [name, setName] = useState(""),
     [days, setDays] = useState(7),
@@ -39,7 +43,7 @@ export function CreateTraining({
       let body: FormData | object;
       if (demo) body = { demo: true, accessDays: days, autoAnswer: auto };
       else {
-        if (!file) throw new Error("Sunum dosyanı seç.");
+        if (!file) throw new Error(t("Sunum dosyanı seç."));
         const form = new FormData();
         form.set("file", file);
         form.set("name", name);
@@ -59,8 +63,8 @@ export function CreateTraining({
     <Modal
       open={open}
       onClose={() => !busy && onClose()}
-      title="Yeni eğitim oluştur"
-      description="Sunumunu yükle ve katılımcı erişimini belirle."
+      title={t("Yeni eğitim oluştur")}
+      description={t("Sunumunu yükle ve katılımcı erişimini belirle.")}
     >
       <form
         onSubmit={(e) => {
@@ -71,13 +75,13 @@ export function CreateTraining({
         <label className={`upload-zone ${file ? "has-file" : ""}`}>
           <Icon name={file ? "file" : "upload"} size={32} />
           <strong>
-            {file ? file.name : "Sunumunu buraya bırak veya dosya seç"}
+            {file ? file.name : t("Sunumunu buraya bırak veya dosya seç")}
           </strong>
-          <span>PDF veya PPTX · En fazla 30 MB · 80 slayt</span>
+          <span>{t("PDF veya PPTX · En fazla 30 MB · 80 slayt")}</span>
           <input
             type="file"
             accept=".pdf,.pptx"
-            aria-label="Sunum dosyası"
+            aria-label={t("Sunum dosyası")}
             disabled={busy}
             onChange={(e) => {
               const f = e.target.files?.[0];
@@ -87,16 +91,16 @@ export function CreateTraining({
           />
         </label>
         <label>
-          Eğitim adı
+          {t("Eğitim adı")}
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Dosya adı otomatik kullanılır"
+            placeholder={t("Dosya adı otomatik kullanılır")}
             maxLength={120}
           />
         </label>
         <label>
-          Eğitim sonrası asistan erişimi
+          {t("Eğitim sonrası asistan erişimi")}
           <div className="input-unit">
             <input
               type="number"
@@ -106,19 +110,21 @@ export function CreateTraining({
               max={365}
               required
             />
-            <span>gün</span>
+            <span>{t("gün")}</span>
           </div>
           <small>
-            Süre eğitim bittiğinde başlar. 0 gün seçersen eğitimle birlikte
-            kapanır.
+            {t(
+              "Süre eğitim bittiğinde başlar. 0 gün seçersen eğitimle birlikte kapanır.",
+            )}
           </small>
         </label>
         <label className="toggle-field">
           <span>
-            <strong>Canlı eğitimde otomatik AI yanıtı</strong>
+            <strong>{t("Canlı eğitimde otomatik AI yanıtı")}</strong>
             <small>
-              Katılımcının sorusu dokümanından yanıtlanır. Yanıtlanamayanlar
-              sana iletilir.
+              {t(
+                "Katılımcının sorusu dokümanından yanıtlanır. Yanıtlanamayanlar sana iletilir.",
+              )}
             </small>
           </span>
           <input
@@ -129,7 +135,9 @@ export function CreateTraining({
           />
         </label>
         <ErrorNote message={error} />
-        {busy && <Loading label="Sunum işleniyor, slaytlar hazırlanıyor…" />}
+        {busy && (
+          <Loading label={t("Sunum işleniyor, slaytlar hazırlanıyor…")} />
+        )}
         <div className="modal-actions">
           <button
             type="button"
@@ -137,11 +145,11 @@ export function CreateTraining({
             disabled={busy}
             onClick={() => create(true)}
           >
-            Örnek sunum kullan
+            {t("Örnek sunum kullan")}
           </button>
           <button className="button primary" disabled={busy}>
             <Icon name="plus" />
-            Eğitimi oluştur
+            {t("Eğitimi oluştur")}
           </button>
         </div>
       </form>
@@ -150,6 +158,8 @@ export function CreateTraining({
 }
 
 export function Report({ id, onBack }: { id: string; onBack: () => void }) {
+  const { t, locale } = useLocale();
+
   const { data, error } = useResource<CourseState>(`courses/${id}`, 5000);
   if (!data)
     return (
@@ -166,28 +176,28 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
     <div className="report-detail">
       <button className="text-button" onClick={onBack}>
         <Icon name="back" />
-        Raporlara dön
+        {t("Raporlara dön")}
       </button>
       <div className="page-title">
         <div>
-          <span className="eyebrow">EĞİTİM RAPORU</span>
+          <span className="eyebrow">{t("EĞİTİM RAPORU")}</span>
           <h1>{c.name}</h1>
           <p className="muted">
-            {c.endedAt ? date(c.endedAt) : "Henüz tamamlanmadı"} · Eğitim
-            sonrası kayıtlarla güncellenir.
+            {c.endedAt ? date(c.endedAt, locale) : t("Henüz tamamlanmadı")}{" "}
+            {t("· Eğitim sonrası kayıtlarla güncellenir.")}
           </p>
         </div>
         <Status status={c.status} />
       </div>
       <div className="metrics">
         {[
-          [participants.length, "Katılımcı"],
-          [questions.length, "Soru"],
+          [participants.length, t("Katılımcı")],
+          [questions.length, t("Soru")],
           [
             questions.filter((q) => q.status === "answered").length,
-            "AI yanıtı",
+            t("AI yanıtı"),
           ],
-          [responses.length, "Aktivite yanıtı"],
+          [responses.length, t("Aktivite yanıtı")],
         ].map(([number, label]) => (
           <div key={label}>
             <strong>{number}</strong>
@@ -197,15 +207,17 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
       </div>
       <section className="report-section">
         <div className="section-title">
-          <h2>Eğitim özeti</h2>
+          <h2>{t("Eğitim özeti")}</h2>
           <span className="small muted">
-            {c.report?.ai ? "AI tarafından hazırlandı" : "Kayıtlardan derlendi"}
-            {c.report && ` · ${date(c.report.updatedAt)}`}
+            {c.report?.ai
+              ? t("AI tarafından hazırlandı")
+              : t("Kayıtlardan derlendi")}
+            {c.report && ` · ${date(c.report.updatedAt, locale)}`}
           </span>
         </div>
         <p>
           {c.report?.summary ||
-            "Eğitim tamamlandığında özet burada hazırlanır."}
+            t("Eğitim tamamlandığında özet burada hazırlanır.")}
         </p>
         {c.report?.recommendations.length ? (
           <ul className="recommendations">
@@ -217,7 +229,8 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
       </section>
       <section className="report-section">
         <h2>
-          Sorular ve yanıtlar <span className="count">{questions.length}</span>
+          {t("Sorular ve yanıtlar")}{" "}
+          <span className="count">{questions.length}</span>
         </h2>
         {groups.length ? (
           groups.map(([id, title]) => (
@@ -225,7 +238,7 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
               <summary>
                 {title}
                 <span>
-                  {questions.filter((q) => q.groupId === id).length} soru
+                  {questions.filter((q) => q.groupId === id).length} {t("soru")}
                 </span>
               </summary>
               {questions
@@ -235,20 +248,20 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
                     <div className="small muted">
                       {q.userName} ·{" "}
                       {q.stage === "followup"
-                        ? "Eğitim sonrası"
-                        : "Canlı eğitim"}{" "}
-                      · {date(q.createdAt)}
+                        ? t("Eğitim sonrası")
+                        : t("Canlı eğitim")}{" "}
+                      · {date(q.createdAt, locale)}
                     </div>
                     <strong>{q.text}</strong>
                     <p>
                       {q.answer ||
                         (q.status === "manual"
-                          ? "Eğitmene iletildi."
-                          : q.reason || "Sorun eğitmene iletildi.")}
+                          ? t("Eğitmene iletildi.")
+                          : q.reason || t("Sorun eğitmene iletildi."))}
                     </p>
                     {q.sources.length > 0 && (
                       <span className="source">
-                        Kaynak: Slayt {q.sources.join(", ")}
+                        {t("Kaynak: Slayt")} {q.sources.join(", ")}
                       </span>
                     )}
                   </div>
@@ -256,12 +269,13 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
             </details>
           ))
         ) : (
-          <p className="muted">Henüz soru yok.</p>
+          <p className="muted">{t("Henüz soru yok.")}</p>
         )}
       </section>
       <section className="report-section">
         <h2>
-          Aktivite sonuçları <span className="count">{responses.length}</span>
+          {t("Aktivite sonuçları")}{" "}
+          <span className="count">{responses.length}</span>
         </h2>
         {c.slides
           .filter((s) => s.kind === "activity")
@@ -270,7 +284,9 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
             return (
               <div className="activity-result" key={s.id}>
                 <h3>{s.activity?.question}</h3>
-                <p className="small muted">{rs.length} yanıt</p>
+                <p className="small muted">
+                  {rs.length} {t("yanıt")}
+                </p>
                 {s.activity?.type === "poll"
                   ? pollResults(s.activity.options, rs).map(
                       ({ option, count, percentage }) => {
@@ -299,7 +315,7 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
             );
           })}
         {!c.slides.some((s) => s.kind === "activity") && (
-          <p className="muted">Bu eğitimde aktivite bulunmuyor.</p>
+          <p className="muted">{t("Bu eğitimde aktivite bulunmuyor.")}</p>
         )}
       </section>
     </div>
@@ -307,6 +323,8 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
 }
 
 export function Dashboard() {
+  const { t, locale } = useLocale();
+
   const router = useRouter();
   const auth = useResource<{ user?: User; aiReady: boolean; model: string }>(
     "auth",
@@ -356,12 +374,16 @@ export function Dashboard() {
             }}
           >
             <Icon name="logout" />
-            Çıkış
+            {t("Çıkış")}
           </button>
         </header>
         <div>
-          <h1>Merhaba, {user.name.split(" ")[0]}.</h1>
-          <p className="muted">Eğitmeninin paylaştığı kodla eğitime katıl.</p>
+          <h1>
+            {t("Merhaba,")} {user.name.split(" ")[0]}.
+          </h1>
+          <p className="muted">
+            {t("Eğitmeninin paylaştığı kodla eğitime katıl.")}
+          </p>
           <JoinForm />
           {courses.data?.courses.map((c) => (
             <button
@@ -372,7 +394,7 @@ export function Dashboard() {
               <Icon name="presentation" />
               <span>
                 {c.name}
-                <small>{date(c.createdAt)}</small>
+                <small>{date(c.createdAt, locale)}</small>
               </span>
               <Status status={c.status} />
               <Icon name="arrow" />
@@ -394,6 +416,7 @@ export function Dashboard() {
     router.replace(`/?view=${next}`);
   }
   function openReport(id: string) {
+    setView("reports");
     setReport(id);
     router.replace(`/?view=reports&report=${id}`);
   }
@@ -402,7 +425,7 @@ export function Dashboard() {
       <header className="app-header">
         <button
           className="icon-button mobile-menu"
-          aria-label="Menüyü aç"
+          aria-label={t("Menüyü aç")}
           onClick={() => setMobile(!mobile)}
         >
           <Icon name="menu" />
@@ -411,35 +434,38 @@ export function Dashboard() {
         <label className="header-search">
           <Icon name="search" />
           <input
-            aria-label="Eğitimlerde ara"
-            placeholder="Eğitimlerinde ara…"
+            aria-label={t("Eğitimlerde ara")}
+            placeholder={t("Eğitimlerinde ara…")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
           {search && (
             <button
               className="icon-button"
-              aria-label="Aramayı temizle"
+              aria-label={t("Aramayı temizle")}
               onClick={() => setSearch("")}
             >
               <Icon name="close" size={16} />
             </button>
           )}
         </label>
-        <div className="account-chip">
-          <span className="avatar">{user.name.slice(0, 1)}</span>
-          <span>
-            {user.name}
-            <small>Eğitmen hesabı{user.demo ? " · Deneme" : ""}</small>
-          </span>
-        </div>
+        <HeaderActions
+          user={user}
+          courses={courses.data?.courses || []}
+          onSettings={() => change("settings")}
+          onReport={openReport}
+          onLogout={async () => {
+            await api("auth", undefined, "DELETE");
+            await auth.refresh();
+          }}
+        />
       </header>
       <aside className={`sidebar ${mobile ? "open" : ""}`}>
         <nav>
           {[
-            ["home", "home", "Ana sayfa"],
-            ["courses", "folder", "Eğitimlerim"],
-            ["reports", "chart", "Raporlar"],
+            ["home", "home", t("Ana sayfa")],
+            ["courses", "folder", t("Eğitimlerim")],
+            ["reports", "chart", t("Raporlar")],
           ].map(([v, icon, label]) => (
             <button
               key={v}
@@ -455,18 +481,18 @@ export function Dashboard() {
           <div className="sidebar-note">
             <Icon name="presentation" />
             <strong>
-              Bir sunum.
+              {t("Bir sunum.")}
               <br />
-              Birlikte öğrenmenin yeni yolu.
+              {t("Birlikte öğrenmenin yeni yolu.")}
             </strong>
-            <p>Eğitimden önce, eğitim sırasında ve sonrasında.</p>
+            <p>{t("Eğitimden önce, eğitim sırasında ve sonrasında.")}</p>
           </div>
           <button
             className={view === "settings" ? "active" : ""}
             onClick={() => change("settings")}
           >
             <Icon name="settings" />
-            Ayarlar
+            {t("Ayarlar")}
           </button>
           <button
             onClick={async () => {
@@ -475,7 +501,7 @@ export function Dashboard() {
             }}
           >
             <Icon name="logout" />
-            Çıkış yap
+            {t("Çıkış yap")}
           </button>
         </div>
       </aside>
@@ -484,30 +510,31 @@ export function Dashboard() {
           <>
             <div className="page-title">
               <div>
-                <h1>Ayarlar</h1>
-                <p className="muted">Hesabın ve model bağlantısı.</p>
+                <h1>{t("Ayarlar")}</h1>
+                <p className="muted">{t("Hesabın ve model bağlantısı.")}</p>
               </div>
             </div>
             <section className="settings-section">
-              <h2>Hesap</h2>
+              <h2>{t("Hesap")}</h2>
               <dl>
-                <dt>Ad soyad</dt>
+                <dt>{t("Ad soyad")}</dt>
                 <dd>{user.name}</dd>
-                <dt>Hesap tipi</dt>
-                <dd>Eğitmen</dd>
-                <dt>E-posta</dt>
-                <dd>{user.email || "Deneme hesabı"}</dd>
+                <dt>{t("Hesap tipi")}</dt>
+                <dd>{t("Eğitmen")}</dd>
+                <dt>{t("E-posta")}</dt>
+                <dd>{user.email || t("Deneme hesabı")}</dd>
               </dl>
-              <h2>Yapay zekâ bağlantısı</h2>
+              <h2>{t("Yapay zekâ bağlantısı")}</h2>
               <p className={auth.data.aiReady ? "success-text" : "muted"}>
                 <Icon name={auth.data.aiReady ? "success" : "warning"} />
                 {auth.data.aiReady
-                  ? "Model bağlantısı ayarlandı"
-                  : "API anahtarı henüz eklenmedi"}
+                  ? t("Model bağlantısı ayarlandı")
+                  : t("API anahtarı henüz eklenmedi")}
               </p>
               <p className="muted">
-                Doküman sohbeti, aktiviteler ve sesli prova aynı modeli
-                kullanır.
+                {t(
+                  "Doküman sohbeti, aktiviteler ve sesli prova aynı modeli kullanır.",
+                )}
               </p>
               <code>{auth.data.model}</code>
             </section>
@@ -519,9 +546,11 @@ export function Dashboard() {
             <>
               <div className="page-title">
                 <div>
-                  <h1>Raporlar</h1>
+                  <h1>{t("Raporlar")}</h1>
                   <p className="muted">
-                    Tamamlanan eğitimlerinin soruları ve aktivite sonuçları.
+                    {t(
+                      "Tamamlanan eğitimlerinin soruları ve aktivite sonuçları.",
+                    )}
                   </p>
                 </div>
               </div>
@@ -530,9 +559,9 @@ export function Dashboard() {
                   <table>
                     <thead>
                       <tr>
-                        <th>Eğitim</th>
-                        <th>Tamamlanma</th>
-                        <th>Asistan erişimi</th>
+                        <th>{t("Eğitim")}</th>
+                        <th>{t("Tamamlanma")}</th>
+                        <th>{t("Asistan erişimi")}</th>
                         <th />
                       </tr>
                     </thead>
@@ -547,8 +576,10 @@ export function Dashboard() {
                               {c.name}
                             </button>
                           </td>
-                          <td>{c.endedAt && date(c.endedAt)}</td>
-                          <td>{c.accessDays} gün</td>
+                          <td>{c.endedAt && date(c.endedAt, locale)}</td>
+                          <td>
+                            {c.accessDays} {t("gün")}
+                          </td>
                           <td>
                             <Icon name="arrow" />
                           </td>
@@ -560,8 +591,10 @@ export function Dashboard() {
               ) : (
                 <Empty
                   icon="chart"
-                  title="İlk raporun eğitimin bitince burada"
-                  description="Sorular, AI yanıtları ve aktiviteler otomatik olarak bir araya gelir."
+                  title={t("İlk raporun eğitimin bitince burada")}
+                  description={t(
+                    "Sorular, AI yanıtları ve aktiviteler otomatik olarak bir araya gelir.",
+                  )}
                 />
               )}
             </>
@@ -573,16 +606,16 @@ export function Dashboard() {
                 <h1>
                   {view === "home" ? (
                     <>
-                      Merhaba, <span>{user.name.split(" ")[0]}.</span>
+                      {t("Merhaba,")} <span>{user.name.split(" ")[0]}.</span>
                     </>
                   ) : (
-                    "Eğitimlerim"
+                    t("Eğitimlerim")
                   )}
                 </h1>
                 <p className="muted">
                   {view === "home"
-                    ? "Bir sonraki eğitimine buradan başla."
-                    : "Sunumlarını hazırla, prova yap ve eğitimini başlat."}
+                    ? t("Bir sonraki eğitimine buradan başla.")
+                    : t("Sunumlarını hazırla, prova yap ve eğitimini başlat.")}
                 </p>
               </div>
             </div>
@@ -592,10 +625,10 @@ export function Dashboard() {
                 onClick={() => setCreate(true)}
               >
                 <Icon name="plus" />
-                Yeni eğitim
+                {t("Yeni eğitim")}
               </button>
               <span className="small muted">
-                PDF veya PPTX sunumundan oluştur.
+                {t("PDF veya PPTX sunumundan oluştur.")}
               </span>
             </div>
             {courses.error && <ErrorNote message={courses.error} />}
@@ -603,17 +636,17 @@ export function Dashboard() {
               <div className="section-title">
                 <h2>
                   {search
-                    ? "Arama sonuçları"
+                    ? t("Arama sonuçları")
                     : view === "home"
-                      ? "Son eğitimlerin"
-                      : "Tüm eğitimler"}
+                      ? t("Son eğitimlerin")
+                      : t("Tüm eğitimler")}
                 </h2>
                 {view === "home" && (
                   <button
                     className="text-button"
                     onClick={() => change("courses")}
                   >
-                    Tümünü gör
+                    {t("Tümünü gör")}
                     <Icon name="right" />
                   </button>
                 )}
@@ -640,7 +673,7 @@ export function Dashboard() {
                         <Status status={c.status} />
                         <h3>{c.name}</h3>
                         <div className="card-meta">
-                          <span>{date(c.createdAt)}</span>
+                          <span>{date(c.createdAt, locale)}</span>
                           <Icon name="arrow" size={18} />
                         </div>
                       </div>
@@ -651,19 +684,21 @@ export function Dashboard() {
                 <Empty
                   title={
                     search
-                      ? "Eşleşen eğitim bulunamadı"
-                      : "İlk eğitimini oluşturalım"
+                      ? t("Eşleşen eğitim bulunamadı")
+                      : t("İlk eğitimini oluşturalım")
                   }
                   description={
                     search
-                      ? "Başka bir adla aramayı deneyebilirsin."
-                      : "Sunumunu yükle. Aktiviteler ve sesli prova eğitim çalışma alanında seni bekliyor."
+                      ? t("Başka bir adla aramayı deneyebilirsin.")
+                      : t(
+                          "Sunumunu yükle. Aktiviteler ve sesli prova eğitim çalışma alanında seni bekliyor.",
+                        )
                   }
                 >
                   {!search && (
                     <button className="button" onClick={() => setCreate(true)}>
                       <Icon name="plus" />
-                      Eğitim oluştur
+                      {t("Eğitim oluştur")}
                     </button>
                   )}
                 </Empty>
@@ -673,18 +708,18 @@ export function Dashboard() {
               <section className="home-guide">
                 <div>
                   <span className="guide-number">01</span>
-                  <h3>Sunumunu yükle</h3>
-                  <p>Dokümanın, eğitiminin kaynağı olsun.</p>
+                  <h3>{t("Sunumunu yükle")}</h3>
+                  <p>{t("Dokümanın, eğitiminin kaynağı olsun.")}</p>
                 </div>
                 <div>
                   <span className="guide-number">02</span>
-                  <h3>Akışını hazırla</h3>
-                  <p>Aktivitelerini yerleştir, kitlenle prova yap.</p>
+                  <h3>{t("Akışını hazırla")}</h3>
+                  <p>{t("Aktivitelerini yerleştir, kitlenle prova yap.")}</p>
                 </div>
                 <div>
                   <span className="guide-number">03</span>
-                  <h3>Birlikte öğren</h3>
-                  <p>Eğitimi başlat, soruları ve yanıtları takip et.</p>
+                  <h3>{t("Birlikte öğren")}</h3>
+                  <p>{t("Eğitimi başlat, soruları ve yanıtları takip et.")}</p>
                 </div>
               </section>
             )}
@@ -706,6 +741,8 @@ export function JoinForm({
   onJoin?: (id: string) => void;
   initialCode?: string;
 }) {
+  const { t } = useLocale();
+
   const router = useRouter(),
     [code, setCode] = useState(initialCode),
     [error, setError] = useState(""),
@@ -730,21 +767,21 @@ export function JoinForm({
       }}
     >
       <label>
-        Eğitim kodu
+        {t("Eğitim kodu")}
         <input
           value={code}
           onChange={(e) =>
             setCode(e.target.value.replace(/\D/g, "").slice(0, 6))
           }
           inputMode="numeric"
-          placeholder="6 haneli kod"
+          placeholder={t("6 haneli kod")}
           minLength={6}
           maxLength={6}
           required
         />
       </label>
       <button className="button primary" disabled={busy}>
-        Eğitime katıl
+        {t("Eğitime katıl")}
         <Icon name="arrow" />
       </button>
       <ErrorNote message={error} />

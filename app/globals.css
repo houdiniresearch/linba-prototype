@@ -513,22 +513,233 @@ label small {
   position: absolute;
   right: 5px;
 }
-.account-chip {
+.header-actions {
   margin-left: auto;
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 }
-.account-chip > span:last-child {
-  display: flex;
-  flex-direction: column;
+.language-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 0 8px;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 500;
 }
-.account-chip small {
-  font-size: 11px;
+.language-trigger:hover {
+  background: var(--workspace);
+}
+.upgrade-trigger {
+  border-radius: 999px;
+  gap: 7px;
+  min-height: 40px;
+  padding: 9px 17px;
+}
+.header-round,
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  padding: 0;
+}
+.header-round {
+  background: var(--workspace);
+}
+.header-round:hover {
+  background: var(--lilac-soft);
+}
+.profile-trigger .avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 13px;
+}
+.header-popover {
+  position: fixed;
+  inset: 68px 28px auto auto;
+  margin: 0;
+  width: 344px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 90px);
+  overflow: auto;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 4px 8px oklch(0.2 0.01 285 / 0.06);
+  background: var(--bg);
+  color: var(--ink);
+}
+.header-popover h2 {
+  font-size: 16px;
+  padding: 4px 8px 10px;
+  margin: 0;
+}
+.header-popover hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 8px 0;
+}
+.popover-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 10px;
+  min-height: 44px;
+  text-align: left;
+  border-radius: 8px;
+}
+.popover-item:hover,
+.report-notification:hover {
+  background: var(--workspace);
+}
+.profile-identity {
+  padding: 8px 10px 4px;
+}
+.profile-identity > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.profile-identity strong {
+  font-size: 16px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.profile-identity p {
+  margin: 6px 0;
   color: var(--muted);
-  font-weight: 400;
-  margin-top: 1px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.plan-badge {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--lilac-soft);
+  color: var(--lilac-ink);
+  font-size: 11px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.profile-upgrade {
+  background: var(--lilac-soft);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 14px 0 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.profile-upgrade p {
+  font-size: 15px;
+  margin-bottom: 16px;
+}
+.profile-upgrade .button {
+  border-radius: 999px;
+  align-self: flex-end;
+}
+.logout-item {
+  color: var(--red);
+}
+.language-popover {
+  width: 200px;
+  right: 240px;
+}
+.language-choice {
+  justify-content: space-between;
+}
+.language-choice[aria-pressed="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.notifications-popover {
+  right: 78px;
+  width: 360px;
+}
+.notification-empty {
+  padding: 24px 12px;
+  text-align: center;
+}
+.notification-empty > svg {
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.notification-empty strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+}
+.notification-empty p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+.report-notification {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 8px;
+  text-align: left;
+  border-radius: 8px;
+}
+.report-notification > span:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+.report-notification strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+.report-notification span span {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.report-notification small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.notification-icon,
+.waitlist-success-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--lilac-soft);
+  color: var(--lilac-ink);
+}
+.waitlist-success {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+  padding-top: 12px;
+}
+.waitlist-success > strong {
+  overflow-wrap: anywhere;
+  max-width: 100%;
+  font-weight: 500;
+}
+.waitlist-success-icon {
+  background: var(--primary);
+  color: var(--primary-ink);
+  width: 52px;
+  height: 52px;
 }
 .sidebar {
   padding: 28px 12px 20px;
@@ -2405,6 +2616,12 @@ tbody tr:hover {
   .app-header > .logo {
     width: 160px;
   }
+  .app-header .header-search {
+    width: auto;
+    flex: 1;
+    min-width: 140px;
+    max-width: 440px;
+  }
   .dashboard-main {
     padding: 32px 28px;
   }
@@ -2486,8 +2703,14 @@ tbody tr:hover {
     width: auto;
   }
   .app-header .header-search {
-    margin-left: auto;
-    width: 190px;
+    display: none;
+  }
+  .header-actions {
+    gap: 6px;
+  }
+  .header-popover {
+    top: 60px;
+    right: 12px;
   }
   .header-search input:not([type="checkbox"]) {
     height: 38px;
@@ -2497,17 +2720,6 @@ tbody tr:hover {
   .header-search > svg {
     left: 9px;
     width: 15px;
-  }
-  .account-chip > span:last-child {
-    display: none;
-  }
-  .account-chip {
-    margin-left: 5px;
-  }
-  .account-chip .avatar {
-    width: 30px;
-    height: 30px;
-    font-size: 12px;
   }
   .mobile-menu {
     display: flex;
@@ -2970,9 +3182,6 @@ tbody tr:hover {
   .app-header .header-search {
     display: none;
   }
-  .account-chip {
-    margin-left: auto;
-  }
   .participant-app > header {
     padding: 13px 16px;
   }
@@ -3067,4 +3276,42 @@ tbody tr:hover {
   font-size: 22px;
   color: var(--ink);
   margin-top: 4px;
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    padding-inline: 12px;
+    gap: 6px;
+  }
+  .app-header > .logo {
+    font-size: 23px;
+  }
+  .header-actions {
+    gap: 4px;
+  }
+  .language-trigger {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+  }
+  .language-trigger > svg {
+    display: none;
+  }
+  .upgrade-trigger {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+  }
+  .upgrade-trigger > span {
+    display: none;
+  }
+}
+@media (max-width: 360px) {
+  .app-header {
+    padding-inline: 8px;
+    gap: 4px;
+  }
+  .app-header > .logo {
+    font-size: 18px;
+  }
 }

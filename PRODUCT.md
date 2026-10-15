@@ -41,7 +41,11 @@ Sunum merkezli platform. Kullanıcının 13 Ekim 2026 konuşmasındaki kararlar�
 
 ## Accessibility & Inclusion
 
-Türkçe; görünür odak; klavye/dokunma; azaltılmış hareket; sürüklemeye alternatif taşıma düğmeleri. Katılımcı mobil, eğitmen masaüstü.
+Türkçe/İngilizce arayüz; görünür odak; klavye/dokunma; azaltılmış hareket; sürüklemeye alternatif taşıma düğmeleri. Katılımcı mobil, eğitmen masaüstü. Dil seçimi sağ üstte, tercih çerezle korunur; eğitim içerikleri çevrilmez.
+
+## Header & Account
+
+Sağ üst sıra: dil seçimi, mint Upgrade butonu, bildirim simgesi ve profil avatarı. Profil menüsü ad/e-posta, ücretsiz plan etiketi, Upgrade alanı, hesap ayarları, plan/bekleme listesi ve çıkış içerir. Var olmayan faturalama veya ekip yönetimi ekranları eklenmez. Upgrade bekleme listesi kaydını açar; kayıt hesaba bağlı ve SQLite'da kalıcıdır, tekrar gönderimde güncellenir. Bildirim listesi kullanıcıya ait tamamlanan eğitim raporlarından türetilir. Otomatik e-posta gönderimi henüz bağlı değildir.
 
 ## Project
 

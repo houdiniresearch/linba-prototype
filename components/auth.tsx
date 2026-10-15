@@ -1,4 +1,5 @@
 "use client";
+import { useLocale } from "./locale-provider";
 import { useState } from "react";
 import type { User } from "@/lib/types";
 import { Logo, Icon, ErrorNote, api } from "./ui";
@@ -10,6 +11,8 @@ export function Auth({
   onDone: (user: User) => void;
   participant?: boolean;
 }) {
+  const { t } = useLocale();
+
   const [register, setRegister] = useState(true),
     [role, setRole] = useState(participant ? "participant" : "teacher"),
     [error, setError] = useState(""),
@@ -49,36 +52,41 @@ export function Auth({
     <div className="auth-screen">
       <header>
         <Logo />
-        <span className="muted">Eğitimin her aşamasında yanında.</span>
+        <span className="muted">{t("Eğitimin her aşamasında yanında.")}</span>
       </header>
       <div className="auth-layout">
         <div className="auth-copy">
-          <span className="eyebrow">EĞİTMEN VE KATILIMCI ÇALIŞMA ALANI</span>
+          <span className="eyebrow">
+            {t("EĞİTMEN VE KATILIMCI ÇALIŞMA ALANI")}
+          </span>
           <h1>
-            Hazırla.
+            {t("Hazırla.")}
             <br />
-            Birlikte öğren.
+            {t("Birlikte öğren.")}
             <br />
-            <span>Öğrenmeyi sürdür.</span>
+            <span>{t("Öğrenmeyi sürdür.")}</span>
           </h1>
           <p>
-            Sunumun, etkileşimli aktivitelerin ve dokümanına dayanan bir öğrenme
-            asistanın. Hepsi aynı eğitimde.
+            {t(
+              "Sunumun, etkileşimli aktivitelerin ve dokümanına dayanan bir öğrenme asistanın. Hepsi aynı eğitimde.",
+            )}
           </p>
           <div className="auth-preview">
             <Icon name="presentation" size={36} />
             <div>
-              <strong>Sunumdan eğitime</strong>
-              <span>Önce dokümanını yükle. Gerisi eğitiminde.</span>
+              <strong>{t("Sunumdan eğitime")}</strong>
+              <span>{t("Önce dokümanını yükle. Gerisi eğitiminde.")}</span>
             </div>
           </div>
         </div>
         <section className="auth-form">
-          <h2>{register ? "LİNBA’ya hoş geldin" : "Tekrar hoş geldin"}</h2>
+          <h2>
+            {register ? t("LİNBA’ya hoş geldin") : t("Tekrar hoş geldin")}
+          </h2>
           <p className="muted">
             {register
-              ? "Hesabını oluştur, çalışma alanına geç."
-              : "Eğitimlerine kaldığın yerden devam et."}
+              ? t("Hesabını oluştur, çalışma alanına geç.")
+              : t("Eğitimlerine kaldığın yerden devam et.")}
           </p>
           {register && (
             <div className="segmented">
@@ -89,7 +97,7 @@ export function Auth({
                   onClick={() => setRole(r)}
                 >
                   <Icon name={r === "teacher" ? "presentation" : "users"} />
-                  {r === "teacher" ? "Eğitmen" : "Katılımcı"}
+                  {r === "teacher" ? t("Eğitmen") : t("Katılımcı")}
                 </button>
               ))}
             </div>
@@ -97,33 +105,33 @@ export function Auth({
           <form onSubmit={submit}>
             {register && (
               <label>
-                Ad soyad
+                {t("Ad soyad")}
                 <input
                   name="name"
                   autoComplete="name"
-                  placeholder="Adın ve soyadın"
+                  placeholder={t("Adın ve soyadın")}
                   required
                   maxLength={80}
                 />
               </label>
             )}
             <label>
-              E-posta
+              {t("E-posta")}
               <input
                 name="email"
                 type="email"
                 autoComplete="email"
-                placeholder="sen@ornek.com"
+                placeholder={t("sen@ornek.com")}
                 required
               />
             </label>
             <label>
-              Şifre
+              {t("Şifre")}
               <input
                 name="password"
                 type="password"
                 autoComplete={register ? "new-password" : "current-password"}
-                placeholder="En az 8 karakter"
+                placeholder={t("En az 8 karakter")}
                 minLength={8}
                 maxLength={128}
                 required
@@ -131,27 +139,31 @@ export function Auth({
             </label>
             <ErrorNote message={error} />
             <button className="button primary full" disabled={busy}>
-              {busy ? "Biraz bekle…" : register ? "Hesap oluştur" : "Giriş yap"}
+              {busy
+                ? t("Biraz bekle…")
+                : register
+                  ? t("Hesap oluştur")
+                  : t("Giriş yap")}
               <Icon name="arrow" />
             </button>
           </form>
           <p className="auth-switch">
-            {register ? "Zaten hesabın var mı?" : "Henüz hesabın yok mu?"}{" "}
+            {register ? t("Zaten hesabın var mı?") : t("Henüz hesabın yok mu?")}{" "}
             <button onClick={() => setRegister(!register)}>
-              {register ? "Giriş yap" : "Hesap oluştur"}
+              {register ? t("Giriş yap") : t("Hesap oluştur")}
             </button>
           </p>
           {!participant && (
             <>
               <div className="or">
-                <span>veya</span>
+                <span>{t("veya")}</span>
               </div>
               <button className="button full" disabled={busy} onClick={demo}>
                 <Icon name="eye" />
-                Örnek eğitimle dene
+                {t("Örnek eğitimle dene")}
               </button>
               <p className="small muted center">
-                Sana özel bir deneme alanı açılır.
+                {t("Sana özel bir deneme alanı açılır.")}
               </p>
             </>
           )}

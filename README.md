@@ -5,6 +5,8 @@ Sunum merkezli Türkçe eğitim prototipi. Eğitmen sunumunu yükler, araya akti
 ## Çalışan akış
 
 - Ayrı eğitmen ve katılımcı hesapları; sunucuda oturumlar ve kalıcı SQLite kayıtları.
+- Sağ üstte dil seçimi, Upgrade, rapor bildirimleri ve profil menüsü. Upgrade hesaba bağlı kalıcı bekleme listesi formunu açar; ödeme akışı yoktur.
+- Türkçe/İngilizce arayüz; dil tercihi bir yıl geçerli `linba_locale` çereziyle korunur. Sunumlar, eğitim adları ve modelden gelen eğitim içerikleri özgün dilinde kalır.
 - PDF/PPTX yükleme: orijinal sayfalar görsel olarak korunur, metin yanıt kaynağı olarak çıkarılır. İlk sürümde sunum içeriği düzenlenmez.
 - Anket, açık uçlu soru ve senaryo aktiviteleri; AI ile hazırlama, slaytların arasına ekleme ve aktivite taşıma.
 - Eğitmenin serbest metinle tarif ettiği kitleye göre oluşturulan personalarla gerçek WebRTC sesli prova. Prova sonunda aynı oturumdan geri bildirim.
@@ -50,6 +52,7 @@ npm run build
 ```sh
 npm run test:integration
 npm run test:voice
+npm run test:header
 ```
 
 Entegrasyon testi için `tests/create_fixtures.py` önce çalıştırılır; yalnız test amaçlı PDF/PPTX dosyaları sistem geçici klasöründe üretilir. Testler bağımsız hesaplar oluşturur ve gerçek API kullanımına yol açar. Ses testi mikrofonu açmadan WebRTC, ses çıktısı ve geri bildirimi doğrular; gerçek mikrofon/hoparlör deneyimi ayrıca elle denenmelidir.

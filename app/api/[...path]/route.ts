@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { localAddresses, joinOrigin } from "@/lib/network";
 import { hasDuplicateOptions } from "@/lib/activities";
+import { joinWaitlist, waitlistEntry } from "@/lib/waitlist";
 import { get, all, put, DATA_DIR } from "@/lib/db";
 import {
   AppError,
@@ -215,6 +216,15 @@ async function handle(request: Request, context: Context): Promise<Response> {
       );
     }
     const user = await requireUser();
+    if (parts[0] === "waitlist" && parts.length === 1) {
+      if (method === "GET")
+        return json({ entry: waitlistEntry(user.id) || null });
+      if (method === "POST") {
+        const body = await request.json();
+        return json({ entry: joinWaitlist(user.id, body.email, body.locale) });
+      }
+      throw new AppError("İşlem desteklenmiyor.", 405);
+    }
     if (parts[0] === "status" && method === "GET") {
       const addresses = localAddresses();
       return json({

@@ -1,4 +1,5 @@
 "use client";
+import { useLocale } from "./locale-provider";
 import { useEffect, useRef, useState } from "react";
 import type { CourseState, User } from "@/lib/types";
 import { Auth } from "./auth";
@@ -6,6 +7,8 @@ import { JoinForm } from "./dashboard";
 import { api, useResource, Icon, Logo, Loading, ErrorNote, Empty } from "./ui";
 
 export function Participant() {
+  const { t } = useLocale();
+
   const auth = useResource<{ user?: User }>("auth");
   const [id, setId] = useState(""),
     [code, setCode] = useState("");
@@ -47,7 +50,7 @@ export function Participant() {
         {!auth.error && <Loading />}
         {auth.error && (
           <button className="button" onClick={() => void auth.refresh()}>
-            Yeniden dene
+            {t("Yeniden dene")}
           </button>
         )}
       </>
@@ -65,13 +68,14 @@ export function Participant() {
     return (
       <div className="participant-gate">
         <Logo />
-        <h1>Katılımcı hesabıyla giriş yap</h1>
+        <h1>{t("Katılımcı hesabıyla giriş yap")}</h1>
         <p className="muted">
-          Bu tarayıcıda eğitmen hesabın açık. Katılımcı görünümünü farklı bir
-          tarayıcıda veya telefonda açabilirsin.
+          {t(
+            "Bu tarayıcıda eğitmen hesabın açık. Katılımcı görünümünü farklı bir tarayıcıda veya telefonda açabilirsin.",
+          )}
         </p>
         <a className="button" href="/">
-          Eğitmen alanına dön
+          {t("Eğitmen alanına dön")}
         </a>
         <button
           className="text-button"
@@ -80,18 +84,19 @@ export function Participant() {
             await auth.refresh();
           }}
         >
-          Bu hesaptan çıkış yap
+          {t("Bu hesaptan çıkış yap")}
         </button>
       </div>
     );
-  if (!id && joining) return <Loading label="Eğitimine katılıyorsun…" />;
+  if (!id && joining) return <Loading label={t("Eğitimine katılıyorsun…")} />;
   if (!id)
     return (
       <div className="participant-gate">
         <Logo />
-        <h1>Eğitime katıl</h1>
+        <h1>{t("Eğitime katıl")}</h1>
         <p className="muted">
-          Merhaba {auth.data.user.name}. Eğitmeninin paylaştığı kodu yaz.
+          {t("Merhaba")} {auth.data.user.name}
+          {t(". Eğitmeninin paylaştığı kodu yaz.")}
         </p>
         <ErrorNote message={joinError} />
         <JoinForm
@@ -104,7 +109,7 @@ export function Participant() {
           }}
         />
         <a className="text-button" href="/">
-          Eğitimlerime dön
+          {t("Eğitimlerime dön")}
         </a>
       </div>
     );
@@ -131,6 +136,8 @@ function ParticipantCourse({
   user: User;
   onLeave: () => void;
 }) {
+  const { t } = useLocale();
+
   const { data, error, refresh } = useResource<CourseState>(
     `courses/${id}`,
     1600,
@@ -194,7 +201,7 @@ function ParticipantCourse({
         {!error && <Loading />}
         {error && (
           <button className="button" onClick={onLeave}>
-            Başka eğitime katıl
+            {t("Başka eğitime katıl")}
           </button>
         )}
       </div>
@@ -212,7 +219,7 @@ function ParticipantCourse({
       <header>
         <button
           className="icon-button"
-          aria-label="Eğitimden çık"
+          aria-label={t("Eğitimden çık")}
           onClick={onLeave}
         >
           <Icon name="back" />
@@ -227,12 +234,14 @@ function ParticipantCourse({
             {c.status === "live" ? (
               <>
                 <span className="live-dot" />
-                Canlı eğitim
+                {t("Canlı eğitim")}
               </>
             ) : ended ? (
-              `Eğitim tamamlandı · Asistan erişimi: ${remaining} gün`
+              t("Eğitim tamamlandı · Asistan erişimi: {days} gün", {
+                days: remaining,
+              })
             ) : (
-              "Eğitmenini bekliyorsun"
+              t("Eğitmenini bekliyorsun")
             )}
           </span>
         </div>
@@ -243,14 +252,14 @@ function ParticipantCourse({
           onClick={() => setTab("chat")}
         >
           <Icon name="chat" />
-          Sohbet
+          {t("Sohbet")}
         </button>
         <button
           className={tab === "activities" ? "active" : ""}
           onClick={() => setTab("activities")}
         >
           <Icon name="activity" />
-          Aktiviteler
+          {t("Aktiviteler")}
           {c.status === "live" && active?.kind === "activity" && <i />}
         </button>
       </nav>
@@ -261,15 +270,19 @@ function ParticipantCourse({
               <span className="assistant-avatar">
                 <Icon name="sparkle" />
               </span>
-              <h2>Sunumun içinden, soruna yanıt.</h2>
+              <h2>{t("Sunumun içinden, soruna yanıt.")}</h2>
               <p>
                 {chatOpen
-                  ? "Bu eğitimin dokümanına ilişkin sorularını sorabilirsin. Yanıtın ve sohbetin sana özel."
-                  : "Eğitmen eğitimi başlattığında burada soru sorabileceksin."}
+                  ? t(
+                      "Bu eğitimin dokümanına ilişkin sorularını sorabilirsin. Yanıtın ve sohbetin sana özel.",
+                    )
+                  : t(
+                      "Eğitmen eğitimi başlattığında burada soru sorabileceksin.",
+                    )}
               </p>
               {!c.autoAnswer && c.status === "live" && (
                 <span className="small">
-                  Bu eğitimde sorular doğrudan eğitmenine iletilir.
+                  {t("Bu eğitimde sorular doğrudan eğitmenine iletilir.")}
                 </span>
               )}
             </div>
@@ -294,16 +307,16 @@ function ParticipantCourse({
                       size={16}
                     />
                     {q.answer
-                      ? "LİNBA asistan"
+                      ? t("LİNBA asistan")
                       : q.status === "pending"
-                        ? "Yanıt hazırlanıyor"
-                        : "Eğitmenine iletildi"}
+                        ? t("Yanıt hazırlanıyor")
+                        : t("Eğitmenine iletildi")}
                   </span>
                   <p>
                     {q.answer ||
                       (q.status === "pending"
-                        ? "Dokümanda yanıtın aranıyor…"
-                        : "Sorun eğitmene iletildi.")}
+                        ? t("Dokümanda yanıtın aranıyor…")
+                        : t("Sorun eğitmene iletildi."))}
                   </p>
                   {q.answer && q.sources.length > 0 && (
                     <div className="chat-sources">
@@ -313,7 +326,7 @@ function ParticipantCourse({
                           onClick={() => setSource(source === n ? 0 : n)}
                         >
                           <Icon name="file" size={14} />
-                          Slayt {n}
+                          {t("Slayt")} {n}
                         </button>
                       ))}
                     </div>
@@ -321,7 +334,7 @@ function ParticipantCourse({
                   {q.addressed && (
                     <span className="small success-text">
                       <Icon name="check" size={14} />
-                      Eğitmenin bu soruyu ele aldı.
+                      {t("Eğitmenin bu soruyu ele aldı.")}
                     </span>
                   )}
                 </div>
@@ -332,7 +345,7 @@ function ParticipantCourse({
                 <button
                   className="icon-button"
                   onClick={() => setSource(0)}
-                  aria-label="Kaynağı kapat"
+                  aria-label={t("Kaynağı kapat")}
                 >
                   <Icon name="close" />
                 </button>
@@ -348,13 +361,13 @@ function ParticipantCourse({
             <ErrorNote message={notice || error} />
             <form onSubmit={ask}>
               <textarea
-                aria-label="Sorunu yaz"
+                aria-label={t("Sorunu yaz")}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder={
                   chatOpen
-                    ? "Eğitimle ilgili sorunu yaz…"
-                    : "Sohbet henüz açık değil"
+                    ? t("Eğitimle ilgili sorunu yaz…")
+                    : t("Sohbet henüz açık değil")
                 }
                 disabled={!chatOpen}
                 rows={1}
@@ -369,7 +382,7 @@ function ParticipantCourse({
               <button
                 className="send-button"
                 disabled={!chatOpen || busy || !message.trim()}
-                aria-label="Soruyu gönder"
+                aria-label={t("Soruyu gönder")}
               >
                 <Icon
                   name={busy ? "spinner" : "send"}
@@ -378,8 +391,9 @@ function ParticipantCourse({
               </button>
             </form>
             <small>
-              Yanıtlar dokümanla sınırlıdır. Kaynakta bulunamayan sorular
-              eğitmenine iletilir.
+              {t(
+                "Yanıtlar dokümanla sınırlıdır. Kaynakta bulunamayan sorular eğitmenine iletilir.",
+              )}
             </small>
           </div>
         </>
@@ -389,16 +403,16 @@ function ParticipantCourse({
             <>
               <span className="activity-label">
                 <Icon name="activity" />
-                AKTİF AKTİVİTE
+                {t("AKTİF AKTİVİTE")}
               </span>
               <h2>{active.activity.question}</h2>
               {submitted ? (
                 <div className="submitted">
                   <Icon name="success" size={40} />
-                  <h3>Yanıtın gönderildi.</h3>
+                  <h3>{t("Yanıtın gönderildi.")}</h3>
                   <p>{submitted.value}</p>
                   <span className="small muted">
-                    Eğitmenin bir sonraki aktivitesini bekleyebilirsin.
+                    {t("Eğitmenin bir sonraki aktivitesini bekleyebilirsin.")}
                   </span>
                 </div>
               ) : (
@@ -441,11 +455,11 @@ function ParticipantCourse({
                     </div>
                   ) : (
                     <label>
-                      Yanıtın
+                      {t("Yanıtın")}
                       <textarea
                         value={value}
                         onChange={(e) => setValue(e.target.value)}
-                        placeholder="Düşünceni kendi sözlerinle paylaş…"
+                        placeholder={t("Düşünceni kendi sözlerinle paylaş…")}
                         rows={6}
                         maxLength={3000}
                         required
@@ -457,7 +471,7 @@ function ParticipantCourse({
                     className="button primary full"
                     disabled={sending || !value.trim()}
                   >
-                    {sending ? "Gönderiliyor…" : "Yanıtımı gönder"}
+                    {sending ? t("Gönderiliyor…") : t("Yanıtımı gönder")}
                     <Icon name="send" />
                   </button>
                 </form>
@@ -467,17 +481,21 @@ function ParticipantCourse({
             <Empty
               icon="activity"
               title={
-                ended ? "Eğitim tamamlandı" : "Bir sonraki aktiviteyi bekle"
+                ended
+                  ? t("Eğitim tamamlandı")
+                  : t("Bir sonraki aktiviteyi bekle")
               }
               description={
                 ended
-                  ? "Paylaştığın yanıtlar eğitmenin raporuna eklendi."
-                  : "Eğitmenin aktivite slaytına geçtiğinde bu alan otomatik açılır."
+                  ? t("Paylaştığın yanıtlar eğitmenin raporuna eklendi.")
+                  : t(
+                      "Eğitmenin aktivite slaytına geçtiğinde bu alan otomatik açılır.",
+                    )
               }
             />
           )}
           <div className="previous-responses">
-            {data.responses.length > 0 && <h3>Gönderdiğin yanıtlar</h3>}
+            {data.responses.length > 0 && <h3>{t("Gönderdiğin yanıtlar")}</h3>}
             {data.responses.map((r) => (
               <div key={r.id}>
                 <span className="small muted">

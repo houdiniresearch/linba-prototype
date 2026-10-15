@@ -1,10 +1,17 @@
 "use client";
+import { useLocale } from "./locale-provider";
 import type { Course, Slide } from "@/lib/types";
 import { Icon } from "./ui";
-export function slideTitle(course: Course, slide: Slide) {
+import { translate, type Locale } from "@/lib/translations";
+export function slideTitle(
+  course: Course,
+  slide: Slide,
+  locale: Locale = "tr",
+) {
   return slide.kind === "document"
-    ? course.pages.find((p) => p.id === slide.pageId)?.title || "Sunum slaytı"
-    : slide.activity?.question || "Aktivite";
+    ? course.pages.find((p) => p.id === slide.pageId)?.title ||
+        translate("Sunum slaytı", locale)
+    : slide.activity?.question || translate("Aktivite", locale);
 }
 export function SlideView({
   course,
@@ -17,6 +24,8 @@ export function SlideView({
   displayKey?: string;
   small?: boolean;
 }) {
+  const { t } = useLocale();
+
   if (slide.kind === "document") {
     const page = course.pages.find((p) => p.id === slide.pageId);
     if (!page) return null;
@@ -34,11 +43,11 @@ export function SlideView({
       <div className="activity-slide-label">
         <Icon name={slide.activity?.type === "poll" ? "chart" : "chat"} />
         {slide.activity?.type === "poll"
-          ? "Anket"
+          ? t("Anket")
           : slide.activity?.type === "scenario"
-            ? "Senaryo"
-            : "Açık uçlu soru"}
-        {slide.activity?.aiGenerated && <span>· AI ile hazırlandı</span>}
+            ? t("Senaryo")
+            : t("Açık uçlu soru")}
+        {slide.activity?.aiGenerated && <span>{t("· AI ile hazırlandı")}</span>}
       </div>
       <h2>{slide.activity?.question}</h2>
       {slide.activity?.type === "poll" ? (
@@ -51,9 +60,9 @@ export function SlideView({
           ))}
         </div>
       ) : (
-        <p>Yanıtını telefonundaki Aktiviteler alanından paylaş.</p>
+        <p>{t("Yanıtını telefonundaki Aktiviteler alanından paylaş.")}</p>
       )}
-      <span className="slide-footer">linba · Birlikte öğrenelim</span>
+      <span className="slide-footer">{t("linba · Birlikte öğrenelim")}</span>
     </div>
   );
 }

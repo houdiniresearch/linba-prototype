@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
+import { LocaleProvider } from "@/components/locale-provider";
 import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
@@ -10,14 +12,18 @@ export const metadata: Metadata = {
   description: "Sunumunu yükle, eğitimini prova et ve birlikte öğren.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale =
+    (await cookies()).get("linba_locale")?.value === "en" ? "en" : "tr";
   return (
-    <html lang="tr">
-      <body>{children}</body>
+    <html lang={locale}>
+      <body>
+        <LocaleProvider initialLocale={locale}>{children}</LocaleProvider>
+      </body>
     </html>
   );
 }

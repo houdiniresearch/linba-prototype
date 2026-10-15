@@ -1,4 +1,5 @@
 "use client";
+import { useLocale } from "./locale-provider";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
@@ -29,6 +30,8 @@ function ActivityEditor({
   onClose: () => void;
   onSave: (value: Activity) => Promise<void>;
 }) {
+  const { t } = useLocale();
+
   const [type, setType] = useState<Activity["type"]>(
       slide?.activity?.type || "poll",
     ),
@@ -62,26 +65,31 @@ function ActivityEditor({
     <Modal
       open={open}
       onClose={onClose}
-      title={slide ? "Aktiviteyi düzenle" : "Aktivite ekle"}
-      description="Aktivite, seçili slayttan sonra sunum akışına yerleşir."
+      title={slide ? t("Aktiviteyi düzenle") : t("Aktivite ekle")}
+      description={t("Aktivite, seçili slayttan sonra sunum akışına yerleşir.")}
       wide
     >
       <div className="activity-dialog">
         <div>
           <div className="activity-type-list">
             {[
-              ["poll", "chart", "Anket", "Seçenekler arasından yanıt alın."],
+              [
+                "poll",
+                "chart",
+                t("Anket"),
+                t("Seçenekler arasından yanıt alın."),
+              ],
               [
                 "open",
                 "chat",
-                "Açık uçlu soru",
-                "Katılımcılar kendi sözleriyle yanıtlasın.",
+                t("Açık uçlu soru"),
+                t("Katılımcılar kendi sözleriyle yanıtlasın."),
               ],
               [
                 "scenario",
                 "activity",
-                "Senaryo",
-                "Bir durum üzerinden uygulama yapın.",
+                t("Senaryo"),
+                t("Bir durum üzerinden uygulama yapın."),
               ],
             ].map(([value, icon, title, desc]) => (
               <button
@@ -104,11 +112,12 @@ function ActivityEditor({
             onClick={generate}
           >
             <Icon name="sparkle" />
-            {busy ? "Hazırlanıyor…" : "Bu slayttan AI ile hazırla"}
+            {busy ? t("Hazırlanıyor…") : t("Bu slayttan AI ile hazırla")}
           </button>
           <p className="small muted">
-            Dokümanındaki içerikten hazırlanır; kaydetmeden önce gözden
-            geçirebilirsin.
+            {t(
+              "Dokümanındaki içerikten hazırlanır; kaydetmeden önce gözden geçirebilirsin.",
+            )}
           </p>
         </div>
         <form
@@ -138,11 +147,11 @@ function ActivityEditor({
           }}
         >
           <label>
-            Aktivite sorusu
+            {t("Aktivite sorusu")}
             <textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Katılımcılarına ne sormak istersin?"
+              placeholder={t("Katılımcılarına ne sormak istersin?")}
               rows={5}
               maxLength={3000}
               required
@@ -150,7 +159,7 @@ function ActivityEditor({
           </label>
           {type === "poll" && (
             <label>
-              Seçenekler
+              {t("Seçenekler")}
               <textarea
                 value={options}
                 onChange={(e) => setOptions(e.target.value)}
@@ -158,14 +167,14 @@ function ActivityEditor({
                 required
               />
               <small>
-                Her satıra bir seçenek yaz. En az 2, en fazla 6 seçenek.
+                {t("Her satıra bir seçenek yaz. En az 2, en fazla 6 seçenek.")}
               </small>
             </label>
           )}
           <ErrorNote message={error} />
           <button className="button primary full" disabled={busy}>
             <Icon name="check" />
-            {slide ? "Değişiklikleri kaydet" : "Akışa ekle"}
+            {slide ? t("Değişiklikleri kaydet") : t("Akışa ekle")}
           </button>
         </form>
       </div>
@@ -174,6 +183,8 @@ function ActivityEditor({
 }
 
 export function Editor({ id, live = false }: { id: string; live?: boolean }) {
+  const { t, locale } = useLocale();
+
   const router = useRouter(),
     resource = useResource<CourseState>(`courses/${id}`, live ? 1800 : 0),
     { data, error, setData, refresh } = resource;
@@ -211,10 +222,10 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
       <div className="editor-loading">
         <a className="text-button" href="/">
           <Icon name="back" />
-          Çalışma alanına dön
+          {t("Çalışma alanına dön")}
         </a>
         <ErrorNote message={error} />
-        {!error && <Loading label="Eğitimin açılıyor…" />}
+        {!error && <Loading label={t("Eğitimin açılıyor…")} />}
       </div>
     );
   const c = data.course,
@@ -261,7 +272,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
       <header className="editor-header">
         <button
           className="icon-button"
-          aria-label="Eğitimlerime dön"
+          aria-label={t("Eğitimlerime dön")}
           onClick={() => router.push("/?view=courses")}
         >
           <Icon name="back" />
@@ -270,10 +281,10 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           <h1>{c.name}</h1>
           <span className="small muted">
             {saving
-              ? "Kaydediliyor…"
+              ? t("Kaydediliyor…")
               : live
-                ? "Eğitmen kontrol ekranı"
-                : "Değişiklikler kaydedildi"}
+                ? t("Eğitmen kontrol ekranı")
+                : t("Değişiklikler kaydedildi")}
             <Icon name="check" size={14} />
           </span>
         </div>
@@ -283,7 +294,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
             <>
               <button className="button" onClick={join}>
                 <Icon name="users" />
-                Katılım
+                {t("Katılım")}
               </button>
               <a
                 className="button"
@@ -292,12 +303,12 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                 rel="noreferrer"
               >
                 <Icon name="monitor" />
-                Yansıt
+                {t("Yansıt")}
               </a>
               {c.status === "live" && (
                 <button className="button danger" onClick={() => setEnd(true)}>
                   <Icon name="stop" />
-                  Eğitimi bitir
+                  {t("Eğitimi bitir")}
                 </button>
               )}
             </>
@@ -308,14 +319,14 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                 onClick={() => router.push(`/egitim/${id}/onizleme`)}
               >
                 <Icon name="eye" />
-                Önizle
+                {t("Önizle")}
               </button>
               <button
                 className="button"
                 onClick={() => router.push(`/egitim/${id}/prova`)}
               >
                 <Icon name="mic" />
-                Prova yap
+                {t("Prova yap")}
               </button>
               {draft ? (
                 <button
@@ -324,7 +335,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                   onClick={start}
                 >
                   <Icon name="play" />
-                  Eğitimi başlat
+                  {t("Eğitimi başlat")}
                 </button>
               ) : c.status === "live" ? (
                 <button
@@ -332,7 +343,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                   onClick={() => router.push(`/egitim/${id}/canli`)}
                 >
                   <Icon name="play" />
-                  Canlı eğitime dön
+                  {t("Canlı eğitime dön")}
                 </button>
               ) : (
                 <button
@@ -340,7 +351,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                   onClick={() => router.push(`/?view=reports&report=${id}`)}
                 >
                   <Icon name="chart" />
-                  Raporu aç
+                  {t("Raporu aç")}
                 </button>
               )}
             </>
@@ -352,12 +363,14 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           {draft && !live ? (
             <button className="text-button" onClick={() => setAdd(true)}>
               <Icon name="plus" />
-              Aktivite ekle
+              {t("Aktivite ekle")}
             </button>
           ) : (
-            <strong>Sunum akışı</strong>
+            <strong>{t("Sunum akışı")}</strong>
           )}
-          <span>{c.slides.length} slayt</span>
+          <span>
+            {c.slides.length} {t("slayt")}
+          </span>
         </div>
         <ol className="thumbnails">
           {c.slides.map((s, i) => (
@@ -380,7 +393,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                 draggable={draft && !live && s.kind === "activity"}
                 onDragStart={() => setDrag(s.id)}
                 onDragEnd={() => setDrag("")}
-                aria-label={`Slayt ${i + 1}: ${slideTitle(c, s)}`}
+                aria-label={`${t("Slayt")} ${i + 1}: ${slideTitle(c, s, locale)}`}
                 aria-current={active.id === s.id ? "true" : undefined}
               >
                 <SlideView course={c} slide={s} small />
@@ -388,19 +401,20 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
               <div className="thumbnail-caption">
                 {s.kind === "document" ? (
                   <span>
-                    Sunum · {c.pages.find((p) => p.id === s.pageId)?.number}
+                    {t("Sunum ·")}{" "}
+                    {c.pages.find((p) => p.id === s.pageId)?.number}
                   </span>
                 ) : (
                   <>
                     <span>
                       <Icon name="activity" size={13} />
-                      Aktivite
+                      {t("Aktivite")}
                     </span>
                     {draft && !live && (
                       <div>
                         <button
                           className="mini-button"
-                          aria-label="Aktiviteyi yukarı taşı"
+                          aria-label={t("Aktiviteyi yukarı taşı")}
                           disabled={i === 0}
                           onClick={() => move(s.id, c.slides[i - 1].id)}
                         >
@@ -408,7 +422,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                         </button>
                         <button
                           className="mini-button"
-                          aria-label="Aktiviteyi aşağı taşı"
+                          aria-label={t("Aktiviteyi aşağı taşı")}
                           disabled={i === c.slides.length - 1}
                           onClick={async () => {
                             const ids = c.slides.map((s) => s.id);
@@ -432,7 +446,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           <button
             className="add-slide"
             onClick={() => setAdd(true)}
-            aria-label="Yeni aktivite ekle"
+            aria-label={t("Yeni aktivite ekle")}
           >
             <Icon name="plus" size={28} />
           </button>
@@ -447,20 +461,22 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
             {live ? (
               <>
                 <span className="live-dot" />
-                Katılımcılar bu slaytı görüyor
+                {t("Katılımcılar bu slaytı görüyor")}
               </>
             ) : (
-              "SUNUM ÇALIŞMA ALANI"
+              t("SUNUM ÇALIŞMA ALANI")
             )}
           </span>
           <span>
-            {live ? `${data.participants.length} katılımcı` : c.originalName}
+            {live
+              ? t("{count} katılımcı", { count: data.participants.length })
+              : c.originalName}
           </span>
         </div>
         <div className="presentation-canvas">
           <div className="canvas-join">
             <span>
-              Katılım kodu: <strong>{c.code}</strong>
+              {t("Katılım kodu:")} <strong>{c.code}</strong>
             </span>
             <Logo />
           </div>
@@ -470,7 +486,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           <button
             className="icon-button"
             disabled={index === 0}
-            aria-label="Önceki slayt"
+            aria-label={t("Önceki slayt")}
             onClick={() => select(c.slides[index - 1].id)}
           >
             <Icon name="left" />
@@ -481,7 +497,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           <button
             className="icon-button"
             disabled={index === c.slides.length - 1}
-            aria-label="Sonraki slayt"
+            aria-label={t("Sonraki slayt")}
             onClick={() => select(c.slides[index + 1].id)}
           >
             <Icon name="right" />
@@ -492,19 +508,19 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           <div className="live-status-strip">
             <span>
               <Icon name="chat" />
-              {data.questions.length} soru
+              {data.questions.length} {t("soru")}
             </span>
             <span>
               <Icon name="activity" />
               {
                 data.responses.filter((r) => r.slideId === active.id).length
               }{" "}
-              aktivite yanıtı
+              {t("aktivite yanıtı")}
             </span>
             <span>
               {c.autoAnswer
-                ? "AI otomatik yanıtlıyor"
-                : "Sorular sana iletiliyor"}
+                ? t("AI otomatik yanıtlıyor")
+                : t("Sorular sana iletiliyor")}
             </span>
           </div>
         ) : (
@@ -513,19 +529,23 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
             <div>
               <strong>
                 {active.kind === "document"
-                  ? "Orijinal sunum slaytı"
-                  : "Etkileşimli aktivite"}
+                  ? t("Orijinal sunum slaytı")
+                  : t("Etkileşimli aktivite")}
               </strong>
               <p>
                 {active.kind === "document"
-                  ? "Sunumun içeriği korunur. Bu slayttan sonra bir aktivite ekleyebilirsin."
-                  : "Canlı eğitimde bu slayta geldiğinde katılımcıların Aktiviteler alanı açılır."}
+                  ? t(
+                      "Sunumun içeriği korunur. Bu slayttan sonra bir aktivite ekleyebilirsin.",
+                    )
+                  : t(
+                      "Canlı eğitimde bu slayta geldiğinde katılımcıların Aktiviteler alanı açılır.",
+                    )}
               </p>
             </div>
             {draft && (
               <button className="button" onClick={() => setAdd(true)}>
                 <Icon name="plus" />
-                Aktivite ekle
+                {t("Aktivite ekle")}
               </button>
             )}
           </div>
@@ -544,19 +564,20 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
         ) : (
           <>
             <div className="tool-title">
-              <h2>{active.kind === "document" ? "Slayt" : "Aktivite"}</h2>
+              <h2>{active.kind === "document" ? t("Slayt") : t("Aktivite")}</h2>
               <Icon
                 name={active.kind === "document" ? "presentation" : "activity"}
               />
             </div>
             {active.kind === "document" ? (
               <>
-                <p className="muted small">{slideTitle(c, active)}</p>
+                <p className="muted small">{slideTitle(c, active, locale)}</p>
                 <div className="tool-block">
-                  <strong>Bu slaytı etkileşimli yap</strong>
+                  <strong>{t("Bu slaytı etkileşimli yap")}</strong>
                   <p>
-                    Katılımcıların fikrini al veya konuyu bir senaryo üzerinden
-                    tartış.
+                    {t(
+                      "Katılımcıların fikrini al veya konuyu bir senaryo üzerinden tartış.",
+                    )}
                   </p>
                   <button
                     className="button full"
@@ -564,18 +585,23 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                     onClick={() => setAdd(true)}
                   >
                     <Icon name="plus" />
-                    Aktivite ekle
+                    {t("Aktivite ekle")}
                   </button>
                 </div>
                 <div className="tool-block">
                   <Icon name="sparkle" />
-                  <strong>Dokümanla öğrenme</strong>
+                  <strong>{t("Dokümanla öğrenme")}</strong>
                   <p>
-                    Asistan soruları sunumunun içeriğine dayanarak yanıtlar ve
-                    kaynak slaytı gösterir.
+                    {t(
+                      "Asistan soruları sunumunun içeriğine dayanarak yanıtlar ve kaynak slaytı gösterir.",
+                    )}
                   </p>
                   {c.pages.every((p) => !p.text.trim()) && (
-                    <ErrorNote message="Bu dosyada okunabilir metin bulunamadı. Asistan soruları eğitmene iletecek." />
+                    <ErrorNote
+                      message={t(
+                        "Bu dosyada okunabilir metin bulunamadı. Asistan soruları eğitmene iletecek.",
+                      )}
+                    />
                   )}
                 </div>
               </>
@@ -583,10 +609,10 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
               <>
                 <p className="muted small">
                   {active.activity?.type === "poll"
-                    ? "Anket"
+                    ? t("Anket")
                     : active.activity?.type === "scenario"
-                      ? "Senaryo"
-                      : "Açık uçlu soru"}
+                      ? t("Senaryo")
+                      : t("Açık uçlu soru")}
                 </p>
                 <p className="activity-question-small">
                   {active.activity?.question}
@@ -594,7 +620,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                 {active.activity?.aiGenerated && (
                   <span className="ai-label">
                     <Icon name="sparkle" size={16} />
-                    AI ile hazırlandı
+                    {t("AI ile hazırlandı")}
                   </span>
                 )}
                 <button
@@ -602,7 +628,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                   disabled={!draft}
                   onClick={() => setEdit(true)}
                 >
-                  Aktiviteyi düzenle
+                  {t("Aktiviteyi düzenle")}
                 </button>
                 {draft && (
                   <button
@@ -617,33 +643,34 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                     }}
                   >
                     <Icon name="trash" />
-                    Aktiviteyi kaldır
+                    {t("Aktiviteyi kaldır")}
                   </button>
                 )}
                 <div className="tool-block">
-                  <strong>Akışta taşı</strong>
+                  <strong>{t("Akışta taşı")}</strong>
                   <p>
-                    Sol taraftaki aktiviteyi sürükleyebilir veya oklarla
-                    taşıyabilirsin.
+                    {t(
+                      "Sol taraftaki aktiviteyi sürükleyebilir veya oklarla taşıyabilirsin.",
+                    )}
                   </p>
                 </div>
               </>
             )}
             <button className="tool-settings" onClick={() => setSettings(true)}>
               <Icon name="settings" />
-              Eğitim ayarları
+              {t("Eğitim ayarları")}
               <Icon name="right" size={16} />
             </button>
             <div className="tool-meta">
               <span>
                 <Icon name="clock" size={16} />
-                {c.accessDays} gün asistan erişimi
+                {c.accessDays} {t("gün asistan erişimi")}
               </span>
               <span>
                 <Icon name="chat" size={16} />
                 {c.autoAnswer
-                  ? "Canlı AI yanıtı açık"
-                  : "Canlı AI yanıtı kapalı"}
+                  ? t("Canlı AI yanıtı açık")
+                  : t("Canlı AI yanıtı kapalı")}
               </span>
             </div>
           </>
@@ -692,14 +719,20 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
       <Modal
         open={end}
         onClose={() => !busy && setEnd(false)}
-        title="Eğitimi bitir"
-        description={`Canlı aktiviteler kapanır. Katılımcıların doküman asistanına erişimi ${c.accessDays} gün boyunca devam eder.`}
+        title={t("Eğitimi bitir")}
+        description={t(
+          "Canlı aktiviteler kapanır. Katılımcıların doküman asistanına erişimi {days} gün boyunca devam eder.",
+          { days: c.accessDays },
+        )}
       >
         <p>
-          Sorular ve aktivite sonuçları raporuna aktarılır. Bu eğitim oturumu
-          yeniden başlatılamaz.
+          {t(
+            "Sorular ve aktivite sonuçları raporuna aktarılır. Bu eğitim oturumu yeniden başlatılamaz.",
+          )}
         </p>
-        {busy && <Loading label="Eğitim kapatılıyor, rapor hazırlanıyor…" />}
+        {busy && (
+          <Loading label={t("Eğitim kapatılıyor, rapor hazırlanıyor…")} />
+        )}
         <ErrorNote message={notice} />
         <div className="modal-actions">
           <button
@@ -707,25 +740,27 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
             onClick={() => setEnd(false)}
             disabled={busy}
           >
-            Vazgeç
+            {t("Vazgeç")}
           </button>
           <button className="button danger" onClick={finish} disabled={busy}>
-            Eğitimi bitir
+            {t("Eğitimi bitir")}
           </button>
         </div>
       </Modal>
       <Modal
         open={showJoin}
         onClose={() => setShowJoin(false)}
-        title="Eğitimine katılım"
-        description="Katılımcılar kendi hesaplarıyla giriş yaparak bu kodla katılabilir."
+        title={t("Eğitimine katılım")}
+        description={t(
+          "Katılımcılar kendi hesaplarıyla giriş yaparak bu kodla katılabilir.",
+        )}
       >
         <div className="join-share">
           <QRCodeSVG value={`${joinBase}/katil?kod=${c.code}`} size={170} />
           <strong>{c.code}</strong>
           <span>{joinBase}/katil</span>
           <p className="small muted">
-            Telefon ve bilgisayar aynı Wi-Fi ağına bağlı olmalı.
+            {t("Telefon ve bilgisayar aynı Wi-Fi ağına bağlı olmalı.")}
           </p>
           <button
             className="button"
@@ -734,14 +769,16 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                 await navigator.clipboard.writeText(
                   `${joinBase}/katil?kod=${c.code}`,
                 );
-                setNotice("Katılım bağlantısı kopyalandı.");
+                setNotice(t("Katılım bağlantısı kopyalandı."));
               } catch {
-                setNotice("Bağlantıyı yukarıdaki adresten kopyalayabilirsin.");
+                setNotice(
+                  t("Bağlantıyı yukarıdaki adresten kopyalayabilirsin."),
+                );
               }
             }}
           >
             <Icon name="link" />
-            Bağlantıyı kopyala
+            {t("Bağlantıyı kopyala")}
           </button>
         </div>
       </Modal>
@@ -758,13 +795,15 @@ function Settings({
   onClose: () => void;
   onSave: (body: object) => Promise<void>;
 }) {
+  const { t } = useLocale();
+
   const [name, setName] = useState(c.name),
     [days, setDays] = useState(c.accessDays),
     [auto, setAuto] = useState(c.autoAnswer),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   return (
-    <Modal open onClose={onClose} title="Eğitim ayarları">
+    <Modal open onClose={onClose} title={t("Eğitim ayarları")}>
       <form
         onSubmit={async (e) => {
           e.preventDefault();
@@ -779,7 +818,7 @@ function Settings({
         }}
       >
         <label>
-          Eğitim adı
+          {t("Eğitim adı")}
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -788,7 +827,7 @@ function Settings({
           />
         </label>
         <label>
-          Eğitim sonrası asistan erişimi
+          {t("Eğitim sonrası asistan erişimi")}
           <div className="input-unit">
             <input
               type="number"
@@ -797,14 +836,14 @@ function Settings({
               value={days}
               onChange={(e) => setDays(Number(e.target.value))}
             />
-            <span>gün</span>
+            <span>{t("gün")}</span>
           </div>
-          <small>Eğitimin bitişinden itibaren hesaplanır.</small>
+          <small>{t("Eğitimin bitişinden itibaren hesaplanır.")}</small>
         </label>
         <label className="toggle-field">
           <span>
-            <strong>Canlı eğitimde otomatik AI yanıtı</strong>
-            <small>Kapalıyken sorular doğrudan sana iletilir.</small>
+            <strong>{t("Canlı eğitimde otomatik AI yanıtı")}</strong>
+            <small>{t("Kapalıyken sorular doğrudan sana iletilir.")}</small>
           </span>
           <input
             type="checkbox"
@@ -816,7 +855,7 @@ function Settings({
         <ErrorNote message={error} />
         <div className="modal-actions">
           <button className="button primary" disabled={busy}>
-            Kaydet
+            {t("Kaydet")}
           </button>
         </div>
       </form>
@@ -830,6 +869,8 @@ function QuestionPanel({
   data: CourseState;
   onAddress: (id: string, value: boolean) => Promise<void>;
 }) {
+  const { t } = useLocale();
+
   const [filter, setFilter] = useState("all");
   const questions = data.questions.filter(
       (q) =>
@@ -842,7 +883,7 @@ function QuestionPanel({
   return (
     <>
       <div className="tool-title">
-        <h2>Katılımcı soruları</h2>
+        <h2>{t("Katılımcı soruları")}</h2>
         <span className="count">{data.questions.length}</span>
       </div>
       <div className="segmented compact">
@@ -850,18 +891,19 @@ function QuestionPanel({
           className={filter === "all" ? "active" : ""}
           onClick={() => setFilter("all")}
         >
-          Tümü
+          {t("Tümü")}
         </button>
         <button
           className={filter === "teacher" ? "active" : ""}
           onClick={() => setFilter("teacher")}
         >
-          Sana iletilenler
+          {t("Sana iletilenler")}
         </button>
       </div>
       <p className="small muted">
-        Benzer sorular gruplanır. Yanıtlar yalnızca soruyu soran katılımcıya
-        görünür.
+        {t(
+          "Benzer sorular gruplanır. Yanıtlar yalnızca soruyu soran katılımcıya görünür.",
+        )}
       </p>
       {groups.length ? (
         groups.map(([id, title]) => (
@@ -884,7 +926,7 @@ function QuestionPanel({
                     <>
                       <p>{q.answer}</p>
                       <span className="source">
-                        AI · Slayt {q.sources.join(", ")}
+                        {t("AI · Slayt")} {q.sources.join(", ")}
                       </span>
                     </>
                   ) : (
@@ -895,9 +937,9 @@ function QuestionPanel({
                         }
                       >
                         {q.status === "pending"
-                          ? "AI yanıtı hazırlanıyor…"
+                          ? t("AI yanıtı hazırlanıyor…")
                           : q.status === "manual"
-                            ? "Doğrudan sana iletildi."
+                            ? t("Doğrudan sana iletildi.")
                             : q.reason}
                       </p>
                       {q.status !== "pending" && (
@@ -906,7 +948,7 @@ function QuestionPanel({
                           onClick={() => onAddress(q.id, !q.addressed)}
                         >
                           <Icon name="check" size={16} />
-                          {q.addressed ? "Ele alındı" : "Ele aldım"}
+                          {q.addressed ? t("Ele alındı") : t("Ele aldım")}
                         </button>
                       )}
                     </>
@@ -919,12 +961,18 @@ function QuestionPanel({
         <Empty
           icon="chat"
           title={
-            filter === "all" ? "Sorular burada toplanacak" : "Bekleyen soru yok"
+            filter === "all"
+              ? t("Sorular burada toplanacak")
+              : t("Bekleyen soru yok")
           }
           description={
             filter === "all"
-              ? "Katılımcılar sohbetten sorduğunda yanıtları bu alandan takip edebilirsin."
-              : "Yanıtlanamayan veya doğrudan sana yönlendirilen sorular burada görünür."
+              ? t(
+                  "Katılımcılar sohbetten sorduğunda yanıtları bu alandan takip edebilirsin.",
+                )
+              : t(
+                  "Yanıtlanamayan veya doğrudan sana yönlendirilen sorular burada görünür.",
+                )
           }
         />
       )}

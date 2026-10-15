@@ -1,4 +1,5 @@
 "use client";
+import { useLocale } from "./locale-provider";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -40,6 +41,10 @@ import {
   Monitor,
   List,
   SpinnerGap,
+  Bell,
+  Globe,
+  Star,
+  CaretDown,
 } from "@phosphor-icons/react";
 const icons = {
   home: House,
@@ -79,6 +84,10 @@ const icons = {
   monitor: Monitor,
   menu: List,
   spinner: SpinnerGap,
+  bell: Bell,
+  globe: Globe,
+  star: Star,
+  downCaret: CaretDown,
 };
 export function Icon({
   name,
@@ -189,6 +198,8 @@ export function Modal({
   children: React.ReactNode;
   wide?: boolean;
 }) {
+  const { t } = useLocale();
+
   return (
     <Dialog.Root open={open} onOpenChange={(v) => !v && onClose()}>
       <Dialog.Portal>
@@ -199,7 +210,7 @@ export function Modal({
         >
           <div className="modal-heading">
             <Dialog.Title>{title}</Dialog.Title>
-            <Dialog.Close className="icon-button" aria-label="Kapat">
+            <Dialog.Close className="icon-button" aria-label={t("Kapat")}>
               <Icon name="close" />
             </Dialog.Close>
           </div>
@@ -215,34 +226,38 @@ export function Modal({
   );
 }
 export function ErrorNote({ message }: { message?: string }) {
+  const { t } = useLocale();
   return message ? (
     <div className="error-note" role="alert">
       <Icon name="warning" />
-      {message}
+      {t(message)}
     </div>
   ) : null;
 }
 export function Loading({ label = "Yükleniyor…" }: { label?: string }) {
+  const { t } = useLocale();
   return (
     <div className="loading" role="status">
       <Icon name="spinner" className="spin" />
-      {label}
+      {t(label)}
     </div>
   );
 }
 export function Status({ status }: { status: string }) {
+  const { t } = useLocale();
+
   return (
     <span className={`status ${status}`}>
       {status === "live"
-        ? "Canlı"
+        ? t("Canlı")
         : status === "ended"
-          ? "Tamamlandı"
-          : "Hazırlanıyor"}
+          ? t("Tamamlandı")
+          : t("Hazırlanıyor")}
     </span>
   );
 }
-export function date(value: string) {
-  return new Intl.DateTimeFormat("tr-TR", {
+export function date(value: string, locale: "tr" | "en" = "tr") {
+  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "tr-TR", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -260,13 +275,14 @@ export function Empty({
   description: string;
   children?: React.ReactNode;
 }) {
+  const { t } = useLocale();
   return (
     <div className="empty">
       <span className="empty-icon">
         <Icon name={icon} size={30} />
       </span>
-      <h3>{title}</h3>
-      <p>{description}</p>
+      <h3>{t(title)}</h3>
+      <p>{t(description)}</p>
       {children}
     </div>
   );
