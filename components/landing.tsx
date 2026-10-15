@@ -274,6 +274,10 @@ function LandingLanguage() {
 
 const questions = [
   [
+    "LİNBA nedir?",
+    "LİNBA, sunumunu merkeze alan bir eğitim çalışma alanıdır. Aynı sunumla eğitimden önce sesli prova yapabilir, eğitim sırasında aktivitelerle katılım sağlayabilir ve sonrasında soruları, yanıtları ve sonuçları takip edebilirsin.",
+  ],
+  [
     "Hangi sunumları yükleyebilirim?",
     "PDF ve PPTX dosyalarını yükleyebilirsin. LİNBA, sunumunun özgün içeriğini korur; aktivitelerini slaytların arasına ekleyebilirsin. Dosya sınırı 30 MB ve 80 slayttır.",
   ],
@@ -282,12 +286,24 @@ const questions = [
     "Tarif ettiğin kitleye göre oluşturulan yapay zekâ katılımcılarıyla konuşursun. Eğitimini sesli anlatırken sorular ve yorumlarla katılırlar; prova sonunda geri bildirim alırsın.",
   ],
   [
+    "Sunumuma nasıl aktivite eklerim?",
+    "Eğitimin çalışma alanında bir slayt seçip arkasına anket, açık uçlu soru veya senaryo ekleyebilirsin. Sunumda o aktiviteye geldiğinde katılımcıların ekranında açılır. Slaytlarının özgün içeriği korunur; aktiviteleri akış içinde taşıyabilirsin.",
+  ],
+  [
     "Katılımcılar eğitime nasıl katılır?",
     "Katılımcılar hesaplarıyla, paylaştığın bağlantı veya eğitim kodunu kullanarak tarayıcıdan katılır. Sunumu, aktiviteleri ve kişisel sohbetlerini telefonlarından takip edebilirler.",
   ],
   [
     "Asistan her soruyu yanıtlar mı?",
     "Asistan yüklediğin dokümana dayanarak yanıt verir ve kaynak slaytları gösterir. Dokümanda yanıt bulunamayan sorular eğitmene iletilir. Canlı eğitimde otomatik yanıtı açıp kapatabilirsin.",
+  ],
+  [
+    "Eğitim bittikten sonra ne olur?",
+    "Katılımcılar, eğitim oluştururken belirlediğin süre boyunca sunuma bağlı asistana soru sormaya devam edebilir. Eğitim raporunda katılımcı sorularını ve aktivite sonuçlarını görür, rapor asistanıyla bu veriler hakkında konuşabilirsin. Eğitim sonrası gelen sorular da aynı rapora eklenir.",
+  ],
+  [
+    "Diğer araçlarla entegrasyonlar hazır mı?",
+    "PowerPoint, Microsoft Teams, Google Slides, Zoom ve ChatGPT entegrasyonları henüz kullanıma açık değil. İlgilendiğin aracın logosuna tıklayarak o entegrasyonun bekleme listesine katılabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.",
   ],
 ] as const;
 
@@ -447,15 +463,17 @@ export function Landing() {
           aria-labelledby="questions-title"
         >
           <div className="landing-faq-intro">
-            <h2 id="questions-title">{t("Başlamadan önce.")}</h2>
-            <p>{t("Sunum, prova ve katılım hakkında merak ettiklerin.")}</p>
+            <h2 id="questions-title">{t("Sık sorulan sorular.")}</h2>
+            <p>
+              {t("İlk sunumundan eğitim sonrasına, merak ettiklerin burada.")}
+            </p>
           </div>
           <div className="landing-faq-list">
-            {questions.map(([question, answer], index) => (
-              <details key={question} name="landing-faq" open={index === 0}>
+            {questions.map(([question, answer]) => (
+              <details key={question} name="landing-faq">
                 <summary>
                   {t(question)}
-                  <Icon name="plus" size={20} />
+                  <Icon name="plus" size={26} />
                 </summary>
                 <p>{t(answer)}</p>
               </details>

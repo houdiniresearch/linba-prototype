@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { integrations, type IntegrationId } from "@/lib/integrations";
 import { useLocale } from "./locale-provider";
-import { api, ErrorNote, Icon, Modal } from "./ui";
+import { api, ErrorNote, Icon, Logo, Modal } from "./ui";
 
 function IntegrationLogo({
   id,
@@ -97,15 +97,14 @@ export function LandingIntegrations() {
         className="waitlist-modal integration-waitlist-modal"
         title={
           <span className="waitlist-heading">
-            <span
-              className={`waitlist-emblem ${registered ? "is-registered" : ""}`}
-              aria-hidden="true"
-            >
-              {registered ? (
-                <Icon name="check" size={27} />
-              ) : (
-                selected && <IntegrationLogo id={selected.id} size={30} />
-              )}
+            <span className="integration-connection" aria-hidden="true">
+              <Logo />
+              <span className="integration-connection-link">
+                <Icon name={registered ? "check" : "link"} size={22} />
+              </span>
+              <span className="waitlist-emblem">
+                {selected && <IntegrationLogo id={selected.id} size={32} />}
+              </span>
             </span>
             <span>
               {t(

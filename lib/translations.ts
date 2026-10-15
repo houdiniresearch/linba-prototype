@@ -1,5 +1,22 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Sık sorulan sorular.": "Frequently asked questions.",
+  "İlk sunumundan eğitim sonrasına, merak ettiklerin burada.":
+    "From your first presentation to the follow-up, find your answers here.",
+  "LİNBA nedir?": "What is LİNBA?",
+  "LİNBA, sunumunu merkeze alan bir eğitim çalışma alanıdır. Aynı sunumla eğitimden önce sesli prova yapabilir, eğitim sırasında aktivitelerle katılım sağlayabilir ve sonrasında soruları, yanıtları ve sonuçları takip edebilirsin.":
+    "LİNBA is a training workspace built around your presentation. Use the same slides to rehearse out loud before training, engage participants with activities during it, and review questions, answers and results afterwards.",
+  "Sunumuma nasıl aktivite eklerim?":
+    "How do I add activities to my presentation?",
+  "Eğitimin çalışma alanında bir slayt seçip arkasına anket, açık uçlu soru veya senaryo ekleyebilirsin. Sunumda o aktiviteye geldiğinde katılımcıların ekranında açılır. Slaytlarının özgün içeriği korunur; aktiviteleri akış içinde taşıyabilirsin.":
+    "In your training workspace, select a slide and add a poll, open question or scenario after it. When you reach that activity in your presentation, it opens on participants’ screens. Your original slides stay intact, and you can move activities within the flow.",
+  "Eğitim bittikten sonra ne olur?": "What happens after training?",
+  "Katılımcılar, eğitim oluştururken belirlediğin süre boyunca sunuma bağlı asistana soru sormaya devam edebilir. Eğitim raporunda katılımcı sorularını ve aktivite sonuçlarını görür, rapor asistanıyla bu veriler hakkında konuşabilirsin. Eğitim sonrası gelen sorular da aynı rapora eklenir.":
+    "Participants can keep asking the presentation’s assistant questions for the period you choose when creating training. Review their questions and activity results in the training report, and discuss that data with the report assistant. Questions asked after training are added to the same report.",
+  "Diğer araçlarla entegrasyonlar hazır mı?":
+    "Are integrations with other tools available?",
+  "PowerPoint, Microsoft Teams, Google Slides, Zoom ve ChatGPT entegrasyonları henüz kullanıma açık değil. İlgilendiğin aracın logosuna tıklayarak o entegrasyonun bekleme listesine katılabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.":
+    "Integrations with PowerPoint, Microsoft Teams, Google Slides, Zoom and ChatGPT are not available yet. Click a tool’s logo to join its waitlist. You can already get started by uploading your PDF or PPTX presentation directly.",
   "Çalıştığın araçlarla birlikte.": "With the tools you already use.",
   "Planlanan entegrasyonlar için bekleme listesine katıl.":
     "Join the waitlist for our planned integrations.",

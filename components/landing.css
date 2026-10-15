@@ -479,54 +479,80 @@ html:has(.landing-page) {
   width: 30px;
   height: 30px;
 }
+.integration-connection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-block: 4px;
+}
+.integration-connection .logo {
+  width: 132px;
+  height: auto;
+}
+.integration-connection-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--lilac-ink);
+}
+.integration-connection-link::before,
+.integration-connection-link::after {
+  content: "";
+  width: 14px;
+  height: 1px;
+  background: var(--line);
+}
+.integration-connection .waitlist-emblem {
+  background: var(--workspace);
+}
 .landing-questions {
-  display: grid;
-  grid-template-columns: 1fr 1.55fr;
-  gap: 80px;
-  padding-block: 112px;
+  padding-block: 96px 112px;
   scroll-margin-top: 96px;
 }
 .landing-faq-intro {
-  padding-top: 20px;
+  margin-bottom: 48px;
 }
 .landing-questions h2 {
-  max-width: 15ch;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
+  font-size: 40px;
 }
 .landing-faq-intro > p {
-  max-width: 28ch;
+  max-width: 60ch;
   color: var(--muted);
-  font-size: 15px;
-  line-height: 1.8;
+  font-size: 16px;
+  line-height: 1.75;
   text-wrap: pretty;
   margin: 0;
 }
 .landing-faq-list details {
   border-bottom: 1px solid var(--line);
-  padding-inline: 24px;
 }
-.landing-faq-list details[open] {
-  background: var(--workspace);
-  border-color: transparent;
-  border-radius: 12px;
+.landing-faq-list details:first-child {
+  border-top: 1px solid var(--line);
 }
 .landing-faq-list summary {
   list-style: none;
   display: flex;
   justify-content: space-between;
-  gap: 22px;
+  gap: 32px;
   align-items: center;
-  padding: 24px 0;
+  padding: 32px 4px;
   cursor: pointer;
-  font-size: 15px;
-  font-weight: 500;
+  font-size: 23px;
+  font-weight: 600;
+  line-height: 1.45;
+  transition: color 160ms ease-out;
+}
+.landing-faq-list summary:hover,
+.landing-faq-list details[open] summary {
+  color: var(--accent);
 }
 .landing-faq-list summary::-webkit-details-marker {
   display: none;
 }
 .landing-faq-list summary svg {
   flex-shrink: 0;
-  color: var(--muted);
+  color: var(--ink);
   transition: transform 180ms ease-out;
 }
 .landing-faq-list details[open] summary svg {
@@ -536,9 +562,11 @@ html:has(.landing-page) {
 .landing-faq-list details p {
   color: var(--muted);
   line-height: 1.85;
-  font-size: 14px;
-  padding: 0 32px 26px 0;
-  margin: 0;
+  font-size: 16px;
+  max-width: 75ch;
+  padding: 0 4px 32px;
+  margin: -8px 0 0;
+  text-wrap: pretty;
 }
 .landing-closing {
   display: flex;
@@ -629,9 +657,6 @@ html:has(.landing-page) {
   .landing-stage-card {
     gap: 40px;
     padding-inline: 32px;
-  }
-  .landing-questions {
-    gap: 48px;
   }
 }
 @media (max-width: 900px) {
@@ -807,32 +832,50 @@ html:has(.landing-page) {
     width: 26px;
     height: 26px;
   }
+  .integration-connection {
+    gap: 10px;
+  }
+  .integration-connection .logo {
+    width: 110px;
+  }
+  .integration-connection-link {
+    gap: 5px;
+  }
+  .integration-connection-link::before,
+  .integration-connection-link::after {
+    width: 8px;
+  }
+  .integration-connection .waitlist-emblem {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+  }
   .landing-questions {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 18px;
-    padding-block: 64px;
+    padding-block: 56px 64px;
   }
   .landing-faq-intro {
-    padding-top: 0;
+    margin-bottom: 28px;
   }
   .landing-questions h2 {
-    max-width: none;
+    font-size: 30px;
     margin: 0 0 14px;
   }
   .landing-faq-intro > p {
-    max-width: none;
     font-size: 14px;
-  }
-  .landing-faq-list details {
-    padding-inline: 16px;
   }
   .landing-faq-list summary {
-    font-size: 14px;
-    padding-block: 20px;
+    font-size: 18px;
+    padding-block: 24px;
+    gap: 20px;
+  }
+  .landing-faq-list summary svg {
+    width: 22px;
+    height: 22px;
   }
   .landing-faq-list details p {
     font-size: 14px;
-    padding-right: 0;
+    padding-bottom: 24px;
+    margin-top: -4px;
   }
   .landing-closing {
     flex-direction: column;
