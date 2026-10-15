@@ -15,7 +15,8 @@ import { Icon, Logo } from "./ui";
 import { useLocale } from "./locale-provider";
 import {
   LandingIntegrations,
-  LandingWaitlistMenu,
+  LandingIntegrationMenu,
+  LandingWaitlistButton,
   LandingWaitlistProvider,
 } from "./landing-integrations";
 
@@ -307,7 +308,7 @@ const questions = [
   ],
   [
     "Diğer araçlarla entegrasyonlar hazır mı?",
-    "PowerPoint, Microsoft Teams, Google Slides, Zoom ve ChatGPT entegrasyonları henüz kullanıma açık değil. İlgilendiğin aracın logosuna tıklayarak o entegrasyonun bekleme listesine katılabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.",
+    "PowerPoint, Microsoft Teams, Google Slides, Zoom ve ChatGPT entegrasyonları henüz kullanıma açık değil. Genel bekleme listesine katılarak LİNBA’daki yeniliklerden haberdar olabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.",
   ],
 ] as const;
 
@@ -370,7 +371,8 @@ function LandingContent() {
           <nav className="landing-nav" aria-label={t("Ana gezinme")}>
             <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
             <a href="#sorular">{t("Sık sorulanlar")}</a>
-            <LandingWaitlistMenu />
+            <LandingIntegrationMenu />
+            <LandingWaitlistButton />
           </nav>
           <div className="landing-header-actions">
             <LandingLanguage />
@@ -408,7 +410,8 @@ function LandingContent() {
           >
             <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
             <a href="#sorular">{t("Sık sorulanlar")}</a>
-            <LandingWaitlistMenu />
+            <LandingIntegrationMenu />
+            <LandingWaitlistButton />
           </nav>
         </header>
       </div>
@@ -517,7 +520,8 @@ function LandingContent() {
         </div>
         <nav className="landing-footer-links" aria-label={t("Alt gezinme")}>
           <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
-          <LandingWaitlistMenu />
+          <LandingIntegrationMenu />
+          <LandingWaitlistButton />
           <Link href="/giris">{t("Giriş yap")}</Link>
         </nav>
         <span>© {new Date().getFullYear()} LİNBA</span>

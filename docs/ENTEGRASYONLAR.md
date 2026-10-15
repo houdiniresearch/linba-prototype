@@ -1,11 +1,13 @@
 # Planlanan entegrasyonlar
 
-Tanıtımda kart akışının altında PowerPoint, Microsoft Teams, Google Slides, Zoom ve ChatGPT sıralanır. Bunlar henüz bağlantı kuran entegrasyonlar değildir. Bölüm açıklaması ve açılan form bu durumu açıkça belirtir. Her düğme ilgili araca özel bekleme listesi açar; hesap zorunlu değildir.
+Tanıtımda kart akışının altında PowerPoint, Microsoft Teams, Google Slides, Zoom ve ChatGPT sıralanır. Bunlar henüz bağlantı kuran entegrasyonlar değildir. Üst/alt gezinmede ve mobil menüde ayrı “Entegrasyonlar” düğmesi araç listesini altında açar. Yanındaki “Bekleme listesine katıl” düğmesi doğrudan genel kayıt penceresini açar; sayfa kaydırılmaz.
 
-`POST /api/integration-waitlist`, katalogdaki entegrasyon kimliğini, e-posta adresini ve TR/EN tercihini alır. Kayıtlar yerel SQLite içinde `integrationWaitlist` türünde saklanır. Aynı e-posta/entegrasyon çifti tek kayıttır; e-posta normalize edilir, tekrar gönderimde oluşturma tarihi korunur. Yanıt yalnız `{ ok: true }` döner; herkese açık listeleme yoktur. Mevcut hesaba bağlı plan bekleme listesi aynı şekilde çalışmaya devam eder. Otomatik e-posta gönderimi bu değişikliğin parçası değildir.
+Bekleme listesi LİNBA geneli içindir. Menüden veya logo sırasından gelen ziyaretçi de aynı genel forma kaydolur; seçilen araç yalnız pencerenin görsel bağlamıdır, kayda eklenmez. Doğrudan açılan genel formda yalnız ortalanmış LİNBA logosu vardır.
 
-Formda yerel e-posta doğrulaması, gerçek kayıt sırasında yüklenme simgesi, hata ve başarı durumları vardır. Pencere kapanınca klavye odağı tıklanan entegrasyon düğmesine döner. Mobilde logolar sarılır, form ekrana sığar. Dil ve tema ortak tokenlarla çalışır.
+`POST /api/public-waitlist`, e-posta adresini ve TR/EN tercihini alır. Kayıtlar yerel SQLite içinde `publicWaitlist` türünde saklanır. Aynı normalize e-posta tek kayıttır; tekrar gönderimde oluşturma tarihi korunur. Yanıt yalnız `{ ok: true }` döner; herkese açık listeleme yoktur. Eski `integration-waitlist` API adresi de aynı genel kayda yönlenir; araç alanı saklanmaz. Önceden oluşturulan entegrasyon kayıtları silinmez. Hesaba bağlı plan bekleme listesi mevcut akışında kalır. Otomatik e-posta gönderimi henüz bağlı değildir.
+
+Formda e-posta doğrulaması, gerçek kayıt sırasında yüklenme simgesi, hata ve başarı durumları vardır. Pencere kapanınca odak tetikleyicisine, mobil menüden açıldıysa ana menü düğmesine döner. Dil, tema ve dar ekran desteklenir. Açılır menüde yön tuşları, Home/End, Escape ve dışarı tıklama desteklenir.
 
 Simgeler yerel dosyalardır. PowerPoint, Teams, Google Slides ve ChatGPT SVG kaynakları [Simple Icons 11.15.0](https://github.com/simple-icons/simple-icons/tree/11.15.0/icons); lisansı `public/integrations/LICENSE.md` içinde korunur. Zoom simgesi [Zoom'un kendi sitesindeki simgeden](https://st1.zoom.us/zoom.ico) alınmıştır; dosyanın özgün biçimi PNG'dir.
 
-Doğrulama: `npm run test:integration-waitlist` anonim kayıt, normalizasyon, tekrar gönderim, entegrasyon ayrımı, geçersiz girdi, dış kaynaktan yazma ve listeleme yasağını kontrol eder. Mevcut header testleri de geçti. Tarayıcıda beş düğmenin kendi bağlamında form açması, kayıt başarısı, Türkçe/İngilizce, Escape/odak dönüşü ve 320 px mobil kontrol edildi. Test kayıtları temizlendi.
+Doğrulama: `npm run test:waitlist` anonim kayıt, normalizasyon, farklı araçlardan gelen tekrarların aynı genel kayda yazılması, geçersiz e-posta, dış kaynaktan yazma ve listeleme yasağını kontrol eder. Mevcut hesap bekleme listesi `tests/header.test.ts` ile doğrulanır.

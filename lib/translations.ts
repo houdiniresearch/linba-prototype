@@ -1,5 +1,15 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  Entegrasyonlar: "Integrations",
+  "{name} entegrasyonu": "{name} integration",
+  "Kullandığın araçlar için entegrasyonlar yolda.":
+    "Integrations with the tools you use are on the way.",
+  "LİNBA bekleme listesine kaydın alındı.": "You’re on the LİNBA waitlist.",
+  "LİNBA’daki yeniliklerden ve kullanıma açılıştan haberdar olmak için e-postanı bırak.":
+    "Leave your email for LİNBA updates and launch news.",
+  "Yalnızca LİNBA ile ilgili haberler için.": "Only for LİNBA updates.",
+  "PowerPoint, Microsoft Teams, Google Slides, Zoom ve ChatGPT entegrasyonları henüz kullanıma açık değil. Genel bekleme listesine katılarak LİNBA’daki yeniliklerden haberdar olabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.":
+    "Integrations with PowerPoint, Microsoft Teams, Google Slides, Zoom and ChatGPT are not available yet. Join the general waitlist for LİNBA updates. You can already get started by uploading your PDF or PPTX presentation directly.",
   "Planlanan entegrasyonlar": "Planned integrations",
   "Sık sorulan sorular.": "Frequently asked questions.",
   "İlk sunumundan eğitim sonrasına, merak ettiklerin burada.":

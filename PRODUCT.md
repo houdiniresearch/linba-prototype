@@ -65,6 +65,6 @@ Sayfa ve veri bekleme durumlarında gerçek ekranın düzenini izleyen iskeletle
 
 ## Tanıtım sayfası
 
-Eğitim akışının altında PowerPoint, Microsoft Teams, Google Slides, Zoom ve ChatGPT planlanan entegrasyonlar olarak sunulur. Her biri hesabı olmayan ziyaretçinin de e-posta bırakabildiği araca özel bekleme listesini açar. Gerçek entegrasyon bağlantısı kurulmaz; kayıtlar yerel SQLite'da e-posta/araç çifti başına tekil saklanır.
+Eğitim akışının altında PowerPoint, Microsoft Teams, Google Slides, Zoom ve ChatGPT planlanan entegrasyonlar olarak sunulur. Entegrasyonlar ayrı açılır menüde listelenir. Bekleme listesi düğmesi doğrudan genel LİNBA kayıt penceresini açar; hesap gerekmez ve kayıtlar entegrasyona göre ayrılmaz. Entegrasyonlardan gelen kayıtlar da aynı genel listeye yazılır. Gerçek entegrasyon bağlantısı kurulmaz; yerel SQLite içinde e-posta başına tek kayıt saklanır.
 
 Oturum açmamış kullanıcı `/` adresinde izometrik görsellerle ürün akışını anlatan landing page görür; oturum açmış kullanıcı aynı adreste çalışma alanına girer. `/kesfet` tanıtımın her zaman erişilebilir önizlemesidir. Giriş `/giris`, kayıt `/giris?mod=kayit` adresindedir; var olan hesabın oturumu varsa bu adresler çalışma alanına döner. Katılımcı bağlantısı `/katil` olarak korunur. Görünüm ve TR/EN dil seçimi ortak tercihlerle çalışır.

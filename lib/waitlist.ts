@@ -1,7 +1,6 @@
 import { AppError } from "./auth";
 import { get, put } from "./db";
 import { createHash } from "node:crypto";
-import { isIntegrationId, type IntegrationId } from "./integrations";
 
 export type WaitlistEntry = {
   id: string;
@@ -10,17 +9,7 @@ export type WaitlistEntry = {
   createdAt: string;
   updatedAt: string;
 };
-export type IntegrationWaitlistEntry = WaitlistEntry & {
-  integration: IntegrationId;
-};
-
-export function joinIntegrationWaitlist(
-  integration: unknown,
-  value: unknown,
-  locale: unknown,
-) {
-  if (!isIntegrationId(integration))
-    throw new AppError("Geçerli bir entegrasyon seç.");
+export function joinPublicWaitlist(value: unknown, locale: unknown) {
   if (
     typeof value !== "string" ||
     value.length > 254 ||
@@ -28,19 +17,16 @@ export function joinIntegrationWaitlist(
   )
     throw new AppError("Geçerli bir e-posta adresi yaz.");
   const email = value.trim().toLowerCase();
-  const id = createHash("sha256")
-    .update(`${integration}:${email}`)
-    .digest("hex");
-  const previous = get<IntegrationWaitlistEntry>("integrationWaitlist", id);
+  const id = createHash("sha256").update(email).digest("hex");
+  const previous = get<WaitlistEntry>("publicWaitlist", id);
   const now = new Date().toISOString();
-  return put("integrationWaitlist", {
+  return put("publicWaitlist", {
     id,
-    integration,
     email,
     locale: locale === "en" ? "en" : "tr",
     createdAt: previous?.createdAt || now,
     updatedAt: now,
-  } satisfies IntegrationWaitlistEntry);
+  } satisfies WaitlistEntry);
 }
 export function waitlistEntry(userId: string) {
   return get<WaitlistEntry>("waitlist", userId);

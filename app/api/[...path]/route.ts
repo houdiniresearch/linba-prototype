@@ -4,7 +4,7 @@ import path from "node:path";
 import { localAddresses, joinOrigin } from "@/lib/network";
 import { hasDuplicateOptions } from "@/lib/activities";
 import {
-  joinIntegrationWaitlist,
+  joinPublicWaitlist,
   joinWaitlist,
   waitlistEntry,
 } from "@/lib/waitlist";
@@ -220,10 +220,13 @@ async function handle(request: Request, context: Context): Promise<Response> {
         },
       );
     }
-    if (parts[0] === "integration-waitlist" && parts.length === 1) {
+    if (
+      ["public-waitlist", "integration-waitlist"].includes(parts[0]) &&
+      parts.length === 1
+    ) {
       if (method !== "POST") throw new AppError("İşlem desteklenmiyor.", 405);
       const body = await request.json();
-      joinIntegrationWaitlist(body.integration, body.email, body.locale);
+      joinPublicWaitlist(body.email, body.locale);
       return json({ ok: true });
     }
     const user = await requireUser();

@@ -37,7 +37,7 @@ function IntegrationLogo({
 
 type Integration = (typeof integrations)[number];
 const WaitlistContext = createContext<
-  ((item: Integration, trigger: HTMLButtonElement) => void) | null
+  ((item: Integration | null, trigger: HTMLButtonElement) => void) | null
 >(null);
 function useWaitlist() {
   const open = useContext(WaitlistContext);
@@ -50,15 +50,17 @@ export function LandingWaitlistProvider({ children }: { children: ReactNode }) {
   const [selected, setSelected] = useState<
     (typeof integrations)[number] | null
   >(null);
+  const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [registered, setRegistered] = useState(false);
   const [error, setError] = useState("");
   const trigger = useRef<HTMLButtonElement>(null);
   const openWaitlist = useCallback(
-    (item: Integration, element: HTMLButtonElement) => {
+    (item: Integration | null, element: HTMLButtonElement) => {
       trigger.current = element;
       setSelected(item);
+      setOpen(true);
       setRegistered(false);
       setError("");
     },
@@ -67,12 +69,11 @@ export function LandingWaitlistProvider({ children }: { children: ReactNode }) {
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!selected || busy) return;
+    if (!open || busy) return;
     setBusy(true);
     setError("");
     try {
-      await api("integration-waitlist", {
-        integration: selected.id,
+      await api("public-waitlist", {
         email,
         locale,
       });
@@ -89,9 +90,9 @@ export function LandingWaitlistProvider({ children }: { children: ReactNode }) {
       {children}
       <Modal
         returnFocusRef={trigger}
-        open={!!selected}
+        open={open}
         onClose={() => {
-          if (!busy) setSelected(null);
+          if (!busy) setOpen(false);
         }}
         closeDisabled={busy}
         className="waitlist-modal integration-waitlist-modal"
@@ -99,12 +100,16 @@ export function LandingWaitlistProvider({ children }: { children: ReactNode }) {
           <span className="waitlist-heading">
             <span className="integration-connection" aria-hidden="true">
               <Logo />
-              <span className="integration-connection-link">
-                <Icon name={registered ? "check" : "link"} size={36} />
-              </span>
-              <span className="waitlist-emblem">
-                {selected && <IntegrationLogo id={selected.id} size={32} />}
-              </span>
+              {selected && (
+                <>
+                  <span className="integration-connection-link">
+                    <Icon name={registered ? "check" : "link"} size={36} />
+                  </span>
+                  <span className="waitlist-emblem">
+                    <IntegrationLogo id={selected.id} size={32} />
+                  </span>
+                </>
+              )}
             </span>
             <span>
               {t(
@@ -115,16 +120,11 @@ export function LandingWaitlistProvider({ children }: { children: ReactNode }) {
             </span>
           </span>
         }
-        description={
-          selected
-            ? t(
-                registered
-                  ? "{name} için talebin kaydedildi."
-                  : "{name} entegrasyonu henüz kullanıma açık değil. Hazır olduğunda haber almak için e-postanı bırak.",
-                { name: selected.name },
-              )
-            : undefined
-        }
+        description={t(
+          registered
+            ? "LİNBA bekleme listesine kaydın alındı."
+            : "LİNBA’daki yeniliklerden ve kullanıma açılıştan haberdar olmak için e-postanı bırak.",
+        )}
       >
         {registered ? (
           <div className="waitlist-confirmation" role="status">
@@ -136,7 +136,7 @@ export function LandingWaitlistProvider({ children }: { children: ReactNode }) {
               </div>
             </div>
             <div className="waitlist-confirmation-actions">
-              <button className="button mint" onClick={() => setSelected(null)}>
+              <button className="button mint" onClick={() => setOpen(false)}>
                 {t("Tamam")}
                 <Icon name="check" size={18} />
               </button>
@@ -166,7 +166,7 @@ export function LandingWaitlistProvider({ children }: { children: ReactNode }) {
               {!busy && <Icon name="arrow" size={19} />}
             </button>
             <p className="waitlist-footnote">
-              {t("Yalnızca seçtiğin entegrasyonla ilgili haberler için.")}
+              {t("Yalnızca LİNBA ile ilgili haberler için.")}
             </p>
           </form>
         )}
@@ -185,14 +185,14 @@ export function LandingIntegrations() {
       aria-labelledby="integrations-title"
     >
       <h2 id="integrations-title">{t("Çalıştığın araçlarla birlikte.")}</h2>
-      <p>{t("Planlanan entegrasyonlar için bekleme listesine katıl.")}</p>
+      <p>{t("Kullandığın araçlar için entegrasyonlar yolda.")}</p>
       <div className="landing-integration-list">
         {integrations.map((item) => (
           <button
             key={item.id}
             type="button"
             aria-haspopup="dialog"
-            aria-label={t("{name} için bekleme listesine katıl", {
+            aria-label={t("{name} entegrasyonu", {
               name: item.name,
             })}
             onClick={(event) => {
@@ -208,7 +208,7 @@ export function LandingIntegrations() {
   );
 }
 
-export function LandingWaitlistMenu() {
+export function LandingIntegrationMenu() {
   const { t } = useLocale();
   const openWaitlist = useWaitlist();
   const id = useId();
@@ -242,7 +242,7 @@ export function LandingWaitlistMenu() {
         aria-expanded={expanded}
         aria-controls={id}
       >
-        {t("Bekleme listesine katıl")}
+        {t("Entegrasyonlar")}
         <Icon name="downCaret" size={13} />
       </button>
       <div
@@ -309,5 +309,29 @@ export function LandingWaitlistMenu() {
         ))}
       </div>
     </div>
+  );
+}
+
+export function LandingWaitlistButton() {
+  const { t } = useLocale();
+  const openWaitlist = useWaitlist();
+  return (
+    <button
+      type="button"
+      className="landing-waitlist-trigger"
+      aria-haspopup="dialog"
+      onClick={(event) => {
+        const mobileNav = event.currentTarget.closest<HTMLElement>(
+          ".landing-mobile-nav",
+        );
+        mobileNav?.hidePopover();
+        const returnTo = mobileNav
+          ? document.querySelector<HTMLButtonElement>(".landing-menu-trigger")
+          : event.currentTarget;
+        if (returnTo) openWaitlist(null, returnTo);
+      }}
+    >
+      {t("Bekleme listesine katıl")}
+    </button>
   );
 }

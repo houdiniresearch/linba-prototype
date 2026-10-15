@@ -84,7 +84,7 @@ html:has(.landing-page) {
 .landing-header-actions {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 24px;
 }
 .landing-nav {
   margin-left: 0;
@@ -1044,7 +1044,10 @@ html:has(.landing-page) {
 .landing-mobile-nav {
   display: none;
 }
-@media (max-width: 767px) {
+@media (max-width: 1000px) {
+  .landing-nav {
+    display: none;
+  }
   .landing-menu-trigger {
     display: inline-flex;
     width: 32px;
