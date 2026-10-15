@@ -206,13 +206,13 @@ html:has(.landing-page) {
 }
 .landing-participant-strip {
   background: var(--lilac-soft);
-  padding-block: 8px;
+  padding-block: 4px;
 }
 .landing-join {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 20px;
+  justify-content: center;
+  gap: 16px;
   scroll-margin-top: 96px;
 }
 .landing-join > label {
@@ -225,25 +225,18 @@ html:has(.landing-page) {
 .landing-join-fields {
   display: flex;
   align-items: center;
-  width: 370px;
+  width: 300px;
   gap: 8px;
-  padding: 3px;
+  padding: 2px;
   background: var(--bg);
   border: 1px solid var(--line);
   border-radius: 9px;
 }
-.landing-join-prefix {
-  padding-left: 11px;
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 600;
-  white-space: nowrap;
-}
 .landing-join-fields input {
   min-width: 0;
   width: 100%;
-  min-height: 34px;
-  padding: 6px 0;
+  min-height: 30px;
+  padding: 5px 10px;
   font-size: 14px;
   background: transparent;
   border: 0;
@@ -252,9 +245,10 @@ html:has(.landing-page) {
 .landing-join-fields:focus-within {
   border-color: var(--lilac-ink);
 }
+.landing-join-fields input:focus,
 .landing-join-fields input:focus-visible {
-  outline: 2px solid var(--lilac-ink);
-  outline-offset: 0;
+  outline: none;
+  box-shadow: none;
 }
 .landing-join-fields input::placeholder {
   color: var(--muted);
@@ -274,8 +268,8 @@ html:has(.landing-page) {
 }
 .landing-page .landing-join-submit {
   flex-shrink: 0;
-  min-height: 34px;
-  padding: 7px 17px;
+  min-height: 30px;
+  padding: 5px 16px;
   background: var(--workspace);
   color: var(--ink);
   border: 0;
@@ -316,87 +310,78 @@ html:has(.landing-page) {
   color: var(--muted);
   font-size: 15px;
 }
-.landing-flow-frame {
-  background: var(--workspace);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  overflow: clip;
-}
-.landing-stage-tabs {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  padding: 10px;
-  gap: 8px;
-  border-bottom: 1px solid var(--line);
-}
-.landing-stage-tabs button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 19px 14px;
-  color: var(--muted);
-  border: 1px solid transparent;
-  border-radius: 10px;
-  text-align: left;
-  transition:
-    background 180ms ease-out,
-    color 180ms ease-out;
-}
-.landing-stage-tab-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
-}
-.landing-stage-tab-text {
-  min-width: 0;
-}
-.landing-stage-tab-text strong {
-  display: block;
-  color: var(--ink);
-  font-size: 15px;
-  line-height: 1.5;
-  font-weight: 500;
-}
-.landing-stage-tab-text small {
-  display: block;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.5;
-  margin-top: 3px;
-}
-.landing-stage-tabs button[aria-selected="true"] {
-  background: var(--bg);
-  border-color: var(--line);
-}
-.landing-stage-tabs button[aria-selected="true"] strong {
-  color: var(--accent);
-}
-.landing-stage-tabs button[aria-selected="true"] .landing-stage-tab-icon {
-  color: var(--accent);
-  background: var(--accent-soft);
-}
-.landing-stage-tabs button:hover:not([aria-selected="true"]) {
-  background: var(--bg);
+.landing-flow-visual {
+  display: none;
 }
 .landing-stage-panel {
   display: grid;
   grid-template-columns: 1.05fr 1fr;
   align-items: center;
   gap: 64px;
-  padding: 32px 64px 44px;
-  min-height: 456px;
-  animation: landing-stage-arrive 180ms ease-out;
+  padding: 48px 32px;
 }
-.landing-stage-panel[hidden] {
+.landing-stage-panel:not(:last-child) {
+  border-bottom: 1px solid var(--line);
+}
+.landing-flow-story[data-scroll-enhanced="true"] {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  align-items: start;
+  gap: 80px;
+}
+.landing-flow-story[data-scroll-enhanced="true"] .landing-flow-visual {
+  display: block;
+  position: sticky;
+  top: max(96px, calc(50svh - 230px));
+  padding: 24px 24px 20px;
+  background: var(--workspace);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.landing-flow-image-stack {
+  display: grid;
+}
+.landing-flow-image-stack img {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.landing-flow-image-stack img[data-active="true"] {
+  opacity: 1;
+}
+.landing-flow-position {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding-top: 14px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.landing-flow-dots {
+  display: flex;
+  gap: 7px;
+}
+.landing-flow-dots i {
+  width: 6px;
+  height: 6px;
+  background: var(--line);
+  border-radius: 50%;
+}
+.landing-flow-dots i[data-active="true"] {
+  background: var(--accent);
+}
+.landing-flow-story[data-scroll-enhanced="true"] .landing-stage-panel {
+  display: flex;
+  min-height: calc(100svh - 140px);
+  padding: 48px 0;
+}
+.landing-flow-story[data-scroll-enhanced="true"] .landing-stage-art {
   display: none;
-}
-.landing-stage-panel:focus-visible {
-  outline-offset: -4px;
 }
 .landing-stage-art img {
   width: 100%;
@@ -441,15 +426,14 @@ html:has(.landing-page) {
   color: var(--lilac-ink);
   margin-top: 1px;
 }
-@keyframes landing-stage-arrive {
-  from {
-    opacity: 0.55;
-    transform: translateY(5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.landing-stage-copy > .landing-stage-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 18px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 500;
 }
 .landing-questions {
   display: grid;
@@ -673,27 +657,30 @@ html:has(.landing-page) {
   .landing-join {
     flex-direction: column;
     align-items: stretch;
-    gap: 8px;
+    gap: 4px;
     scroll-margin-top: 92px;
   }
   .landing-join > label {
     font-size: 13px;
+    text-align: center;
   }
   .landing-join-fields {
     width: 100%;
+    max-width: 340px;
+    margin-inline: auto;
   }
   .landing-join-fields input {
     font-size: 16px;
-  }
-  .landing-page .landing-join-submit {
-    min-height: 34px;
-    padding: 7px 15px;
-    font-size: 13px;
   }
   .landing-page .button {
     min-height: 46px;
     padding: 12px 16px;
     gap: 14px;
+    font-size: 13px;
+  }
+  .landing-page .landing-join-submit {
+    min-height: 38px;
+    padding: 8px 15px;
     font-size: 13px;
   }
   .landing-page .landing-signup {
@@ -716,31 +703,6 @@ html:has(.landing-page) {
   }
   .landing-flow-intro p {
     font-size: 14px;
-  }
-  .landing-stage-tabs {
-    padding: 6px;
-    gap: 4px;
-  }
-  .landing-stage-tabs button {
-    flex-direction: column;
-    gap: 6px;
-    padding: 12px 4px;
-    text-align: center;
-  }
-  .landing-stage-tab-icon {
-    width: 36px;
-    height: 36px;
-  }
-  .landing-stage-tab-text strong {
-    font-size: 14px;
-    line-height: 1.35;
-    min-height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .landing-stage-tab-text small {
-    display: none;
   }
   .landing-stage-panel {
     grid-template-columns: minmax(0, 1fr);
