@@ -1,5 +1,13 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Kitlene göre sesli prova": "Voice rehearsal for your audience",
+  "Sunumla birlikte katılım": "Participation as you present",
+  "Kaynaklı yanıtlar ve rapor": "Sourced answers and reporting",
+  "Başlamadan önce.": "Before you begin.",
+  "Sunum, prova ve katılım hakkında merak ettiklerin.":
+    "What to know about slides, rehearsal and participation.",
+  "İlk adım, elindeki sunum.": "Start with the presentation you already have.",
+  "Alt gezinme": "Footer navigation",
   "Katlanmış bir sunum sayfasının oluşturduğu öğrenme alanında eğitmen ve üç katılımcı":
     "An instructor and three participants in a learning space formed by a folded presentation sheet",
   "LİNBA ana sayfa": "LİNBA home",

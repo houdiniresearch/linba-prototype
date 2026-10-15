@@ -11,6 +11,8 @@ import { useLocale } from "./locale-provider";
 const stages = [
   {
     label: "Eğitimden önce",
+    hint: "Kitlene göre sesli prova",
+    detailIcons: ["file", "mic"],
     title: "Kitleni tanı. Anlatımını dene.",
     text: "Sunumunu yükle, katılımcı kitleni tarif et. Farklı sorular soran yapay zekâ katılımcılarıyla sesli prova yap.",
     details: [
@@ -22,6 +24,8 @@ const stages = [
   },
   {
     label: "Eğitim sırasında",
+    hint: "Sunumla birlikte katılım",
+    detailIcons: ["activity", "chat"],
     title: "Sunumun ilerlesin. Herkes katılsın.",
     text: "Aktivitelerini slaytlarının arasına yerleştir. İlgili slayta geldiğinde katılımcılar telefonlarından yanıtlasın, sorularını kişisel sohbetlerinde sorsun.",
     details: [
@@ -33,6 +37,8 @@ const stages = [
   },
   {
     label: "Eğitimden sonra",
+    hint: "Kaynaklı yanıtlar ve rapor",
+    detailIcons: ["clock", "chart"],
     title: "Eğitim biter. Öğrenme devam eder.",
     text: "Katılımcıların, belirlediğin süre boyunca dokümana soru sormayı sürdürsün. Sen de soruları ve aktivite sonuçlarını raporundan incele.",
     details: [
@@ -174,80 +180,96 @@ export function Landing() {
             <h2 id="flow-title">{t("Bir sunum. Baştan sona bir eğitim.")}</h2>
             <p>{t("Hazırlık, katılım ve takip aynı akışta buluşur.")}</p>
           </div>
-          <div
-            className="landing-stage-tabs"
-            role="tablist"
-            aria-label={t("Eğitimin aşamaları")}
-          >
-            {stages.map((item, index) => (
-              <button
-                key={item.label}
-                id={`stage-tab-${index}`}
-                role="tab"
-                aria-selected={stage === index}
-                aria-controls={`stage-panel-${index}`}
-                tabIndex={stage === index ? 0 : -1}
-                onClick={() => setStage(index)}
-                onKeyDown={(event) => {
-                  let next = stage;
-                  if (event.key === "ArrowRight")
-                    next = (stage + 1) % stages.length;
-                  else if (event.key === "ArrowLeft")
-                    next = (stage + stages.length - 1) % stages.length;
-                  else if (event.key === "Home") next = 0;
-                  else if (event.key === "End") next = stages.length - 1;
-                  else return;
-                  event.preventDefault();
-                  setStage(next);
-                  document.getElementById(`stage-tab-${next}`)?.focus();
-                }}
+          <div className="landing-flow-frame">
+            <div
+              className="landing-stage-tabs"
+              role="tablist"
+              aria-label={t("Eğitimin aşamaları")}
+            >
+              {stages.map((item, index) => (
+                <button
+                  key={item.label}
+                  id={`stage-tab-${index}`}
+                  role="tab"
+                  aria-label={t(item.label)}
+                  aria-describedby={`stage-hint-${index}`}
+                  aria-selected={stage === index}
+                  aria-controls={`stage-panel-${index}`}
+                  tabIndex={stage === index ? 0 : -1}
+                  onClick={() => setStage(index)}
+                  onKeyDown={(event) => {
+                    let next = stage;
+                    if (event.key === "ArrowRight")
+                      next = (stage + 1) % stages.length;
+                    else if (event.key === "ArrowLeft")
+                      next = (stage + stages.length - 1) % stages.length;
+                    else if (event.key === "Home") next = 0;
+                    else if (event.key === "End") next = stages.length - 1;
+                    else return;
+                    event.preventDefault();
+                    setStage(next);
+                    document.getElementById(`stage-tab-${next}`)?.focus();
+                  }}
+                >
+                  <span className="landing-stage-tab-icon" aria-hidden="true">
+                    <Icon
+                      name={
+                        index === 0
+                          ? "mic"
+                          : index === 1
+                            ? "presentation"
+                            : "chat"
+                      }
+                      size={23}
+                    />
+                  </span>
+                  <span className="landing-stage-tab-text">
+                    <strong>{t(item.label)}</strong>
+                    <small id={`stage-hint-${index}`}>{t(item.hint)}</small>
+                  </span>
+                </button>
+              ))}
+            </div>
+            {stages.map((active, index) => (
+              <div
+                key={active.label}
+                className="landing-stage-panel"
+                role="tabpanel"
+                id={`stage-panel-${index}`}
+                aria-labelledby={`stage-tab-${index}`}
+                hidden={stage !== index}
+                tabIndex={0}
               >
-                <Icon
-                  name={
-                    index === 0 ? "mic" : index === 1 ? "presentation" : "chat"
-                  }
-                  size={19}
-                />
-                {t(item.label)}
-              </button>
+                <div className="landing-stage-art">
+                  <img
+                    key={active.image}
+                    src={active.image}
+                    alt={t(active.alt)}
+                    width={1448}
+                    height={1086}
+                    sizes="(max-width: 767px) 100vw, 550px"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <div className="landing-stage-copy">
+                  <h3>{t(active.title)}</h3>
+                  <p>{t(active.text)}</p>
+                  <ul>
+                    {active.details.map((detail, detailIndex) => (
+                      <li key={detail}>
+                        <Icon
+                          name={active.detailIcons[detailIndex]}
+                          size={21}
+                        />
+                        <span>{t(detail)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             ))}
           </div>
-          {stages.map((active, index) => (
-            <div
-              key={active.label}
-              className="landing-stage-panel"
-              role="tabpanel"
-              id={`stage-panel-${index}`}
-              aria-labelledby={`stage-tab-${index}`}
-              hidden={stage !== index}
-              tabIndex={0}
-            >
-              <div className="landing-stage-art">
-                <img
-                  key={active.image}
-                  src={active.image}
-                  alt={t(active.alt)}
-                  width={1448}
-                  height={1086}
-                  sizes="(max-width: 767px) 100vw, 550px"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-              <div className="landing-stage-copy">
-                <h3>{t(active.title)}</h3>
-                <p>{t(active.text)}</p>
-                <ul>
-                  {active.details.map((detail) => (
-                    <li key={detail}>
-                      <Icon name="check" size={17} />
-                      <span>{t(detail)}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          ))}
         </section>
 
         <section
@@ -255,10 +277,13 @@ export function Landing() {
           id="sorular"
           aria-labelledby="questions-title"
         >
-          <h2 id="questions-title">{t("Aklındaki birkaç soru.")}</h2>
+          <div className="landing-faq-intro">
+            <h2 id="questions-title">{t("Başlamadan önce.")}</h2>
+            <p>{t("Sunum, prova ve katılım hakkında merak ettiklerin.")}</p>
+          </div>
           <div className="landing-faq-list">
-            {questions.map(([question, answer]) => (
-              <details key={question}>
+            {questions.map(([question, answer], index) => (
+              <details key={question} name="landing-faq" open={index === 0}>
                 <summary>
                   {t(question)}
                   <Icon name="plus" size={20} />
@@ -273,9 +298,12 @@ export function Landing() {
           className="landing-closing landing-container"
           aria-labelledby="closing-title"
         >
-          <h2 id="closing-title">
-            {t("Bir sonraki eğitimini birlikte hazırlayalım.")}
-          </h2>
+          <div>
+            <h2 id="closing-title">
+              {t("Bir sonraki eğitimini birlikte hazırlayalım.")}
+            </h2>
+            <p>{t("İlk adım, elindeki sunum.")}</p>
+          </div>
           <Link href="/giris?mod=kayit" className="button primary">
             {t("Hesap oluştur")}
             <Icon name="arrow" size={19} />
@@ -283,14 +311,21 @@ export function Landing() {
         </section>
       </main>
       <footer className="landing-footer landing-container">
-        <Link
-          href="/"
-          className="landing-brand"
-          aria-label={t("LİNBA ana sayfa")}
-        >
-          <Logo />
-        </Link>
-        <p>{t("Sunumdan birlikte öğrenmeye.")}</p>
+        <div className="landing-footer-brand">
+          <Link
+            href="/"
+            className="landing-brand"
+            aria-label={t("LİNBA ana sayfa")}
+          >
+            <Logo />
+          </Link>
+          <p>{t("Sunumdan birlikte öğrenmeye.")}</p>
+        </div>
+        <nav className="landing-footer-links" aria-label={t("Alt gezinme")}>
+          <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
+          <Link href="/katil">{t("Eğitime katıl")}</Link>
+          <Link href="/giris">{t("Giriş yap")}</Link>
+        </nav>
         <span>© {new Date().getFullYear()} LİNBA</span>
       </footer>
     </div>
