@@ -4,11 +4,26 @@ Bu görseller yerleşik imagegen aracıyla üretildi. Şeffaflık korunarak WebP
 
 Uygulamada kullanılan dosyalar:
 
-- `public/landing/training.webp`
+- `public/landing/hero-learning-space.webp` (yalnız açılış bölümü)
+- `public/landing/training.webp` (Eğitim sırasında)
 - `public/landing/rehearsal.webp`
 - `public/landing/follow-up.webp`
 
-## landing-hero
+## hero-learning-space
+
+Yalnız açılış bölümünde kullanılır. İki kompozisyon arasından kavisli kâğıt zeminli sahne seçildi. Yerleşik imagegen ile yeni bir görsel olarak üretildi; aşağıdaki üç destek görseli korunur.
+
+```text
+Use case: stylized-concept. Asset type: premium isometric hero artwork for the LİNBA presentation and training platform.
+Primary idea: a single presentation unfolds into a shared learning space. Make a visually arresting but quiet physical paper sculpture, with a different composition from ordinary screen-and-phone SaaS isometrics.
+Scene and composition: a large upright white presentation folio with a delicately folded lilac rear panel forms an open, asymmetrical stage at rear right. Its face has one elegantly simple geometric teaching diagram in lilac with a small fuchsia circle, no text. A thin white paper ribbon unrolls diagonally forward-left from the base into a small open semicircular learning area. One adult instructor stands beside the folio and three seated adult learners face them in three different natural postures; one raises a hand, another holds a small notebook. The learner chairs are slim and meticulously designed. One small mint speech shape with a tiny fuchsia dot hovers close to the raised hand. Only this one communication cue, no clutter of cards or icons. Four people total.
+Visual quality: very sophisticated contemporary editorial 3D; architectural scale-model precision with tactile folded-paper and matte porcelain materials, fine crisp edges, restrained color, carefully balanced positive and negative space. Orthographic isometric view from above, beautiful long diagonal composition, refined natural studio shadows. Avoid shiny plastic, thick rounded toys, anonymous egg-head avatars and caricatures. Adult human proportions, subtle small face detail, charcoal/gray clothes with one lilac garment and one mint detail.
+Palette: matte whites and cool light gray dominate, charcoal human figures and fine edges, lilac #AE8CE0, small deep fuchsia #E80076 content detail, restrained mint #39DEC0. No blue, warm beige or orange. No luminous effects.
+Canvas: landscape 4:3 with all objects fully in frame, 80% image occupancy, ample transparent breathing room at every edge. Artwork will sit to the right of a real HTML headline at roughly 650px wide. It should read clearly and look deliberately authored, with a meaningful silhouette.
+True transparent alpha backdrop, clean antialiased cutout edges, soft neutral contact shadow only. Excellent over both pure white and dark charcoal. No glow, gradients as backdrop, white halos, opaque patches, bulky plinths, confetti, robot, brain, floating orbs, browser windows, monitor frames, phones, laptops, texts, letters, numbers or logos.
+```
+
+## training (önceki ana görsel)
 
 ```text
 Use case: stylized-concept. Asset type: transparent isometric hero illustration for LİNBA, a real presentation-centered training platform.

@@ -6,7 +6,7 @@
 - Tasarım varyansı 6, hareket yoğunluğu 3, içerik yoğunluğu 2. İki satırlı ana mesaj ve tek izometrik sahne; uzun özellik ızgaraları yok.
 - Aşamalar tek sekmeli alanda değişir. Yön tuşları, Home/End, doğru tab-panel bağlantıları ve azaltılmış hareket desteklenir.
 - Dört sık sorulan soru yerel details/summary ile açılır.
-- Üç şeffaf görsel yerleşik imagegen ile üretildi. Tam promptlar [LANDING_GORSELLERI.md](LANDING_GORSELLERI.md) içinde. PNG kaynakları Codex görsel dizininde korunur, uygulama `public/landing` altındaki WebP sürümlerini kullanır. Toplam sıkıştırılmış kaynak boyutu yaklaşık 395 KB.
+- Dört şeffaf görsel yerleşik imagegen ile üretildi. Açılış görseli yalnız üst bölümde kullanılır; kavisli kâğıt zeminin sunum sayfasına dönüştüğü bir öğrenme alanında eğitmen ve üç katılımcıyı gösterir. Tam promptlar [LANDING_GORSELLERI.md](LANDING_GORSELLERI.md) içinde. PNG kaynakları Codex görsel dizininde korunur, uygulama `public/landing` altındaki WebP sürümlerini kullanır. Toplam sıkıştırılmış kaynak boyutu yaklaşık 564 KB.
 
 ## Yollar ve oturum
 

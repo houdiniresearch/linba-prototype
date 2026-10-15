@@ -1,5 +1,7 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Katlanmış bir sunum sayfasının oluşturduğu öğrenme alanında eğitmen ve üç katılımcı":
+    "An instructor and three participants in a learning space formed by a folded presentation sheet",
   "LİNBA ana sayfa": "LİNBA home",
   "İçeriğe geç": "Skip to content",
   "Ana gezinme": "Main navigation",

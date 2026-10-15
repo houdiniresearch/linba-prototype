@@ -151,9 +151,9 @@ export function Landing() {
           </div>
           <div className="landing-hero-art">
             <Image
-              src="/landing/training.webp"
+              src="/landing/hero-learning-space.webp"
               alt={t(
-                "Bir sunumdan etkileşimli eğitime: slaytlar, katılımcı telefonu ve aktivite yanıtları",
+                "Katlanmış bir sunum sayfasının oluşturduğu öğrenme alanında eğitmen ve üç katılımcı",
               )}
               width={1448}
               height={1086}
