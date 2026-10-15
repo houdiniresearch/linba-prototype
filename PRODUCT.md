@@ -54,3 +54,7 @@ Mevcut Next.js/TypeScript yerel projeyi kullan. SQLite ve yerel dosyalar. GitHub
 ## Görünüm tercihi
 
 Ürün genelinde Açık / Koyu / Sistem temaları desteklenir. Sağ üst görünüm menüsü eğitmen paneli, eğitim düzenleme, sesli prova, katılımcı ve giriş ekranlarında erişilebilirdir. Tercih tarayıcıda bir yıl saklanır, yenilemede korunur ve tüm ekranlara uygulanır. Yüklenen sunum sayfalarının renkleri değişmez.
+
+## Rapor asistanı
+
+Raporlar ve rapor detayından yeni sekmede açılır. Solda yalnız eğitmene ait tamamlanmış eğitim raporları vardır; her rapor ayrı ve kalıcı bir sohbeti temsil eder. Sorular ve aktivite sonuçları üzerinden konuşulur, kaynak bölümüne geçilebilir. Mevcut tek model kullanılır; başarısız yanıtlar geçmişe kaydedilmez. Başka rapora geçmek o konuşmayı açar; raporlar arası kıyaslama yoktur. Detay ve testler docs/RAPOR_ASISTANI.md'dedir.

@@ -1,5 +1,6 @@
 "use client";
 import { ThemeMenu } from "./theme-menu";
+import { ReportAssistantLink } from "./report-assistant";
 import { useLocale } from "./locale-provider";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -162,6 +163,17 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
   const { t, locale } = useLocale();
 
   const { data, error } = useResource<CourseState>(`courses/${id}`, 5000);
+  const loaded = !!data;
+  useEffect(() => {
+    const section = location.hash.slice(1);
+    if (
+      loaded &&
+      ["report-overview", "report-questions", "report-activities"].includes(
+        section,
+      )
+    )
+      document.getElementById(section)?.scrollIntoView({ block: "start" });
+  }, [loaded, id]);
   if (!data)
     return (
       <>
@@ -188,9 +200,12 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
             {t("· Eğitim sonrası kayıtlarla güncellenir.")}
           </p>
         </div>
-        <Status status={c.status} />
+        <div className="report-title-actions">
+          <Status status={c.status} />
+          <ReportAssistantLink id={c.id} />
+        </div>
       </div>
-      <div className="metrics">
+      <div className="metrics" id="report-overview">
         {[
           [participants.length, t("Katılımcı")],
           [questions.length, t("Soru")],
@@ -228,7 +243,7 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
           </ul>
         ) : null}
       </section>
-      <section className="report-section">
+      <section className="report-section" id="report-questions">
         <h2>
           {t("Sorular ve yanıtlar")}{" "}
           <span className="count">{questions.length}</span>
@@ -273,7 +288,7 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
           <p className="muted">{t("Henüz soru yok.")}</p>
         )}
       </section>
-      <section className="report-section">
+      <section className="report-section" id="report-activities">
         <h2>
           {t("Aktivite sonuçları")}{" "}
           <span className="count">{responses.length}</span>
@@ -555,6 +570,7 @@ export function Dashboard() {
                     )}
                   </p>
                 </div>
+                <ReportAssistantLink />
               </div>
               {reports.length ? (
                 <div className="table-wrap">

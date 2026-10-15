@@ -60,3 +60,7 @@ Mevcut Phosphor ikon ailesi ve Radix. Aktif slayt fuşya odak çizgisi ve açık
 ## Tema
 
 Açık, Koyu ve Sistem seçenekleri ortak görünüm menüsündedir. İlk tercih Sistem'dir; kullanıcı seçimi bir yıl süreli linba_theme çerezinde saklanır ve sunucu ilk HTML'ye uygular. Sistem seçimi işletim sistemindeki değişiklikleri CSS color-scheme ile anında izler; tema için sayfa yüklenirken JavaScript beklenmez. Koyu temada nötr yüzeyler hafif lila tonlu kömür, ana metin kırık beyaz, yardımcı metin açık gridir. Fuşya ve mint dolgulu eylemler aynı kalır; etkileşimli metinler koyu zeminde daha açık ton kullanır. Sunum görselleri dönüştürülmez. Logonun yalnız yazısı koyu temada açılır; özgün sembol, fuşya nokta ve geometri korunur.
+
+## Rapor sohbet alanı
+
+AhaSlides rapor asistanı referansı: bağımsız yeni sekme, solda rapor listesi, üstte seçili eğitim, ortada sade konuşma ve altta sabit mesaj alanı. Boş durumda kısa karşılama ve dört gerçek soru önerisi. Yeni sohbet düğmesi yerine raporlar seçilir; seçili rapor açık pembe vurgulanır. Asistan yanıtları geniş metin alanında, eğitmen mesajları sağa hizalı nötr yüzeyde yer alır. Kaynaklar açık lila bağlantılardır. Tema tokenları ve özgün logo kullanılır. Mobilde sol liste menüye dönüşür.

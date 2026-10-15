@@ -1,5 +1,56 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Rapor asistanı": "Report assistant",
+  "Rapor asistanı eğitmen hesabında kullanılabilir.":
+    "The report assistant is available to instructor accounts.",
+  Raporların: "Your reports",
+  "Rapor listesini aç": "Open report list",
+  "Rapor listesini kapat": "Close report list",
+  "Raporlarda ara": "Search reports",
+  "Raporlarda ara…": "Search reports…",
+  "Rapor seç": "Choose a report",
+  "Aramana uygun rapor bulunamadı.": "No reports match your search.",
+  "Tamamlanan eğitimlerin burada listelenir.":
+    "Your completed training sessions appear here.",
+  "Raporlarını birlikte inceleyelim": "Let’s explore your reports",
+  "Rapor bulunamadı": "Report not found",
+  "Henüz tamamlanmış eğitimin yok": "No completed training yet",
+  "Soldaki listeden başka bir rapor seçebilirsin.":
+    "Choose another report from the list.",
+  "Eğitimini tamamladığında raporunu burada konuşabiliriz.":
+    "Once training is complete, we can discuss its report here.",
+  "Bu eğitimde neler öne çıktı?": "What stood out in this training?",
+  "En çok hangi konularda soru soruldu?":
+    "Which topics prompted the most questions?",
+  "Aktivite yanıtlarını özetle.": "Summarize the activity responses.",
+  "Bir sonraki eğitim için ne önerirsin?":
+    "What would you suggest for the next training?",
+  "Rapor sohbeti": "Report conversation",
+  Sen: "You",
+  Kaynaklar: "Sources",
+  "Rapor özeti": "Report overview",
+  "Raporun inceleniyor…": "Reviewing your report…",
+  "Bu raporu birlikte inceleyelim.": "Let’s explore this report together.",
+  "Soruların, katılımın ve aktivite yanıtlarının ardındaki detayları konuşabiliriz.":
+    "Explore the questions, participation and activity responses in this training.",
+  "Rapor asistanını kullanmak için model bağlantısını ayarla.":
+    "Configure the model connection to use the report assistant.",
+  "Rapor hakkında sorunu yaz": "Write a question about this report",
+  "Bu rapor hakkında bir şey sor…": "Ask something about this report…",
+  "Yanıtlar yalnızca seçili raporun kayıtlarına dayanır.":
+    "Answers use only the selected report’s records.",
+  "Rapor asistanı eğitim tamamlandığında açılır.":
+    "The report assistant becomes available when training ends.",
+  "Sorunu 1–3000 karakter arasında yaz.":
+    "Write a question between 1 and 3,000 characters.",
+  "Bu istek başka bir mesaj için kullanıldı.":
+    "This request was already used for a different message.",
+  "Bu rapor için bir yanıt hazırlanıyor. Birazdan yeniden dene.":
+    "An answer is being prepared for this report. Please try again shortly.",
+  "Sohbet başka bir sekmede güncellendi. Son mesajları yenileyip tekrar dene.":
+    "This conversation changed in another tab. Refresh the messages and try again.",
+  "Asistan yanıtı alınamadı. Lütfen yeniden dene.":
+    "The assistant could not respond. Please try again.",
   Görünüm: "Appearance",
   Açık: "Light",
   Koyu: "Dark",

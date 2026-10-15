@@ -38,6 +38,7 @@ import {
   groupQuestion,
 } from "@/lib/ai";
 import { refreshReport } from "@/lib/reports";
+import { reportList, reportChat, sendReportMessage } from "@/lib/report-chat";
 import { VOICES, assignVoices, personaVoice, voiceStyle } from "@/lib/voices";
 import { cleanUsage, type UsageEntry } from "@/lib/voice-usage";
 import { recordRehearsalUsage } from "@/lib/rehearsal-usage";
@@ -216,6 +217,18 @@ async function handle(request: Request, context: Context): Promise<Response> {
       );
     }
     const user = await requireUser();
+    if (parts[0] === "report-assistant") {
+      if (parts.length === 1 && method === "GET")
+        return json({ reports: reportList(user) });
+      if (parts.length === 2) {
+        if (method === "GET") return json(reportChat(user, parts[1]));
+        if (method === "POST")
+          return json(
+            await sendReportMessage(user, parts[1], await request.json()),
+          );
+      }
+      throw new AppError("İşlem desteklenmiyor.", 405);
+    }
     if (parts[0] === "waitlist" && parts.length === 1) {
       if (method === "GET")
         return json({ entry: waitlistEntry(user.id) || null });

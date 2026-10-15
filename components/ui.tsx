@@ -47,6 +47,7 @@ import {
   CaretDown,
   Sun,
   Moon,
+  ArrowSquareOut,
 } from "@phosphor-icons/react";
 const icons = {
   home: House,
@@ -92,6 +93,7 @@ const icons = {
   downCaret: CaretDown,
   sun: Sun,
   moon: Moon,
+  external: ArrowSquareOut,
 };
 export function Icon({
   name,
