@@ -1,4 +1,5 @@
 "use client";
+import { ThemeMenu } from "./theme-menu";
 import { useLocale } from "./locale-provider";
 import { useEffect, useRef, useState } from "react";
 import type { CourseState, Rehearsal } from "@/lib/types";
@@ -571,6 +572,7 @@ export function RehearsalView({ id }: { id: string }) {
           <h1>{t("Sesli prova")}</h1>
           <span className="small muted">{c.name}</span>
         </div>
+        <ThemeMenu />
         <Logo />
       </header>
       {!rehearsal ? (

@@ -1,4 +1,5 @@
 "use client";
+import { ThemeMenu } from "./theme-menu";
 import { useLocale } from "./locale-provider";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -290,6 +291,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
         </div>
         <Status status={c.status} />
         <div className="editor-header-actions">
+          <ThemeMenu />
           {live ? (
             <>
               <button className="button" onClick={join}>

@@ -1,4 +1,5 @@
 "use client";
+import { ThemeMenu } from "./theme-menu";
 import { useLocale } from "./locale-provider";
 import { useEffect, useRef, useState } from "react";
 import type { CourseState, User } from "@/lib/types";
@@ -67,7 +68,10 @@ export function Participant() {
   if (auth.data.user.role !== "participant")
     return (
       <div className="participant-gate">
-        <Logo />
+        <header>
+          <Logo />
+          <ThemeMenu />
+        </header>
         <h1>{t("Katılımcı hesabıyla giriş yap")}</h1>
         <p className="muted">
           {t(
@@ -92,7 +96,10 @@ export function Participant() {
   if (!id)
     return (
       <div className="participant-gate">
-        <Logo />
+        <header>
+          <Logo />
+          <ThemeMenu />
+        </header>
         <h1>{t("Eğitime katıl")}</h1>
         <p className="muted">
           {t("Merhaba")} {auth.data.user.name}
@@ -196,7 +203,10 @@ function ParticipantCourse({
   if (!data)
     return (
       <div className="participant-gate">
-        <Logo />
+        <header>
+          <Logo />
+          <ThemeMenu />
+        </header>
         <ErrorNote message={error} />
         {!error && <Loading />}
         {error && (
@@ -225,6 +235,7 @@ function ParticipantCourse({
           <Icon name="back" />
         </button>
         <Logo />
+        <ThemeMenu />
         <span className="avatar">{user.name.slice(0, 1)}</span>
       </header>
       <div className="participant-course-title">

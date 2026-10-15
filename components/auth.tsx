@@ -1,4 +1,5 @@
 "use client";
+import { ThemeMenu } from "./theme-menu";
 import { useLocale } from "./locale-provider";
 import { useState } from "react";
 import type { User } from "@/lib/types";
@@ -52,7 +53,10 @@ export function Auth({
     <div className="auth-screen">
       <header>
         <Logo />
-        <span className="muted">{t("Eğitimin her aşamasında yanında.")}</span>
+        <div className="auth-header-actions">
+          <span className="muted">{t("Eğitimin her aşamasında yanında.")}</span>
+          <ThemeMenu />
+        </div>
       </header>
       <div className="auth-layout">
         <div className="auth-copy">

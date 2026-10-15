@@ -3,6 +3,7 @@ import { useId, useRef, useState } from "react";
 import type { Course, User } from "@/lib/types";
 import type { WaitlistEntry } from "@/lib/waitlist";
 import { useLocale } from "./locale-provider";
+import { ThemeMenu } from "./theme-menu";
 import { api, date, ErrorNote, Icon, Modal, useResource } from "./ui";
 
 export function HeaderActions({
@@ -70,6 +71,7 @@ export function HeaderActions({
   return (
     <>
       <div className="header-actions">
+        <ThemeMenu />
         <button
           className="language-trigger"
           popoverTarget={languageId}

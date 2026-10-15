@@ -45,6 +45,8 @@ import {
   Globe,
   Star,
   CaretDown,
+  Sun,
+  Moon,
 } from "@phosphor-icons/react";
 const icons = {
   home: House,
@@ -88,6 +90,8 @@ const icons = {
   globe: Globe,
   star: Star,
   downCaret: CaretDown,
+  sun: Sun,
+  moon: Moon,
 };
 export function Icon({
   name,
@@ -105,11 +109,21 @@ export function Icon({
 }
 export function Logo() {
   return (
-    <span className="logo">
+    <span className="logo" role="img" aria-label="LİNBA">
       <Image
         className="logo-image"
         src="/brand/linba-logo-color.svg"
-        alt="LİNBA"
+        alt=""
+        aria-hidden="true"
+        width={700}
+        height={214}
+        unoptimized
+      />
+      <Image
+        className="logo-image logo-image-dark"
+        src="/brand/linba-logo-dark.svg"
+        alt=""
+        aria-hidden="true"
         width={700}
         height={214}
         unoptimized

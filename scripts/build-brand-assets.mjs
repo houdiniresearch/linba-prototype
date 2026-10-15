@@ -39,6 +39,10 @@ await writeFile(
   logo,
 );
 await writeFile(new URL("../app/icon.svg", import.meta.url), icon);
+await writeFile(
+  new URL("../public/brand/linba-logo-dark.svg", import.meta.url),
+  logo.replace('fill="#23232F"', 'fill="#F4F3F6"'),
+);
 
 // Verify that the recoloring has not changed the source silhouette.
 const rendered = await sharp(Buffer.from(logo)).ensureAlpha().raw().toBuffer();

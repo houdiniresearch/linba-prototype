@@ -1,4 +1,5 @@
 "use client";
+import { ThemeMenu } from "./theme-menu";
 import { useLocale } from "./locale-provider";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -366,6 +367,7 @@ export function Dashboard() {
       <div className="participant-home">
         <header>
           <Logo />
+          <ThemeMenu />
           <button
             className="text-button"
             onClick={async () => {

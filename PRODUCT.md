@@ -50,3 +50,7 @@ Sağ üst sıra: dil seçimi, mint Planı yükselt butonu (İngilizce: Upgrade),
 ## Project
 
 Mevcut Next.js/TypeScript yerel projeyi kullan. SQLite ve yerel dosyalar. GitHub özel: https://github.com/houdiniresearch/linba-prototype.
+
+## Görünüm tercihi
+
+Ürün genelinde Açık / Koyu / Sistem temaları desteklenir. Sağ üst görünüm menüsü eğitmen paneli, eğitim düzenleme, sesli prova, katılımcı ve giriş ekranlarında erişilebilirdir. Tercih tarayıcıda bir yıl saklanır, yenilemede korunur ve tüm ekranlara uygulanır. Yüklenen sunum sayfalarının renkleri değişmez.

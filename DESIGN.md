@@ -56,3 +56,7 @@ Mevcut Phosphor ikon ailesi ve Radix. Aktif slayt fuşya odak çizgisi ve açık
 - Kaynaksız yanıtı hocaya ilet; sahte ölçüm gösterme.
 - Sunum ekranına özel soru/sohbet koyma.
 - Mikrofonu kullanıcı başlatsın; oturum kapanınca durdur.
+
+## Tema
+
+Açık, Koyu ve Sistem seçenekleri ortak görünüm menüsündedir. İlk tercih Sistem'dir; kullanıcı seçimi bir yıl süreli linba_theme çerezinde saklanır ve sunucu ilk HTML'ye uygular. Sistem seçimi işletim sistemindeki değişiklikleri CSS color-scheme ile anında izler; tema için sayfa yüklenirken JavaScript beklenmez. Koyu temada nötr yüzeyler hafif lila tonlu kömür, ana metin kırık beyaz, yardımcı metin açık gridir. Fuşya ve mint dolgulu eylemler aynı kalır; etkileşimli metinler koyu zeminde daha açık ton kullanır. Sunum görselleri dönüştürülmez. Logonun yalnız yazısı koyu temada açılır; özgün sembol, fuşya nokta ve geometri korunur.

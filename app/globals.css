@@ -1,24 +1,29 @@
 :root {
-  --bg: oklch(1 0 0);
-  --workspace: oklch(0.9797 0.0026 286.35);
-  --ink: oklch(0.2616 0.0223 284.75);
-  --muted: oklch(0.5117 0.022 285.6);
-  --line: oklch(0.9294 0.0067 286.27);
+  color-scheme: light dark;
+  --bg: light-dark(oklch(1 0 0), oklch(0.205 0.008 300));
+  --workspace: light-dark(oklch(0.9797 0.0026 286.35), oklch(0.17 0.007 300));
+  --ink: light-dark(oklch(0.2616 0.0223 284.75), oklch(0.96 0.004 300));
+  --muted: light-dark(oklch(0.5117 0.022 285.6), oklch(0.74 0.014 300));
+  --line: light-dark(oklch(0.9294 0.0067 286.27), oklch(0.33 0.012 300));
   --brand-lilac: oklch(0.7044 0.1301 304.43);
   --brand-fuchsia: oklch(0.6021 0.2426 3.28);
-  --lilac-soft: oklch(0.9561 0.0155 306.41);
-  --lilac-ink: oklch(0.4434 0.1144 305.67);
-  --accent: oklch(0.531 0.214 3.02);
-  --accent-hover: oklch(0.4788 0.1934 1.86);
-  --accent-soft: oklch(0.9673 0.0167 343.61);
+  --lilac-soft: light-dark(oklch(0.9561 0.0155 306.41), oklch(0.285 0.038 306));
+  --lilac-ink: light-dark(oklch(0.4434 0.1144 305.67), oklch(0.83 0.085 306));
+  --accent: light-dark(oklch(0.531 0.214 3.02), oklch(0.8 0.14 350));
+  --accent-hover: light-dark(oklch(0.4788 0.1934 1.86), oklch(0.88 0.09 350));
+  --accent-soft: light-dark(
+    oklch(0.9673 0.0167 343.61),
+    oklch(0.285 0.045 345)
+  );
   --mint: oklch(0.8394 0.1416 176.11);
   --mint-hover: oklch(0.7897 0.139 175.38);
   --mint-ink: oklch(0.3243 0.0485 178.27);
   --primary: oklch(0.5943 0.2394 3.26);
   --primary-hover: oklch(0.5451 0.2198 2.89);
   --primary-ink: oklch(1 0 0);
-  --green: oklch(0.4 0.09 165);
-  --red: oklch(0.45 0.18 25);
+  --green: light-dark(oklch(0.4 0.09 165), oklch(0.8 0.13 165));
+  --red: light-dark(oklch(0.45 0.18 25), oklch(0.8 0.11 25));
+  --warning-ink: light-dark(oklch(0.43 0.08 65), oklch(0.82 0.1 65));
   --radius: 10px;
   --header: 76px;
   --z-dropdown: 10;
@@ -171,7 +176,7 @@ small,
   padding: 10px 17px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: white;
+  background: var(--bg);
   font-weight: 600;
   white-space: nowrap;
   transition:
@@ -194,8 +199,8 @@ small,
 }
 .button.danger {
   color: var(--red);
-  border-color: oklch(0.86 0.055 25);
-  background: oklch(0.99 0.006 25);
+  border-color: light-dark(oklch(0.86 0.055 25), oklch(0.42 0.07 25));
+  background: light-dark(oklch(0.99 0.006 25), oklch(0.27 0.035 25));
 }
 .button.ai-button,
 .button.report {
@@ -205,7 +210,7 @@ small,
 }
 .button.ai-button:hover:not(:disabled),
 .button.report:hover:not(:disabled) {
-  background: color-mix(in oklch, var(--brand-lilac) 22%, white);
+  background: color-mix(in oklch, var(--brand-lilac) 22%, var(--bg));
   border-color: transparent;
 }
 .text-button {
@@ -278,7 +283,7 @@ select {
   padding: 11px 13px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: white;
+  background: var(--bg);
   color: var(--ink);
   min-height: 42px;
   transition:
@@ -287,7 +292,8 @@ select {
 }
 input::placeholder,
 textarea::placeholder {
-  color: oklch(0.51 0.008 285);
+  color: var(--muted);
+  opacity: 1;
 }
 input:focus,
 textarea:focus {
@@ -340,7 +346,7 @@ label small {
   appearance: none;
   width: 40px;
   height: 23px;
-  background: oklch(0.78 0.012 285);
+  background: light-dark(oklch(0.78 0.012 285), oklch(0.43 0.015 300));
   border-radius: 20px;
   position: relative;
   cursor: pointer;
@@ -365,7 +371,7 @@ label small {
   transform: translateX(17px);
 }
 .error-note {
-  background: oklch(0.972 0.018 25);
+  background: light-dark(oklch(0.972 0.018 25), oklch(0.27 0.035 25));
   color: var(--red);
   border-radius: 8px;
   padding: 12px 14px;
@@ -411,7 +417,7 @@ label small {
   width: min(540px, calc(100vw - 32px));
   max-height: calc(100dvh - 48px);
   overflow: auto;
-  background: white;
+  background: var(--bg);
   border-radius: 16px;
   padding: 28px;
   box-shadow: 0 24px 100px oklch(0.15 0.025 300/0.15);
@@ -485,7 +491,7 @@ label small {
   align-items: center;
   padding: 0 28px;
   gap: 44px;
-  background: white;
+  background: var(--bg);
   position: sticky;
   top: 0;
   z-index: var(--z-dropdown);
@@ -510,7 +516,7 @@ label small {
 }
 .header-search input:not([type="checkbox"]) {
   padding-left: 43px;
-  background: white;
+  background: var(--bg);
   font-weight: 400;
   height: 44px;
 }
@@ -761,7 +767,7 @@ label small {
   padding: 28px 12px 20px;
   display: flex;
   flex-direction: column;
-  background: white;
+  background: var(--bg);
   position: sticky;
   top: var(--header);
   height: calc(100dvh - var(--header));
@@ -873,7 +879,7 @@ label small {
   transition:
     box-shadow 0.18s,
     border-color 0.18s;
-  background: white;
+  background: var(--bg);
   min-width: 0;
 }
 .training-card:hover {
@@ -971,7 +977,7 @@ label small {
 }
 .status.live {
   color: var(--green);
-  background: oklch(0.95 0.025 165);
+  background: light-dark(oklch(0.95 0.025 165), oklch(0.28 0.035 165));
 }
 .status.live:before {
   content: "";
@@ -1182,7 +1188,7 @@ tbody tr:hover {
   color: var(--accent);
 }
 .forwarded {
-  color: oklch(0.48 0.085 60);
+  color: var(--warning-ink);
 }
 .activity-result {
   padding: 20px 0;
@@ -1268,7 +1274,7 @@ tbody tr:hover {
   border: 1px solid var(--line);
   padding: 30px;
   border-radius: 14px;
-  background: white;
+  background: var(--bg);
 }
 .auth-form h2 {
   font-size: 24px;
@@ -1299,7 +1305,7 @@ tbody tr:hover {
   color: var(--muted);
 }
 .segmented button.active {
-  background: white;
+  background: var(--bg);
   box-shadow: 0 1px 4px oklch(0.1 0 0/0.07);
   color: var(--accent);
   font-weight: 500;
@@ -1353,7 +1359,7 @@ tbody tr:hover {
   display: flex;
   gap: 16px;
   padding: 0 22px;
-  background: white;
+  background: var(--bg);
   border-bottom: 1px solid var(--line);
   align-items: center;
   height: 76px;
@@ -1388,7 +1394,7 @@ tbody tr:hover {
   min-height: 40px;
 }
 .slide-rail {
-  background: white;
+  background: var(--bg);
   border-right: 1px solid var(--line);
   overflow: auto;
   position: relative;
@@ -1405,7 +1411,7 @@ tbody tr:hover {
   font-size: 12px;
   position: sticky;
   top: 0;
-  background: white;
+  background: var(--bg);
   z-index: 1;
 }
 .rail-heading .text-button {
@@ -1446,7 +1452,7 @@ tbody tr:hover {
   border-radius: 9px;
   overflow: hidden;
   aspect-ratio: 16/9;
-  background: white;
+  background: var(--bg);
   outline-offset: 3px;
 }
 .selected > .thumbnail {
@@ -1561,7 +1567,7 @@ tbody tr:hover {
   max-width: 45%;
 }
 .presentation-canvas {
-  background: white;
+  background: var(--bg);
   border: 1px solid var(--line);
   border-radius: 10px;
   overflow: hidden;
@@ -1575,8 +1581,8 @@ tbody tr:hover {
   align-items: center;
   justify-content: space-between;
   padding: 12px 18px;
-  background: oklch(0.99 0.002 295);
-  border-bottom: 1px solid oklch(0.95 0.003 285);
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
   font-size: 12px;
   gap: 15px;
 }
@@ -1594,7 +1600,7 @@ tbody tr:hover {
 .activity-slide {
   aspect-ratio: 16/9;
   min-height: 280px;
-  background: white;
+  background: var(--bg);
   padding: clamp(24px, 3vw, 55px);
   display: flex;
   flex-direction: column;
@@ -1674,7 +1680,7 @@ tbody tr:hover {
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 22px;
-  background: white;
+  background: var(--bg);
   margin-top: auto;
 }
 .stage-note > svg {
@@ -1698,7 +1704,7 @@ tbody tr:hover {
   align-self: center;
 }
 .editor-tools {
-  background: white;
+  background: var(--bg);
   border-left: 1px solid var(--line);
   padding: 25px 20px;
   overflow: auto;
@@ -1900,9 +1906,6 @@ tbody tr:hover {
   margin: 40px auto;
   padding: 24px;
 }
-.participant-gate > .logo {
-  margin-bottom: 44px;
-}
 .participant-gate h1 {
   font-size: 25px;
 }
@@ -1966,7 +1969,7 @@ tbody tr:hover {
   display: flex;
   flex-direction: column;
   height: 100dvh;
-  background: white;
+  background: var(--bg);
   border-inline: 1px solid var(--line);
 }
 .participant-app > header {
@@ -2063,7 +2066,7 @@ tbody tr:hover {
   color: var(--muted);
 }
 .chat-intro > .small {
-  color: oklch(0.48 0.085 60);
+  color: var(--warning-ink);
 }
 .chat-exchange {
   margin: 16px 0 24px;
@@ -2112,7 +2115,7 @@ tbody tr:hover {
   background: var(--workspace);
 }
 .chat-answer.forward .chat-answer-label {
-  color: oklch(0.47 0.075 60);
+  color: var(--warning-ink);
 }
 .chat-answer.forward p {
   margin-bottom: 0;
@@ -2136,7 +2139,7 @@ tbody tr:hover {
   padding: 14px 20px 18px;
   border-top: 1px solid var(--line);
   flex-shrink: 0;
-  background: white;
+  background: var(--bg);
 }
 .chat-input-area form {
   display: flex;
@@ -2144,7 +2147,7 @@ tbody tr:hover {
   border: 1px solid var(--line);
   padding: 6px;
   border-radius: 11px;
-  background: white;
+  background: var(--bg);
 }
 .chat-input-area textarea {
   border: 0;
@@ -2270,7 +2273,7 @@ tbody tr:hover {
 }
 .preview-page {
   min-height: 100dvh;
-  background: white;
+  background: var(--bg);
 }
 .preview-page > header {
   display: flex;
@@ -2301,7 +2304,7 @@ tbody tr:hover {
   margin-bottom: 26px;
 }
 .phone-preview {
-  border: 3px solid oklch(0.87 0.015 285);
+  border: 3px solid var(--line);
   border-radius: 30px;
   padding: 28px 16px;
   min-height: 590px;
@@ -2371,7 +2374,7 @@ tbody tr:hover {
 }
 .projection {
   height: 100dvh;
-  background: white;
+  background: var(--bg);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -2437,6 +2440,9 @@ tbody tr:hover {
   background: var(--workspace);
 }
 .rehearsal-page .editor-header > .logo {
+  margin-left: 0;
+}
+.rehearsal-page .editor-header > .theme-trigger {
   margin-left: auto;
 }
 .rehearsal-setup {
@@ -2453,7 +2459,7 @@ tbody tr:hover {
   margin-bottom: 30px;
 }
 .rehearsal-setup textarea {
-  background: white;
+  background: var(--bg);
 }
 .rehearsal-setup form > .button {
   min-width: 270px;
@@ -2468,7 +2474,7 @@ tbody tr:hover {
   min-width: 0;
 }
 .rehearsal-layout > aside {
-  background: white;
+  background: var(--bg);
   border-left: 1px solid var(--line);
   padding: 28px 24px;
   min-height: calc(100dvh - 76px);
@@ -2500,17 +2506,17 @@ tbody tr:hover {
   display: block;
 }
 .persona-1 {
-  background: oklch(0.94 0.03 165);
+  background: light-dark(oklch(0.94 0.03 165), oklch(0.28 0.035 165));
   color: var(--green);
 }
 .persona-2 {
-  background: oklch(0.95 0.025 65);
-  color: oklch(0.43 0.08 65);
+  background: light-dark(oklch(0.95 0.025 65), oklch(0.28 0.035 65));
+  color: var(--warning-ink);
 }
 .voice-console {
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: white;
+  background: var(--bg);
   padding: 23px;
   display: flex;
   align-items: center;
@@ -2552,7 +2558,7 @@ tbody tr:hover {
   }
 }
 .rehearsal-feedback {
-  background: white;
+  background: var(--bg);
   padding: 26px;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -3330,4 +3336,88 @@ tbody tr:hover {
   .app-header > .logo {
     font-size: 18px;
   }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+.logo {
+  position: relative;
+}
+.logo-image-dark {
+  display: none;
+}
+:root[data-theme="dark"] .logo-image:not(.logo-image-dark) {
+  visibility: hidden;
+}
+:root[data-theme="dark"] .logo-image-dark {
+  display: block;
+  position: absolute;
+  inset: 0;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="system"] .logo-image:not(.logo-image-dark) {
+    visibility: hidden;
+  }
+  :root[data-theme="system"] .logo-image-dark {
+    display: block;
+    position: absolute;
+    inset: 0;
+  }
+}
+.theme-trigger {
+  flex-shrink: 0;
+}
+.theme-popover {
+  width: 220px;
+}
+.theme-choice > span {
+  flex: 1;
+}
+.theme-choice[aria-pressed="true"] {
+  background: var(--lilac-soft);
+  color: var(--lilac-ink);
+}
+.auth-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.participant-app > header .theme-trigger {
+  margin-left: auto;
+}
+.participant-app > header .theme-trigger + .avatar {
+  margin-left: 0;
+}
+@media (max-width: 360px) {
+  .app-header .header-round,
+  .app-header .profile-trigger,
+  .app-header .language-trigger,
+  .app-header .upgrade-trigger {
+    width: 38px;
+    height: 40px;
+  }
+  .app-header .profile-trigger .avatar {
+    width: 36px;
+    height: 36px;
+  }
+}
+@media (max-width: 600px) {
+  .auth-header-actions > .muted {
+    display: none;
+  }
+}
+
+.participant-gate > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 44px;
+}
+.participant-home header > .theme-trigger {
+  margin-left: auto;
+  margin-right: 10px;
 }
