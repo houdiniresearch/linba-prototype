@@ -3,6 +3,32 @@
   color: var(--ink);
   min-height: 100dvh;
 }
+.landing-page > main {
+  position: relative;
+  isolation: isolate;
+}
+.landing-page > main::before,
+.landing-page > main::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.landing-page > main::before {
+  background: var(--lilac-ink);
+  opacity: 0.13;
+  mask-image: url("/landing/isometric-grid.svg");
+  mask-size: 144px 166.28px;
+  mask-repeat: repeat;
+}
+.landing-page > main::after {
+  background: var(--bg);
+  mask-image:
+    radial-gradient(ellipse 80% 34% at 90% 14%, transparent 15%, #000 85%),
+    radial-gradient(ellipse 72% 32% at 0% 70%, transparent 5%, #000 90%);
+  mask-composite: intersect;
+}
 .landing-container {
   width: min(1280px, calc(100% - 112px));
   margin-inline: auto;
@@ -479,6 +505,9 @@
   }
 }
 @media (max-width: 767px) {
+  .landing-page > main::before {
+    opacity: 0.08;
+  }
   .landing-container {
     width: calc(100% - 40px);
   }

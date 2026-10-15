@@ -73,6 +73,8 @@ AhaSlides rapor asistanı referansı: bağımsız yeni sekme, solda rapor listes
 
 ## Tanıtım sayfası
 
+Arka planda özgün izometrik görsellerin açılarını sürdüren ince lila çizgi deseni kullanılır. Desen görsellerin çevresinde ve bölüm kenarlarında belirir, metin çevresinde silikleşir. Mobilde yoğunluğu azaltılır. CSS maskesi dekoratiftir; tıklamaları engellemez, hareket içermez ve ürün ekranlarına taşınmaz.
+
 Markayı koruyan, düşük yoğunluklu tasarım. Tasarım varyansı 6, hareket 3, görsel yoğunluk 2: ilk ekranda solda iki satırlı mesaj, sağda tek izometrik sahne. Yalnızca sekme seçimi ve soru açılışında hareket var. Genel font Inter, yüzeyler mevcut açık/koyu tokenlar; fuşya kayıt eylemleri, görsellerde sınırlı lila/mint ayrıntılar. Gölgeler raster nesnelerin fiziksel derinliği ve mevcut menülerle sınırlı.
 
 Açılışa özel WebP sahnede katlanmış sunum sayfası, eğitmen ve üç katılımcı bir öğrenme alanı oluşturur. Bu görsel altta tekrarlanmaz. Üç ayrı destek görseli hazırlık, canlı eğitim ve eğitim sonrası aşamalarını anlatır; yazılar HTML'dir. İkinci bölüm aynı alanda üç erişilebilir sekmeyle değişir. Aşamalar, kısa açıklamalı sekmeler ve ortak görsel yüzeyiyle tek çerçevede sunulur. Devamında ilk yanıtı açık, tek seferde bir sorunun açıldığı dört soru ve sunumla başlamayı vurgulayan kapanış çağrısı vardır. Alt gezinme temel ürün bağlantılarını tekrar erişilebilir kılar. Küçük ekranda başlık, görsel ve bölüm içeriği tek sütuna geçer; gezinme yerel popover menüsüne dönüşür. Sahte müşteri referansları, ölçümler veya fiyatlandırma kullanılmaz.

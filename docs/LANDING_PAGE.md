@@ -3,6 +3,7 @@
 ## Kararlar
 
 - Marka korundu: özgün logo, Inter, fuşya eylemler ve lila/mint ayrıntılar.
+- Arka plandaki ince izometrik çizgi deseni, üst görselin ve alt bölümün kenarlarında yumuşakça belirir. Metin çevresinde silikleşir; ortak lila tokenı iki temaya uyum sağlar. Küçük, yerel SVG yalnız dekoratif CSS maskesidir; hareket veya ek bağımlılık içermez.
 - Tasarım varyansı 6, hareket yoğunluğu 3, içerik yoğunluğu 2. İki satırlı ana mesaj ve tek izometrik sahne; uzun özellik ızgaraları yok.
 - Aşamalar kısa açıklamalı üç sekme ile ortak bir çerçevede değişir. Yön tuşları, Home/End, doğru tab-panel bağlantıları ve azaltılmış hareket desteklenir.
 - Dört sık sorulan soru yerel details/summary ile açılır. İlk yanıt açık gelir, tek seferde bir soru açık kalır. Kapanışta ilk adım sunum yüklemek olarak açıklanır; footer temel gezinme bağlantıları sunar.
