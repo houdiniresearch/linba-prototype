@@ -65,10 +65,10 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
       </header>
       <main className="access-layout">
         <section className="access-experience" aria-labelledby="access-title">
-          <h1 id="access-title">{t("Beklerken, ajanlarla tanış.")}</h1>
+          <h1 id="access-title">{t("LİNBA ajanlarıyla tanış.")}</h1>
           <p>
             {t(
-              "Örnek bir eğitimde LİNBA ajanlarını ücretsiz deneyimle. Hesap oluşturman gerekmez.",
+              "Pratik, etkileşim ve öğrenme desteğini örnek bir eğitimde keşfet.",
             )}
           </p>
           <ErrorNote message={experienceError} />
@@ -84,6 +84,9 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
             )}
             <Icon name={experiencing ? "spinner" : "arrow"} size={19} />
           </button>
+          <p className="access-experience-note">
+            {t("Ücretsiz. Hesap oluşturmadan.")}
+          </p>
         </section>
         <section
           className="access-invitation"

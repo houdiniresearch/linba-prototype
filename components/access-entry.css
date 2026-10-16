@@ -52,21 +52,27 @@
   text-wrap: pretty;
 }
 .access-experience .access-experience-button {
-  width: 100%;
+  width: auto;
+  gap: 24px;
   min-height: 52px;
-  margin-top: 20px;
-  background: var(--lilac-soft);
+  margin-top: 24px;
+  background: var(--lilac-ink);
   border: 0;
   border-radius: 8px;
-  color: var(--lilac-ink);
+  color: var(--bg);
   justify-content: space-between;
   padding-inline: 20px;
   font-size: 14px;
   font-weight: 600;
 }
-.access-experience-button:hover {
-  background: color-mix(in oklch, var(--brand-lilac) 23%, var(--bg));
+.access-experience .access-experience-button:hover:not(:disabled) {
+  background: color-mix(in oklch, var(--lilac-ink) 88%, var(--ink));
 }
+.access-experience > .access-experience-note {
+  margin: 12px 0 0;
+  font-size: 12px;
+}
+
 .access-invitation {
   border-left: 1px solid var(--line);
   padding-left: 64px;
