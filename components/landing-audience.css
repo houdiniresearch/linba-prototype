@@ -18,34 +18,58 @@
   text-wrap: pretty;
 }
 .audience-tabs {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 44px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  width: min(940px, 100%);
+  margin: 0 auto 44px;
+  padding: 6px;
+  background: var(--workspace);
+  border-radius: 12px;
 }
 .audience-tabs > a {
-  padding: 11px 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  min-width: 0;
+  gap: 10px;
+  padding: 10px 14px;
   border-radius: 8px;
   color: var(--muted);
   font-size: 14px;
   font-weight: 500;
+  line-height: 1.4;
   transition:
-    background 160ms ease-out,
-    color 160ms ease-out;
+    background 180ms ease-out,
+    color 180ms ease-out;
+}
+.audience-tabs > a > svg {
+  flex-shrink: 0;
+}
+.audience-tabs > a > span {
+  min-width: 0;
+  text-wrap: balance;
 }
 .audience-tabs > a:hover {
   color: var(--ink);
-  background: var(--workspace);
+  background: var(--lilac-soft);
 }
 .audience-tabs > a[aria-current="step"] {
-  background: var(--accent-soft);
+  background: var(--bg);
+  color: var(--ink);
+}
+.audience-tabs > a[aria-current="step"] > svg {
   color: var(--accent);
+}
+.audience-tabs > a:focus-visible {
+  outline: 2px solid var(--lilac-ink);
+  outline-offset: 2px;
 }
 .audience-panel {
   display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
-  gap: 72px;
+  grid-template-columns: 0.82fr 1.18fr;
+  gap: 56px;
   align-items: center;
 }
 /* The default is a readable document; desktop pinning is enabled after hydration. */
@@ -165,7 +189,7 @@
 }
 .audience-demo-window {
   animation: audience-window-enter 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  min-height: 365px;
+  min-height: 405px;
   border: 1px solid var(--line);
   background: var(--bg);
   border-radius: 12px;
@@ -537,18 +561,93 @@
 .audience-report-next svg {
   flex-shrink: 0;
 }
-.audience-source-slide {
-  margin-top: 18px;
-  min-height: 148px;
+.audience-biology-slide {
+  margin-top: 12px;
+  padding: 14px 18px;
+  background: var(--lilac-soft);
+  border-radius: 8px;
 }
-.audience-source-slide > p {
-  max-width: 30ch;
+.audience-biology-slide-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.audience-biology-slide-heading strong {
   font-size: 14px;
-  line-height: 1.65;
+  font-weight: 600;
+}
+.audience-biology-slide-heading > span {
+  color: var(--muted);
+  font-size: 10px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.audience-cell-comparison {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 10px;
+}
+.audience-cell-comparison > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  text-align: center;
+}
+.audience-cell-comparison svg {
+  display: block;
+  width: 100px;
+  height: 68px;
+}
+.audience-cell-plant {
+  color: var(--green);
+}
+.audience-cell-animal {
+  color: var(--lilac-ink);
+}
+.audience-cell-comparison strong {
+  font-size: 12px;
+  font-weight: 500;
+}
+.audience-cell-comparison span {
+  color: var(--muted);
+  font-size: 10px;
+}
+.audience-access-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 13px 15px;
+  border-radius: 8px;
+  background: color-mix(in oklch, var(--mint) 13%, var(--bg));
+}
+.audience-access-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  color: var(--green);
+}
+.audience-access-note strong {
+  display: block;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+.audience-access-note p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
 }
 .audience-demo-stage {
   position: relative;
-  height: 317px;
+  height: 357px;
   padding: 22px;
 }
 .audience-demo-scene {
@@ -835,7 +934,7 @@
     max-width: 620px;
   }
   .audience-preview {
-    width: min(560px, 100%);
+    width: min(620px, 100%);
     justify-self: center;
   }
 }
@@ -854,13 +953,19 @@
     font-size: 14px;
   }
   .audience-tabs {
-    justify-content: flex-start;
-    gap: 6px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
     margin-bottom: 28px;
   }
   .audience-tabs > a {
-    padding: 10px 12px;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 10px;
     font-size: 12px;
+  }
+  .audience-tabs > a > svg {
+    width: 18px;
+    height: 18px;
   }
   .audience-copy h3 {
     font-size: 25px;
@@ -956,14 +1061,50 @@
     gap: 3px;
   }
   .audience-demo-window {
-    min-height: 367px;
+    min-height: 397px;
   }
   .audience-demo-stage {
-    height: 319px;
+    height: 349px;
     padding: 16px 14px;
   }
   .audience-demo-scene {
     inset: 16px 14px;
+  }
+  .audience-biology-slide {
+    padding: 12px;
+    margin-top: 10px;
+  }
+  .audience-biology-slide-heading strong {
+    font-size: 13px;
+  }
+  .audience-cell-comparison {
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .audience-cell-comparison svg {
+    width: 80px;
+    height: 54px;
+  }
+  .audience-cell-comparison strong {
+    font-size: 11px;
+  }
+  .audience-cell-comparison span {
+    font-size: 9px;
+  }
+  .audience-access-note {
+    gap: 8px;
+    padding: 10px;
+    margin-top: 10px;
+  }
+  .audience-access-icon {
+    width: 22px;
+    height: 26px;
+  }
+  .audience-access-note strong {
+    font-size: 12px;
+  }
+  .audience-access-note p {
+    font-size: 10px;
   }
   .audience-activity-question > strong {
     font-size: 15px;

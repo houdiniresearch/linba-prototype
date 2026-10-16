@@ -37,7 +37,7 @@ const audiences = [
     filename: "Hücre biyolojisi.pdf",
     scenes: ["Sorunu sor", "Yanıtı keşfet", "Kaynağa dön"],
     summary:
-      "Örnek eğitim sonrası sohbet: katılımcı, hocanın gösterdiği bitki ve hayvan hücrelerini nasıl ayırt edeceğini sorar. Asistan sunumdaki farkları açıklar ve ilgili slaydı gösterir.",
+      "Örnek eğitim sonrası sohbet: katılımcı, hocanın gösterdiği bitki ve hayvan hücrelerini nasıl ayırt edeceğini sorar. Asistan sunumdaki farkları açıklar ve ilgili slaydı gösterir. Katılımcı, eğitmenin belirlediği 7 günlük asistan erişimi boyunca soru sormayı sürdürebilir.",
   },
   {
     id: "institution",
@@ -400,15 +400,119 @@ function AudienceDemo({
           <Icon name="file" size={16} />
           {t("Kaynağa geri dön.")}
         </span>
-        <div className="audience-mini-slide audience-source-slide">
-          <span>{t("Bitki mi, hayvan mı?")}</span>
-          <p>{t("Hücre duvarı · Merkezi koful · Kloroplast")}</p>
-          <div className="audience-slide-rule" />
-          <span className="audience-slide-caption">06 / 12</span>
+        <div className="audience-biology-slide">
+          <div className="audience-biology-slide-heading">
+            <strong>{t("Bitki mi, hayvan mı?")}</strong>
+            <span>06 / 12</span>
+          </div>
+          <div className="audience-cell-comparison">
+            <div>
+              <svg
+                className="audience-cell-plant"
+                viewBox="0 0 100 68"
+                aria-hidden="true"
+              >
+                <rect
+                  x="9"
+                  y="5"
+                  width="82"
+                  height="58"
+                  rx="13"
+                  fill="currentColor"
+                  fillOpacity=".08"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                />
+                <rect
+                  x="15"
+                  y="11"
+                  width="70"
+                  height="46"
+                  rx="9"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                  opacity=".4"
+                />
+                <rect
+                  x="43"
+                  y="19"
+                  width="28"
+                  height="29"
+                  rx="9"
+                  fill="currentColor"
+                  fillOpacity=".13"
+                />
+                <circle cx="30" cy="34" r="9" fill="var(--brand-lilac)" />
+                <circle cx="30" cy="34" r="3" fill="var(--lilac-ink)" />
+                <ellipse cx="27" cy="17" rx="6" ry="3" fill="currentColor" />
+                <ellipse cx="76" cy="48" rx="6" ry="3" fill="currentColor" />
+                <ellipse cx="31" cy="51" rx="6" ry="3" fill="currentColor" />
+              </svg>
+              <strong>{t("Bitki hücresi")}</strong>
+              <span>{t("Hücre duvarı var")}</span>
+            </div>
+            <div>
+              <svg
+                className="audience-cell-animal"
+                viewBox="0 0 100 68"
+                aria-hidden="true"
+              >
+                <ellipse
+                  cx="50"
+                  cy="34"
+                  rx="37"
+                  ry="28"
+                  fill="currentColor"
+                  fillOpacity=".08"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+                <circle cx="44" cy="33" r="13" fill="var(--brand-lilac)" />
+                <circle cx="44" cy="33" r="4" fill="var(--lilac-ink)" />
+                <ellipse
+                  cx="68"
+                  cy="23"
+                  rx="6"
+                  ry="3"
+                  fill="currentColor"
+                  opacity=".4"
+                  transform="rotate(-25 68 23)"
+                />
+                <ellipse
+                  cx="64"
+                  cy="48"
+                  rx="6"
+                  ry="3"
+                  fill="currentColor"
+                  opacity=".4"
+                  transform="rotate(20 64 48)"
+                />
+                <circle
+                  cx="26"
+                  cy="43"
+                  r="3"
+                  fill="currentColor"
+                  opacity=".3"
+                />
+              </svg>
+              <strong>{t("Hayvan hücresi")}</strong>
+              <span>{t("Hücre duvarı yok")}</span>
+            </div>
+          </div>
         </div>
-        <div className="audience-demo-note">
-          <Icon name="clock" size={17} />
-          <span>{t("Eğitim sonrası erişimi sen belirlersin.")}</span>
+        <div className="audience-access-note">
+          <span className="audience-access-icon">
+            <Icon name="clock" size={22} />
+          </span>
+          <div>
+            <strong>
+              {t("7 gün boyunca soru sormaya devam edebilirsin.")}
+            </strong>
+            <p>
+              {t("Bu eğitim için asistan erişim süresini eğitmenin belirledi.")}
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -698,7 +802,13 @@ export function LandingAudience() {
                 });
               }}
             >
-              {t(item.label)}
+              <Icon
+                name={
+                  (["users", "presentation", "mic", "chart"] as const)[index]
+                }
+                size={20}
+              />
+              <span>{t(item.label)}</span>
             </a>
           ))}
         </nav>

@@ -1,5 +1,13 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Bitki hücresi": "Plant cell",
+  "Hayvan hücresi": "Animal cell",
+  "Hücre duvarı var": "Cell wall present",
+  "Hücre duvarı yok": "No cell wall",
+  "7 gün boyunca soru sormaya devam edebilirsin.":
+    "You can keep asking questions for 7 days.",
+  "Bu eğitim için asistan erişim süresini eğitmenin belirledi.":
+    "Your instructor set the assistant access period for this training.",
   "Kullanım senaryoları": "Use cases",
   "Eğitimin, çalıştığın araçlarla buluşsun.":
     "Bring training into the tools you use.",
@@ -11,8 +19,8 @@ const en: Record<string, string> = {
     "A new sales team presenting the product for the first time, with limited customer experience.",
   "Ece · Yapay zekâ ajanı": "Ece · AI agent",
   "Hücre biyolojisi.pdf": "Cell biology.pdf",
-  "Örnek eğitim sonrası sohbet: katılımcı, hocanın gösterdiği bitki ve hayvan hücrelerini nasıl ayırt edeceğini sorar. Asistan sunumdaki farkları açıklar ve ilgili slaydı gösterir.":
-    "Example post-training conversation: a participant asks how to tell apart the plant and animal cells shown by the instructor. The assistant explains the differences in the presentation and points to the relevant slide.",
+  "Örnek eğitim sonrası sohbet: katılımcı, hocanın gösterdiği bitki ve hayvan hücrelerini nasıl ayırt edeceğini sorar. Asistan sunumdaki farkları açıklar ve ilgili slaydı gösterir. Katılımcı, eğitmenin belirlediği 7 günlük asistan erişimi boyunca soru sormayı sürdürebilir.":
+    "Example post-training conversation: a participant asks how to tell apart the plant and animal cells shown by the instructor. The assistant explains the differences in the presentation and points to the relevant slide. The participant can keep asking questions during the 7-day assistant access period set by the instructor.",
   "Hocanın gösterdiği bitki ve hayvan hücrelerini nasıl ayırt ederiz?":
     "How do we tell apart the plant and animal cells the instructor showed us?",
   "Bitki hücresinde hücre duvarı ve büyük merkezi koful bulunur; fotosentez yapan hücrelerinde kloroplast da vardır. Hayvan hücresinde hücre duvarı ve kloroplast yoktur. Her ikisinde de hücre zarı vardır.":
