@@ -492,7 +492,36 @@ function AudiencePanel({
       </div>
       <div className="audience-preview" data-running={running}>
         <div className="audience-preview-toolbar">
-          <span>{t("Örnek senaryo")}</span>
+          <div
+            className="audience-scene-controls"
+            role="group"
+            aria-label={t("Örnek sahneleri")}
+          >
+            {audience.scenes.map((label, index) => (
+              <button
+                key={label}
+                type="button"
+                aria-label={`${index + 1}. ${t(label)}`}
+                aria-pressed={scene === index}
+                onClick={() => selectScene(index)}
+              >
+                <span className="audience-scene-number">
+                  {scene === index && (
+                    <svg
+                      className="audience-scene-progress"
+                      key={`${scene}-${sceneRestart}`}
+                      viewBox="0 0 32 32"
+                      aria-hidden="true"
+                    >
+                      <circle cx="16" cy="16" r="14" />
+                    </svg>
+                  )}
+                  {index + 1}
+                </span>
+                <span>{t(label)}</span>
+              </button>
+            ))}
+          </div>
           {!reduced && (
             <button
               type="button"
@@ -506,36 +535,6 @@ function AudiencePanel({
               <Icon name={paused ? "play" : "pause"} size={17} />
             </button>
           )}
-        </div>
-        <div
-          className="audience-scene-controls"
-          role="group"
-          aria-label={t("Örnek sahneleri")}
-        >
-          {audience.scenes.map((label, index) => (
-            <button
-              key={label}
-              type="button"
-              aria-label={`${index + 1}. ${t(label)}`}
-              aria-pressed={scene === index}
-              onClick={() => selectScene(index)}
-            >
-              <span className="audience-scene-number">
-                {scene === index && (
-                  <svg
-                    className="audience-scene-progress"
-                    key={`${scene}-${sceneRestart}`}
-                    viewBox="0 0 32 32"
-                    aria-hidden="true"
-                  >
-                    <circle cx="16" cy="16" r="14" />
-                  </svg>
-                )}
-                {index + 1}
-              </span>
-              <span>{t(label)}</span>
-            </button>
-          ))}
         </div>
         <div className="audience-demo-window" aria-hidden="true">
           <div className="audience-demo-header">
