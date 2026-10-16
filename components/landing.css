@@ -571,11 +571,6 @@ html:has(.landing-page) {
 .landing-integration-group button > span:not(.integration-chatgpt-symbol) {
   flex: 1;
 }
-.landing-integration-group button > svg {
-  margin-left: auto;
-  color: var(--muted);
-  flex-shrink: 0;
-}
 .landing-integration-group button:hover {
   background: var(--lilac-soft);
   border-color: var(--brand-lilac);

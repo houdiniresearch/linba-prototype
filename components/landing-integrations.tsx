@@ -249,7 +249,6 @@ export function LandingIntegrations() {
                   >
                     <IntegrationLogo id={item.id} />
                     <span>{item.name}</span>
-                    <Icon name="arrow" size={17} />
                   </button>
                 );
               })}
