@@ -1,5 +1,26 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Kullanım senaryoları": "Use cases",
+  "Eğitimin, çalıştığın araçlarla buluşsun.":
+    "Bring training into the tools you use.",
+  "Sunum araçları": "Presentation tools",
+  "Yapay zekâ asistanları": "AI assistants",
+  "Eğitimine hazırlıklı git.": "Go into your training prepared.",
+  "Kitle tanımın": "Your audience brief",
+  "Ürünü ilk kez anlatacak, müşteri deneyimi az olan yeni satış ekibi.":
+    "A new sales team presenting the product for the first time, with limited customer experience.",
+  "Ece · Yapay zekâ ajanı": "Ece · AI agent",
+  "Dijital güvenlik atölyesi.pdf": "Digital security workshop.pdf",
+  "Örnek eğitim sonrası sohbet: atölye bittikten sonra katılımcı, hocanın gösterdiği sahte e-postanın nasıl ayırt edildiğini sorar. Asistan sunumdaki örneği açıklar ve ilgili slaydı gösterir.":
+    "Example post-training conversation: after the workshop, a participant asks how to spot the fake email shown by the instructor. The assistant explains the example from the presentation and points to the relevant slide.",
+  "Hocanın gösterdiği sahte e-postayı nasıl ayırt ediyoruz?":
+    "How do we spot the fake email the instructor showed us?",
+  "Örnekteki e-posta, “Hesabın kapanacak” diyerek acele ettiriyor. Gönderen adresi kurumla eşleşmiyor ve bağlantı farklı bir siteye gidiyor. Bunlar, hocanın dikkat çektiği uyarı işaretleri.":
+    "The example email creates urgency by saying your account will be closed. Its sender address doesn’t match the organisation and its link goes to a different site. These are the warning signs the instructor highlighted.",
+  "Slayt 06 · Şüpheli e-postalar": "Slide 06 · Suspicious emails",
+  "Sahte e-postayı fark et.": "Spot the fake email.",
+  "Gönderen adresi, bağlantı ve acele ettiren dil.":
+    "Sender address, link destination and language that creates urgency.",
   "Ürün eğitimini yeni başlayanlara anlatmadan önce kitleni tarif et. Katılımcılarını temsil eden yapay zekâ ajanlarıyla sesli prova yap; anlatımın, tempon ve sorulara verdiğin yanıtlar hakkında geri bildirim al.":
     "Describe your audience before delivering product training to new starters. Rehearse out loud with AI agents representing your participants, and get feedback on your delivery, pace and responses to questions.",
   "Örnek prova: eğitmen kitlesini tarif eder ve katılımcıları temsil eden yapay zekâ ajanlarıyla sesli prova yapar. Prova sonrasında anlatımının netliği, temposu ve sorulara verdiği yanıtlarla ilgili performans geri bildirimi alır.":
@@ -220,8 +241,8 @@ const en: Record<string, string> = {
   "LİNBA’daki yeniliklerden ve kullanıma açılıştan haberdar olmak için e-postanı bırak.":
     "Leave your email for LİNBA updates and launch news.",
   "Yalnızca LİNBA ile ilgili haberler için.": "Only for LİNBA updates.",
-  "PowerPoint, Microsoft Teams, Google Slides, Zoom ve ChatGPT entegrasyonları henüz kullanıma açık değil. Genel bekleme listesine katılarak LİNBA’daki yeniliklerden haberdar olabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.":
-    "Integrations with PowerPoint, Microsoft Teams, Google Slides, Zoom and ChatGPT are not available yet. Join the general waitlist for LİNBA updates. You can already get started by uploading your PDF or PPTX presentation directly.",
+  "PowerPoint, Microsoft Teams, Google Slides, Zoom, Google Meet ve ChatGPT entegrasyonları henüz kullanıma açık değil. Genel bekleme listesine katılarak LİNBA’daki yeniliklerden haberdar olabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.":
+    "Integrations with PowerPoint, Microsoft Teams, Google Slides, Zoom, Google Meet and ChatGPT are not available yet. Join the general waitlist for LİNBA updates. You can already get started by uploading your PDF or PPTX presentation directly.",
   "Planlanan entegrasyonlar": "Planned integrations",
   "Sık sorulan sorular.": "Frequently asked questions.",
   "İlk sunumundan eğitim sonrasına, merak ettiklerin burada.":
@@ -238,8 +259,8 @@ const en: Record<string, string> = {
     "Participants can keep asking the presentation’s assistant questions for the period you choose when creating training. Review their questions and activity results in the training report, and discuss that data with the report assistant. Questions asked after training are added to the same report.",
   "Diğer araçlarla entegrasyonlar hazır mı?":
     "Are integrations with other tools available?",
-  "PowerPoint, Microsoft Teams, Google Slides, Zoom ve ChatGPT entegrasyonları henüz kullanıma açık değil. İlgilendiğin aracın logosuna tıklayarak o entegrasyonun bekleme listesine katılabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.":
-    "Integrations with PowerPoint, Microsoft Teams, Google Slides, Zoom and ChatGPT are not available yet. Click a tool’s logo to join its waitlist. You can already get started by uploading your PDF or PPTX presentation directly.",
+  "PowerPoint, Microsoft Teams, Google Slides, Zoom, Google Meet ve ChatGPT entegrasyonları henüz kullanıma açık değil. İlgilendiğin aracın logosuna tıklayarak o entegrasyonun bekleme listesine katılabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.":
+    "Integrations with PowerPoint, Microsoft Teams, Google Slides, Zoom, Google Meet and ChatGPT are not available yet. Click a tool’s logo to join its waitlist. You can already get started by uploading your PDF or PPTX presentation directly.",
   "Çalıştığın araçlarla birlikte.": "With the tools you already use.",
   "Planlanan entegrasyonlar için bekleme listesine katıl.":
     "Join the waitlist for our planned integrations.",

@@ -71,7 +71,7 @@ html:has(.landing-page) {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 48px;
+  gap: 24px;
 }
 .landing-brand {
   display: inline-flex;
@@ -88,6 +88,7 @@ html:has(.landing-page) {
 }
 .landing-nav {
   margin-left: 0;
+  gap: 20px;
 }
 .landing-nav a,
 .landing-waitlist-trigger {
@@ -508,33 +509,228 @@ html:has(.landing-page) {
   font-size: 15px;
   line-height: 1.7;
 }
-.landing-integration-list {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px 28px;
+.landing-integration-map {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px minmax(0, 1fr);
+  grid-template-rows: 260px 150px;
+  position: relative;
+  width: min(1080px, 100%);
+  margin: 48px auto 0;
+  isolation: isolate;
 }
-.landing-integration-list button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.landing-integration-paths {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--brand-lilac);
+  pointer-events: none;
+  z-index: -1;
+}
+.landing-integration-paths path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  opacity: 0.6;
+  stroke-dasharray: 5 7;
+  animation: integration-connection-flow 16s linear infinite;
+}
+.landing-integration-paths circle {
+  fill: currentColor;
+}
+.landing-integration-hub {
+  position: relative;
+  display: grid;
+  place-items: center;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  justify-self: center;
+  width: 180px;
+  height: 180px;
+  border: 1px solid color-mix(in oklch, var(--brand-lilac) 40%, var(--line));
+  border-radius: 50%;
+  background: var(--bg);
+}
+.landing-integration-hub::before,
+.landing-integration-hub::after {
+  content: "";
+  position: absolute;
+  border: 1px solid color-mix(in oklch, var(--brand-lilac) 22%, transparent);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.landing-integration-hub::before {
+  inset: -18px;
+}
+.landing-integration-hub::after {
+  inset: -36px;
+  opacity: 0.6;
+}
+.landing-integration-hub .logo {
+  font-size: 34px;
+}
+.landing-integration-group {
+  width: min(280px, 100%);
+  align-self: center;
+  text-align: left;
+}
+.landing-integration-group h3 {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  font-weight: 500;
+  color: var(--muted);
+}
+.landing-integration-group > div {
+  display: grid;
   gap: 12px;
-  padding: 14px 8px;
-  border-radius: 8px;
-  color: var(--ink);
-  font-size: 21px;
-  font-weight: 600;
-  white-space: nowrap;
-  transition: background 160ms ease-out;
 }
-.landing-integration-list button:hover {
-  background: var(--workspace);
+.integration-group-presentations {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
 }
-.landing-integration-list img,
+.integration-group-meetings {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+}
+.integration-group-assistants {
+  grid-column: 2;
+  grid-row: 2;
+  width: 280px;
+  justify-self: center;
+  align-self: end;
+}
+.integration-group-assistants h3 {
+  text-align: center;
+}
+.landing-integration-group button {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+  min-height: 58px;
+  padding: 12px 16px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: left;
+  transition:
+    border-color 180ms ease-out,
+    background 180ms ease-out;
+}
+.landing-integration-group button > span:not(.integration-chatgpt-symbol) {
+  flex: 1;
+}
+.landing-integration-group button > svg {
+  margin-left: auto;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.landing-integration-group button:hover {
+  background: var(--lilac-soft);
+  border-color: var(--brand-lilac);
+}
+.landing-integration-group button:focus-visible {
+  outline: 2px solid var(--lilac-ink);
+  outline-offset: 4px;
+}
+.landing-integration-group img,
 .integration-waitlist-modal .waitlist-emblem img {
   flex-shrink: 0;
   object-fit: contain;
+}
+@keyframes integration-connection-flow {
+  to {
+    stroke-dashoffset: -192;
+  }
+}
+@media (max-width: 850px) {
+  .landing-integration-map {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto;
+    gap: 38px 28px;
+    margin-top: 48px;
+    padding-top: 20px;
+  }
+  .landing-integration-paths {
+    display: none;
+  }
+  .landing-integration-hub {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    width: 144px;
+    height: 144px;
+    margin-bottom: 18px;
+  }
+  .landing-integration-hub .logo {
+    font-size: 30px;
+  }
+  .landing-integration-hub::before {
+    inset: -12px;
+  }
+  .landing-integration-hub::after {
+    inset: -24px;
+  }
+  .integration-group-presentations {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .integration-group-meetings {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .integration-group-assistants {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: min(280px, 100%);
+  }
+  .landing-integration-group {
+    width: 100%;
+  }
+  .landing-integration-group button {
+    font-size: 14px;
+  }
+}
+@media (max-width: 540px) {
+  .landing-integration-map {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 26px;
+  }
+  .landing-integration-hub {
+    grid-column: 1;
+  }
+  .integration-group-presentations {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .integration-group-meetings {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .integration-group-assistants {
+    grid-column: 1;
+    grid-row: 4;
+    width: 100%;
+  }
+  .integration-group-assistants h3 {
+    text-align: left;
+  }
+  .landing-integration-group h3 {
+    margin-bottom: 10px;
+  }
+  .landing-integration-group button {
+    min-height: 54px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-integration-paths path {
+    animation: none;
+  }
 }
 .integration-chatgpt-symbol {
   display: inline-block;
@@ -902,20 +1098,6 @@ html:has(.landing-page) {
     margin-bottom: 24px;
     font-size: 14px;
   }
-  .landing-integration-list {
-    justify-content: center;
-    gap: 8px 18px;
-  }
-  .landing-integration-list button {
-    padding: 12px 6px;
-    font-size: 17px;
-    gap: 9px;
-  }
-  .landing-integration-list img,
-  .landing-integration-list .integration-chatgpt-symbol {
-    width: 26px;
-    height: 26px;
-  }
   .integration-waitlist-modal .modal-heading > .icon-button {
     position: absolute;
     top: 10px;
@@ -1044,7 +1226,7 @@ html:has(.landing-page) {
 .landing-mobile-nav {
   display: none;
 }
-@media (max-width: 1000px) {
+@media (max-width: 1200px) {
   .landing-nav {
     display: none;
   }

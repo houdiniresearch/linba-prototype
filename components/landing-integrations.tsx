@@ -178,30 +178,81 @@ export function LandingWaitlistProvider({ children }: { children: ReactNode }) {
 export function LandingIntegrations() {
   const { t } = useLocale();
   const openWaitlist = useWaitlist();
+  const groups = [
+    {
+      id: "presentations",
+      title: "Sunum araçları",
+      tools: ["powerpoint", "google-slides"],
+    },
+    {
+      id: "meetings",
+      title: "Canlı eğitim",
+      tools: ["teams", "zoom", "google-meet"],
+    },
+    { id: "assistants", title: "Yapay zekâ asistanları", tools: ["chatgpt"] },
+  ] as const;
   return (
     <section
       id="entegrasyonlar"
       className="landing-integrations landing-container"
       aria-labelledby="integrations-title"
     >
-      <h2 id="integrations-title">{t("Çalıştığın araçlarla birlikte.")}</h2>
+      <h2 id="integrations-title">
+        {t("Eğitimin, çalıştığın araçlarla buluşsun.")}
+      </h2>
       <p>{t("Kullandığın araçlar için entegrasyonlar yolda.")}</p>
-      <div className="landing-integration-list">
-        {integrations.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            aria-haspopup="dialog"
-            aria-label={t("{name} entegrasyonu", {
-              name: item.name,
-            })}
-            onClick={(event) => {
-              openWaitlist(item, event.currentTarget);
-            }}
+      <div className="landing-integration-map">
+        <svg
+          className="landing-integration-paths"
+          viewBox="0 0 1080 410"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            className="integration-path-presentations"
+            d="M280 130C360 130 360 130 450 130"
+          />
+          <path
+            className="integration-path-meetings"
+            d="M630 130C720 130 720 130 800 130"
+          />
+          <path className="integration-path-assistants" d="M540 220V306" />
+          <circle cx="280" cy="130" r="4" />
+          <circle cx="800" cy="130" r="4" />
+          <circle cx="540" cy="306" r="4" />
+        </svg>
+        <div className="landing-integration-hub">
+          <Logo />
+        </div>
+        {groups.map((group) => (
+          <div
+            className={`landing-integration-group integration-group-${group.id}`}
+            key={group.id}
           >
-            <IntegrationLogo id={item.id} />
-            <span>{item.name}</span>
-          </button>
+            <h3>{t(group.title)}</h3>
+            <div>
+              {group.tools.map((id) => {
+                const item = integrations.find((tool) => tool.id === id)!;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    aria-haspopup="dialog"
+                    aria-label={t("{name} entegrasyonu", {
+                      name: item.name,
+                    })}
+                    onClick={(event) => {
+                      openWaitlist(item, event.currentTarget);
+                    }}
+                  >
+                    <IntegrationLogo id={item.id} />
+                    <span>{item.name}</span>
+                    <Icon name="arrow" size={17} />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         ))}
       </div>
     </section>

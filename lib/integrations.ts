@@ -3,6 +3,7 @@ export const integrations = [
   { id: "teams", name: "Microsoft Teams" },
   { id: "google-slides", name: "Google Slides" },
   { id: "zoom", name: "Zoom" },
+  { id: "google-meet", name: "Google Meet" },
   { id: "chatgpt", name: "ChatGPT" },
 ] as const;
 

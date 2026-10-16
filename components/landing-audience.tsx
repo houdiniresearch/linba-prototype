@@ -11,7 +11,7 @@ const audiences = [
     label: "Kurumsal eğitmen",
     title: "Yeni bir ekibe, hazırlıklı bir başlangıç.",
     text: "Ürün eğitimini yeni başlayanlara anlatmadan önce kitleni tarif et. Katılımcılarını temsil eden yapay zekâ ajanlarıyla sesli prova yap; anlatımın, tempon ve sorulara verdiğin yanıtlar hakkında geri bildirim al.",
-    benefit: "Katılımcılarının sorularına hazırlıklı gir.",
+    benefit: "Eğitimine hazırlıklı git.",
     filename: "Ürün eğitimi.pdf",
     scenes: ["Kitleyi tanı", "Sesli prova", "Geri bildirim"],
     summary:
@@ -34,10 +34,10 @@ const audiences = [
     title: "Atölyen bitsin. Öğrenme devam etsin.",
     text: "Atölyenden sonra da katılımcılarına sunumunla öğrenme alanı bırak. Belirlediğin süre boyunca sorularını sorsunlar, kaynak slaytlara geri dönebilsinler.",
     benefit: "Bilgiyi ihtiyaç duydukları anda erişilebilir tut.",
-    filename: "Zaman yönetimi atölyesi.pdf",
+    filename: "Dijital güvenlik atölyesi.pdf",
     scenes: ["Sorunu sor", "Yanıtı keşfet", "Kaynağa dön"],
     summary:
-      "Örnek eğitim sonrası sohbet: atölye bittikten sonra katılımcı, hocanın anlattığı önemli ve acil iş ayrımını bir örnekle açıklamasını ister. Asistan sunuma dayalı yanıt verir ve ilgili slaydı gösterir.",
+      "Örnek eğitim sonrası sohbet: atölye bittikten sonra katılımcı, hocanın gösterdiği sahte e-postanın nasıl ayırt edildiğini sorar. Asistan sunumdaki örneği açıklar ve ilgili slaydı gösterir.",
   },
   {
     id: "institution",
@@ -143,13 +143,18 @@ function AudienceDemo({
       <div className="audience-demo-stage" data-scene={scene}>
         <div className="audience-demo-scene" data-active={scene === 0}>
           <span className="audience-message-label">
+            <Icon name="users" size={16} />
+            {t("Kitle tanımın")}
+          </span>
+          <blockquote className="audience-audience-brief">
+            {t(
+              "Ürünü ilk kez anlatacak, müşteri deneyimi az olan yeni satış ekibi.",
+            )}
+          </blockquote>
+          <span className="audience-message-label">
             <Icon name="sparkle" size={16} />
             {t("Yapay zekâ katılımcı ajanları")}
           </span>
-          <h4 className="audience-scene-title">{t("Kitleni tarif et.")}</h4>
-          <p className="audience-scene-description">
-            {t("Yeni başlayan bir ekibe ürün eğitimi.")}
-          </p>
           <div className="audience-persona-list">
             <div>
               <span>EA</span>
@@ -174,7 +179,10 @@ function AudienceDemo({
             </div>
           </div>
         </div>
-        <div className="audience-demo-scene" data-active={scene === 1}>
+        <div
+          className="audience-demo-scene audience-rehearsal-scene"
+          data-active={scene === 1}
+        >
           <div className="audience-mini-slide">
             <span>{t("Müşteriyi tanımakla başla.")}</span>
             <p>{t("İhtiyacı anla. Doğru soruyu sor.")}</p>
@@ -199,9 +207,11 @@ function AudienceDemo({
             </div>
             <Icon name="mic" size={18} />
           </div>
-          <div className="audience-demo-note">
-            <Icon name="mic" size={17} />
-            <span>{t("Yapay zekâ ajanlarıyla sesli prova.")}</span>
+          <div className="audience-demo-message audience-agent-question">
+            <span className="audience-message-label">
+              {t("Ece · Yapay zekâ ajanı")}
+            </span>
+            <p>{t("Müşteri doğrudan fiyatı sorarsa nasıl ilerlemeliyim?")}</p>
           </div>
         </div>
         <div className="audience-demo-scene" data-active={scene === 2}>
@@ -361,9 +371,7 @@ function AudienceDemo({
         <div className="audience-followup-question">
           <span className="audience-response-avatar">MK</span>
           <div className="audience-chat-question">
-            {t(
-              "Hocanın anlattığı önemli ve acil iş ayrımını bir örnekle açıklar mısın?",
-            )}
+            {t("Hocanın gösterdiği sahte e-postayı nasıl ayırt ediyoruz?")}
           </div>
         </div>
       </div>
@@ -375,12 +383,12 @@ function AudienceDemo({
           </span>
           <p>
             {t(
-              "Önemli bir iş seni hedefine yaklaştırır; acil bir iş ise hemen ilgi ister. Yarınki toplantıya hazırlanmak hem önemli hem acildir. Gelecek ayın planını yapmak önemlidir ama henüz acil değildir.",
+              "Örnekteki e-posta, “Hesabın kapanacak” diyerek acele ettiriyor. Gönderen adresi kurumla eşleşmiyor ve bağlantı farklı bir siteye gidiyor. Bunlar, hocanın dikkat çektiği uyarı işaretleri.",
             )}
           </p>
           <div className="audience-source">
             <Icon name="file" size={17} />
-            {t("Slayt 06 · Önemli ve acil işler")}
+            {t("Slayt 06 · Şüpheli e-postalar")}
             <Icon name="arrow" size={14} />
           </div>
         </div>
@@ -391,8 +399,8 @@ function AudienceDemo({
           {t("Kaynağa geri dön.")}
         </span>
         <div className="audience-mini-slide audience-source-slide">
-          <span>{t("Önemli mi, acil mi?")}</span>
-          <p>{t("Önemli: hedefe katkısı. Acil: zaman baskısı.")}</p>
+          <span>{t("Sahte e-postayı fark et.")}</span>
+          <p>{t("Gönderen adresi, bağlantı ve acele ettiren dil.")}</p>
           <div className="audience-slide-rule" />
           <span className="audience-slide-caption">06 / 12</span>
         </div>
@@ -408,6 +416,7 @@ function AudienceDemo({
 export function LandingAudience() {
   const { t } = useLocale();
   const [selected, setSelected] = useState(0);
+  const [paused, setPaused] = useState(false);
   const [inView, setInView] = useState(false);
   const [visible, setVisible] = useState(true);
   const [reduced, setReduced] = useState(false);
@@ -427,13 +436,13 @@ export function LandingAudience() {
   };
 
   useEffect(() => {
-    if (!inView || !visible || reduced) return;
+    if (!inView || !visible || paused || reduced) return;
     const timer = window.setInterval(
       () => setScene((current) => (current + 1) % 3),
       4500,
     );
     return () => window.clearInterval(timer);
-  }, [audience.id, inView, visible, reduced, scene, sceneRestart]);
+  }, [audience.id, inView, visible, paused, reduced, scene, sceneRestart]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -526,10 +535,23 @@ export function LandingAudience() {
         </div>
         <div
           className="audience-preview"
-          data-running={inView && visible && !reduced}
+          data-running={inView && visible && !paused && !reduced}
         >
           <div className="audience-preview-toolbar">
             <span>{t("Örnek senaryo")}</span>
+            {!reduced && (
+              <button
+                type="button"
+                onClick={() => setPaused((current) => !current)}
+                aria-label={t(
+                  paused ? "Animasyonu oynat" : "Animasyonu duraklat",
+                )}
+                aria-pressed={paused}
+                title={t(paused ? "Animasyonu oynat" : "Animasyonu duraklat")}
+              >
+                <Icon name={paused ? "play" : "pause"} size={17} />
+              </button>
+            )}
           </div>
           <div
             className="audience-demo-window"
@@ -560,7 +582,19 @@ export function LandingAudience() {
                 aria-pressed={scene === index}
                 onClick={() => selectScene(index)}
               >
-                <span className="audience-scene-number">{index + 1}</span>
+                <span className="audience-scene-number">
+                  {scene === index && (
+                    <svg
+                      className="audience-scene-progress"
+                      key={`${audience.id}-${scene}-${sceneRestart}`}
+                      viewBox="0 0 32 32"
+                      aria-hidden="true"
+                    >
+                      <circle cx="16" cy="16" r="14" />
+                    </svg>
+                  )}
+                  {index + 1}
+                </span>
                 <span>{t(label)}</span>
               </button>
             ))}

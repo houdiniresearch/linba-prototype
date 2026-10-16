@@ -309,7 +309,7 @@ const questions = [
   ],
   [
     "Diğer araçlarla entegrasyonlar hazır mı?",
-    "PowerPoint, Microsoft Teams, Google Slides, Zoom ve ChatGPT entegrasyonları henüz kullanıma açık değil. Genel bekleme listesine katılarak LİNBA’daki yeniliklerden haberdar olabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.",
+    "PowerPoint, Microsoft Teams, Google Slides, Zoom, Google Meet ve ChatGPT entegrasyonları henüz kullanıma açık değil. Genel bekleme listesine katılarak LİNBA’daki yeniliklerden haberdar olabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.",
   ],
 ] as const;
 
@@ -371,6 +371,7 @@ function LandingContent() {
           </Link>
           <nav className="landing-nav" aria-label={t("Ana gezinme")}>
             <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
+            <a href="#kimler-icin">{t("Kullanım senaryoları")}</a>
             <a href="#sorular">{t("Sık sorulanlar")}</a>
             <LandingIntegrationMenu />
             <LandingWaitlistButton />
@@ -410,6 +411,7 @@ function LandingContent() {
             }}
           >
             <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
+            <a href="#kimler-icin">{t("Kullanım senaryoları")}</a>
             <a href="#sorular">{t("Sık sorulanlar")}</a>
             <LandingIntegrationMenu />
             <LandingWaitlistButton />
@@ -523,6 +525,7 @@ function LandingContent() {
         </div>
         <nav className="landing-footer-links" aria-label={t("Alt gezinme")}>
           <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
+          <a href="#kimler-icin">{t("Kullanım senaryoları")}</a>
           <LandingIntegrationMenu />
           <LandingWaitlistButton />
           <Link href="/giris">{t("Giriş yap")}</Link>
