@@ -142,9 +142,12 @@ function LandingFlow() {
         >
           <div className="landing-stage-copy">
             <p className="landing-stage-label">
-              <span className="landing-stage-number" aria-hidden="true">
-                {String(index + 1).padStart(2, "0")}
-              </span>
+              <Icon
+                name={
+                  index === 0 ? "mic" : index === 1 ? "presentation" : "chat"
+                }
+                size={28}
+              />
               <span>{t(item.label)}</span>
             </p>
             <h3 id={`stage-heading-${index}`}>{t(item.title)}</h3>
