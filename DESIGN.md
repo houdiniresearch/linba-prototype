@@ -124,3 +124,5 @@ Entegrasyon grup başlıkları, ikonla birlikte 14 px / 600 ağırlıkta ve ara�
 Ajan deneyimi alanı görselsizdir: kısa başlık ve açıklama, içeriğe göre genişleyen lila düğme ve kısa ücretsiz kullanım notu bulunur. İzometrik görsel kullanılmaz; bekleme listesi ayrı sol sütunda kalır.
 
 Karşılama ekranının arka planında ana sayfayla aynı `/landing/isometric-grid.svg` deseni düşük opaklıkta kullanılır; merkezde maske ile silikleşerek içeriği okunaklı tutar. Ajan deneyimi düğmesinin altında kişiye özel çalışma alanı açılacağı belirtilir; “demo” sözcüğü gösterilmez.
+
+Aynı hafif geometrik desen beta giriş ve hesap oluşturma durumlarında da uygulanır. Karşılama ve Auth ekranları desen stilini ortak CSS seçicilerinden alır; form yüzeyi opak, merkezdeki desen silik kalır.

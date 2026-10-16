@@ -6,29 +6,6 @@
   flex-direction: column;
   background: var(--bg);
 }
-.access-page::before,
-.access-page::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-}
-.access-page::before {
-  background: var(--lilac-ink);
-  opacity: 0.1;
-  mask-image: url("/landing/isometric-grid.svg");
-  mask-size: 144px 166.28px;
-  mask-repeat: repeat;
-}
-.access-page::after {
-  background: var(--bg);
-  mask-image: radial-gradient(
-    ellipse 65% 70% at 50% 50%,
-    #000 35%,
-    transparent 100%
-  );
-}
 .access-header {
   width: min(1280px, 100%);
   margin-inline: auto;

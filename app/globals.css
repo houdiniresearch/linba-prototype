@@ -1322,6 +1322,40 @@ tbody tr:hover {
   background: var(--primary);
   border-radius: 10px;
 }
+.auth-screen {
+  position: relative;
+  isolation: isolate;
+  display: flow-root;
+  min-height: 100svh;
+  background: var(--bg);
+}
+.auth-screen::before,
+.auth-screen::after,
+.access-page::before,
+.access-page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.auth-screen::before,
+.access-page::before {
+  background: var(--lilac-ink);
+  opacity: 0.1;
+  mask-image: url("/landing/isometric-grid.svg");
+  mask-size: 144px 166.28px;
+  mask-repeat: repeat;
+}
+.auth-screen::after,
+.access-page::after {
+  background: var(--bg);
+  mask-image: radial-gradient(
+    ellipse 65% 70% at 50% 50%,
+    #000 35%,
+    transparent 100%
+  );
+}
 .auth-screen > header {
   display: flex;
   justify-content: space-between;
