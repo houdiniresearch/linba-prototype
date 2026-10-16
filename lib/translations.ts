@@ -1,5 +1,21 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Bir sunumla,": "One presentation.",
+  "hazırlıklı başla.": "Start prepared.",
+  "herkesi dahil et.": "Bring everyone in.",
+  "öğrenmeyi sürdür.": "Keep learning going.",
+  "Bir sunumla hazırlıklı başla, herkesi dahil et, öğrenmeyi sürdür.":
+    "With one presentation, start prepared, bring everyone in and keep learning going.",
+  "Sunumunu yükle. Yapay zekâyla prova yap, eğitim sırasında etkileşim kur ve sonrasında öğrenmeyi sürdür.":
+    "Upload your slides. Rehearse with AI, bring people into your training and keep learning going afterwards.",
+  "Senaryoları keşfet": "Explore use cases",
+  "PDF ve PPTX sunumlarınla çalışır.":
+    "Works with your PDF and PPTX presentations.",
+  "Eğitimin üç aşaması": "Three stages of training",
+  "Etkileşim kur": "Engage",
+  "Öğrenmeyi sürdür": "Keep learning",
+  "Açılış animasyonunu oynat": "Play hero animation",
+  "Açılış animasyonunu duraklat": "Pause hero animation",
   Başlangıç: "Start",
   Etkinlik: "Activity",
   Bitiş: "End",

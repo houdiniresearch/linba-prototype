@@ -1,7 +1,6 @@
 "use client";
 import "./landing.css";
 
-import Image from "next/image";
 import Link from "next/link";
 import {
   useCallback,
@@ -14,6 +13,7 @@ import {
 import { Icon, Logo } from "./ui";
 import { useLocale } from "./locale-provider";
 import { LandingAudience } from "./landing-audience";
+import { LandingHero } from "./landing-hero";
 import {
   LandingIntegrations,
   LandingWaitlistButton,
@@ -419,41 +419,7 @@ function LandingContent() {
       </div>
 
       <main id="landing-main" tabIndex={-1}>
-        <section
-          className="landing-hero landing-container"
-          aria-labelledby="landing-title"
-        >
-          <div className="landing-hero-copy">
-            <h1 id="landing-title">
-              {t("Sunumunu yükle.")} <span>{t("Birlikte öğrenin.")}</span>
-            </h1>
-            <p>
-              {t(
-                "Kitlene göre prova yap. Eğitimde etkileşim kur. Sonrasında, sunumuna dayanan asistanınla öğrenmeyi sürdür.",
-              )}
-            </p>
-            <div className="landing-hero-actions">
-              <Link href="/giris?mod=kayit" className="button primary">
-                {t("Ücretsiz başla")}
-                <Icon name="arrow" size={19} />
-              </Link>
-            </div>
-          </div>
-          <div className="landing-hero-art">
-            <Image
-              src="/landing/hero-learning-space.webp"
-              alt={t(
-                "Katlanmış bir sunum sayfasının oluşturduğu öğrenme alanında eğitmen ve üç katılımcı",
-              )}
-              width={1448}
-              height={1086}
-              sizes="(max-width: 767px) 100vw, (max-width: 1100px) 55vw, 720px"
-              loading="eager"
-              fetchPriority="high"
-              unoptimized
-            />
-          </div>
-        </section>
+        <LandingHero />
 
         <section
           className="landing-flow landing-container"
