@@ -319,7 +319,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
-  margin-top: 14px;
+  margin-bottom: 14px;
 }
 .audience-scene-controls button {
   display: flex;
@@ -874,7 +874,7 @@
   }
   .audience-scene-controls {
     gap: 3px;
-    margin-top: 10px;
+    margin-bottom: 10px;
   }
   .audience-scene-controls button {
     gap: 5px;

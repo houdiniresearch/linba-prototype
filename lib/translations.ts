@@ -10,17 +10,17 @@ const en: Record<string, string> = {
   "Ürünü ilk kez anlatacak, müşteri deneyimi az olan yeni satış ekibi.":
     "A new sales team presenting the product for the first time, with limited customer experience.",
   "Ece · Yapay zekâ ajanı": "Ece · AI agent",
-  "Dijital güvenlik atölyesi.pdf": "Digital security workshop.pdf",
-  "Örnek eğitim sonrası sohbet: atölye bittikten sonra katılımcı, hocanın gösterdiği sahte e-postanın nasıl ayırt edildiğini sorar. Asistan sunumdaki örneği açıklar ve ilgili slaydı gösterir.":
-    "Example post-training conversation: after the workshop, a participant asks how to spot the fake email shown by the instructor. The assistant explains the example from the presentation and points to the relevant slide.",
-  "Hocanın gösterdiği sahte e-postayı nasıl ayırt ediyoruz?":
-    "How do we spot the fake email the instructor showed us?",
-  "Örnekteki e-posta, “Hesabın kapanacak” diyerek acele ettiriyor. Gönderen adresi kurumla eşleşmiyor ve bağlantı farklı bir siteye gidiyor. Bunlar, hocanın dikkat çektiği uyarı işaretleri.":
-    "The example email creates urgency by saying your account will be closed. Its sender address doesn’t match the organisation and its link goes to a different site. These are the warning signs the instructor highlighted.",
-  "Slayt 06 · Şüpheli e-postalar": "Slide 06 · Suspicious emails",
-  "Sahte e-postayı fark et.": "Spot the fake email.",
-  "Gönderen adresi, bağlantı ve acele ettiren dil.":
-    "Sender address, link destination and language that creates urgency.",
+  "Hücre biyolojisi.pdf": "Cell biology.pdf",
+  "Örnek eğitim sonrası sohbet: katılımcı, hocanın gösterdiği bitki ve hayvan hücrelerini nasıl ayırt edeceğini sorar. Asistan sunumdaki farkları açıklar ve ilgili slaydı gösterir.":
+    "Example post-training conversation: a participant asks how to tell apart the plant and animal cells shown by the instructor. The assistant explains the differences in the presentation and points to the relevant slide.",
+  "Hocanın gösterdiği bitki ve hayvan hücrelerini nasıl ayırt ederiz?":
+    "How do we tell apart the plant and animal cells the instructor showed us?",
+  "Bitki hücresinde hücre duvarı ve büyük merkezi koful bulunur; fotosentez yapan hücrelerinde kloroplast da vardır. Hayvan hücresinde hücre duvarı ve kloroplast yoktur. Her ikisinde de hücre zarı vardır.":
+    "Plant cells have a cell wall and a large central vacuole; photosynthetic cells also have chloroplasts. Animal cells have no cell wall or chloroplasts. Both have a cell membrane.",
+  "Slayt 06 · Bitki ve hayvan hücresi": "Slide 06 · Plant and animal cells",
+  "Bitki mi, hayvan mı?": "Plant or animal?",
+  "Hücre duvarı · Merkezi koful · Kloroplast":
+    "Cell wall · Central vacuole · Chloroplasts",
   "Ürün eğitimini yeni başlayanlara anlatmadan önce kitleni tarif et. Katılımcılarını temsil eden yapay zekâ ajanlarıyla sesli prova yap; anlatımın, tempon ve sorulara verdiğin yanıtlar hakkında geri bildirim al.":
     "Describe your audience before delivering product training to new starters. Rehearse out loud with AI agents representing your participants, and get feedback on your delivery, pace and responses to questions.",
   "Örnek prova: eğitmen kitlesini tarif eder ve katılımcıları temsil eden yapay zekâ ajanlarıyla sesli prova yapar. Prova sonrasında anlatımının netliği, temposu ve sorulara verdiği yanıtlarla ilgili performans geri bildirimi alır.":

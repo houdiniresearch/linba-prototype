@@ -34,10 +34,10 @@ const audiences = [
     title: "Atölyen bitsin. Öğrenme devam etsin.",
     text: "Atölyenden sonra da katılımcılarına sunumunla öğrenme alanı bırak. Belirlediğin süre boyunca sorularını sorsunlar, kaynak slaytlara geri dönebilsinler.",
     benefit: "Bilgiyi ihtiyaç duydukları anda erişilebilir tut.",
-    filename: "Dijital güvenlik atölyesi.pdf",
+    filename: "Hücre biyolojisi.pdf",
     scenes: ["Sorunu sor", "Yanıtı keşfet", "Kaynağa dön"],
     summary:
-      "Örnek eğitim sonrası sohbet: atölye bittikten sonra katılımcı, hocanın gösterdiği sahte e-postanın nasıl ayırt edildiğini sorar. Asistan sunumdaki örneği açıklar ve ilgili slaydı gösterir.",
+      "Örnek eğitim sonrası sohbet: katılımcı, hocanın gösterdiği bitki ve hayvan hücrelerini nasıl ayırt edeceğini sorar. Asistan sunumdaki farkları açıklar ve ilgili slaydı gösterir.",
   },
   {
     id: "institution",
@@ -371,7 +371,9 @@ function AudienceDemo({
         <div className="audience-followup-question">
           <span className="audience-response-avatar">MK</span>
           <div className="audience-chat-question">
-            {t("Hocanın gösterdiği sahte e-postayı nasıl ayırt ediyoruz?")}
+            {t(
+              "Hocanın gösterdiği bitki ve hayvan hücrelerini nasıl ayırt ederiz?",
+            )}
           </div>
         </div>
       </div>
@@ -383,12 +385,12 @@ function AudienceDemo({
           </span>
           <p>
             {t(
-              "Örnekteki e-posta, “Hesabın kapanacak” diyerek acele ettiriyor. Gönderen adresi kurumla eşleşmiyor ve bağlantı farklı bir siteye gidiyor. Bunlar, hocanın dikkat çektiği uyarı işaretleri.",
+              "Bitki hücresinde hücre duvarı ve büyük merkezi koful bulunur; fotosentez yapan hücrelerinde kloroplast da vardır. Hayvan hücresinde hücre duvarı ve kloroplast yoktur. Her ikisinde de hücre zarı vardır.",
             )}
           </p>
           <div className="audience-source">
             <Icon name="file" size={17} />
-            {t("Slayt 06 · Şüpheli e-postalar")}
+            {t("Slayt 06 · Bitki ve hayvan hücresi")}
             <Icon name="arrow" size={14} />
           </div>
         </div>
@@ -399,8 +401,8 @@ function AudienceDemo({
           {t("Kaynağa geri dön.")}
         </span>
         <div className="audience-mini-slide audience-source-slide">
-          <span>{t("Sahte e-postayı fark et.")}</span>
-          <p>{t("Gönderen adresi, bağlantı ve acele ettiren dil.")}</p>
+          <span>{t("Bitki mi, hayvan mı?")}</span>
+          <p>{t("Hücre duvarı · Merkezi koful · Kloroplast")}</p>
           <div className="audience-slide-rule" />
           <span className="audience-slide-caption">06 / 12</span>
         </div>
@@ -505,18 +507,6 @@ function AudiencePanel({
             </button>
           )}
         </div>
-        <div className="audience-demo-window" aria-hidden="true">
-          <div className="audience-demo-header">
-            <Icon name="file" size={18} />
-            <span>{t(audience.filename)}</span>
-            <span className="audience-window-dots">
-              <i />
-              <i />
-              <i />
-            </span>
-          </div>
-          <AudienceDemo kind={audience.id} scene={scene} />
-        </div>
         <div
           className="audience-scene-controls"
           role="group"
@@ -546,6 +536,18 @@ function AudiencePanel({
               <span>{t(label)}</span>
             </button>
           ))}
+        </div>
+        <div className="audience-demo-window" aria-hidden="true">
+          <div className="audience-demo-header">
+            <Icon name="file" size={18} />
+            <span>{t(audience.filename)}</span>
+            <span className="audience-window-dots">
+              <i />
+              <i />
+              <i />
+            </span>
+          </div>
+          <AudienceDemo kind={audience.id} scene={scene} />
         </div>
         <p className="sr-only">{t(audience.summary)}</p>
       </div>
