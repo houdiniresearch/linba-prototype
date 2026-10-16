@@ -526,10 +526,6 @@ function LandingContent() {
           role="group"
           aria-label={t("Sosyal medya")}
         >
-          <div className="landing-footer-social-heading">
-            <span>{t("Bizi takip et")}</span>
-            <span className="landing-footer-soon">{t("Yakında")}</span>
-          </div>
           <div className="landing-footer-social-buttons">
             {[
               { name: "LinkedIn", Symbol: LinkedinLogo },
@@ -541,8 +537,8 @@ function LandingContent() {
                 type="button"
                 disabled
                 key={name}
-                aria-label={`${name} · ${t("Yakında")}`}
-                title={`${name} · ${t("Yakında")}`}
+                aria-label={name}
+                title={name}
               >
                 <Symbol size={21} weight="regular" aria-hidden="true" />
               </button>
