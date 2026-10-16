@@ -58,9 +58,6 @@ export function LandingHero() {
     >
       <div className="landing-hero landing-container">
         <div className="landing-hero-copy">
-          <p className="landing-hero-intro">
-            {t("Sunumdan birlikte öğrenmeye.")}
-          </p>
           <h1
             id="landing-title"
             aria-label={t(

@@ -71,7 +71,7 @@ html:has(.landing-page) {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 24px;
+  gap: 32px;
 }
 .landing-brand {
   display: inline-flex;
@@ -88,7 +88,7 @@ html:has(.landing-page) {
 }
 .landing-nav {
   margin-left: 0;
-  gap: 20px;
+  gap: 4px;
 }
 .landing-nav a,
 .landing-waitlist-trigger {
@@ -111,15 +111,29 @@ html:has(.landing-page) {
   white-space: nowrap;
 }
 .landing-nav a {
+  min-height: 40px;
+  padding: 10px 12px;
+  border-radius: 6px;
   color: var(--muted);
+  font-size: 14px;
+  transition:
+    color 160ms ease-out,
+    background 160ms ease-out;
 }
-.landing-nav a:hover,
-.landing-login:hover {
-  color: var(--accent);
+.landing-nav a:hover {
+  color: var(--ink);
+  background: color-mix(in oklch, var(--lilac-soft) 65%, transparent);
 }
 .landing-header-actions {
   margin-left: auto;
-  gap: 18px;
+  gap: 16px;
+}
+.landing-auth-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 16px;
+  border-left: 1px solid var(--line);
 }
 .landing-language {
   display: inline-flex;
@@ -127,10 +141,11 @@ html:has(.landing-page) {
   justify-content: center;
   gap: 7px;
   margin: 0;
-  min-height: 38px;
-  padding: 8px 10px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  min-height: 40px;
+  padding: 8px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--muted);
   font-size: 13px;
   font-weight: 500;
 }
@@ -179,9 +194,24 @@ html:has(.landing-page) {
   outline-offset: -2px;
 }
 .landing-login {
-  padding: 10px 16px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  color: var(--ink);
+  transition: background 160ms ease-out;
+}
+.landing-login:hover {
+  background: var(--workspace);
+}
+.landing-header :is(a, button):focus-visible {
+  outline: 2px solid var(--lilac-ink);
+  outline-offset: 3px;
+}
+.landing-header :is(.landing-login, .landing-language):active {
+  background: var(--lilac-soft);
 }
 .landing-hero-frame {
   background: color-mix(in oklch, var(--lilac-soft) 48%, var(--bg));
@@ -198,13 +228,6 @@ html:has(.landing-page) {
   position: relative;
   z-index: 1;
   animation: landing-hook-copy 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-.landing-hero-intro {
-  margin: 0 0 20px;
-  color: var(--lilac-ink);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.5;
 }
 .landing-hero h1 {
   display: flex;
@@ -339,6 +362,7 @@ html:has(.landing-page) {
   opacity: 1;
 }
 .landing-page .button {
+  border-radius: 8px;
   min-height: 48px;
   padding: 13px 20px;
   font-weight: 500;
@@ -346,9 +370,11 @@ html:has(.landing-page) {
   white-space: nowrap;
 }
 .landing-page .landing-signup {
-  min-height: 38px;
-  padding: 9px 16px;
+  min-height: 40px;
+  padding: 8px 18px;
   font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
 }
 .landing-page .landing-join-submit {
   flex-shrink: 0;
@@ -927,7 +953,7 @@ html:has(.landing-page) {
     gap: 20px;
   }
   .landing-nav {
-    gap: 20px;
+    gap: 4px;
   }
   .landing-header-actions {
     gap: 10px;
@@ -979,11 +1005,16 @@ html:has(.landing-page) {
   }
   .landing-header-actions {
     margin-left: auto;
+    gap: 4px;
+  }
+  .landing-auth-actions {
+    padding-left: 0;
+    border-left: 0;
     gap: 2px;
   }
   .landing-language {
     width: 40px;
-    min-height: 34px;
+    min-height: 40px;
     padding: 6px 4px;
     gap: 4px;
     font-size: 12px;
@@ -1013,10 +1044,6 @@ html:has(.landing-page) {
   .landing-hero-actions {
     gap: 10px;
     flex-wrap: wrap;
-  }
-  .landing-hero-intro {
-    font-size: 12px;
-    margin-bottom: 14px;
   }
   .landing-join {
     flex-direction: column;
@@ -1048,7 +1075,7 @@ html:has(.landing-page) {
     font-size: 13px;
   }
   .landing-page .landing-signup {
-    min-height: 34px;
+    min-height: 40px;
     padding: 8px 10px;
     font-size: 12px;
   }
@@ -1256,8 +1283,9 @@ html:has(.landing-page) {
   }
   .landing-menu-trigger {
     display: inline-flex;
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
   }
   .landing-mobile-nav:popover-open {
     display: flex;
@@ -1297,5 +1325,9 @@ html:has(.landing-page) {
   }
   .landing-header {
     gap: 6px;
+  }
+  .landing-language,
+  .landing-menu-trigger {
+    width: 36px;
   }
 }

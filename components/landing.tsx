@@ -376,15 +376,17 @@ function LandingContent() {
           </nav>
           <div className="landing-header-actions">
             <LandingLanguage />
-            <Link className="landing-login" href="/giris">
-              {t("Giriş yap")}
-            </Link>
-            <Link
-              className="button primary landing-signup"
-              href="/giris?mod=kayit"
-            >
-              {t("Kayıt ol")}
-            </Link>
+            <div className="landing-auth-actions">
+              <Link className="landing-login" href="/giris">
+                {t("Giriş yap")}
+              </Link>
+              <Link
+                className="button primary landing-signup"
+                href="/giris?mod=kayit"
+              >
+                {t("Kayıt ol")}
+              </Link>
+            </div>
             <button
               className="icon-button landing-menu-trigger"
               popoverTarget={mobileMenuId}
