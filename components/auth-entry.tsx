@@ -68,48 +68,26 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
         </div>
       </header>
       <main className="access-layout">
-        <section className="access-story" aria-labelledby="access-title">
-          <div className="access-story-copy">
-            <span className="access-launch">
-              <span aria-hidden="true" />
-              {t("Yeni bir öğrenme deneyimi, çok yakında.")}
-            </span>
-            <h1 id="access-title">
-              {t("Eğitiminin her anında,")}
-              <br />
-              <span>{t("yanında bir ajan.")}</span>
-            </h1>
-            <p>
-              {t(
-                "Hazırlığından öğrenme sonuçlarına, LİNBA’nın yapay zekâ ajanlarıyla tanış.",
-              )}
-            </p>
-          </div>
-          <div className="access-art">
-            <img
-              src="/landing/hero-learning-space.webp"
-              width={1024}
-              height={768}
-              alt={t(
-                "Eğitim, katılım ve öğrenmeyi bir araya getiren LİNBA ajanlarının izometrik görünümü",
-              )}
-              fetchPriority="high"
-            />
-          </div>
-          <div className="access-agent-roles" aria-label={t("LİNBA ajanları")}>
-            <span>
-              <Icon name="mic" size={19} />
-              {t("Birlikte pratik yap.")}
-            </span>
-            <span>
-              <Icon name="chat" size={19} />
-              {t("Katılımı güçlendir.")}
-            </span>
-            <span>
-              <Icon name="chart" size={19} />
-              {t("Öğrenmeyi anla.")}
-            </span>
-          </div>
+        <section className="access-experience" aria-labelledby="access-title">
+          <h1 id="access-title">{t("Beklerken, ajanlarla tanış.")}</h1>
+          <p>
+            {t(
+              "Örnek bir eğitimde LİNBA ajanlarını ücretsiz deneyimle. Hesap oluşturman gerekmez.",
+            )}
+          </p>
+          <ErrorNote message={experienceError} />
+          <button
+            className="button access-experience-button"
+            disabled={experiencing}
+            onClick={experience}
+          >
+            {t(
+              experiencing
+                ? "Deneyimin hazırlanıyor…"
+                : "LİNBA ajanlarını deneyimle",
+            )}
+            <Icon name={experiencing ? "spinner" : "arrow"} size={19} />
+          </button>
         </section>
         <section
           className="access-invitation"
@@ -136,9 +114,6 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
             </div>
           ) : (
             <>
-              <span className="access-section-label">
-                {t("Bekleme listesi")}
-              </span>
               <h2 id="access-waitlist-title">
                 {t("İlk haberdar olanlardan ol.")}
               </h2>
@@ -175,30 +150,6 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
               </p>
             </>
           )}
-          <div className="access-experience">
-            <div className="access-experience-heading">
-              <Icon name="sparkle" size={22} />
-              <h3>{t("Beklerken, ajanlarla tanış.")}</h3>
-            </div>
-            <p>
-              {t(
-                "Örnek bir eğitimde LİNBA ajanlarını ücretsiz deneyimle. Hesap oluşturman gerekmez.",
-              )}
-            </p>
-            <ErrorNote message={experienceError} />
-            <button
-              className="button access-experience-button"
-              disabled={experiencing}
-              onClick={experience}
-            >
-              {t(
-                experiencing
-                  ? "Deneyimin hazırlanıyor…"
-                  : "LİNBA ajanlarını deneyimle",
-              )}
-              <Icon name={experiencing ? "spinner" : "arrow"} size={19} />
-            </button>
-          </div>
           <p className="access-existing">
             {t("Zaten hesabın var mı?")}{" "}
             <Link href="/giris?mod=giris">{t("Giriş yap")}</Link>

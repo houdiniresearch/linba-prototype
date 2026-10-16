@@ -9,7 +9,7 @@ export default function Loading() {
         <Logo />
       </header>
       <main className="access-layout" aria-hidden="true">
-        <div className="access-story access-loading-story">
+        <div className="access-loading-block">
           <Skeleton className="sk-line" />
           <Skeleton className="sk-auth-display" />
         </div>

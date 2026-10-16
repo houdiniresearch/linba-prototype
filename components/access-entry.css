@@ -5,7 +5,7 @@
   background: var(--bg);
 }
 .access-header {
-  width: min(1360px, 100%);
+  width: min(1280px, 100%);
   margin-inline: auto;
   padding: 28px 40px;
   display: flex;
@@ -32,106 +32,54 @@
   color: var(--ink);
 }
 .access-layout {
-  width: min(1280px, calc(100% - 80px));
+  width: min(1060px, calc(100% - 80px));
   margin: auto;
   display: grid;
-  grid-template-columns: minmax(0, 1.18fr) minmax(0, 1fr);
-  gap: clamp(48px, 6vw, 100px);
-  align-items: center;
-  padding-block: 12px 28px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 80px;
+  align-items: start;
+  padding-block: 64px;
 }
-.access-story {
-  position: relative;
-  overflow: hidden;
-  border-radius: 16px;
-  background: var(--lilac-soft);
-  padding: 38px 40px 28px;
+.access-experience {
+  padding-top: 0;
 }
-.access-launch {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--lilac-ink);
-  font-size: 12px;
-  font-weight: 500;
-}
-.access-launch > span {
-  width: 6px;
-  height: 6px;
-  background: var(--brand-lilac);
-  border-radius: 50%;
-}
-.access-story h1 {
-  margin: 22px 0 16px;
-  font-size: clamp(32px, 3.25vw, 46px);
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 1.15;
-  text-wrap: initial;
-}
-.access-story h1 > span {
-  color: var(--lilac-ink);
-}
-.access-story-copy > p {
-  max-width: 38ch;
-  color: var(--muted);
-  font-size: 15px;
-  line-height: 1.75;
-  margin-bottom: 0;
-  text-wrap: pretty;
-}
-.access-art {
-  max-width: 500px;
-  margin: -4px auto -18px;
-}
-.access-art img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 4/3;
-  object-fit: contain;
-}
-.access-agent-roles {
-  display: flex;
-  justify-content: space-between;
-  gap: 14px;
-  border-top: 1px solid color-mix(in oklch, var(--lilac-ink) 15%, transparent);
-  padding-top: 22px;
-}
-.access-agent-roles > span {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 9px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--lilac-ink);
-}
-.access-invitation {
-  padding-right: 24px;
-}
-.access-section-label {
-  display: block;
-  margin-bottom: 15px;
-  color: var(--lilac-ink);
-  font-size: 13px;
-  font-weight: 600;
-}
+.access-experience h1,
 .access-invitation h2 {
-  font-size: clamp(28px, 2.5vw, 36px);
+  font-size: clamp(28px, 2.7vw, 36px);
   line-height: 1.2;
   font-weight: 600;
   letter-spacing: -0.035em;
-  margin-bottom: 18px;
-  max-width: 15ch;
-  text-wrap: initial;
+  margin: 0 0 20px;
+  max-width: 17ch;
 }
+.access-experience > p,
 .access-invitation > p,
 .access-confirmation > p {
   color: var(--muted);
   font-size: 15px;
-  line-height: 1.75;
+  line-height: 1.8;
   max-width: 42ch;
   text-wrap: pretty;
+}
+.access-experience .access-experience-button {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 20px;
+  background: var(--lilac-soft);
+  border: 0;
+  border-radius: 8px;
+  color: var(--lilac-ink);
+  justify-content: space-between;
+  padding-inline: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.access-experience-button:hover {
+  background: color-mix(in oklch, var(--brand-lilac) 23%, var(--bg));
+}
+.access-invitation {
+  border-left: 1px solid var(--line);
+  padding-left: 64px;
 }
 .access-waitlist-form {
   display: flex;
@@ -140,9 +88,9 @@
   margin-top: 28px;
 }
 .access-waitlist-form label {
-  margin-bottom: 0;
   font-size: 13px;
   font-weight: 500;
+  margin-bottom: 0;
 }
 .access-waitlist-form input {
   width: 100%;
@@ -173,48 +121,8 @@
   font-size: 11px;
   line-height: 1.6;
 }
-.access-experience {
-  margin-top: 34px;
-  padding-top: 28px;
-  border-top: 1px solid var(--line);
-}
-.access-experience-heading {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--lilac-ink);
-}
-.access-experience h3 {
-  margin: 0;
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-.access-experience > p {
-  margin: 12px 0 18px;
-  max-width: 43ch;
-  font-size: 13px;
-  line-height: 1.8;
-  color: var(--muted);
-  text-wrap: pretty;
-}
-.access-experience .access-experience-button {
-  width: 100%;
-  min-height: 50px;
-  background: var(--lilac-soft);
-  border: 0;
-  border-radius: 8px;
-  color: var(--lilac-ink);
-  justify-content: space-between;
-  padding-inline: 20px;
-  font-size: 14px;
-  font-weight: 600;
-}
-.access-experience-button:hover {
-  background: color-mix(in oklch, var(--brand-lilac) 23%, var(--bg));
-}
 .access-invitation > .access-existing {
-  margin: 25px 0 0;
+  margin: 28px 0 0;
   font-size: 12px;
 }
 .access-existing a,
@@ -228,13 +136,13 @@
   text-decoration: underline;
 }
 .access-confirmation {
-  min-height: 295px;
+  min-height: 300px;
 }
 .access-confirmation-icon {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   color: var(--lilac-ink);
   background: var(--lilac-soft);
   border-radius: 50%;
@@ -252,7 +160,7 @@
   padding: 8px 0;
 }
 .access-footer {
-  width: min(1360px, 100%);
+  width: min(1280px, 100%);
   padding: 22px 40px;
   margin-inline: auto;
   display: flex;
@@ -265,42 +173,15 @@
   outline: 2px solid var(--lilac-ink);
   outline-offset: 4px;
 }
-@media (min-width: 1000px) and (max-height: 850px) {
-  .access-header {
-    padding-block: 20px;
-  }
-  .access-story {
-    padding: 28px 32px 24px;
-  }
-  .access-art {
-    max-width: 430px;
-    margin: -16px auto -24px;
-  }
-  .access-story h1 {
-    font-size: 38px;
-  }
-  .access-agent-roles {
-    padding-top: 16px;
-  }
-  .access-footer {
-    padding-block: 14px;
-  }
+.access-loading-block {
+  min-height: 350px;
 }
-@media (max-width: 1050px) {
+@media (max-width: 1000px) {
   .access-layout {
-    gap: 40px;
+    gap: 48px;
   }
   .access-invitation {
-    padding-right: 0;
-  }
-  .access-story {
-    padding-inline: 28px;
-  }
-  .access-agent-roles {
-    gap: 8px;
-  }
-  .access-agent-roles > span {
-    font-size: 11px;
+    padding-left: 40px;
   }
 }
 @media (max-width: 760px) {
@@ -317,35 +198,29 @@
     font-size: 12px;
   }
   .access-layout {
-    width: calc(100% - 48px);
+    width: min(480px, calc(100% - 48px));
     grid-template-columns: 1fr;
-    gap: 38px;
-    padding-block: 12px 32px;
+    gap: 40px;
+    padding-block: 40px;
   }
-  .access-story {
-    padding: 28px 28px 24px;
-  }
-  .access-story h1 {
-    font-size: clamp(28px, 5.5vw, 40px);
-  }
-  .access-art {
-    max-width: 390px;
-    margin: -10px auto -20px;
+  .access-experience h1,
+  .access-invitation h2 {
+    font-size: 30px;
+    max-width: 20ch;
   }
   .access-invitation {
-    max-width: 480px;
-    width: 100%;
-    margin-inline: auto;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding: 36px 0 0;
   }
-  .access-invitation h2 {
-    max-width: 20ch;
-    font-size: 30px;
-  }
-  .access-agent-roles > span {
-    font-size: 12px;
+  .access-experience .access-experience-button {
+    margin-top: 10px;
   }
   .access-footer {
     padding: 20px 24px;
+  }
+  .access-loading-block {
+    min-height: 240px;
   }
 }
 @media (max-width: 380px) {
@@ -362,31 +237,15 @@
   }
   .access-layout {
     width: calc(100% - 36px);
+    padding-block: 32px;
   }
-  .access-story {
-    padding: 24px 20px;
-  }
-  .access-launch {
-    font-size: 11px;
-  }
-  .access-story h1 {
+  .access-experience h1,
+  .access-invitation h2 {
     font-size: 28px;
-  }
-  .access-agent-roles > span {
-    font-size: 10px;
   }
   .access-footer {
     flex-direction: column;
     gap: 4px;
     padding-inline: 18px;
-  }
-}
-
-.access-loading-story {
-  min-height: 620px;
-}
-@media (max-width: 760px) {
-  .access-loading-story {
-    min-height: 440px;
   }
 }
