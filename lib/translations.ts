@@ -1,8 +1,37 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  Deneyimle: "Experience",
+  "LİNBA’yı keşfet": "Explore LİNBA",
+  "Yeni bir öğrenme deneyimi, çok yakında.":
+    "A new learning experience. Coming soon.",
+  "Eğitiminin her anında,": "At every step of your training,",
+  "yanında bir ajan.": "an agent by your side.",
+  "Hazırlığından öğrenme sonuçlarına, LİNBA’nın yapay zekâ ajanlarıyla tanış.":
+    "From preparation to learning outcomes, meet LİNBA’s AI agents.",
+  "Eğitim, katılım ve öğrenmeyi bir araya getiren LİNBA ajanlarının izometrik görünümü":
+    "An isometric view of LİNBA agents bringing training, participation and learning together",
+  "LİNBA ajanları": "LİNBA agents",
+  "Birlikte pratik yap.": "Practice together.",
+  "Katılımı güçlendir.": "Build participation.",
+  "Öğrenmeyi anla.": "Understand learning.",
+  "Listedesin.": "You’re on the list.",
+  "LİNBA kullanıma açıldığında ilk haberdar olanlardan olacaksın.":
+    "You’ll be among the first to know when LİNBA launches.",
+  "Farklı bir e-posta kullan": "Use a different email",
+  "İlk haberdar olanlardan ol.": "Be among the first to know.",
+  "LİNBA yakında kullanıma açılıyor. Yerini al, açılış haberini sana iletelim.":
+    "LİNBA is launching soon. Join the list and we’ll let you know when it’s ready.",
+  "Yalnızca LİNBA’nın açılışı ve yenilikleri hakkında.":
+    "Only updates about LİNBA’s launch and new features.",
+  "Beklerken, ajanlarla tanış.": "Meet the agents while you wait.",
+  "Örnek bir eğitimde LİNBA ajanlarını ücretsiz deneyimle. Hesap oluşturman gerekmez.":
+    "Experience LİNBA agents for free in a sample training. No account needed.",
+  "Deneyimin hazırlanıyor…": "Preparing your experience…",
+  "LİNBA ajanlarını deneyimle": "Experience LİNBA agents",
+
   "Şimdi Dene, Ücretsiz!": "Try Now, For Free!",
-  "LİNBA yakında kullanıma açılıyor. İlk haberdar olanlardan olmak için bekleme listesine katıl. O zamana kadar LİNBA’yı demo hesabıyla ücretsiz deneyebilirsin.":
-    "LİNBA is launching soon. Join the waitlist to be among the first to know. In the meantime, you can try LİNBA for free with a demo account.",
+  "LİNBA yakında kullanıma açılıyor. İlk haberdar olanlardan olmak için bekleme listesine katıl. O zamana kadar LİNBA’nın yapay zekâ ajanlarını ücretsiz deneyimleyebilirsin.":
+    "LİNBA is launching soon. Join the waitlist to be among the first to know. In the meantime, you can experience LİNBA’s AI agents for free.",
   "Etkileşimi aç. Katılımcılarını dahil et.":
     "Start the conversation. Engage your participants.",
   "Farklı roller, farklı ihtiyaçlar. Pratik, etkileşim ve değerlendirmede sana eşlik eden yapay zekâ ajanları.":

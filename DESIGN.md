@@ -115,4 +115,8 @@ Açılışın 1–2–3 seçeneklerinde dolu seçili kutu kullanılmaz; ince çe
 
 Anasayfadaki prova anlatımı “pratik yap / practice” olarak güncellendi; İngilizce katılım başlığı “engage participants.” ifadesini kullanır. Başlık, aşamalar, kullanım örnekleri, FAQ ve kapanış aynı dili izler.
 
-Entegrasyon grup başlıkları, ikonla birlikte 14 px / 600 ağırlıkta ve araç kartlarının iç boşluğuna hizalanarak sunulur. Alt grubun başlığı da aynı hizayı izler; dikey bağlantı noktasıyla metin arasında boşluk korunur. Deneme FAQ yanıtı LİNBA’nın yakında kullanıma açılacağını, ilk haberler için bekleme listesini ve demo hesabıyla ücretsiz denemeyi açıklar. Yanıtın sonundaki altı çizili “Şimdi Dene, Ücretsiz!” bağlantısı, demo hesabına erişilebilen giriş ekranına gider.
+Entegrasyon grup başlıkları, ikonla birlikte 14 px / 600 ağırlıkta ve araç kartlarının iç boşluğuna hizalanarak sunulur. Alt grubun başlığı da aynı hizayı izler; dikey bağlantı noktasıyla metin arasında boşluk korunur. Deneme FAQ yanıtı LİNBA’nın yakında kullanıma açılacağını, ilk haberler için bekleme listesini ve ajanları ücretsiz deneyimlemeyi açıklar. Yanıtın sonundaki altı çizili “Şimdi Dene, Ücretsiz!” bağlantısı, ajan deneyimi ve bekleme listesi ekranına gider.
+
+## Açılış öncesi karşılama
+
+`/giris` ve eski `/giris?mod=kayit` bağlantıları, hesap alanları yerine genel bekleme listesi ve “LİNBA ajanlarını deneyimle” seçeneğini gösterir. Solda mevcut izometrik sahne ve üç ajan rolü; sağda e-posta formu ve ayrı deneyim eylemi vardır. Bekleme listesi mevcut `public-waitlist` API’sine, deneyim mevcut örnek çalışma alanı akışına bağlanır. Başarı ve hata durumları ayrıdır. “Demo” sözcüğü kullanıcıya gösterilmez. Mevcut kullanıcı girişi küçük bağlantıdan `/giris?mod=giris` yolunda korunur. Katılımcı girişi değişmez. Mobilde sahne ve davet alt alta, koyu temada ortak tokenlarla gösterilir.

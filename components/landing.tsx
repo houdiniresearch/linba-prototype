@@ -306,7 +306,7 @@ const questions = [
   ],
   [
     "Nasıl deneyebilirim, bekleme listesi ne için?",
-    "LİNBA yakında kullanıma açılıyor. İlk haberdar olanlardan olmak için bekleme listesine katıl. O zamana kadar LİNBA’yı demo hesabıyla ücretsiz deneyebilirsin.",
+    "LİNBA yakında kullanıma açılıyor. İlk haberdar olanlardan olmak için bekleme listesine katıl. O zamana kadar LİNBA’nın yapay zekâ ajanlarını ücretsiz deneyimleyebilirsin.",
     true,
   ],
 ] as const;
@@ -376,14 +376,14 @@ function LandingContent() {
           <div className="landing-header-actions">
             <LandingLanguage />
             <div className="landing-auth-actions">
-              <Link className="landing-login" href="/giris">
+              <Link className="landing-login" href="/giris?mod=giris">
                 {t("Giriş yap")}
               </Link>
               <Link
                 className="button primary landing-signup"
                 href="/giris?mod=kayit"
               >
-                {t("Kayıt ol")}
+                {t("Deneyimle")}
               </Link>
             </div>
             <button
@@ -530,7 +530,7 @@ function LandingContent() {
           <a href="#entegrasyonlar">{t("Entegrasyonlar")}</a>
           <a href="#sorular">{t("Sık sorulanlar")}</a>
           <LandingWaitlistButton />
-          <Link href="/giris">{t("Giriş yap")}</Link>
+          <Link href="/giris?mod=giris">{t("Giriş yap")}</Link>
         </nav>
         <div
           className="landing-footer-socials"

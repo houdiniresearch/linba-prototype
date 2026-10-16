@@ -5,7 +5,7 @@ import { all, remove } from "../lib/db";
 
 const base = process.env.LINBA_TEST_URL || "http://localhost:3000";
 
-test("public landing, login and registration preserve authenticated workspace access", async () => {
+test("prelaunch welcome and existing login preserve authenticated workspace access", async () => {
   const root = await fetch(base);
   assert.equal(root.status, 200);
   assert.match(await root.text(), /class="landing-page"/);
@@ -13,12 +13,15 @@ test("public landing, login and registration preserve authenticated workspace ac
   assert.equal(preview.status, 200);
   assert.match(await preview.text(), /class="landing-page"/);
 
-  const login = await (await fetch(`${base}/giris`)).text();
+  for (const path of ["/giris", "/giris?mod=kayit"]) {
+    const welcome = await (await fetch(`${base}${path}`)).text();
+    assert.match(welcome, /access-waitlist-form/);
+    assert.match(welcome, /LİNBA ajanlarını deneyimle/);
+    assert.doesNotMatch(welcome, /type="password"/i);
+  }
+  const login = await (await fetch(`${base}/giris?mod=giris`)).text();
   assert.match(login, /autoComplete="current-password"/i);
   assert.doesNotMatch(login, /autoComplete="name"/i);
-  const signup = await (await fetch(`${base}/giris?mod=kayit`)).text();
-  assert.match(signup, /autoComplete="new-password"/i);
-  assert.match(signup, /autoComplete="name"/i);
 
   let userId: string | undefined;
   try {

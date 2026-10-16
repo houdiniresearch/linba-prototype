@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
 import { AuthEntry } from "@/components/auth-entry";
 
-export const metadata: Metadata = { title: "Giriş yap | LİNBA" };
+export const metadata: Metadata = {
+  title: "LİNBA ajanlarını deneyimle | LİNBA",
+};
 
 export default async function Page({
   searchParams,
@@ -12,5 +14,5 @@ export default async function Page({
 }) {
   if (await currentUser()) redirect("/");
   const { mod } = await searchParams;
-  return <AuthEntry register={mod === "kayit"} />;
+  return <AuthEntry login={mod === "giris"} />;
 }
