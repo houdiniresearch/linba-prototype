@@ -260,16 +260,19 @@ export function LandingIntegrations() {
     {
       id: "presentations",
       title: "Sunum araçları",
+      icon: "presentation",
       tools: ["powerpoint", "google-slides"],
     },
     {
       id: "meetings",
       title: "Canlı eğitim",
+      icon: "monitor",
       tools: ["teams", "zoom", "google-meet"],
     },
     {
       id: "assistants",
       title: "Yapay zekâ asistanları",
+      icon: "chat",
       tools: ["chatgpt", "claude"],
     },
   ] as const;
@@ -299,7 +302,7 @@ export function LandingIntegrations() {
             className="integration-path-meetings"
             d="M630 130C720 130 720 130 800 130"
           />
-          <path className="integration-path-assistants" d="M540 220V306" />
+          <path className="integration-path-assistants" d="M540 220V286" />
           <path
             className="integration-progress-path integration-progress-presentations"
             pathLength={1}
@@ -313,11 +316,11 @@ export function LandingIntegrations() {
           <path
             className="integration-progress-path integration-progress-assistants"
             pathLength={1}
-            d="M540 220V306"
+            d="M540 220V286"
           />
           <circle cx="280" cy="130" r="4" />
           <circle cx="800" cy="130" r="4" />
-          <circle cx="540" cy="306" r="4" />
+          <circle cx="540" cy="286" r="4" />
         </svg>
         <div className="landing-integration-hub">
           <Logo />
@@ -327,7 +330,10 @@ export function LandingIntegrations() {
             className={`landing-integration-group integration-group-${group.id}`}
             key={group.id}
           >
-            <h3>{t(group.title)}</h3>
+            <h3>
+              <Icon name={group.icon} size={17} />
+              <span>{t(group.title)}</span>
+            </h3>
             <div>
               {group.tools.map((id) => {
                 const item = integrations.find((tool) => tool.id === id)!;

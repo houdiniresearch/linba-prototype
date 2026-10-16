@@ -748,11 +748,20 @@ html:has(.landing-page) {
   text-align: left;
 }
 .landing-integration-group h3 {
-  margin: 0 0 14px;
-  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 22px;
+  padding-inline: 16px;
+  margin: 0 0 16px;
+  font-size: 14px;
   line-height: 1.5;
-  font-weight: 500;
-  color: var(--muted);
+  font-weight: 600;
+  color: var(--ink);
+}
+.landing-integration-group h3 > svg {
+  flex-shrink: 0;
+  color: var(--lilac-ink);
 }
 .landing-integration-group > div {
   display: grid;
@@ -775,9 +784,6 @@ html:has(.landing-page) {
   padding-top: 48px;
   justify-self: center;
   align-self: start;
-}
-.integration-group-assistants h3 {
-  text-align: center;
 }
 .landing-integration-group button {
   display: flex;
@@ -1586,4 +1592,20 @@ html:has(.landing-page) {
   ::view-transition-new(root) {
     animation: none;
   }
+}
+
+.landing-faq-try {
+  color: var(--lilac-ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+.landing-faq-try:hover {
+  color: var(--accent);
+}
+.landing-faq-try:focus-visible {
+  outline: 2px solid var(--lilac-ink);
+  outline-offset: 4px;
+  border-radius: 2px;
 }

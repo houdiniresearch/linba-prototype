@@ -306,7 +306,8 @@ const questions = [
   ],
   [
     "Nasıl deneyebilirim, bekleme listesi ne için?",
-    "Şimdi dene düğmesiyle hesap oluşturup mevcut özellikleri kullanmaya başlayabilirsin. Genel bekleme listesi, LİNBA’nın kullanıma açılışı ve yeni özellikleriyle ilgili haberler içindir. Entegrasyonlar henüz kullanıma açık değildir.",
+    "Hesap oluşturarak LİNBA’yı deneyebilirsin. Bekleme listesine katılarak yeni özelliklerden ve gelişmelerden haberdar olabilirsin.",
+    true,
   ],
 ] as const;
 
@@ -455,13 +456,22 @@ function LandingContent() {
             </p>
           </div>
           <div className="landing-faq-list">
-            {questions.map(([question, answer]) => (
+            {questions.map(([question, answer, tryLink]) => (
               <details key={question} name="landing-faq">
                 <summary>
                   {t(question)}
                   <Icon name="plus" size={26} />
                 </summary>
-                <p>{t(answer)}</p>
+                <p>
+                  {tryLink && (
+                    <>
+                      <Link className="landing-faq-try" href="/giris?mod=kayit">
+                        {t("Şimdi Dene, Ücretsiz!")}
+                      </Link>{" "}
+                    </>
+                  )}
+                  {t(answer)}
+                </p>
               </details>
             ))}
           </div>
@@ -494,7 +504,7 @@ function LandingContent() {
                 href="/giris?mod=kayit"
                 className="button primary landing-try-button"
               >
-                <span>{t("Şimdi dene, ücretsiz")}</span>
+                <span>{t("Şimdi Dene, Ücretsiz!")}</span>
                 <Icon name="arrow" size={18} />
               </Link>
               <LandingWaitlistButton className="button landing-waitlist-button" />

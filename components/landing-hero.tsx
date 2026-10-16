@@ -101,7 +101,7 @@ export function LandingHero() {
               href="/giris?mod=kayit"
               className="button primary landing-try-button"
             >
-              {t("Şimdi dene, ücretsiz")}
+              {t("Şimdi Dene, Ücretsiz!")}
               <Icon name="arrow" size={19} />
             </Link>
             <LandingWaitlistButton className="button landing-waitlist-button" />

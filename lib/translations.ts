@@ -1,5 +1,8 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Şimdi Dene, Ücretsiz!": "Try Now, For Free!",
+  "Hesap oluşturarak LİNBA’yı deneyebilirsin. Bekleme listesine katılarak yeni özelliklerden ve gelişmelerden haberdar olabilirsin.":
+    "Create an account to try LİNBA. Join the waitlist to hear about new features and updates.",
   "Etkileşimi aç. Katılımcılarını dahil et.":
     "Start the conversation. Engage your participants.",
   "Farklı roller, farklı ihtiyaçlar. Pratik, etkileşim ve değerlendirmede sana eşlik eden yapay zekâ ajanları.":

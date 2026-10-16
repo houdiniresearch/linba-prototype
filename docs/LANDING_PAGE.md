@@ -2,7 +2,7 @@
 
 ## Kararlar
 
-- Ana kayıt çağrısı “Şimdi dene, ücretsiz”dir. Üst çubuk masaüstünde 68 px, mobilde 64 px; girişin sağında ayrı kayıt bağlantısı vardır. İlk ekranda yinelenen “Nasıl çalışır?” bağlantısı kaldırılmıştır, üst gezinmede korunur.
+- Ana kayıt çağrısı “Şimdi Dene, Ücretsiz!”dir. Üst çubuk masaüstünde 68 px, mobilde 64 px; girişin sağında ayrı kayıt bağlantısı vardır. İlk ekranda yinelenen “Nasıl çalışır?” bağlantısı kaldırılmıştır, üst gezinmede korunur.
 
 - Marka korundu: özgün logo, Inter, fuşya eylemler ve lila/mint ayrıntılar.
 - Üst çubuk cam yüzeyle sayfada sabit kalır; gezinme logonun yanında, dil ve giriş sağdadır. Tanıtımda tema seçici gösterilmez, mevcut görünüm tercihi korunur. Bölüm bağlantıları sabit çubuğun altında boşluk bırakarak yumuşak kayar; azaltılmış hareket tercihinde doğrudan gider.
@@ -50,14 +50,16 @@ Ana sayfa eğitim için yapay zekâ ajanlarını üç somut kullanım üzerinden
 
 Başlık tek lila renktedir. Beyaz/tema zemini üzerinde üç farklı izometrik sahne, 4 saniyelik otomatik döngü ve sakin çapraz solmayla başlığa eşlik eder. Mevcut `hero-learning-space.webp` etkileşim sahnesinde korunur; `hero-agents-rehearsal.webp` ve `hero-agents-assessment.webp` yeni sahnelerdir. Görsel altındaki 1–2–3 ve kısa adlar mesajı seçer, süreyi yeniden başlatır; oynat/duraklat kontrolü yoktur. Ekran veya sekme görünür değilken döngü durur. Azaltılmış harekette otomatik geçiş kapalıdır, seçim düğmeleri çalışır. Sunucu ve ilk istemci çıktısı aynıdır. Tüm görsellerin alanı yüklenmeden ayrılır.
 
-Ana ve kapanış eylemleri “Şimdi dene, ücretsiz” ve “Bekleme listesine katıl”dır. İlk eylem kayıt yoluna gider; ikinci genel e-posta kayıt penceresini açar. Bekleme listesi üst menüye eklenmez. Kapanışta küçük `agents-invitation.webp` kullanılır; footer “Eğitim için yapay zekâ ajanları.” der. Özgün logo, Inter, fuşya ana eylemler ve 8 px düğme köşeleri korunur. Yeni görseller yerleşik imagegen ile üretilip gerçek alfa kanalı korunarak WebP olarak projeye kopyalanmıştır; promptlar docs/LANDING_GORSELLERI.md içinde saklanır.
+Ana ve kapanış eylemleri “Şimdi Dene, Ücretsiz!” ve “Bekleme listesine katıl”dır. İlk eylem kayıt yoluna gider; ikinci genel e-posta kayıt penceresini açar. Bekleme listesi üst menüye eklenmez. Kapanışta küçük `agents-invitation.webp` kullanılır; footer “Eğitim için yapay zekâ ajanları.” der. Özgün logo, Inter, fuşya ana eylemler ve 8 px düğme köşeleri korunur. Yeni görseller yerleşik imagegen ile üretilip gerçek alfa kanalı korunarak WebP olarak projeye kopyalanmıştır; promptlar docs/LANDING_GORSELLERI.md içinde saklanır.
 
 Entegrasyon haritası kaydırmaya doğrudan bağlıdır: araç grupları 30 px hareketten yerlerine otururken netleşir, merkezdeki logo hafifçe ölçeklenir ve üç bağlantı merkezden araçlara doğru çizilir. Her grubun ilerlemesi kendi yerleşim yüksekliğinden hesaplanır; yukarı kaydırma ilerlemeyi geri sarar. Tek seferlik zaman animasyonu, sabitleme veya tekerlek/dokunma engeli yoktur. IntersectionObserver yalnız harita yakınındayken pasif scroll dinleyicisinin requestAnimationFrame boyamasını etkinleştirir. Okumalar yazmalardan önce yapılır, offsetTop/offsetHeight sayesinde dönüşümler kendi hesaplarına etki etmez. Sunucu/JS kapalı ve azaltılmış hareket durumlarında içerik bütünüyle görünürdür. Klavye odağı alan grup daima tam okunaklıdır. Tarayıcının View Transition desteği varsa dil seçimi 160–260 ms çapraz solmayla güncellenir; destek yoksa veya hareket azaltılmışsa doğrudan değişir. Etki yalnız tanıtım sayfasında kullanılır.
 
-Altı FAQ; ajan rolleri, kitlenin provayı şekillendirmesi, kaynaklı öğrenme yanıtları, öğrenme değerlendirmesi, eğitim sonrası erişim ve deneme/bekleme listesi ayrımını kapsar. Entegrasyonların henüz kullanıma açık olmadığı açıkça söylenir. Mevcut dört kullanım senaryosu ve eğitim öncesi/sırası/sonrası kart yapısı korunur.
+Altı FAQ; ajan rolleri, kitlenin provayı şekillendirmesi, kaynaklı öğrenme yanıtları, öğrenme değerlendirmesi, eğitim sonrası erişim ve deneme/bekleme listesi ayrımını kapsar. Entegrasyonların planlandığı bölümün kısa açıklamasında belirtilir; deneme FAQ yanıtında bu bilgi tekrarlanmaz. Mevcut dört kullanım senaryosu ve eğitim öncesi/sırası/sonrası kart yapısı korunur.
 
 Footer, marka/açıklama, iki sütunlu gezinme ve sosyal medya olarak düzenlenir. LinkedIn, Instagram, X ve YouTube ikonları mevcut Phosphor ailesindendir. Gerçek hesap adresleri henüz verilmediği için yerel disabled düğmelerdir; bağlantı veya tıklama işlemi yoktur. Sosyal alanda yalnız ikonlar görünür; başlık ve yakında etiketi kullanılmaz. Mobilde alanlar alt alta gelir; 44 px sosyal düğmeler ve en altta ayırıcıyla telif satırı korunur.
 
 Açılışın 1–2–3 seçeneklerinde dolu seçili kutu kullanılmaz; ince çerçeveli, hafif lila zeminli sayı ve metin rengi aktif adımı belirtir. Görsel yalnız solmayla değişir, başlıktaki dikey hareket 4 px ile sınırlıdır; çıkış girişten daha kısadır. Otomatik süre ve tıklayarak seçim davranışı korunur.
 
 Anasayfadaki prova anlatımı “pratik yap / practice” olarak güncellendi; İngilizce katılım başlığı “engage participants.” ifadesini kullanır. Başlık, aşamalar, kullanım örnekleri, FAQ ve kapanış aynı dili izler.
+
+Entegrasyon grup başlıkları, ikonla birlikte 14 px / 600 ağırlıkta ve araç kartlarının iç boşluğuna hizalanarak sunulur. Alt grubun başlığı da aynı hizayı izler; dikey bağlantı noktasıyla metin arasında boşluk korunur. Deneme FAQ yanıtı kayıt yoluna giden altı çizili “Şimdi Dene, Ücretsiz!” bağlantısıyla açılır.
