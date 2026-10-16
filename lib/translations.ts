@@ -1,5 +1,30 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Kitleyi tanı": "Your audience",
+  "Aktif dinleme": "Active listening",
+  "Geri bildirim": "Feedback",
+  Yanıtlar: "Responses",
+  "AI analizi": "AI analysis",
+  "Sorunu sor": "Ask a question",
+  "Yanıtı keşfet": "Explore the answer",
+  "Kaynağa dön": "View the source",
+  "Kitleni tarif et.": "Describe your audience.",
+  "Yeni başlayan bir ekibe ürün eğitimi.":
+    "Product training for a team of new starters.",
+  "Yeni başlayan": "New starter",
+  "Müşteri temsilcisi": "Customer representative",
+  "Meraklı katılımcı": "Curious participant",
+  "Anlatımını sesli dene.": "Rehearse your delivery out loud.",
+  "Prova geri bildirimi": "Rehearsal feedback",
+  "Önce ihtiyacı sor, sonra fiyatı bağlama oturt.":
+    "Ask about their needs first, then put the price in context.",
+  "Bir soru daha.": "One more question.",
+  "Sunumun, sorulara açık kalsın.": "Keep your presentation open to questions.",
+  "Kaynağa geri dön.": "Return to the source.",
+  "Önce dinle. Sonra kendi cümlelerinle özetle.":
+    "Listen first. Then summarise in your own words.",
+  "Örnek prova: eğitmen kitlesini tarif eder, sunumunu sesli anlatır ve yapay zekâ katılımcısının fiyat sorusuna hazırlanmak için geri bildirim alır.":
+    "Example rehearsal: an instructor describes their audience, rehearses out loud and receives feedback to prepare for an AI participant’s pricing question.",
   "Korelasyon, nedensellik anlamına gelir mi?":
     "Does correlation imply causation?",
   "Ortak fikirler": "Shared ideas",
