@@ -60,10 +60,6 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
           <Logo />
         </Link>
         <div>
-          <Link className="access-back" href="/kesfet">
-            <Icon name="back" size={16} />
-            {t("LİNBA’yı keşfet")}
-          </Link>
           <ThemeMenu />
         </div>
       </header>

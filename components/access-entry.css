@@ -21,16 +21,6 @@
   align-items: center;
   gap: 24px;
 }
-.access-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--muted);
-  font-size: 13px;
-}
-.access-back:hover {
-  color: var(--ink);
-}
 .access-layout {
   width: min(1060px, calc(100% - 80px));
   margin: auto;
@@ -194,9 +184,6 @@
   .access-header > div {
     gap: 12px;
   }
-  .access-back {
-    font-size: 12px;
-  }
   .access-layout {
     width: min(480px, calc(100% - 48px));
     grid-template-columns: 1fr;
@@ -226,14 +213,6 @@
 @media (max-width: 380px) {
   .access-header {
     padding-inline: 18px;
-  }
-  .access-back {
-    font-size: 0;
-    gap: 0;
-  }
-  .access-back svg {
-    width: 20px;
-    height: 20px;
   }
   .access-layout {
     width: calc(100% - 36px);
