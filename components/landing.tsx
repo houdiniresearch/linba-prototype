@@ -376,14 +376,11 @@ function LandingContent() {
           <div className="landing-header-actions">
             <LandingLanguage />
             <div className="landing-auth-actions">
-              <Link className="landing-login" href="/giris?mod=giris">
+              <Link className="landing-login" href="/giris">
                 {t("Giriş yap")}
               </Link>
-              <Link
-                className="button primary landing-signup"
-                href="/giris?mod=kayit"
-              >
-                {t("Deneyimle")}
+              <Link className="button primary landing-signup" href="/giris">
+                {t("Kayıt ol")}
               </Link>
             </div>
             <button
@@ -530,7 +527,7 @@ function LandingContent() {
           <a href="#entegrasyonlar">{t("Entegrasyonlar")}</a>
           <a href="#sorular">{t("Sık sorulanlar")}</a>
           <LandingWaitlistButton />
-          <Link href="/giris?mod=giris">{t("Giriş yap")}</Link>
+          <Link href="/giris">{t("Giriş yap")}</Link>
         </nav>
         <div
           className="landing-footer-socials"
