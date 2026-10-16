@@ -10,12 +10,12 @@ const audiences = [
     id: "corporate",
     label: "Kurumsal eğitmen",
     title: "Yeni bir ekibe, hazırlıklı bir başlangıç.",
-    text: "Ürün eğitimini yeni başlayanlara anlatmadan önce kitleni tarif et. Katılımcılarını temsil eden yapay zekâ ajanlarıyla sesli prova yap; anlatımın, tempon ve sorulara verdiğin yanıtlar hakkında geri bildirim al.",
+    text: "Ürün eğitimini yeni başlayanlara anlatmadan önce kitleni tarif et. Katılımcılarını temsil eden yapay zekâ ajanlarıyla sesli pratik yap; anlatımın, tempon ve sorulara verdiğin yanıtlar hakkında geri bildirim al.",
     benefit: "Eğitimine hazırlıklı git.",
     filename: "Ürün eğitimi.pdf",
-    scenes: ["Kitleyi tanı", "Sesli prova", "Geri bildirim"],
+    scenes: ["Kitleyi tanı", "Sesli pratik", "Geri bildirim"],
     summary:
-      "Örnek prova: eğitmen kitlesini tarif eder ve katılımcıları temsil eden yapay zekâ ajanlarıyla sesli prova yapar. Prova sonrasında anlatımının netliği, temposu ve sorulara verdiği yanıtlarla ilgili performans geri bildirimi alır.",
+      "Örnek pratik: eğitmen kitlesini tarif eder ve katılımcıları temsil eden yapay zekâ ajanlarıyla sesli pratik yapar. Pratik sonrasında anlatımının netliği, temposu ve sorulara verdiği yanıtlarla ilgili performans geri bildirimi alır.",
   },
   {
     id: "academic",
@@ -269,7 +269,7 @@ function AudienceDemo({
         <div className="audience-demo-scene" data-active={scene === 2}>
           <span className="audience-message-label">
             <Icon name="sparkle" size={16} />
-            {t("Prova performansın")}
+            {t("Pratik performansın")}
           </span>
           <h4 className="audience-scene-title">
             {t("Anlatımına dışarıdan bak.")}
@@ -824,7 +824,7 @@ export function LandingAudience() {
           <h2 id={`${id}-title`}>{t("Senin eğitimine göre.")}</h2>
           <p>
             {t(
-              "Farklı roller, farklı ihtiyaçlar. Prova, etkileşim ve değerlendirmede sana eşlik eden yapay zekâ ajanları.",
+              "Farklı roller, farklı ihtiyaçlar. Pratik, etkileşim ve değerlendirmede sana eşlik eden yapay zekâ ajanları.",
             )}
           </p>
         </div>

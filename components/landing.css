@@ -672,9 +672,40 @@ html:has(.landing-page) {
   fill: none;
   stroke: currentColor;
   stroke-width: 1.6;
-  opacity: 0.6;
-  stroke-dasharray: 5 7;
-  animation: integration-connection-flow 16s linear infinite;
+  opacity: 0.22;
+}
+.landing-integration-paths .integration-progress-path {
+  stroke-width: 2;
+  opacity: 0.85;
+  stroke-dasharray: 1;
+  transition: stroke-dashoffset 100ms linear;
+}
+.integration-progress-presentations {
+  stroke-dashoffset: calc(1 - var(--integration-presentations, 1));
+}
+.integration-progress-meetings {
+  stroke-dashoffset: calc(1 - var(--integration-meetings, 1));
+}
+.integration-progress-assistants {
+  stroke-dashoffset: calc(1 - var(--integration-assistants, 1));
+}
+.landing-integration-group {
+  opacity: calc(0.3 + 0.7 * var(--integration-reveal, 1));
+  transform: translateY(calc(30px * (1 - var(--integration-reveal, 1))));
+  transition:
+    opacity 100ms linear,
+    transform 100ms linear;
+}
+.landing-integration-group:focus-within {
+  opacity: 1;
+  transform: none;
+}
+.landing-integration-hub {
+  opacity: calc(0.55 + 0.45 * var(--integration-reveal, 1));
+  transform: scale(calc(0.94 + 0.06 * var(--integration-reveal, 1)));
+  transition:
+    opacity 100ms linear,
+    transform 100ms linear;
 }
 .landing-integration-paths circle {
   fill: currentColor;
@@ -781,11 +812,6 @@ html:has(.landing-page) {
   flex-shrink: 0;
   object-fit: contain;
 }
-@keyframes integration-connection-flow {
-  to {
-    stroke-dashoffset: -192;
-  }
-}
 @media (max-width: 850px) {
   .landing-integration-map {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -866,8 +892,15 @@ html:has(.landing-page) {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .landing-integration-paths path {
-    animation: none;
+  .landing-integration-group,
+  .landing-integration-hub {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .landing-integration-paths .integration-progress-path {
+    stroke-dashoffset: 0;
+    transition: none;
   }
 }
 .integration-chatgpt-symbol {

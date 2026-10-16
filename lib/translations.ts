@@ -1,5 +1,33 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Etkileşimi aç. Katılımcılarını dahil et.":
+    "Start the conversation. Engage your participants.",
+  "Farklı roller, farklı ihtiyaçlar. Pratik, etkileşim ve değerlendirmede sana eşlik eden yapay zekâ ajanları.":
+    "Different roles, different needs. AI agents that support practice, engagement and assessment.",
+  "Pratik performansın": "Your practice performance",
+  "Örnek pratik: eğitmen kitlesini tarif eder ve katılımcıları temsil eden yapay zekâ ajanlarıyla sesli pratik yapar. Pratik sonrasında anlatımının netliği, temposu ve sorulara verdiği yanıtlarla ilgili performans geri bildirimi alır.":
+    "Example practice: an instructor describes their audience and practices out loud with AI agents representing the participants. Afterwards, they receive performance feedback on clarity, pace and how they handled questions.",
+  "Sesli pratik": "Voice practice",
+  "Ürün eğitimini yeni başlayanlara anlatmadan önce kitleni tarif et. Katılımcılarını temsil eden yapay zekâ ajanlarıyla sesli pratik yap; anlatımın, tempon ve sorulara verdiğin yanıtlar hakkında geri bildirim al.":
+    "Describe your audience before delivering product training to new starters. Practice out loud with AI agents representing your participants, and get feedback on your delivery, pace and responses to questions.",
+  "Pratik yap, katılımcılarınla etkileşim kur, öğrenme ihtiyaçlarını keşfet.":
+    "Practice, engage your participants and discover learning needs.",
+  "Pratik yap, katılımcılarını dahil et, öğrenme ihtiyaçlarını gör.":
+    "Practice, involve your participants and identify learning needs.",
+  "Kitleni, deneyim düzeyini ve eğitim bağlamını tarif edersin. Bu tanıma göre oluşturulan yapay zekâ ajanları sesli pratiğine sorularla katılır. Geri bildirim, senin anlatımının netliği, tempon ve sorulara verdiğin yanıtlarla ilgilidir.":
+    "Describe your audience, their experience and the training context. AI agents created from this brief join your voice practice with questions. Feedback focuses on the clarity of your delivery, your pace and how you respond.",
+  "Pratik ajanları kitleme nasıl uyum sağlar?":
+    "How do practice agents adapt to my audience?",
+  "Eğitimden önce katılımcılarını temsil eden ajanlarla sesli pratik yaparsın. Eğitim sırasında öğrenme ajanı katılımcıların sorularını eğitim kaynaklarına dayanarak yanıtlar. Sonrasında rapor ajanıyla soruları, aktivite yanıtlarını ve öğrenme ihtiyaçlarını birlikte incelersin.":
+    "Before training, practice out loud with agents representing your participants. During training, a learning agent answers participant questions using your training materials. Afterwards, review questions, activity responses and learning needs with the report agent.",
+  "Kitleni tarif et. Katılımcılarını temsil eden yapay zekâ ajanlarıyla sesli pratik yap; anlatımını ve sorulara verdiğin yanıtları geliştir.":
+    "Describe your audience. Practice out loud with AI agents representing your participants, and improve your delivery and responses to questions.",
+  "Pratik yapmana, katılımı artırmana ve öğrenmeyi değerlendirmene yardımcı olan yapay zekâ ajanları.":
+    "AI agents that help you practice, engage participants and assess learning.",
+  "Eğitmenin yapay zekâ katılımcı ajanlarıyla sesli pratiğini gösteren izometrik sahne":
+    "An isometric scene of an instructor practicing out loud with AI participant agents",
+  Pratik: "Practice",
+  "Pratik yapmana": "practice.",
   Yakında: "Coming soon",
   "Sosyal medya": "Social media",
   "Bizi takip et": "Follow us",
@@ -86,7 +114,7 @@ const en: Record<string, string> = {
   "Prova yap, katılımcılarını dahil et, öğrenme ihtiyaçlarını gör.":
     "Rehearse, involve your participants and identify learning needs.",
   "Prova yapmana": "rehearse.",
-  "Katılımı artırmana": "engage everyone.",
+  "Katılımı artırmana": "engage participants.",
   "Öğrenmeyi sürdürmene": "keep learning.",
   "yardımcı olan yapay zekâ.": "AI that helps you",
   "Prova yapmana, katılımı artırmana ve öğrenmeyi sürdürmene yardımcı olan yapay zekâ.":

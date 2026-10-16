@@ -4,7 +4,7 @@ import { Landing } from "@/components/landing";
 export const metadata: Metadata = {
   title: "LİNBA | Eğitim için yapay zekâ ajanları",
   description:
-    "Yapay zekâ ajanlarıyla sesli prova yap, katılımcılarla etkileşim kur ve öğrenme sonuçlarını değerlendir.",
+    "Yapay zekâ ajanlarıyla sesli pratik yap, katılımcılarla etkileşim kur ve öğrenme sonuçlarını değerlendir.",
   alternates: { canonical: "/" },
 };
 

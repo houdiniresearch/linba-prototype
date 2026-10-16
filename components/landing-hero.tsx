@@ -9,10 +9,10 @@ import { LandingWaitlistButton } from "./landing-integrations";
 
 const moments = [
   {
-    headline: "Prova yapmana",
-    label: "Prova",
+    headline: "Pratik yapmana",
+    label: "Pratik",
     image: "hero-agents-rehearsal.webp",
-    alt: "Eğitmenin yapay zekâ katılımcı ajanlarıyla sesli provasını gösteren izometrik sahne",
+    alt: "Eğitmenin yapay zekâ katılımcı ajanlarıyla sesli pratiğini gösteren izometrik sahne",
   },
   {
     headline: "Katılımı artırmana",
@@ -77,7 +77,7 @@ export function LandingHero() {
           <h1
             id="landing-title"
             aria-label={t(
-              "Prova yapmana, katılımı artırmana ve öğrenmeyi değerlendirmene yardımcı olan yapay zekâ ajanları.",
+              "Pratik yapmana, katılımı artırmana ve öğrenmeyi değerlendirmene yardımcı olan yapay zekâ ajanları.",
             )}
           >
             <span className="landing-hero-rotator" aria-hidden="true">

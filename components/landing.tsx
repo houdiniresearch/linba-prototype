@@ -31,7 +31,7 @@ const stages = [
     label: "Eğitimden önce",
     detailIcons: ["file", "mic"],
     title: "Kitleni tanı. Anlatımını dene.",
-    text: "Kitleni tarif et. Katılımcılarını temsil eden yapay zekâ ajanlarıyla sesli prova yap; anlatımını ve sorulara verdiğin yanıtları geliştir.",
+    text: "Kitleni tarif et. Katılımcılarını temsil eden yapay zekâ ajanlarıyla sesli pratik yap; anlatımını ve sorulara verdiğin yanıtları geliştir.",
     details: [
       "Kitlene göre oluşturulan yapay zekâ ajanları",
       "Anlatımına ve tempona yönelik geri bildirim",
@@ -42,7 +42,7 @@ const stages = [
   {
     label: "Eğitim sırasında",
     detailIcons: ["activity", "chat"],
-    title: "Etkileşimi aç. Herkesi dahil et.",
+    title: "Etkileşimi aç. Katılımcılarını dahil et.",
     text: "Etkinliklerle yanıtları topla. Öğrenme ajanı katılımcıların sorularını eğitim kaynaklarına dayanarak yanıtlasın; sen de eğitimin akışına odaklan.",
     details: [
       "Anket, açık uçlu soru ve senaryolar",
@@ -286,11 +286,11 @@ function LandingLanguage() {
 const questions = [
   [
     "LİNBA’nın yapay zekâ ajanları ne yapar?",
-    "Eğitimden önce katılımcılarını temsil eden ajanlarla sesli prova yaparsın. Eğitim sırasında öğrenme ajanı katılımcıların sorularını eğitim kaynaklarına dayanarak yanıtlar. Sonrasında rapor ajanıyla soruları, aktivite yanıtlarını ve öğrenme ihtiyaçlarını birlikte incelersin.",
+    "Eğitimden önce katılımcılarını temsil eden ajanlarla sesli pratik yaparsın. Eğitim sırasında öğrenme ajanı katılımcıların sorularını eğitim kaynaklarına dayanarak yanıtlar. Sonrasında rapor ajanıyla soruları, aktivite yanıtlarını ve öğrenme ihtiyaçlarını birlikte incelersin.",
   ],
   [
-    "Prova ajanları kitlime nasıl uyum sağlar?",
-    "Kitleni, deneyim düzeyini ve eğitim bağlamını tarif edersin. Bu tanıma göre oluşturulan yapay zekâ ajanları sesli provana sorularla katılır. Geri bildirim, senin anlatımının netliği, tempon ve sorulara verdiğin yanıtlarla ilgilidir.",
+    "Pratik ajanları kitleme nasıl uyum sağlar?",
+    "Kitleni, deneyim düzeyini ve eğitim bağlamını tarif edersin. Bu tanıma göre oluşturulan yapay zekâ ajanları sesli pratiğine sorularla katılır. Geri bildirim, senin anlatımının netliği, tempon ve sorulara verdiğin yanıtlarla ilgilidir.",
   ],
   [
     "Öğrenme ajanı yanıtlarını neye dayandırır?",
@@ -430,7 +430,7 @@ function LandingContent() {
             </h2>
             <p>
               {t(
-                "Prova yap, katılımcılarını dahil et, öğrenme ihtiyaçlarını gör.",
+                "Pratik yap, katılımcılarını dahil et, öğrenme ihtiyaçlarını gör.",
               )}
             </p>
           </div>
@@ -486,7 +486,7 @@ function LandingContent() {
             </h2>
             <p>
               {t(
-                "Prova yap, katılımcılarınla etkileşim kur, öğrenme ihtiyaçlarını keşfet.",
+                "Pratik yap, katılımcılarınla etkileşim kur, öğrenme ihtiyaçlarını keşfet.",
               )}
             </p>
             <div className="landing-cta-actions">
