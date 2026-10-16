@@ -4,8 +4,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useId,
-  useLayoutEffect,
   useRef,
   useState,
   type ReactNode,
@@ -256,110 +254,6 @@ export function LandingIntegrations() {
         ))}
       </div>
     </section>
-  );
-}
-
-export function LandingIntegrationMenu() {
-  const { t } = useLocale();
-  const openWaitlist = useWaitlist();
-  const id = useId();
-  const trigger = useRef<HTMLButtonElement>(null);
-  const panel = useRef<HTMLDivElement>(null);
-  const [expanded, setExpanded] = useState(false);
-  const position = useCallback(() => {
-    if (!trigger.current || !panel.current) return;
-    const rect = trigger.current.getBoundingClientRect();
-    const menu = panel.current.getBoundingClientRect();
-    panel.current.style.left = `${Math.max(12, Math.min(rect.left, window.innerWidth - menu.width - 12))}px`;
-    panel.current.style.top = `${rect.bottom + menu.height + 8 <= window.innerHeight - 12 ? rect.bottom + 8 : Math.max(12, rect.top - menu.height - 8)}px`;
-  }, []);
-  useLayoutEffect(() => {
-    if (!expanded) return;
-    position();
-    window.addEventListener("resize", position);
-    window.addEventListener("scroll", position, true);
-    return () => {
-      window.removeEventListener("resize", position);
-      window.removeEventListener("scroll", position, true);
-    };
-  }, [expanded, position]);
-  return (
-    <div className="landing-waitlist-control">
-      <button
-        type="button"
-        className="landing-waitlist-trigger"
-        ref={trigger}
-        popoverTarget={id}
-        aria-expanded={expanded}
-        aria-controls={id}
-      >
-        {t("Entegrasyonlar")}
-        <Icon name="downCaret" size={13} />
-      </button>
-      <div
-        id={id}
-        ref={panel}
-        popover="auto"
-        className="landing-waitlist-menu"
-        role="group"
-        aria-label={t("Planlanan entegrasyonlar")}
-        onToggle={(event) => {
-          const open = event.newState === "open";
-          setExpanded(open);
-          if (open) {
-            position();
-            panel.current?.querySelector("button")?.focus();
-          }
-        }}
-        onKeyDown={(event) => {
-          if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key))
-            return;
-          event.preventDefault();
-          const items = Array.from(
-            event.currentTarget.querySelectorAll("button"),
-          );
-          const current = items.indexOf(
-            document.activeElement as HTMLButtonElement,
-          );
-          const next =
-            event.key === "Home"
-              ? 0
-              : event.key === "End"
-                ? items.length - 1
-                : (current +
-                    (event.key === "ArrowDown" ? 1 : -1) +
-                    items.length) %
-                  items.length;
-          items[next]?.focus();
-        }}
-      >
-        <p>{t("Planlanan entegrasyonlar")}</p>
-        {integrations.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            aria-haspopup="dialog"
-            onClick={() => {
-              panel.current?.hidePopover();
-              const mobileNav = trigger.current?.closest<HTMLElement>(
-                ".landing-mobile-nav",
-              );
-              mobileNav?.hidePopover();
-              const returnTo = mobileNav
-                ? document.querySelector<HTMLButtonElement>(
-                    ".landing-menu-trigger",
-                  )
-                : trigger.current;
-              if (returnTo) openWaitlist(item, returnTo);
-            }}
-          >
-            <IntegrationLogo id={item.id} size={24} />
-            <span>{item.name}</span>
-            <Icon name="arrow" size={16} />
-          </button>
-        ))}
-      </div>
-    </div>
   );
 }
 

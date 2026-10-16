@@ -105,62 +105,6 @@ html:has(.landing-page) {
 .landing-waitlist-trigger[aria-expanded="true"] {
   color: var(--accent);
 }
-.landing-waitlist-trigger > svg {
-  transition: transform 160ms ease-out;
-}
-.landing-waitlist-trigger[aria-expanded="true"] > svg {
-  transform: rotate(180deg);
-}
-.landing-waitlist-menu {
-  position: fixed;
-  inset: auto;
-  width: 268px;
-  max-width: calc(100vw - 24px);
-  max-height: calc(100dvh - 24px);
-  overflow-y: auto;
-  margin: 0;
-  padding: 8px;
-  color: var(--ink);
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  box-shadow: 0 3px 8px oklch(0.15 0.01 300 / 0.1);
-}
-.landing-waitlist-menu > p {
-  margin: 0;
-  padding: 8px 10px 10px;
-  font-size: 12px;
-  color: var(--muted);
-}
-.landing-waitlist-menu > button {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  min-height: 46px;
-  padding: 10px;
-  border-radius: 7px;
-  font-size: 14px;
-  text-align: left;
-}
-.landing-waitlist-menu > button:hover {
-  background: var(--workspace);
-}
-.landing-waitlist-menu > button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
-}
-.landing-waitlist-menu > button > img,
-.landing-waitlist-menu .integration-chatgpt-symbol {
-  flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-}
-.landing-waitlist-menu > button > svg:last-child {
-  margin-left: auto;
-  color: var(--muted);
-}
 .landing-login {
   font-size: 13px;
   font-weight: 500;

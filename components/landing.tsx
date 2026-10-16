@@ -16,7 +16,6 @@ import { useLocale } from "./locale-provider";
 import { LandingAudience } from "./landing-audience";
 import {
   LandingIntegrations,
-  LandingIntegrationMenu,
   LandingWaitlistButton,
   LandingWaitlistProvider,
 } from "./landing-integrations";
@@ -372,8 +371,8 @@ function LandingContent() {
           <nav className="landing-nav" aria-label={t("Ana gezinme")}>
             <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
             <a href="#kimler-icin">{t("Kullanım senaryoları")}</a>
+            <a href="#entegrasyonlar">{t("Entegrasyonlar")}</a>
             <a href="#sorular">{t("Sık sorulanlar")}</a>
-            <LandingIntegrationMenu />
             <LandingWaitlistButton />
           </nav>
           <div className="landing-header-actions">
@@ -412,8 +411,8 @@ function LandingContent() {
           >
             <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
             <a href="#kimler-icin">{t("Kullanım senaryoları")}</a>
+            <a href="#entegrasyonlar">{t("Entegrasyonlar")}</a>
             <a href="#sorular">{t("Sık sorulanlar")}</a>
-            <LandingIntegrationMenu />
             <LandingWaitlistButton />
           </nav>
         </header>
@@ -526,7 +525,8 @@ function LandingContent() {
         <nav className="landing-footer-links" aria-label={t("Alt gezinme")}>
           <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
           <a href="#kimler-icin">{t("Kullanım senaryoları")}</a>
-          <LandingIntegrationMenu />
+          <a href="#entegrasyonlar">{t("Entegrasyonlar")}</a>
+          <a href="#sorular">{t("Sık sorulanlar")}</a>
           <LandingWaitlistButton />
           <Link href="/giris">{t("Giriş yap")}</Link>
         </nav>

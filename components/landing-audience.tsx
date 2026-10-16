@@ -413,193 +413,307 @@ function AudienceDemo({
   );
 }
 
-export function LandingAudience() {
+type Audience = (typeof audiences)[number];
+
+function AudiencePanel({
+  audience,
+  active,
+  enhanced,
+  paused,
+  onPause,
+  reduced,
+  visible,
+}: {
+  audience: Audience;
+  active: boolean;
+  enhanced: boolean;
+  paused: boolean;
+  onPause: () => void;
+  reduced: boolean;
+  visible: boolean;
+}) {
   const { t } = useLocale();
-  const [selected, setSelected] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const panel = useRef<HTMLElement>(null);
   const [inView, setInView] = useState(false);
-  const [visible, setVisible] = useState(true);
-  const [reduced, setReduced] = useState(false);
   const [scene, setScene] = useState(0);
   const [sceneRestart, setSceneRestart] = useState(0);
-  const section = useRef<HTMLElement>(null);
-  const tabs = useRef<Array<HTMLButtonElement | null>>([]);
-  const id = useId();
-  const audience = audiences[selected];
+  const running =
+    inView && (!enhanced || active) && visible && !paused && !reduced;
   const selectScene = (index: number) => {
     setScene(index);
     setSceneRestart((current) => current + 1);
   };
-  const selectAudience = (index: number) => {
-    setSelected(index);
-    selectScene(0);
-  };
-
-  useEffect(() => {
-    if (!inView || !visible || paused || reduced) return;
-    const timer = window.setInterval(
-      () => setScene((current) => (current + 1) % 3),
-      4500,
-    );
-    return () => window.clearInterval(timer);
-  }, [audience.id, inView, visible, paused, reduced, scene, sceneRestart]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting),
-      { threshold: 0.12 },
+      { threshold: 0.3 },
     );
-    if (section.current) observer.observe(section.current);
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const motion = () => setReduced(media.matches);
+    if (panel.current) observer.observe(panel.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (active) {
+      setScene(0);
+      setSceneRestart((current) => current + 1);
+    }
+  }, [active]);
+
+  useEffect(() => {
+    if (!running) return;
+    const timer = window.setTimeout(
+      () => setScene((current) => (current + 1) % 3),
+      4500,
+    );
+    return () => window.clearTimeout(timer);
+  }, [running, scene, sceneRestart]);
+
+  return (
+    <article
+      className="audience-panel"
+      id={`senaryo-${audience.id}`}
+      aria-labelledby={`senaryo-${audience.id}-title`}
+      data-active={active}
+      aria-hidden={enhanced && !active ? true : undefined}
+      inert={enhanced && !active}
+      ref={panel}
+    >
+      <div className="audience-copy">
+        <p className="audience-profile-label">{t(audience.label)}</p>
+        <h3 id={`senaryo-${audience.id}-title`}>{t(audience.title)}</h3>
+        <p>{t(audience.text)}</p>
+        <div className="audience-benefit">
+          <Icon name="check" size={19} />
+          <span>{t(audience.benefit)}</span>
+        </div>
+      </div>
+      <div className="audience-preview" data-running={running}>
+        <div className="audience-preview-toolbar">
+          <span>{t("Örnek senaryo")}</span>
+          {!reduced && (
+            <button
+              type="button"
+              onClick={onPause}
+              aria-label={t(
+                paused ? "Animasyonu oynat" : "Animasyonu duraklat",
+              )}
+              aria-pressed={paused}
+              title={t(paused ? "Animasyonu oynat" : "Animasyonu duraklat")}
+            >
+              <Icon name={paused ? "play" : "pause"} size={17} />
+            </button>
+          )}
+        </div>
+        <div className="audience-demo-window" aria-hidden="true">
+          <div className="audience-demo-header">
+            <Icon name="file" size={18} />
+            <span>{t(audience.filename)}</span>
+            <span className="audience-window-dots">
+              <i />
+              <i />
+              <i />
+            </span>
+          </div>
+          <AudienceDemo kind={audience.id} scene={scene} />
+        </div>
+        <div
+          className="audience-scene-controls"
+          role="group"
+          aria-label={t("Örnek sahneleri")}
+        >
+          {audience.scenes.map((label, index) => (
+            <button
+              key={label}
+              type="button"
+              aria-label={`${index + 1}. ${t(label)}`}
+              aria-pressed={scene === index}
+              onClick={() => selectScene(index)}
+            >
+              <span className="audience-scene-number">
+                {scene === index && (
+                  <svg
+                    className="audience-scene-progress"
+                    key={`${scene}-${sceneRestart}`}
+                    viewBox="0 0 32 32"
+                    aria-hidden="true"
+                  >
+                    <circle cx="16" cy="16" r="14" />
+                  </svg>
+                )}
+                {index + 1}
+              </span>
+              <span>{t(label)}</span>
+            </button>
+          ))}
+        </div>
+        <p className="sr-only">{t(audience.summary)}</p>
+      </div>
+    </article>
+  );
+}
+
+export function LandingAudience() {
+  const { t } = useLocale();
+  const [selected, setSelected] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const [reduced, setReduced] = useState(false);
+  const [enhanced, setEnhanced] = useState(false);
+  const section = useRef<HTMLElement>(null);
+  const shell = useRef<HTMLDivElement>(null);
+  const id = useId();
+
+  useEffect(() => {
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const viewport = window.matchMedia(
+      "(min-width: 1000px) and (min-height: 800px)",
+    );
+    const update = () => {
+      setReduced(motion.matches);
+      setEnhanced(viewport.matches && !motion.matches);
+    };
     const visibility = () => setVisible(!document.hidden);
-    motion();
+    update();
     visibility();
-    media.addEventListener("change", motion);
+    motion.addEventListener("change", update);
+    viewport.addEventListener("change", update);
     document.addEventListener("visibilitychange", visibility);
     return () => {
-      observer.disconnect();
-      media.removeEventListener("change", motion);
+      motion.removeEventListener("change", update);
+      viewport.removeEventListener("change", update);
       document.removeEventListener("visibilitychange", visibility);
     };
   }, []);
+
+  useEffect(() => {
+    const container = section.current;
+    const content = shell.current;
+    if (!container || !content) return;
+    let frame = 0;
+    let inView = false;
+    const measure = () => {
+      if (enhanced)
+        container.style.setProperty(
+          "--audience-shell-height",
+          `${content.offsetHeight}px`,
+        );
+    };
+    const sizeObserver = new ResizeObserver(measure);
+    if (enhanced) sizeObserver.observe(content);
+    measure();
+    const paint = () => {
+      frame = 0;
+      if (!inView) return;
+      if (enhanced) {
+        const top = container.getBoundingClientRect().top;
+        const padding = parseFloat(getComputedStyle(container).paddingTop);
+        const pin = parseFloat(getComputedStyle(content).top);
+        const distance = Math.max(0, pin - top - padding);
+        const next = Math.min(
+          audiences.length - 1,
+          Math.floor((distance + 1) / (window.innerHeight * 0.75)),
+        );
+        setSelected((current) => (current === next ? current : next));
+      } else {
+        const panels = Array.from(
+          container.querySelectorAll<HTMLElement>(".audience-panel"),
+        );
+        const focusLine = window.innerHeight * 0.4;
+        const next = panels.reduce(
+          (best, panel, index) =>
+            Math.abs(panel.getBoundingClientRect().top - focusLine) <
+            Math.abs(panels[best].getBoundingClientRect().top - focusLine)
+              ? index
+              : best,
+          0,
+        );
+        setSelected((current) => (current === next ? current : next));
+      }
+    };
+    const schedule = () => {
+      if (inView && !frame) frame = window.requestAnimationFrame(paint);
+    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting;
+        schedule();
+      },
+      { rootMargin: "100px" },
+    );
+    observer.observe(container);
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      observer.disconnect();
+      sizeObserver.disconnect();
+      container.style.removeProperty("--audience-shell-height");
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      window.cancelAnimationFrame(frame);
+    };
+  }, [enhanced]);
 
   return (
     <section
       className="landing-audience landing-container"
       id="kimler-icin"
       aria-labelledby={`${id}-title`}
+      data-scroll-enhanced={enhanced}
       ref={section}
     >
-      <div className="audience-heading">
-        <h2 id={`${id}-title`}>{t("Senin eğitimine göre.")}</h2>
-        <p>
-          {t(
-            "Farklı kitleler, farklı ihtiyaçlar. Aynı sunumdan başlayan bir eğitim alanı.",
-          )}
-        </p>
-      </div>
-      <div
-        className="audience-tabs"
-        role="tablist"
-        aria-label={t("Eğitmen profilleri")}
-        onKeyDown={(event) => {
-          if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key))
-            return;
-          event.preventDefault();
-          const next =
-            event.key === "Home"
-              ? 0
-              : event.key === "End"
-                ? audiences.length - 1
-                : (selected +
-                    (event.key === "ArrowRight" ? 1 : -1) +
-                    audiences.length) %
-                  audiences.length;
-          selectAudience(next);
-          tabs.current[next]?.focus();
-        }}
-      >
-        {audiences.map((item, index) => (
-          <button
-            key={item.id}
-            type="button"
-            role="tab"
-            id={`${id}-tab-${index}`}
-            aria-selected={selected === index}
-            aria-controls={`${id}-panel`}
-            tabIndex={selected === index ? 0 : -1}
-            ref={(element) => {
-              tabs.current[index] = element;
-            }}
-            onClick={() => selectAudience(index)}
-          >
-            {t(item.label)}
-          </button>
-        ))}
-      </div>
-      <div
-        className="audience-panel"
-        role="tabpanel"
-        id={`${id}-panel`}
-        aria-labelledby={`${id}-tab-${selected}`}
-        tabIndex={0}
-      >
-        <div className="audience-copy" key={`${audience.id}-copy`}>
-          <h3>{t(audience.title)}</h3>
-          <p>{t(audience.text)}</p>
-          <div className="audience-benefit">
-            <Icon name="check" size={19} />
-            <span>{t(audience.benefit)}</span>
-          </div>
-        </div>
-        <div
-          className="audience-preview"
-          data-running={inView && visible && !paused && !reduced}
-        >
-          <div className="audience-preview-toolbar">
-            <span>{t("Örnek senaryo")}</span>
-            {!reduced && (
-              <button
-                type="button"
-                onClick={() => setPaused((current) => !current)}
-                aria-label={t(
-                  paused ? "Animasyonu oynat" : "Animasyonu duraklat",
-                )}
-                aria-pressed={paused}
-                title={t(paused ? "Animasyonu oynat" : "Animasyonu duraklat")}
-              >
-                <Icon name={paused ? "play" : "pause"} size={17} />
-              </button>
+      <div className="audience-scroll-shell" ref={shell}>
+        <div className="audience-heading">
+          <h2 id={`${id}-title`}>{t("Senin eğitimine göre.")}</h2>
+          <p>
+            {t(
+              "Farklı kitleler, farklı ihtiyaçlar. Aynı sunumdan başlayan bir eğitim alanı.",
             )}
-          </div>
-          <div
-            className="audience-demo-window"
-            key={audience.id}
-            aria-hidden="true"
-          >
-            <div className="audience-demo-header">
-              <Icon name="file" size={18} />
-              <span>{t(audience.filename)}</span>
-              <span className="audience-window-dots">
-                <i />
-                <i />
-                <i />
-              </span>
-            </div>
-            <AudienceDemo kind={audience.id} scene={scene} />
-          </div>
-          <div
-            className="audience-scene-controls"
-            role="group"
-            aria-label={t("Örnek sahneleri")}
-          >
-            {audience.scenes.map((label, index) => (
-              <button
-                key={label}
-                type="button"
-                aria-label={`${index + 1}. ${t(label)}`}
-                aria-pressed={scene === index}
-                onClick={() => selectScene(index)}
-              >
-                <span className="audience-scene-number">
-                  {scene === index && (
-                    <svg
-                      className="audience-scene-progress"
-                      key={`${audience.id}-${scene}-${sceneRestart}`}
-                      viewBox="0 0 32 32"
-                      aria-hidden="true"
-                    >
-                      <circle cx="16" cy="16" r="14" />
-                    </svg>
-                  )}
-                  {index + 1}
-                </span>
-                <span>{t(label)}</span>
-              </button>
-            ))}
-          </div>
-          <p className="sr-only">{t(audience.summary)}</p>
+          </p>
+        </div>
+        <nav className="audience-tabs" aria-label={t("Eğitmen profilleri")}>
+          {audiences.map((item, index) => (
+            <a
+              key={item.id}
+              href={`#senaryo-${item.id}`}
+              aria-current={selected === index ? "step" : undefined}
+              onClick={(event) => {
+                if (!enhanced || !section.current || !shell.current) return;
+                event.preventDefault();
+                const container = section.current;
+                const padding = parseFloat(
+                  getComputedStyle(container).paddingTop,
+                );
+                const pin = parseFloat(getComputedStyle(shell.current).top);
+                window.scrollTo({
+                  top:
+                    window.scrollY +
+                    container.getBoundingClientRect().top +
+                    padding -
+                    pin +
+                    index * window.innerHeight * 0.75 +
+                    2,
+                  behavior: "smooth",
+                });
+              }}
+            >
+              {t(item.label)}
+            </a>
+          ))}
+        </nav>
+        <div className="audience-panels">
+          {audiences.map((audience, index) => (
+            <AudiencePanel
+              key={audience.id}
+              audience={audience}
+              active={selected === index}
+              enhanced={enhanced}
+              paused={paused}
+              onPause={() => setPaused((current) => !current)}
+              reduced={reduced}
+              visible={visible}
+            />
+          ))}
         </div>
       </div>
     </section>
