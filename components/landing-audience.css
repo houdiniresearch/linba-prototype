@@ -396,21 +396,13 @@
   font-weight: 600;
   color: var(--ink);
 }
-.audience-confusion-heading > span {
-  margin-left: auto;
-  padding: 4px 7px;
-  border-radius: 4px;
-  font-size: 9px;
-  color: var(--lilac-ink);
-  background: var(--lilac-soft);
-}
 .audience-confusion-subtitle {
   margin: 5px 0 14px;
   font-size: 11px;
   color: var(--muted);
 }
 .audience-confusion-detail {
-  color: var(--lilac-ink);
+  color: light-dark(oklch(0.65 0.14 85), oklch(0.82 0.15 90));
 }
 .audience-confusion-detail > svg {
   display: block;

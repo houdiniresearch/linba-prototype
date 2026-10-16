@@ -162,7 +162,6 @@ function AudienceDemo({
         >
           <div className="audience-confusion-heading">
             <strong>Confusion spike</strong>
-            <span>{t("Konsept")}</span>
           </div>
           <p className="audience-confusion-subtitle">
             {t("Kafa karışıklığı sinyali")}
@@ -259,7 +258,7 @@ export function LandingAudience() {
       return;
     const timer = window.setInterval(
       () => setAcademicScene((current) => (current + 1) % 3),
-      8000,
+      6000,
     );
     return () => window.clearInterval(timer);
   }, [audience.id, inView, visible, paused, reduced, academicScene]);
