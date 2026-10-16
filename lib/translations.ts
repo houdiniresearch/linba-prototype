@@ -1,5 +1,37 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "İki değer birlikte artıyorsa biri diğerinin nedenidir.":
+    "If two values increase together, one causes the other.",
+  "Bazı yanıtlar, birlikte değişimi doğrudan neden-sonuç ilişkisi olarak yorumluyor.":
+    "Some responses interpret correlation as a direct cause-and-effect relationship.",
+
+  "Yanıtları topla. Düşünme biçimlerini gör.":
+    "Collect responses. Understand the thinking behind them.",
+  "Açık uçlu bir soruyla öğrencilerinden yazılı yanıtlar al. Yapay zekâ, yanıtlardaki ortak fikirleri ve kavram yanılgılarını özetlesin; sen nerede yeniden açıklama gerektiğini gör.":
+    "Invite written responses to an open question. Let AI summarise shared ideas and misconceptions so you can see what needs another explanation.",
+  "Tek tek yanıtların ötesinde, sınıfın nasıl düşündüğünü anla.":
+    "Understand how your class is thinking, beyond individual answers.",
+  "Araştırma yöntemleri.pdf": "Research methods.pdf",
+  "Örnek yapay zekâ etkinliği: öğrenciler korelasyon ve nedensellik sorusuna yazılı yanıt verir; yapay zekâ ortak kavram yanılgısını özetler. Önerilen confusion spike özelliği, benzer soruların bir slaytta yoğunlaştığını eğitmene gösterir.":
+    "Example AI activity: students write responses about correlation and causation, and AI summarises a shared misconception. The proposed confusion spike feature highlights similar questions concentrated on one slide for the instructor.",
+  "Yapay zekâ etkinliği": "AI activity",
+  "Birlikte artan iki değer arasında neden-sonuç ilişkisi var mıdır? Açıkla.":
+    "Does an increase in two values mean that one causes the other? Explain.",
+  "Örnek yazılı yanıtlar": "Example written responses",
+  "Birlikte artıyorsa biri diğerine neden oluyor olabilir.":
+    "If they increase together, one might be causing the other.",
+  "Üçüncü bir etken ikisini de etkiliyor olabilir.":
+    "A third factor could be affecting both of them.",
+  "Yapay zekâ analizi": "AI analysis",
+  "Yanıtlar, birlikte değişim ile neden-sonuç ilişkisinin karıştırılabildiğini gösteriyor.":
+    "The responses suggest that correlation and causation may be getting confused.",
+  "Kafa karışıklığı sinyali": "Confusion signal",
+  Konsept: "Concept",
+  "Slayt 08 · Benzer sorular bu kavramda yoğunlaşıyor.":
+    "Slide 08 · Similar questions are clustering around this concept.",
+  "Bir karşı örnekle yeniden açıklamayı düşün.":
+    "Consider revisiting it with a counterexample.",
+
   "Senin eğitimine göre.": "Built around your training.",
   "Farklı kitleler, farklı ihtiyaçlar. Aynı sunumdan başlayan bir eğitim alanı.":
     "Different audiences, different needs. One training workspace built around your slides.",

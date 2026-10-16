@@ -19,12 +19,12 @@ const audiences = [
   {
     id: "academic",
     label: "Öğretim görevlisi",
-    title: "Anlattığın konu, birlikte düşünülen bir soruya dönüşsün.",
-    text: "Sunumuna kısa bir aktivite yerleştir. O slayta geldiğinde öğrenciler telefonlarından yanıtlasın; sorularıyla derse katılsın.",
-    benefit: "Katılımı dersinin doğal bir parçası yap.",
-    filename: "Veri okuryazarlığı.pdf",
+    title: "Yanıtları topla. Düşünme biçimlerini gör.",
+    text: "Açık uçlu bir soruyla öğrencilerinden yazılı yanıtlar al. Yapay zekâ, yanıtlardaki ortak fikirleri ve kavram yanılgılarını özetlesin; sen nerede yeniden açıklama gerektiğini gör.",
+    benefit: "Tek tek yanıtların ötesinde, sınıfın nasıl düşündüğünü anla.",
+    filename: "Araştırma yöntemleri.pdf",
     summary:
-      "Örnek ders içi aktivite: slayttaki grafik sorusu öğrencinin telefonunda açılır ve öğrenci yanıtını gönderir.",
+      "Örnek yapay zekâ etkinliği: öğrenciler korelasyon ve nedensellik sorusuna yazılı yanıt verir; yapay zekâ ortak kavram yanılgısını özetler. Önerilen confusion spike özelliği, benzer soruların bir slaytta yoğunlaştığını eğitmene gösterir.",
   },
   {
     id: "independent",
@@ -81,38 +81,71 @@ function AudienceDemo({ kind }: { kind: (typeof audiences)[number]["id"] }) {
     );
   if (kind === "academic")
     return (
-      <div className="audience-classroom">
-        <div className="audience-chart-slide">
-          <span>{t("Grafiği nasıl yorumlarsın?")}</span>
-          <div className="audience-chart">
-            <i />
-            <i />
-            <i />
-            <i />
-          </div>
-          <p>{t("Veriden bir çıkarım yap.")}</p>
+      <div className="audience-academic">
+        <div className="audience-activity-question">
+          <span className="audience-message-label">
+            <Icon name="activity" size={16} />
+            {t("Yapay zekâ etkinliği")}
+          </span>
+          <strong>
+            {t(
+              "Birlikte artan iki değer arasında neden-sonuç ilişkisi var mıdır? Açıkla.",
+            )}
+          </strong>
         </div>
-        <div className="audience-phone audience-arrival-one">
-          <div className="audience-phone-speaker" />
-          <span className="audience-message-label">{t("Sıra sende")}</span>
-          <strong>{t("Grafikte nasıl bir değişim var?")}</strong>
-          <div className="audience-option">
-            <span>A</span>
-            {t("Azalıyor")}
+        <div className="audience-written-responses audience-arrival-one">
+          <span className="audience-message-label">
+            {t("Örnek yazılı yanıtlar")}
+          </span>
+          <div>
+            <span className="audience-response-dot" />
+            <p>{t("İki değer birlikte artıyorsa biri diğerinin nedenidir.")}</p>
           </div>
-          <div className="audience-option audience-option-selected">
-            <span>B</span>
-            {t("Artıyor")}
-            <Icon name="check" size={16} />
+          <div>
+            <span className="audience-response-dot" />
+            <p>{t("Üçüncü bir etken ikisini de etkiliyor olabilir.")}</p>
           </div>
-          <div className="audience-option">
-            <span>C</span>
-            {t("Değişmiyor")}
+        </div>
+        <div className="audience-response-analysis audience-arrival-two">
+          <span className="audience-message-label">
+            <Icon name="sparkle" size={16} />
+            {t("Yapay zekâ analizi")}
+          </span>
+          <p>
+            {t(
+              "Bazı yanıtlar, birlikte değişimi doğrudan neden-sonuç ilişkisi olarak yorumluyor.",
+            )}
+          </p>
+        </div>
+        <div className="audience-confusion-signal audience-arrival-three">
+          <div className="audience-confusion-heading">
+            <Icon name="warning" size={17} />
+            <strong>{t("Kafa karışıklığı sinyali")}</strong>
+            <span>{t("Konsept")}</span>
           </div>
-          <div className="audience-sent audience-arrival-two">
-            <Icon name="check" size={16} />
-            {t("Yanıtın gönderildi")}
+          <div className="audience-confusion-detail">
+            <svg width="76" height="32" viewBox="0 0 76 32" aria-hidden="true">
+              <path
+                d="M1 28H75"
+                fill="none"
+                stroke="currentColor"
+                opacity=".18"
+              />
+              <path
+                d="M2 24L13 23L23 25L34 21L44 22L54 6L64 16L74 20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <circle cx="54" cy="6" r="3" fill="currentColor" />
+            </svg>
+            <p>{t("Slayt 08 · Benzer sorular bu kavramda yoğunlaşıyor.")}</p>
           </div>
+          <span className="audience-confusion-suggestion">
+            {t("Bir karşı örnekle yeniden açıklamayı düşün.")}
+          </span>
         </div>
       </div>
     );
