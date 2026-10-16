@@ -1,5 +1,15 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  Başlangıç: "Start",
+  Etkinlik: "Activity",
+  Bitiş: "End",
+  "Korelasyon ve nedensellik": "Correlation and causation",
+  "Net açıklama": "Clear explanation",
+  "Kısmi açıklama": "Partial explanation",
+  "Tekrar gerekli": "Needs review",
+  "Yeniden ele alınmalı": "Revisit this topic",
+  "Benzer sorular ve eksik yanıtlar bu konuda yoğunlaşıyor.":
+    "Similar questions and incomplete answers cluster around this topic.",
   "Bitki hücresi": "Plant cell",
   "Hayvan hücresi": "Animal cell",
   "Hücre duvarı var": "Cell wall present",

@@ -67,27 +67,79 @@ function AudienceDemo({
           className="audience-demo-scene audience-report-cover"
           data-active={scene === 0}
         >
-          <span className="audience-report-cover-icon">
-            <Icon name="chart" size={36} />
-          </span>
-          <span className="audience-message-label">{t("Eğitim raporu")}</span>
-          <h4 className="audience-scene-title">{t("Araştırma yöntemleri")}</h4>
-          <p className="audience-report-date">
-            {t("15 Ekim 2026 · Tamamlanan eğitim")}
-          </p>
-          <div className="audience-report-contents">
-            <span>
-              <Icon name="users" size={18} />
-              {t("Öğrenci katılımı")}
-            </span>
-            <span>
-              <Icon name="activity" size={18} />
-              {t("Etkinlik yanıtları")}
-            </span>
-            <span>
-              <Icon name="chart" size={18} />
-              {t("Öğrenci davranışları")}
-            </span>
+          <div className="audience-report-heading">
+            <div className="audience-report-topline">
+              <span>{t("Eğitim raporu")}</span>
+              <span className="audience-report-status">
+                <i />
+                {t("Tamamlandı")}
+              </span>
+            </div>
+            <h4>{t("Araştırma yöntemleri")}</h4>
+            <p>{t("15 Ekim 2026 · Tamamlanan eğitim")}</p>
+          </div>
+          <div className="audience-report-visuals">
+            <div className="audience-report-participation">
+              <h5>{t("Öğrenci katılımı")}</h5>
+              <svg
+                viewBox="0 0 320 100"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path
+                  className="audience-report-grid"
+                  d="M0 18H320M0 52H320M0 86H320M96 0V100M224 0V100"
+                />
+                <path
+                  className="audience-report-area"
+                  d="M0 77C16 77 22 63 40 66S62 42 80 45S102 24 120 30S142 52 160 43S182 57 200 46S220 22 240 26S262 11 280 19S304 16 320 14V100H0Z"
+                />
+                <path
+                  className="audience-report-line"
+                  d="M0 77C16 77 22 63 40 66S62 42 80 45S102 24 120 30S142 52 160 43S182 57 200 46S220 22 240 26S262 11 280 19S304 16 320 14"
+                />
+                <circle
+                  cx="200"
+                  cy="46"
+                  r="5"
+                  fill="var(--bg)"
+                  stroke="var(--lilac-ink)"
+                  strokeWidth="2"
+                />
+              </svg>
+              <div className="audience-report-axis">
+                <span>{t("Başlangıç")}</span>
+                <span>{t("Etkinlik")}</span>
+                <span>{t("Bitiş")}</span>
+              </div>
+            </div>
+            <div className="audience-report-responses">
+              <h5>{t("Etkinlik yanıtları")}</h5>
+              <div className="audience-report-response-bars">
+                {[
+                  { label: "Net açıklama", width: "48%", tone: "clear" },
+                  { label: "Kısmi açıklama", width: "34%", tone: "partial" },
+                  { label: "Tekrar gerekli", width: "18%", tone: "review" },
+                ].map((item) => (
+                  <div key={item.tone} data-tone={item.tone}>
+                    <span>{t(item.label)}</span>
+                    <div>
+                      <i style={{ width: item.width }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="audience-report-focus">
+            <span className="audience-report-focus-marker" />
+            <div>
+              <span>{t("Yeniden ele alınmalı")}</span>
+              <strong>{t("Korelasyon ve nedensellik")}</strong>
+              <p>
+                {t("Benzer sorular ve eksik yanıtlar bu konuda yoğunlaşıyor.")}
+              </p>
+            </div>
           </div>
         </div>
         <div
