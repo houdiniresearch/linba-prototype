@@ -1362,17 +1362,12 @@ tbody tr:hover {
 .auth-copy h1 {
   font-size: clamp(36px, 4vw, 54px);
   line-height: 1.2;
-  margin: 22px 0 25px;
+  margin: 0;
   font-weight: 600;
   letter-spacing: -0.035em;
 }
 .auth-copy h1 span {
   color: var(--accent);
-}
-.auth-copy > p {
-  font-size: 16px;
-  color: var(--muted);
-  max-width: 430px;
 }
 .auth-form {
   border: 1px solid var(--line);

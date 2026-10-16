@@ -65,21 +65,13 @@ export function Auth({
       </header>
       <div className="auth-layout">
         <div className="auth-copy">
-          <span className="eyebrow">
-            {t("EĞİTMEN VE KATILIMCI ÇALIŞMA ALANI")}
-          </span>
           <h1>
-            {t("Hazırla.")}
+            {t("Yapay zekâ ajanların.")}
             <br />
-            {t("Birlikte öğren.")}
+            {t("Eğitiminin")}
             <br />
-            <span>{t("Öğrenmeyi sürdür.")}</span>
+            <span>{t("her aşamasında.")}</span>
           </h1>
-          <p>
-            {t(
-              "Sunumun, etkileşimli aktivitelerin ve dokümanına dayanan bir öğrenme asistanın. Hepsi aynı eğitimde.",
-            )}
-          </p>
         </div>
         <section className="auth-form">
           <h2>

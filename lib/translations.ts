@@ -1,5 +1,8 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Yapay zekâ ajanların.": "Your AI agents.",
+  Eğitiminin: "At every step",
+  "her aşamasında.": "of your training.",
   "Beta test kullanıcısı mısın?": "Are you a beta tester?",
   "Sana özel bir çalışma alanı açılır.":
     "A private workspace will be created for you.",
