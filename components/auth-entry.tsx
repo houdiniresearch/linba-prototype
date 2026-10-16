@@ -126,7 +126,7 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
             </>
           )}
           <p className="access-existing">
-            {t("Zaten hesabın var mı?")}{" "}
+            {t("Beta test kullanıcısı mısın?")}{" "}
             <Link href="/giris?mod=giris">{t("Giriş yap")}</Link>
           </p>
         </section>

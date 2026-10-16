@@ -1,5 +1,6 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Beta test kullanıcısı mısın?": "Are you a beta tester?",
   "Sana özel bir çalışma alanı açılır.":
     "A private workspace will be created for you.",
   "LİNBA’yı deneyimle.": "Experience LİNBA in action.",
