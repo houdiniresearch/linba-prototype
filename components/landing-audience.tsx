@@ -38,7 +38,19 @@ const audiences = [
   },
 ] as const;
 
-function AudienceDemo({ kind }: { kind: (typeof audiences)[number]["id"] }) {
+const academicScenes = [
+  "Yazılı yanıtlar",
+  "Yapay zekâ analizi",
+  "Confusion spike",
+];
+
+function AudienceDemo({
+  kind,
+  scene,
+}: {
+  kind: (typeof audiences)[number]["id"];
+  scene: number;
+}) {
   const { t } = useLocale();
   if (kind === "corporate")
     return (
@@ -81,69 +93,120 @@ function AudienceDemo({ kind }: { kind: (typeof audiences)[number]["id"] }) {
     );
   if (kind === "academic")
     return (
-      <div className="audience-academic">
-        <div className="audience-activity-question">
-          <span className="audience-message-label">
-            <Icon name="activity" size={16} />
-            {t("Yapay zekâ etkinliği")}
-          </span>
-          <strong>
-            {t(
-              "Birlikte artan iki değer arasında neden-sonuç ilişkisi var mıdır? Açıkla.",
-            )}
-          </strong>
-        </div>
-        <div className="audience-written-responses audience-arrival-one">
-          <span className="audience-message-label">
-            {t("Örnek yazılı yanıtlar")}
-          </span>
-          <div>
-            <span className="audience-response-dot" />
-            <p>{t("İki değer birlikte artıyorsa biri diğerinin nedenidir.")}</p>
+      <div className="audience-academic" data-scene={scene}>
+        <div
+          className="audience-academic-scene"
+          hidden={scene !== 0}
+          key="responses"
+        >
+          <div className="audience-activity-question">
+            <span className="audience-message-label">
+              <Icon name="activity" size={16} />
+              {t("Yapay zekâ etkinliği")}
+            </span>
+            <strong>{t("Korelasyon, nedensellik anlamına gelir mi?")}</strong>
           </div>
-          <div>
-            <span className="audience-response-dot" />
-            <p>{t("Üçüncü bir etken ikisini de etkiliyor olabilir.")}</p>
+          <div className="audience-written-responses">
+            <span className="audience-message-label">
+              {t("Örnek yazılı yanıtlar")}
+            </span>
+            <div>
+              <span className="audience-response-avatar">EA</span>
+              <p>
+                {t("İki değer birlikte artıyorsa biri diğerinin nedenidir.")}
+              </p>
+            </div>
+            <div>
+              <span className="audience-response-avatar">MK</span>
+              <p>{t("Üçüncü bir etken ikisini de etkiliyor olabilir.")}</p>
+            </div>
           </div>
         </div>
-        <div className="audience-response-analysis audience-arrival-two">
-          <span className="audience-message-label">
-            <Icon name="sparkle" size={16} />
-            {t("Yapay zekâ analizi")}
-          </span>
-          <p>
-            {t(
-              "Bazı yanıtlar, birlikte değişimi doğrudan neden-sonuç ilişkisi olarak yorumluyor.",
-            )}
-          </p>
+        <div
+          className="audience-academic-scene"
+          hidden={scene !== 1}
+          key="analysis"
+        >
+          <div className="audience-analysis-map">
+            <div className="audience-analysis-inputs">
+              <Icon name="chat" size={23} />
+              <Icon name="chat" size={23} />
+              <Icon name="chat" size={23} />
+            </div>
+            <span className="audience-analysis-connector" />
+            <span className="audience-analysis-core">
+              <Icon name="sparkle" size={32} />
+            </span>
+            <span className="audience-analysis-connector" />
+            <div className="audience-analysis-groups">
+              <span>{t("Ortak fikirler")}</span>
+              <span>{t("Kavram yanılgıları")}</span>
+            </div>
+          </div>
+          <div className="audience-response-analysis">
+            <span className="audience-message-label">
+              <Icon name="sparkle" size={16} />
+              {t("Yapay zekâ analizi")}
+            </span>
+            <p>
+              {t(
+                "Bazı yanıtlar, birlikte değişimi doğrudan neden-sonuç ilişkisi olarak yorumluyor.",
+              )}
+            </p>
+          </div>
         </div>
-        <div className="audience-confusion-signal audience-arrival-three">
+        <div
+          className="audience-academic-scene audience-confusion-signal"
+          hidden={scene !== 2}
+          key="confusion"
+        >
           <div className="audience-confusion-heading">
-            <Icon name="warning" size={17} />
-            <strong>{t("Kafa karışıklığı sinyali")}</strong>
+            <strong>Confusion spike</strong>
             <span>{t("Konsept")}</span>
           </div>
+          <p className="audience-confusion-subtitle">
+            {t("Kafa karışıklığı sinyali")}
+          </p>
           <div className="audience-confusion-detail">
-            <svg width="76" height="32" viewBox="0 0 76 32" aria-hidden="true">
+            <svg viewBox="0 0 400 106" aria-hidden="true">
               <path
-                d="M1 28H75"
+                d="M8 25H392M8 57H392M8 90H392"
                 fill="none"
                 stroke="currentColor"
-                opacity=".18"
+                opacity=".12"
               />
               <path
-                d="M2 24L13 23L23 25L34 21L44 22L54 6L64 16L74 20"
+                d="M8 86L43 83L78 87L113 77L148 80L183 72L218 78L253 65L288 16L323 55L358 68L392 76V98H8Z"
+                fill="currentColor"
+                opacity=".08"
+              />
+              <path
+                d="M8 86L43 83L78 87L113 77L148 80L183 72L218 78L253 65L288 16L323 55L358 68L392 76"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
-              <circle cx="54" cy="6" r="3" fill="currentColor" />
+              <path
+                d="M288 16V98"
+                stroke="currentColor"
+                strokeDasharray="3 5"
+                opacity=".35"
+              />
+              <circle
+                cx="288"
+                cy="16"
+                r="11"
+                fill="currentColor"
+                opacity=".12"
+              />
+              <circle cx="288" cy="16" r="4" fill="currentColor" />
             </svg>
             <p>{t("Slayt 08 · Benzer sorular bu kavramda yoğunlaşıyor.")}</p>
           </div>
           <span className="audience-confusion-suggestion">
+            <Icon name="chat" size={17} />
             {t("Bir karşı örnekle yeniden açıklamayı düşün.")}
           </span>
         </div>
@@ -185,10 +248,21 @@ export function LandingAudience() {
   const [inView, setInView] = useState(false);
   const [visible, setVisible] = useState(true);
   const [reduced, setReduced] = useState(false);
+  const [academicScene, setAcademicScene] = useState(0);
   const section = useRef<HTMLElement>(null);
   const tabs = useRef<Array<HTMLButtonElement | null>>([]);
   const id = useId();
   const audience = audiences[selected];
+
+  useEffect(() => {
+    if (audience.id !== "academic" || !inView || !visible || paused || reduced)
+      return;
+    const timer = window.setInterval(
+      () => setAcademicScene((current) => (current + 1) % 3),
+      8000,
+    );
+    return () => window.clearInterval(timer);
+  }, [audience.id, inView, visible, paused, reduced, academicScene]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -287,6 +361,28 @@ export function LandingAudience() {
         >
           <div className="audience-preview-toolbar">
             <span>{t("Örnek senaryo")}</span>
+            {audience.id === "academic" && (
+              <div
+                className="audience-scene-controls"
+                role="group"
+                aria-label={t("Örnek sahneleri")}
+              >
+                {academicScenes.map((label, index) => (
+                  <button
+                    key={label}
+                    type="button"
+                    aria-label={t(label)}
+                    aria-pressed={academicScene === index}
+                    onClick={() => {
+                      setAcademicScene(index);
+                      setPaused(true);
+                    }}
+                  >
+                    <span />
+                  </button>
+                ))}
+              </div>
+            )}
             {!reduced && (
               <button
                 type="button"
@@ -314,7 +410,7 @@ export function LandingAudience() {
                 <i />
               </span>
             </div>
-            <AudienceDemo kind={audience.id} />
+            <AudienceDemo kind={audience.id} scene={academicScene} />
           </div>
           <p className="sr-only">{t(audience.summary)}</p>
         </div>

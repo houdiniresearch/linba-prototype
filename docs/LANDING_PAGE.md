@@ -31,7 +31,7 @@ Lighthouse bu ortamda kurulu bir araç olarak bulunmadığından skor üretilmed
 
 ## Kimler için?
 
-`components/landing-audience.tsx` ve kendi CSS dosyası, kartların ardından üç kullanım senaryosu sunar. Kurumsal eğitmen sesli prova, öğretim görevlisi açık uçlu yazılı yanıtların yapay zekâ analizini, bağımsız eğitimci eğitim sonrası kaynaklı sohbet örneğini seçer. Küçük ürün gösterimleri temsili içeriktir ve görünür “Örnek senaryo” etiketi taşır. Sekmeler manuel ve klavye ile seçilir; hareket duraklatılabilir. Animasyon ekran dışında ve tarayıcı sekmesi gizliyken durur, azaltılmış hareket tercihinde tüm içerik statik gösterilir. Yazılı yanıtlar, yapay zekâ özeti ve “Konsept” etiketli kafa karışıklığı sinyali sırayla belirir; küçük ekranda alt alta yerleşir.
+`components/landing-audience.tsx` ve kendi CSS dosyası, kartların ardından üç kullanım senaryosu sunar. Kurumsal eğitmen sesli prova, öğretim görevlisi açık uçlu yazılı yanıtların yapay zekâ analizini, bağımsız eğitimci eğitim sonrası kaynaklı sohbet örneğini seçer. Küçük ürün gösterimleri temsili içeriktir ve görünür “Örnek senaryo” etiketi taşır. Profil sekmeleri manuel ve klavye ile seçilir; hareket duraklatılabilir. Animasyon ekran dışında ve tarayıcı sekmesi gizliyken durur. Öğretim görevlisi örneği diğer örneklerle aynı yükseklikte, 8 saniyelik üç sahne kullanır: öğrenci yanıtları, görsel AI gruplaması ve pencerenin tüm içerik alanını kaplayan “Konsept” etiketli confusion spike grafiği. Sahne düğmeleri seçim yapıp otomatik akışı durdurur; azaltılmış hareket tercihinde de bu düğmeler kullanılabilir. Prova ve sohbet döngüleri 16 saniyedir. Küçük ekranda açıklama ve örnek alt alta yerleşir; pencere boyutu sahne değişiminde sabit kalır.
 
 ### Confusion spike fikri
 

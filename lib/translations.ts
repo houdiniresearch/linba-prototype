@@ -1,5 +1,11 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Korelasyon, nedensellik anlamına gelir mi?":
+    "Does correlation imply causation?",
+  "Ortak fikirler": "Shared ideas",
+  "Kavram yanılgıları": "Misconceptions",
+  "Yazılı yanıtlar": "Written responses",
+  "Örnek sahneleri": "Example scenes",
   "İki değer birlikte artıyorsa biri diğerinin nedenidir.":
     "If two values increase together, one causes the other.",
   "Bazı yanıtlar, birlikte değişimi doğrudan neden-sonuç ilişkisi olarak yorumluyor.":
