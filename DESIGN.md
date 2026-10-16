@@ -115,4 +115,4 @@ Açılışın 1–2–3 seçeneklerinde dolu seçili kutu kullanılmaz; ince çe
 
 Anasayfadaki prova anlatımı “pratik yap / practice” olarak güncellendi; İngilizce katılım başlığı “engage participants.” ifadesini kullanır. Başlık, aşamalar, kullanım örnekleri, FAQ ve kapanış aynı dili izler.
 
-Entegrasyon grup başlıkları, ikonla birlikte 14 px / 600 ağırlıkta ve araç kartlarının iç boşluğuna hizalanarak sunulur. Alt grubun başlığı da aynı hizayı izler; dikey bağlantı noktasıyla metin arasında boşluk korunur. Deneme FAQ yanıtı kayıt yoluna giden altı çizili “Şimdi Dene, Ücretsiz!” bağlantısıyla açılır.
+Entegrasyon grup başlıkları, ikonla birlikte 14 px / 600 ağırlıkta ve araç kartlarının iç boşluğuna hizalanarak sunulur. Alt grubun başlığı da aynı hizayı izler; dikey bağlantı noktasıyla metin arasında boşluk korunur. Deneme FAQ yanıtı LİNBA’nın yakında kullanıma açılacağını, ilk haberler için bekleme listesini ve demo hesabıyla ücretsiz denemeyi açıklar. Yanıtın sonundaki altı çizili “Şimdi Dene, Ücretsiz!” bağlantısı, demo hesabına erişilebilen giriş ekranına gider.

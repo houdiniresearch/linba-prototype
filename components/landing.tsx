@@ -306,7 +306,7 @@ const questions = [
   ],
   [
     "Nasıl deneyebilirim, bekleme listesi ne için?",
-    "Hesap oluşturarak LİNBA’yı deneyebilirsin. Bekleme listesine katılarak yeni özelliklerden ve gelişmelerden haberdar olabilirsin.",
+    "LİNBA yakında kullanıma açılıyor. İlk haberdar olanlardan olmak için bekleme listesine katıl. O zamana kadar LİNBA’yı demo hesabıyla ücretsiz deneyebilirsin.",
     true,
   ],
 ] as const;
@@ -463,14 +463,15 @@ function LandingContent() {
                   <Icon name="plus" size={26} />
                 </summary>
                 <p>
+                  {t(answer)}
                   {tryLink && (
                     <>
-                      <Link className="landing-faq-try" href="/giris?mod=kayit">
+                      {" "}
+                      <Link className="landing-faq-try" href="/giris">
                         {t("Şimdi Dene, Ücretsiz!")}
-                      </Link>{" "}
+                      </Link>
                     </>
                   )}
-                  {t(answer)}
                 </p>
               </details>
             ))}
