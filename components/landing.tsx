@@ -3,6 +3,12 @@ import "./landing.css";
 
 import Link from "next/link";
 import {
+  InstagramLogo,
+  LinkedinLogo,
+  XLogo,
+  YoutubeLogo,
+} from "@phosphor-icons/react";
+import {
   useCallback,
   useEffect,
   useId,
@@ -515,7 +521,37 @@ function LandingContent() {
           <LandingWaitlistButton />
           <Link href="/giris">{t("Giriş yap")}</Link>
         </nav>
-        <span>© {new Date().getFullYear()} LİNBA</span>
+        <div
+          className="landing-footer-socials"
+          role="group"
+          aria-label={t("Sosyal medya")}
+        >
+          <div className="landing-footer-social-heading">
+            <span>{t("Bizi takip et")}</span>
+            <span className="landing-footer-soon">{t("Yakında")}</span>
+          </div>
+          <div className="landing-footer-social-buttons">
+            {[
+              { name: "LinkedIn", Symbol: LinkedinLogo },
+              { name: "Instagram", Symbol: InstagramLogo },
+              { name: "X", Symbol: XLogo },
+              { name: "YouTube", Symbol: YoutubeLogo },
+            ].map(({ name, Symbol }) => (
+              <button
+                type="button"
+                disabled
+                key={name}
+                aria-label={`${name} · ${t("Yakında")}`}
+                title={`${name} · ${t("Yakında")}`}
+              >
+                <Symbol size={21} weight="regular" aria-hidden="true" />
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="landing-footer-bottom">
+          <span>© {new Date().getFullYear()} LİNBA</span>
+        </div>
       </footer>
     </div>
   );

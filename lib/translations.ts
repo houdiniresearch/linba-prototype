@@ -1,5 +1,8 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  Yakında: "Coming soon",
+  "Sosyal medya": "Social media",
+  "Bizi takip et": "Follow us",
   "Anket, açık uçlu soru ve senaryolar": "Polls, open questions and scenarios",
   "Etkinliklerle yanıtları topla. Öğrenme ajanı katılımcıların sorularını eğitim kaynaklarına dayanarak yanıtlasın; sen de eğitimin akışına odaklan.":
     "Collect responses through activities. Let the learning agent answer participant questions using your training materials, while you focus on delivering the training.",
