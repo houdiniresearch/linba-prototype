@@ -64,30 +64,6 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
         </div>
       </header>
       <main className="access-layout">
-        <section className="access-experience" aria-labelledby="access-title">
-          <h1 id="access-title">{t("LİNBA ajanlarıyla tanış.")}</h1>
-          <p>
-            {t(
-              "Pratik, etkileşim ve öğrenme desteğini örnek bir eğitimde keşfet.",
-            )}
-          </p>
-          <ErrorNote message={experienceError} />
-          <button
-            className="button access-experience-button"
-            disabled={experiencing}
-            onClick={experience}
-          >
-            {t(
-              experiencing
-                ? "Deneyimin hazırlanıyor…"
-                : "LİNBA ajanlarını deneyimle",
-            )}
-            <Icon name={experiencing ? "spinner" : "arrow"} size={19} />
-          </button>
-          <p className="access-experience-note">
-            {t("Ücretsiz. Hesap oluşturmadan.")}
-          </p>
-        </section>
         <section
           className="access-invitation"
           aria-labelledby="access-waitlist-title"
@@ -97,7 +73,7 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
               <span className="access-confirmation-icon">
                 <Icon name="check" size={28} />
               </span>
-              <h2 id="access-waitlist-title">{t("Listedesin.")}</h2>
+              <h1 id="access-waitlist-title">{t("Listedesin.")}</h1>
               <p>
                 {t(
                   "LİNBA kullanıma açıldığında ilk haberdar olanlardan olacaksın.",
@@ -113,9 +89,9 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
             </div>
           ) : (
             <>
-              <h2 id="access-waitlist-title">
+              <h1 id="access-waitlist-title">
                 {t("İlk haberdar olanlardan ol.")}
-              </h2>
+              </h1>
               <p>
                 {t(
                   "LİNBA yakında kullanıma açılıyor. Yerini al, açılış haberini sana iletelim.",
@@ -152,6 +128,30 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
           <p className="access-existing">
             {t("Zaten hesabın var mı?")}{" "}
             <Link href="/giris?mod=giris">{t("Giriş yap")}</Link>
+          </p>
+        </section>
+        <section className="access-experience" aria-labelledby="access-title">
+          <h2 id="access-title">{t("LİNBA’yı deneyimle.")}</h2>
+          <p>
+            {t(
+              "Örnek bir eğitimde LİNBA’nın yapay zekâ ajanlarını dene. Pratik yap, etkileşim kur ve öğrenme desteğini keşfet.",
+            )}
+          </p>
+          <ErrorNote message={experienceError} />
+          <button
+            className="button access-experience-button"
+            disabled={experiencing}
+            onClick={experience}
+          >
+            {t(
+              experiencing
+                ? "Deneyimin hazırlanıyor…"
+                : "LİNBA ajanlarını deneyimle",
+            )}
+            <Icon name={experiencing ? "spinner" : "arrow"} size={19} />
+          </button>
+          <p className="access-experience-note">
+            {t("Ücretsiz. Hesap oluşturmadan.")}
           </p>
         </section>
       </main>

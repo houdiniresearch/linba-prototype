@@ -1,5 +1,8 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "LİNBA’yı deneyimle.": "Experience LİNBA in action.",
+  "Örnek bir eğitimde LİNBA’nın yapay zekâ ajanlarını dene. Pratik yap, etkileşim kur ve öğrenme desteğini keşfet.":
+    "Try LİNBA’s AI agents in a sample training. Practice, interact and explore learning support.",
   "LİNBA ajanlarıyla tanış.": "Meet LİNBA’s agents.",
   "Pratik, etkileşim ve öğrenme desteğini örnek bir eğitimde keşfet.":
     "Explore practice, engagement and learning support in a sample training.",

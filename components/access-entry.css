@@ -31,10 +31,16 @@
   padding-block: 64px;
 }
 .access-experience {
-  padding-top: 0;
+  align-self: stretch;
+  border-left: 1px solid var(--line);
+  padding-left: 64px;
 }
-.access-experience h1,
-.access-invitation h2 {
+.access-experience h2 {
+  max-width: 14ch;
+  color: var(--lilac-ink);
+}
+.access-experience h2,
+.access-invitation h1 {
   font-size: clamp(28px, 2.7vw, 36px);
   line-height: 1.2;
   font-weight: 600;
@@ -73,10 +79,6 @@
   font-size: 12px;
 }
 
-.access-invitation {
-  border-left: 1px solid var(--line);
-  padding-left: 64px;
-}
 .access-waitlist-form {
   display: flex;
   flex-direction: column;
@@ -176,7 +178,7 @@
   .access-layout {
     gap: 48px;
   }
-  .access-invitation {
+  .access-experience {
     padding-left: 40px;
   }
 }
@@ -196,12 +198,12 @@
     gap: 40px;
     padding-block: 40px;
   }
-  .access-experience h1,
-  .access-invitation h2 {
+  .access-experience h2,
+  .access-invitation h1 {
     font-size: 30px;
     max-width: 20ch;
   }
-  .access-invitation {
+  .access-experience {
     border-left: 0;
     border-top: 1px solid var(--line);
     padding: 36px 0 0;
@@ -224,8 +226,8 @@
     width: calc(100% - 36px);
     padding-block: 32px;
   }
-  .access-experience h1,
-  .access-invitation h2 {
+  .access-experience h2,
+  .access-invitation h1 {
     font-size: 28px;
   }
   .access-footer {

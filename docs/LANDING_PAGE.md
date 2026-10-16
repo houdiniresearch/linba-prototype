@@ -66,8 +66,8 @@ Entegrasyon grup başlıkları, ikonla birlikte 14 px / 600 ağırlıkta ve ara�
 
 ## Açılış öncesi karşılama
 
-`/giris` ve eski `/giris?mod=kayit` bağlantıları, hesap alanları yerine genel bekleme listesi ve “LİNBA ajanlarını deneyimle” seçeneğini gösterir. Solda sade başlık, açıklama ve ajanları deneyimleme düğmesi; sağda e-posta bekleme listesi formu vardır. İzometrik tanıtım bloğu, küçük bekleme listesi etiketi ve tekrar eden ajan rolleri kaldırılmıştır. Alanlar yalnız ince ayırıcı ve boşlukla ayrılır. Bekleme listesi mevcut `public-waitlist` API’sine, deneyim mevcut örnek çalışma alanı akışına bağlanır. Başarı ve hata durumları ayrıdır. “Demo” sözcüğü kullanıcıya gösterilmez. Mevcut kullanıcı girişi küçük bağlantıdan `/giris?mod=giris` yolunda korunur. Katılımcı girişi değişmez. Mobilde iki eylem alanı alt alta, koyu temada ortak tokenlarla gösterilir.
+`/giris` ve eski `/giris?mod=kayit` bağlantıları, hesap alanları yerine genel bekleme listesi ve “LİNBA ajanlarını deneyimle” seçeneğini gösterir. Solda e-posta bekleme listesi formu; sağda sade başlık, açıklama ve ajanları deneyimleme düğmesi vardır. İzometrik tanıtım bloğu, küçük bekleme listesi etiketi ve tekrar eden ajan rolleri kaldırılmıştır. Alanlar yalnız ince ayırıcı ve boşlukla ayrılır. Bekleme listesi mevcut `public-waitlist` API’sine, deneyim mevcut örnek çalışma alanı akışına bağlanır. Başarı ve hata durumları ayrıdır. “Demo” sözcüğü kullanıcıya gösterilmez. Mevcut kullanıcı girişi küçük bağlantıdan `/giris?mod=giris` yolunda korunur. Katılımcı girişi değişmez. Mobilde iki eylem alanı alt alta, koyu temada ortak tokenlarla gösterilir.
 
 Ana sayfanın üst çubuğundaki “Kayıt ol” ve “Giriş yap” düğmeleri, alt gezinmedeki “Giriş yap” gibi doğrudan `/giris` karşılama ekranını açar.
 
-Ajan deneyimi alanı görselsizdir: kısa başlık ve açıklama, içeriğe göre genişleyen lila düğme ve kısa ücretsiz kullanım notu bulunur. İzometrik görsel kullanılmaz; bekleme listesi ayrı sağ sütunda kalır.
+Ajan deneyimi alanı görselsizdir: kısa başlık ve açıklama, içeriğe göre genişleyen lila düğme ve kısa ücretsiz kullanım notu bulunur. İzometrik görsel kullanılmaz; bekleme listesi ayrı sol sütunda kalır.

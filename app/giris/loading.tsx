@@ -9,11 +9,11 @@ export default function Loading() {
         <Logo />
       </header>
       <main className="access-layout" aria-hidden="true">
-        <div className="access-loading-block">
+        <div className="access-invitation access-loading-block">
           <Skeleton className="sk-line" />
           <Skeleton className="sk-auth-display" />
         </div>
-        <div className="access-invitation">
+        <div className="access-experience">
           <Skeleton className="sk-auth-display" />
           <Skeleton className="sk-auth-input" />
         </div>
