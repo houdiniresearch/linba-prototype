@@ -13,6 +13,7 @@ import {
 } from "react";
 import { Icon, Logo } from "./ui";
 import { useLocale } from "./locale-provider";
+import { LandingAudience } from "./landing-audience";
 import {
   LandingIntegrations,
   LandingIntegrationMenu,
@@ -464,6 +465,8 @@ function LandingContent() {
           </div>
           <LandingFlow />
         </section>
+
+        <LandingAudience />
 
         <LandingIntegrations />
 

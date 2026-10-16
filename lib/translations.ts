@@ -1,5 +1,66 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Senin eğitimine göre.": "Built around your training.",
+  "Farklı kitleler, farklı ihtiyaçlar. Aynı sunumdan başlayan bir eğitim alanı.":
+    "Different audiences, different needs. One training workspace built around your slides.",
+  "Eğitmen profilleri": "Instructor profiles",
+  "Kurumsal eğitmen": "Corporate trainer",
+  "Öğretim görevlisi": "University instructor",
+  "Bağımsız eğitimci": "Independent educator",
+  "Yeni bir ekibe, hazırlıklı bir başlangıç.":
+    "A confident start for a new team.",
+  "Ürün eğitimini yeni başlayanlara anlatmadan önce kitleni tarif et. Farklı deneyimlere sahip yapay zekâ katılımcılarının sorularıyla anlatımını dene.":
+    "Describe your audience before delivering product training to new starters. Rehearse with questions from AI participants with different levels of experience.",
+  "Katılımcılarının sorularına hazırlıklı gir.":
+    "Be ready for your participants’ questions.",
+  "Ürün eğitimi.pdf": "Product training.pdf",
+  "Örnek prova: eğitmen ürününü anlatırken yeni başlayan bir katılımcı fiyat sorusunu nasıl ele alacağını sorar.":
+    "Example rehearsal: while the instructor explains a product, a new starter asks how to handle a pricing question.",
+  "Anlattığın konu, birlikte düşünülen bir soruya dönüşsün.":
+    "Turn your topic into a question to explore together.",
+  "Sunumuna kısa bir aktivite yerleştir. O slayta geldiğinde öğrenciler telefonlarından yanıtlasın; sorularıyla derse katılsın.":
+    "Add a short activity to your presentation. When you reach that slide, students can respond on their phones and bring their questions into the lesson.",
+  "Katılımı dersinin doğal bir parçası yap.":
+    "Make participation a natural part of your lesson.",
+  "Veri okuryazarlığı.pdf": "Data literacy.pdf",
+  "Örnek ders içi aktivite: slayttaki grafik sorusu öğrencinin telefonunda açılır ve öğrenci yanıtını gönderir.":
+    "Example classroom activity: a question about the slide’s chart opens on a student’s phone, and the student submits a response.",
+  "Atölyen bitsin. Öğrenme devam etsin.":
+    "The workshop ends. Learning keeps going.",
+  "Atölyenden sonra da katılımcılarına sunumunla öğrenme alanı bırak. Belirlediğin süre boyunca sorularını sorsunlar, kaynak slaytlara geri dönebilsinler.":
+    "Give participants a way to keep learning from your presentation after the workshop. Let them ask questions and revisit source slides for the period you choose.",
+  "Bilgiyi ihtiyaç duydukları anda erişilebilir tut.":
+    "Keep knowledge available when they need it.",
+  "Etkili iletişim atölyesi.pdf": "Effective communication workshop.pdf",
+  "Örnek eğitim sonrası sohbet: katılımcı aktif dinlemeyi sorar; asistan sunumdaki açıklama ve kaynak slaytla yanıt verir.":
+    "Example follow-up conversation: a participant asks about active listening, and the assistant responds using the presentation and a source slide.",
+  "Müşteriyi tanımakla başla.": "Start by understanding your customer.",
+  "İhtiyacı anla. Doğru soruyu sor.":
+    "Understand the need. Ask the right question.",
+  "Ece · Yeni başlayan": "Ece · New starter",
+  "Müşteri doğrudan fiyatı sorarsa nasıl ilerlemeliyim?":
+    "How should I respond if the customer asks about price straight away?",
+  "Soruyu karşıla. Anlatımını sürdür.":
+    "Address the question. Keep the conversation going.",
+  "Grafiği nasıl yorumlarsın?": "How would you interpret this chart?",
+  "Veriden bir çıkarım yap.": "Draw a conclusion from the data.",
+  "Sıra sende": "Your turn",
+  "Grafikte nasıl bir değişim var?": "What change does the chart show?",
+  Azalıyor: "Decreasing",
+  Artıyor: "Increasing",
+  Değişmiyor: "No change",
+  "Yanıtın gönderildi": "Response submitted",
+  "Aktif dinlemeyi bir örnekle açıklar mısın?":
+    "Could you explain active listening with an example?",
+  "Sunumuna dayanan asistan": "An assistant grounded in your slides",
+  "Karşındaki kişiyi kendi cümlelerinle özetlemek, doğru anlayıp anlamadığını kontrol etmene yardımcı olur.":
+    "Summarising what someone said in your own words helps you check that you understood them correctly.",
+  "Slayt 12 · Aktif dinleme": "Slide 12 · Active listening",
+  "Erişim süresini sen belirlersin.": "You choose how long access lasts.",
+  "Örnek senaryo": "Example scenario",
+  "Animasyonu oynat": "Play animation",
+  "Animasyonu duraklat": "Pause animation",
+
   Entegrasyonlar: "Integrations",
   "{name} entegrasyonu": "{name} integration",
   "Kullandığın araçlar için entegrasyonlar yolda.":

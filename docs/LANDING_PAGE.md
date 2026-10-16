@@ -28,3 +28,7 @@
 Tarayıcıda açık/koyu tema, Türkçe/İngilizce, 320/390 px mobil, 768/1024 px tablet ve 1470 px masaüstü ölçüleri; kaydırmada ileri/geri kart yığılması, mobil menü, soru açma ve giriş/kayıt geçişleri kontrol edildi. Yatay taşma yok. Açık temada ana düğme kontrastı 4,60:1, açıklama metni kontrastı 5,73:1. Azaltılmış hareket altında kart yığılması yerine doğal üç aşamalı akış kullanılır; soru geçişi animasyonsuzdur. `npm run test:landing` anonim ve oturumlu yol davranışını gerçek yerel sunucuda doğrular, test hesaplarını temizler. Build, 14 alan testi, 2 bekleme listesi/dil testi ve 1 tanıtım yolu testi geçti.
 
 Lighthouse bu ortamda kurulu bir araç olarak bulunmadığından skor üretilmedi. Görsellerin alanları önceden ayrılır, ilk görsel yüksek öncelikle yüklenir, diğerleri tembel yüklenir; ek animasyon bağımlılığı yoktur. Performans değerlendirmesi yerel geliştirme sunucusuna aittir, üretim Lighthouse ölçümü değildir.
+
+## Kimler için?
+
+`components/landing-audience.tsx` ve kendi CSS dosyası, kartların ardından üç kullanım senaryosu sunar. Kurumsal eğitmen sesli prova, öğretim görevlisi ders içi aktivite, bağımsız eğitimci eğitim sonrası kaynaklı sohbet örneğini seçer. Küçük ürün gösterimleri temsili içeriktir ve görünür “Örnek senaryo” etiketi taşır. Sekmeler manuel ve klavye ile seçilir; hareket duraklatılabilir. Animasyon ekran dışında ve tarayıcı sekmesi gizliyken durur, azaltılmış hareket tercihinde tüm içerik statik gösterilir. Telefon/grafik katmanları küçük ekranda metinleri kapatmaz.
