@@ -249,8 +249,8 @@ const en: Record<string, string> = {
   "LİNBA’daki yeniliklerden ve kullanıma açılıştan haberdar olmak için e-postanı bırak.":
     "Leave your email for LİNBA updates and launch news.",
   "Yalnızca LİNBA ile ilgili haberler için.": "Only for LİNBA updates.",
-  "PowerPoint, Microsoft Teams, Google Slides, Zoom, Google Meet ve ChatGPT entegrasyonları henüz kullanıma açık değil. Genel bekleme listesine katılarak LİNBA’daki yeniliklerden haberdar olabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.":
-    "Integrations with PowerPoint, Microsoft Teams, Google Slides, Zoom, Google Meet and ChatGPT are not available yet. Join the general waitlist for LİNBA updates. You can already get started by uploading your PDF or PPTX presentation directly.",
+  "PowerPoint, Microsoft Teams, Google Slides, Zoom, Google Meet, ChatGPT ve Claude entegrasyonları henüz kullanıma açık değil. Genel bekleme listesine katılarak LİNBA’daki yeniliklerden haberdar olabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.":
+    "Integrations with PowerPoint, Microsoft Teams, Google Slides, Zoom, Google Meet, ChatGPT and Claude are not available yet. Join the general waitlist for LİNBA updates. You can already get started by uploading your PDF or PPTX presentation directly.",
   "Planlanan entegrasyonlar": "Planned integrations",
   "Sık sorulan sorular.": "Frequently asked questions.",
   "İlk sunumundan eğitim sonrasına, merak ettiklerin burada.":
@@ -267,8 +267,8 @@ const en: Record<string, string> = {
     "Participants can keep asking the presentation’s assistant questions for the period you choose when creating training. Review their questions and activity results in the training report, and discuss that data with the report assistant. Questions asked after training are added to the same report.",
   "Diğer araçlarla entegrasyonlar hazır mı?":
     "Are integrations with other tools available?",
-  "PowerPoint, Microsoft Teams, Google Slides, Zoom, Google Meet ve ChatGPT entegrasyonları henüz kullanıma açık değil. İlgilendiğin aracın logosuna tıklayarak o entegrasyonun bekleme listesine katılabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.":
-    "Integrations with PowerPoint, Microsoft Teams, Google Slides, Zoom, Google Meet and ChatGPT are not available yet. Click a tool’s logo to join its waitlist. You can already get started by uploading your PDF or PPTX presentation directly.",
+  "PowerPoint, Microsoft Teams, Google Slides, Zoom, Google Meet, ChatGPT ve Claude entegrasyonları henüz kullanıma açık değil. İlgilendiğin aracın logosuna tıklayarak o entegrasyonun bekleme listesine katılabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.":
+    "Integrations with PowerPoint, Microsoft Teams, Google Slides, Zoom, Google Meet, ChatGPT and Claude are not available yet. Click a tool’s logo to join its waitlist. You can already get started by uploading your PDF or PPTX presentation directly.",
   "Çalıştığın araçlarla birlikte.": "With the tools you already use.",
   "Planlanan entegrasyonlar için bekleme listesine katıl.":
     "Join the waitlist for our planned integrations.",

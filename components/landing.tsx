@@ -308,7 +308,7 @@ const questions = [
   ],
   [
     "Diğer araçlarla entegrasyonlar hazır mı?",
-    "PowerPoint, Microsoft Teams, Google Slides, Zoom, Google Meet ve ChatGPT entegrasyonları henüz kullanıma açık değil. Genel bekleme listesine katılarak LİNBA’daki yeniliklerden haberdar olabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.",
+    "PowerPoint, Microsoft Teams, Google Slides, Zoom, Google Meet, ChatGPT ve Claude entegrasyonları henüz kullanıma açık değil. Genel bekleme listesine katılarak LİNBA’daki yeniliklerden haberdar olabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.",
   ],
 ] as const;
 

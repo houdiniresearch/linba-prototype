@@ -456,7 +456,7 @@ html:has(.landing-page) {
 .landing-integration-map {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 220px minmax(0, 1fr);
-  grid-template-rows: 260px 150px;
+  grid-template-rows: 260px 220px;
   position: relative;
   width: min(1080px, 100%);
   margin: 48px auto 0;
@@ -544,8 +544,9 @@ html:has(.landing-page) {
   grid-column: 2;
   grid-row: 2;
   width: 280px;
+  padding-top: 48px;
   justify-self: center;
-  align-self: end;
+  align-self: start;
 }
 .integration-group-assistants h3 {
   text-align: center;
@@ -632,6 +633,7 @@ html:has(.landing-page) {
     grid-column: 1 / -1;
     grid-row: 3;
     width: min(280px, 100%);
+    padding-top: 0;
   }
   .landing-integration-group {
     width: 100%;

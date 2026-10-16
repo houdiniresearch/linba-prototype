@@ -187,7 +187,11 @@ export function LandingIntegrations() {
       title: "Canlı eğitim",
       tools: ["teams", "zoom", "google-meet"],
     },
-    { id: "assistants", title: "Yapay zekâ asistanları", tools: ["chatgpt"] },
+    {
+      id: "assistants",
+      title: "Yapay zekâ asistanları",
+      tools: ["chatgpt", "claude"],
+    },
   ] as const;
   return (
     <section
@@ -202,7 +206,7 @@ export function LandingIntegrations() {
       <div className="landing-integration-map">
         <svg
           className="landing-integration-paths"
-          viewBox="0 0 1080 410"
+          viewBox="0 0 1080 480"
           preserveAspectRatio="none"
           aria-hidden="true"
         >

@@ -5,6 +5,7 @@ export const integrations = [
   { id: "zoom", name: "Zoom" },
   { id: "google-meet", name: "Google Meet" },
   { id: "chatgpt", name: "ChatGPT" },
+  { id: "claude", name: "Claude" },
 ] as const;
 
 export type IntegrationId = (typeof integrations)[number]["id"];
