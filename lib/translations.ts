@@ -1,5 +1,37 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Eğitim kurumları": "Educational institutions",
+  "Öğrencilerini anla. Sonraki eğitimi geliştir.":
+    "Understand your students. Improve the next training.",
+  "Eğitim raporunu asistanınla birlikte incele. Öğrencilerin hangi konularda zorlandığını sor, öğrenme ihtiyaçlarını keşfet ve sonraki eğitimini bu içgörülerle planla.":
+    "Explore the training report with your assistant. Ask where students struggled, discover their learning needs and use those insights to plan your next training.",
+  "Öğrencilerinin sorularını somut eğitim kararlarına dönüştür.":
+    "Turn students’ questions into concrete teaching decisions.",
+  "Araştırma yöntemleri · Eğitim raporu": "Research methods · Training report",
+  "Zorlanılan konular": "Learning gaps",
+  "Sonraki eğitim": "Next training",
+  "Örnek rapor asistanı: kurum, öğrencilerin korelasyon ve nedensellik hakkında sorduğu soruları inceler. Asistana nerede zorlandıklarını ve sonraki eğitimde neyi geliştirebileceğini sorar; rapora dayalı açıklama ve bir karşı örnek önerisi alır.":
+    "Example report assistant: an institution reviews students’ questions about correlation and causation. It asks where they struggled and what to improve next time, receiving a report-grounded explanation and a suggestion to use a counterexample.",
+  "Örnek eğitim raporu": "Example training report",
+  "Öğrencilerden gelen sorular": "Questions from students",
+  "Birlikte artıyorlarsa biri diğerinin nedeni değil mi?":
+    "If they increase together, doesn’t one cause the other?",
+  "Üçüncü bir etken olduğunu nasıl anlarız?":
+    "How can we tell if there is a third factor?",
+  "Slayt 08 · Korelasyon ve nedensellik":
+    "Slide 08 · Correlation and causation",
+  "Öğrenciler en çok hangi konuda zorlandı?":
+    "Which topic did students struggle with most?",
+  "Sorular, korelasyon ile neden-sonuç ilişkisini ayırt etmede zorlanıldığını gösteriyor.":
+    "The questions suggest students struggled to distinguish correlation from causation.",
+  "Dayanak: eğitimde sorulan sorular":
+    "Based on questions asked during training",
+  "Bir sonraki eğitimde neyi geliştirebilirim?":
+    "What can I improve in my next training?",
+  "Bu kavramı bir karşı örnekle yeniden ele al. Ardından kısa bir açık uçlu soruyla öğrencilerin gerekçelerini karşılaştır.":
+    "Revisit this concept with a counterexample. Then use a short open question to compare students’ reasoning.",
+  "Karşı örnek → Açık uçlu soru → Birlikte tartışma":
+    "Counterexample → Open question → Discussion",
   "Kitleyi tanı": "Your audience",
   "Aktif dinleme": "Active listening",
   "Geri bildirim": "Feedback",

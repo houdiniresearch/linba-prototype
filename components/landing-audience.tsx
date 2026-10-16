@@ -39,6 +39,17 @@ const audiences = [
     summary:
       "Örnek eğitim sonrası sohbet: katılımcı aktif dinlemeyi sorar; asistan sunumdaki açıklama ve kaynak slaytla yanıt verir.",
   },
+  {
+    id: "institution",
+    label: "Eğitim kurumları",
+    title: "Öğrencilerini anla. Sonraki eğitimi geliştir.",
+    text: "Eğitim raporunu asistanınla birlikte incele. Öğrencilerin hangi konularda zorlandığını sor, öğrenme ihtiyaçlarını keşfet ve sonraki eğitimini bu içgörülerle planla.",
+    benefit: "Öğrencilerinin sorularını somut eğitim kararlarına dönüştür.",
+    filename: "Araştırma yöntemleri · Eğitim raporu",
+    scenes: ["Raporu aç", "Zorlanılan konular", "Sonraki eğitim"],
+    summary:
+      "Örnek rapor asistanı: kurum, öğrencilerin korelasyon ve nedensellik hakkında sorduğu soruları inceler. Asistana nerede zorlandıklarını ve sonraki eğitimde neyi geliştirebileceğini sorar; rapora dayalı açıklama ve bir karşı örnek önerisi alır.",
+  },
 ] as const;
 
 function AudienceDemo({
@@ -49,6 +60,84 @@ function AudienceDemo({
   scene: number;
 }) {
   const { t } = useLocale();
+  if (kind === "institution")
+    return (
+      <div className="audience-demo-stage" data-scene={scene}>
+        <div className="audience-demo-scene" data-active={scene === 0}>
+          <span className="audience-message-label">
+            <Icon name="chart" size={16} />
+            {t("Örnek eğitim raporu")}
+          </span>
+          <h4 className="audience-scene-title">
+            {t("Öğrencilerden gelen sorular")}
+          </h4>
+          <div className="audience-report-questions">
+            <p>
+              <Icon name="chat" size={17} />
+              <span>
+                {t("Birlikte artıyorlarsa biri diğerinin nedeni değil mi?")}
+              </span>
+            </p>
+            <p>
+              <Icon name="chat" size={17} />
+              <span>{t("Üçüncü bir etken olduğunu nasıl anlarız?")}</span>
+            </p>
+          </div>
+          <div className="audience-demo-note">
+            <Icon name="file" size={17} />
+            <span>{t("Slayt 08 · Korelasyon ve nedensellik")}</span>
+          </div>
+        </div>
+        <div
+          className="audience-demo-scene audience-report-conversation"
+          data-active={scene === 1}
+        >
+          <div className="audience-chat-question">
+            {t("Öğrenciler en çok hangi konuda zorlandı?")}
+          </div>
+          <div className="audience-chat-answer">
+            <span className="audience-message-label">
+              <Icon name="sparkle" size={16} />
+              {t("Rapor asistanı")}
+            </span>
+            <p>
+              {t(
+                "Sorular, korelasyon ile neden-sonuç ilişkisini ayırt etmede zorlanıldığını gösteriyor.",
+              )}
+            </p>
+            <div className="audience-source">
+              <Icon name="chart" size={17} />
+              {t("Dayanak: eğitimde sorulan sorular")}
+            </div>
+          </div>
+        </div>
+        <div
+          className="audience-demo-scene audience-report-conversation"
+          data-active={scene === 2}
+        >
+          <div className="audience-chat-question">
+            {t("Bir sonraki eğitimde neyi geliştirebilirim?")}
+          </div>
+          <div className="audience-chat-answer">
+            <span className="audience-message-label">
+              <Icon name="sparkle" size={16} />
+              {t("Rapor asistanı")}
+            </span>
+            <p>
+              {t(
+                "Bu kavramı bir karşı örnekle yeniden ele al. Ardından kısa bir açık uçlu soruyla öğrencilerin gerekçelerini karşılaştır.",
+              )}
+            </p>
+            <div className="audience-report-next">
+              <Icon name="presentation" size={19} />
+              <span>
+                {t("Karşı örnek → Açık uçlu soru → Birlikte tartışma")}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   if (kind === "corporate")
     return (
       <div className="audience-demo-stage" data-scene={scene}>

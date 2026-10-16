@@ -385,6 +385,41 @@
 .audience-followup-question .audience-chat-question {
   margin: 0;
 }
+.audience-report-questions {
+  margin-top: 8px;
+}
+.audience-report-questions p {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  background: var(--workspace);
+  border-radius: 7px;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.audience-report-questions svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--lilac-ink);
+}
+.audience-report-conversation .audience-chat-question {
+  max-width: 94%;
+  margin-bottom: 24px;
+}
+.audience-report-next {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 18px;
+  color: var(--lilac-ink);
+  font-size: 11px;
+  line-height: 1.6;
+}
+.audience-report-next svg {
+  flex-shrink: 0;
+}
 .audience-source-slide {
   margin-top: 18px;
   min-height: 148px;
@@ -681,6 +716,18 @@
   }
   .audience-scene-title {
     font-size: 21px;
+  }
+  .audience-report-questions p {
+    margin-top: 9px;
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  .audience-report-conversation .audience-chat-question {
+    margin-bottom: 18px;
+  }
+  .audience-report-next {
+    font-size: 10px;
+    margin-top: 14px;
   }
   .audience-persona-list {
     margin-top: 18px;
