@@ -57,3 +57,39 @@ Composition landscape 4:3, all objects fully in frame occupying 75% of canvas, g
 Genuinely transparent alpha background, suitable over white and charcoal webpages.
 No words, text, letters, numbers, logos, captions, people, robots, brains, sparkles, chrome, glitter, blue, glow, neon, bloom, glossy clay, glass, gradients as backdrop, or pedestal.
 ```
+
+## Yapay zekâ ajanları — yeni açılış ve kapanış sahneleri
+
+Yerleşik `image_gen` kullanıldı; CLI/API kullanılmadı. Üç ayrı çağrıda referans olarak mevcut `public/landing/hero-learning-space.webp` verildi. Bu dosya değiştirilmedi. Tüm çıktılar 1448 × 1086 PNG, gerçek alfa kanallıdır. WebP kalite 90 ile görsel içerik değiştirilmeden sıkıştırıldı; kapanış görseli ayrıca 720 × 540 boyutuna küçültüldü.
+
+| Kullanım      | Projedeki dosya                              | Korunan PNG kaynağı                                                                                                         |
+| ------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Prova         | `public/landing/hero-agents-rehearsal.webp`  | `/Users/houdini/.codex/generated_images/01a13585-b946-7a21-ba40-a0cf287402e1/exec-972e4647-b87f-4c0c-89be-535d03161b11.png` |
+| Değerlendirme | `public/landing/hero-agents-assessment.webp` | `/Users/houdini/.codex/generated_images/01a13585-b946-7a21-ba40-a0cf287402e1/exec-0cdf0dd6-619e-4e3d-b93e-914723d60e4f.png` |
+| Kapanış       | `public/landing/agents-invitation.webp`      | `/Users/houdini/.codex/generated_images/01a13585-b946-7a21-ba40-a0cf287402e1/exec-e0106fef-a0e1-4f42-9425-781416b634f3.png` |
+
+Her çağrının tam promptu, aşağıdaki ortak metin ile ilgili sahne metninin art arda birleştirilmesidir.
+
+### Ortak metin
+
+```text
+Use case: stylized-concept. Asset type: production transparent isometric illustration for LINBA, an agentic AI education platform. Input image is ONLY a style/quality reference: match its exquisitely detailed architectural paper-sculpture render, adult human anatomy, thin white folded planes with lilac backs, tiny fuchsia and mint details, charcoal clothing, crisp beveled edges and soft physically plausible contact shadows. Orthographic isometric camera, landscape 4:3 composition. Matte paper and porcelain, premium editorial 3D, refined neutral studio light. True transparent alpha background, clean antialiased edges, no white rectangle, no backdrop, no opaque floor, no gradient backdrop, no glow, no robot, no brain, no toy/clay characters, no text/letters/numbers/logo. All objects fully in frame, cohesive scene occupies 80% canvas with breathing room. Do not reproduce the reference scene; create a distinct scene from the same collection.
+```
+
+### Prova sahnesi
+
+```text
+Scene: an adult female trainer standing on a thin curved white paper ribbon, speaking toward three tall, slim, meticulously designed portrait panels arranged in a shallow semicircle. The panels represent AI rehearsal participants: each shows a restrained lilac adult profile silhouette, one small mint speech bubble and a short sculptural mint waveform connects the trainer to the panels. One slim folded white/lilac lesson folio behind the trainer, with a simple two-shape diagram. Emphasize a believable, calm rehearsal with AI agents, generous negative space, no screens or monitors. Keep similar scale and physical sophistication to reference.
+```
+
+### Değerlendirme sahnesi
+
+```text
+Scene: one adult educator in a lilac blouse examining a sculptural white folded report folio at rear right. The folio contains a clean lilac line chart with one tiny fuchsia marker, no labels. On the curved white paper ribbon in front, three small mint and lilac response slips collect into two organized groups, leading to exactly three slim lilac chart bars and one mint check mark. Convey an AI agent finding learning needs from learner responses, measurement and evaluation, without fictional statistics. Quiet intelligent composition, no screens or UI windows. Match reference human, rendering and material quality.
+```
+
+### Kapanış sahnesi
+
+```text
+Scene: a compact welcoming learning workspace made from a folded lilac-backed white paper arch with one adult educator and one adult learner discussing a tiny mint speech shape between them, alongside one small neatly organized response folio with an understated fuchsia circle. Delicate curved white ribbon connects the two figures, forming a welcoming open loop. A warm human moment inviting the visitor to begin using AI agents for learning. This is a SMALL footer illustration, so use a simple legible silhouette and fewer objects than reference, no huge teaching board. All details still premium and precise.
+```

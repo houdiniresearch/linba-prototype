@@ -25,10 +25,10 @@ const stages = [
     label: "Eğitimden önce",
     detailIcons: ["file", "mic"],
     title: "Kitleni tanı. Anlatımını dene.",
-    text: "Sunumunu yükle, katılımcı kitleni tarif et. Farklı sorular soran yapay zekâ katılımcılarıyla sesli prova yap.",
+    text: "Kitleni tarif et. Katılımcılarını temsil eden yapay zekâ ajanlarıyla sesli prova yap; anlatımını ve sorulara verdiğin yanıtları geliştir.",
     details: [
-      "Sunumuna bağlı bir çalışma alanı",
-      "Kitlene göre sesli prova ve geri bildirim",
+      "Kitlene göre oluşturulan yapay zekâ ajanları",
+      "Anlatımına ve tempona yönelik geri bildirim",
     ],
     image: "/landing/rehearsal.webp",
     alt: "Bir sunumun etrafındaki farklı katılımcı profilleri ve sesli konuşma akışının izometrik görünümü",
@@ -36,11 +36,11 @@ const stages = [
   {
     label: "Eğitim sırasında",
     detailIcons: ["activity", "chat"],
-    title: "Sunumun ilerlesin. Herkes katılsın.",
-    text: "Aktivitelerini slaytlarının arasına yerleştir. İlgili slayta geldiğinde katılımcılar telefonlarından yanıtlasın, sorularını kişisel sohbetlerinde sorsun.",
+    title: "Etkileşimi aç. Herkesi dahil et.",
+    text: "Etkinliklerle yanıtları topla. Öğrenme ajanı katılımcıların sorularını eğitim kaynaklarına dayanarak yanıtlasın; sen de eğitimin akışına odaklan.",
     details: [
-      "Sunum akışında anket, açık uçlu soru ve senaryo",
-      "Kaynak slaytları gösteren asistan yanıtları",
+      "Anket, açık uçlu soru ve senaryolar",
+      "Eğitim kaynaklarına dayanan öğrenme ajanı",
     ],
     image: "/landing/training.webp",
     alt: "Eğitmen sunumu, katılımcı telefonu ve aktivite yanıtlarının izometrik görünümü",
@@ -49,10 +49,10 @@ const stages = [
     label: "Eğitimden sonra",
     detailIcons: ["clock", "chart"],
     title: "Eğitim biter. Öğrenme devam eder.",
-    text: "Katılımcıların, belirlediğin süre boyunca dokümana soru sormayı sürdürsün. Sen de soruları ve aktivite sonuçlarını raporundan incele.",
+    text: "Katılımcılar öğrenme ajanına soru sormayı sürdürsün. Rapor ajanıyla yanıtları ve katılımı incele; sonraki eğitiminde neyi geliştirebileceğini gör.",
     details: [
-      "Süresini senin belirlediğin asistan erişimi",
-      "Her eğitime özel rapor ve rapor sohbeti",
+      "Süresini senin belirlediğin öğrenme ajanı erişimi",
+      "Eğitim verilerini yorumlayan rapor ajanı",
     ],
     image: "/landing/follow-up.webp",
     alt: "Sunum kaynaklarıyla bağlantılı bir sohbet ve eğitim raporunun izometrik görünümü",
@@ -279,36 +279,28 @@ function LandingLanguage() {
 
 const questions = [
   [
-    "LİNBA nedir?",
-    "LİNBA, sunumunu merkeze alan bir eğitim çalışma alanıdır. Aynı sunumla eğitimden önce sesli prova yapabilir, eğitim sırasında aktivitelerle katılım sağlayabilir ve sonrasında soruları, yanıtları ve sonuçları takip edebilirsin.",
+    "LİNBA’nın yapay zekâ ajanları ne yapar?",
+    "Eğitimden önce katılımcılarını temsil eden ajanlarla sesli prova yaparsın. Eğitim sırasında öğrenme ajanı katılımcıların sorularını eğitim kaynaklarına dayanarak yanıtlar. Sonrasında rapor ajanıyla soruları, aktivite yanıtlarını ve öğrenme ihtiyaçlarını birlikte incelersin.",
   ],
   [
-    "Hangi sunumları yükleyebilirim?",
-    "PDF ve PPTX dosyalarını yükleyebilirsin. LİNBA, sunumunun özgün içeriğini korur; aktivitelerini slaytların arasına ekleyebilirsin. Dosya sınırı 30 MB ve 80 slayttır.",
+    "Prova ajanları kitlime nasıl uyum sağlar?",
+    "Kitleni, deneyim düzeyini ve eğitim bağlamını tarif edersin. Bu tanıma göre oluşturulan yapay zekâ ajanları sesli provana sorularla katılır. Geri bildirim, senin anlatımının netliği, tempon ve sorulara verdiğin yanıtlarla ilgilidir.",
   ],
   [
-    "Provada kimlerle konuşuyorum?",
-    "Tarif ettiğin kitleye göre oluşturulan yapay zekâ katılımcılarıyla konuşursun. Eğitimini sesli anlatırken sorular ve yorumlarla katılırlar; prova sonunda geri bildirim alırsın.",
+    "Öğrenme ajanı yanıtlarını neye dayandırır?",
+    "Yüklediğin eğitim kaynaklarını kullanır ve ilgili slaytları gösterir. Kaynaklarda yanıt bulunmayan sorular eğitmene iletilir. Canlı eğitimde otomatik yanıtı açıp kapatabilirsin.",
   ],
   [
-    "Sunumuma nasıl aktivite eklerim?",
-    "Eğitimin çalışma alanında bir slayt seçip arkasına anket, açık uçlu soru veya senaryo ekleyebilirsin. Sunumda o aktiviteye geldiğinde katılımcıların ekranında açılır. Slaytlarının özgün içeriği korunur; aktiviteleri akış içinde taşıyabilirsin.",
+    "Rapor ajanı ölçme ve değerlendirmeye nasıl yardımcı olur?",
+    "Katılımcı sorularını ve aktivite yanıtlarını incelemene yardımcı olur. Hangi konularda zorlanıldığını ve sonraki eğitimlerde neleri geliştirebileceğini sorabilirsin. Değerlendirme, eğitimde toplanan verilere dayanır; eğitimle ilgili kararları sen verirsin.",
   ],
   [
-    "Katılımcılar eğitime nasıl katılır?",
-    "Katılımcılar hesaplarıyla, paylaştığın bağlantı veya eğitim kodunu kullanarak tarayıcıdan katılır. Sunumu, aktiviteleri ve kişisel sohbetlerini telefonlarından takip edebilirler.",
+    "Eğitim bitince öğrenme ajanına erişim devam eder mi?",
+    "Evet. Katılımcılar, eğitmenin belirlediği süre boyunca soru sormaya devam edebilir. Eğitim sonrası sorular da aynı eğitim raporuna eklenir.",
   ],
   [
-    "Asistan her soruyu yanıtlar mı?",
-    "Asistan yüklediğin dokümana dayanarak yanıt verir ve kaynak slaytları gösterir. Dokümanda yanıt bulunamayan sorular eğitmene iletilir. Canlı eğitimde otomatik yanıtı açıp kapatabilirsin.",
-  ],
-  [
-    "Eğitim bittikten sonra ne olur?",
-    "Katılımcılar, eğitim oluştururken belirlediğin süre boyunca sunuma bağlı asistana soru sormaya devam edebilir. Eğitim raporunda katılımcı sorularını ve aktivite sonuçlarını görür, rapor asistanıyla bu veriler hakkında konuşabilirsin. Eğitim sonrası gelen sorular da aynı rapora eklenir.",
-  ],
-  [
-    "Diğer araçlarla entegrasyonlar hazır mı?",
-    "PowerPoint, Microsoft Teams, Google Slides, Zoom, Google Meet, ChatGPT ve Claude entegrasyonları henüz kullanıma açık değil. Genel bekleme listesine katılarak LİNBA’daki yeniliklerden haberdar olabilirsin. PDF veya PPTX sunumunu doğrudan yükleyerek şimdiden başlayabilirsin.",
+    "Nasıl deneyebilirim, bekleme listesi ne için?",
+    "Şimdi dene düğmesiyle hesap oluşturup mevcut özellikleri kullanmaya başlayabilirsin. Genel bekleme listesi, LİNBA’nın kullanıma açılışı ve yeni özellikleriyle ilgili haberler içindir. Entegrasyonlar henüz kullanıma açık değildir.",
   ],
 ] as const;
 
@@ -427,8 +419,14 @@ function LandingContent() {
           aria-labelledby="flow-title"
         >
           <div className="landing-flow-intro">
-            <h2 id="flow-title">{t("Bir sunum. Baştan sona bir eğitim.")}</h2>
-            <p>{t("Hazırlık, katılım ve takip aynı akışta buluşur.")}</p>
+            <h2 id="flow-title">
+              {t("Eğitimden önce, eğitim sırasında, eğitimden sonra.")}
+            </h2>
+            <p>
+              {t(
+                "Prova yap, katılımcılarını dahil et, öğrenme ihtiyaçlarını gör.",
+              )}
+            </p>
           </div>
           <LandingFlow />
         </section>
@@ -445,7 +443,9 @@ function LandingContent() {
           <div className="landing-faq-intro">
             <h2 id="questions-title">{t("Sık sorulan sorular.")}</h2>
             <p>
-              {t("İlk sunumundan eğitim sonrasına, merak ettiklerin burada.")}
+              {t(
+                "Ajanların nasıl çalıştığını, neye dayandığını ve eğitimine nasıl eşlik ettiğini keşfet.",
+              )}
             </p>
           </div>
           <div className="landing-faq-list">
@@ -465,16 +465,35 @@ function LandingContent() {
           className="landing-closing landing-container"
           aria-labelledby="closing-title"
         >
-          <div>
+          <img
+            className="landing-closing-art"
+            src="/landing/agents-invitation.webp"
+            width={480}
+            height={360}
+            loading="lazy"
+            alt=""
+            aria-hidden="true"
+          />
+          <div className="landing-closing-copy">
             <h2 id="closing-title">
-              {t("Bir sonraki eğitimini birlikte hazırlayalım.")}
+              {t("Bir sonraki eğitimine ajanlarınla hazırlan.")}
             </h2>
-            <p>{t("İlk adım, elindeki sunum.")}</p>
+            <p>
+              {t(
+                "Prova yap, katılımcılarınla etkileşim kur, öğrenme ihtiyaçlarını keşfet.",
+              )}
+            </p>
+            <div className="landing-cta-actions">
+              <Link
+                href="/giris?mod=kayit"
+                className="button primary landing-try-button"
+              >
+                <span>{t("Şimdi dene, ücretsiz")}</span>
+                <Icon name="arrow" size={18} />
+              </Link>
+              <LandingWaitlistButton className="button landing-waitlist-button" />
+            </div>
           </div>
-          <Link href="/giris?mod=kayit" className="button primary">
-            {t("Ücretsiz dene")}
-            <Icon name="arrow" size={19} />
-          </Link>
         </section>
       </main>
       <footer className="landing-footer landing-container">
@@ -486,7 +505,7 @@ function LandingContent() {
           >
             <Logo />
           </Link>
-          <p>{t("Sunumdan birlikte öğrenmeye.")}</p>
+          <p>{t("Eğitim için yapay zekâ ajanları.")}</p>
         </div>
         <nav className="landing-footer-links" aria-label={t("Alt gezinme")}>
           <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>

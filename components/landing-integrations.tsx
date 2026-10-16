@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useRef,
   useState,
   type ReactNode,
@@ -174,6 +175,47 @@ export function LandingWaitlistProvider({ children }: { children: ReactNode }) {
 }
 
 export function LandingIntegrations() {
+  const section = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const element = section.current;
+    if (
+      !element ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
+    const targets = [
+      ...element.querySelectorAll<HTMLElement>(
+        ".landing-integration-hub, .landing-integration-group",
+      ),
+    ];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const index = targets.indexOf(entry.target as HTMLElement);
+          // A one-time entrance enhances visible content without trapping scrolling.
+          if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            (entry.target as HTMLElement).animate(
+              [
+                { opacity: 0.35, transform: "translateY(18px)" },
+                { opacity: 1, transform: "translateY(0)" },
+              ],
+              {
+                duration: 650,
+                delay: Math.min(index, 2) * 90,
+                easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+                fill: "backwards",
+              },
+            );
+          }
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -24px 0px" },
+    );
+    targets.forEach((target) => observer.observe(target));
+    return () => observer.disconnect();
+  }, []);
   const { t } = useLocale();
   const openWaitlist = useWaitlist();
   const groups = [
@@ -196,6 +238,7 @@ export function LandingIntegrations() {
   return (
     <section
       id="entegrasyonlar"
+      ref={section}
       className="landing-integrations landing-container"
       aria-labelledby="integrations-title"
     >

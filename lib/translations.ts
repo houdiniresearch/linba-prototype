@@ -1,5 +1,87 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Anket, açık uçlu soru ve senaryolar": "Polls, open questions and scenarios",
+  "Etkinliklerle yanıtları topla. Öğrenme ajanı katılımcıların sorularını eğitim kaynaklarına dayanarak yanıtlasın; sen de eğitimin akışına odaklan.":
+    "Collect responses through activities. Let the learning agent answer participant questions using your training materials, while you focus on delivering the training.",
+  "Etkileşimi aç. Herkesi dahil et.":
+    "Start the conversation. Bring everyone in.",
+  "Ajanların nasıl çalıştığını, neye dayandığını ve eğitimine nasıl eşlik ettiğini keşfet.":
+    "Explore how the agents work, what they rely on and how they support your training.",
+  "Eğitim için yapay zekâ ajanları.": "AI agents for education.",
+  "Prova yap, katılımcılarınla etkileşim kur, öğrenme ihtiyaçlarını keşfet.":
+    "Rehearse, engage your participants and discover learning needs.",
+  "Bir sonraki eğitimine ajanlarınla hazırlan.":
+    "Prepare for your next training with your AI agents.",
+  "Şimdi dene düğmesiyle hesap oluşturup mevcut özellikleri kullanmaya başlayabilirsin. Genel bekleme listesi, LİNBA’nın kullanıma açılışı ve yeni özellikleriyle ilgili haberler içindir. Entegrasyonlar henüz kullanıma açık değildir.":
+    "Use Try it now to create an account and explore the current features. The general waitlist is for updates about LİNBA’s launch and new features. Integrations are not yet available.",
+  "Nasıl deneyebilirim, bekleme listesi ne için?":
+    "How can I try LİNBA, and what is the waitlist for?",
+  "Evet. Katılımcılar, eğitmenin belirlediği süre boyunca soru sormaya devam edebilir. Eğitim sonrası sorular da aynı eğitim raporuna eklenir.":
+    "Yes. Participants can keep asking questions for the duration set by their instructor. Post-training questions are added to the same training report.",
+  "Eğitim bitince öğrenme ajanına erişim devam eder mi?":
+    "Can participants keep using the learning agent after training?",
+  "Katılımcı sorularını ve aktivite yanıtlarını incelemene yardımcı olur. Hangi konularda zorlanıldığını ve sonraki eğitimlerde neleri geliştirebileceğini sorabilirsin. Değerlendirme, eğitimde toplanan verilere dayanır; eğitimle ilgili kararları sen verirsin.":
+    "It helps you examine participant questions and activity responses. Ask which topics participants struggled with and what to improve in future training. Assessment is grounded in the data collected during training; you make the training decisions.",
+  "Rapor ajanı ölçme ve değerlendirmeye nasıl yardımcı olur?":
+    "How does the report agent support learning assessment?",
+  "Yüklediğin eğitim kaynaklarını kullanır ve ilgili slaytları gösterir. Kaynaklarda yanıt bulunmayan sorular eğitmene iletilir. Canlı eğitimde otomatik yanıtı açıp kapatabilirsin.":
+    "It uses the training materials you upload and points to relevant slides. Questions without an answer in the materials are passed to the instructor. You can enable or disable automatic answers during live training.",
+  "Öğrenme ajanı yanıtlarını neye dayandırır?":
+    "What does the learning agent base its answers on?",
+  "Kitleni, deneyim düzeyini ve eğitim bağlamını tarif edersin. Bu tanıma göre oluşturulan yapay zekâ ajanları sesli provana sorularla katılır. Geri bildirim, senin anlatımının netliği, tempon ve sorulara verdiğin yanıtlarla ilgilidir.":
+    "Describe your audience, their experience and the training context. AI agents created from this brief join your voice rehearsal with questions. Feedback focuses on the clarity of your delivery, your pace and how you respond.",
+  "Prova ajanları kitlime nasıl uyum sağlar?":
+    "How do rehearsal agents adapt to my audience?",
+  "Eğitimden önce katılımcılarını temsil eden ajanlarla sesli prova yaparsın. Eğitim sırasında öğrenme ajanı katılımcıların sorularını eğitim kaynaklarına dayanarak yanıtlar. Sonrasında rapor ajanıyla soruları, aktivite yanıtlarını ve öğrenme ihtiyaçlarını birlikte incelersin.":
+    "Before training, rehearse out loud with agents representing your participants. During training, a learning agent answers participant questions using your training materials. Afterwards, review questions, activity responses and learning needs with the report agent.",
+  "LİNBA’nın yapay zekâ ajanları ne yapar?": "What do LİNBA’s AI agents do?",
+  "Öğrencilerimiz en çok hangi konularda zorlanıyor? Sonraki eğitimlerde neleri iyileştirebiliriz? Rapor ajanınızla katılımı, etkinlik yanıtlarını ve öğrenci davranışlarını birlikte değerlendirin.":
+    "Which topics do our students struggle with most? What can we improve in future training? Explore participation, activity responses and student behaviour with your report agent.",
+  "Açık uçlu bir soruyla öğrencilerinden yazılı yanıtlar al. Yapay zekâ ajanı ortak fikirleri ve kavram yanılgılarını özetlesin; sen nerede yeniden açıklama gerektiğini gör.":
+    "Invite written responses to an open question. An AI agent summarises shared ideas and misconceptions so you can see what needs another explanation.",
+  "Atölyenden sonra da katılımcılarına bir öğrenme ajanı sun. Belirlediğin süre boyunca sorularını sorsunlar, eğitim kaynaklarına geri dönebilsinler.":
+    "Give participants a learning agent after your workshop. Let them ask questions and revisit training materials for the period you choose.",
+  "Farklı roller, farklı ihtiyaçlar. Prova, etkileşim ve değerlendirmede sana eşlik eden yapay zekâ ajanları.":
+    "Different roles, different needs. AI agents that support rehearsal, engagement and assessment.",
+  "Eğitim verilerini yorumlayan rapor ajanı":
+    "A report agent that helps interpret training data",
+  "Süresini senin belirlediğin öğrenme ajanı erişimi":
+    "Learning agent access for a duration you choose",
+  "Eğitim kaynaklarına dayanan öğrenme ajanı":
+    "A learning agent grounded in your training materials",
+  "Katılımcılar öğrenme ajanına soru sormayı sürdürsün. Rapor ajanıyla yanıtları ve katılımı incele; sonraki eğitiminde neyi geliştirebileceğini gör.":
+    "Let participants keep asking their learning agent questions. Review responses and engagement with the report agent, and identify what to improve in your next training.",
+  "Anlatımına ve tempona yönelik geri bildirim":
+    "Feedback on your delivery and pace",
+  "Kitlene göre oluşturulan yapay zekâ ajanları":
+    "AI agents tailored to your audience",
+  "Kitleni tarif et. Katılımcılarını temsil eden yapay zekâ ajanlarıyla sesli prova yap; anlatımını ve sorulara verdiğin yanıtları geliştir.":
+    "Describe your audience. Rehearse out loud with AI agents representing your participants, and improve your delivery and responses to questions.",
+  "Katılımcı yanıtlarından öğrenme ihtiyaçlarını inceleyen eğitmen ve raporun izometrik görünümü":
+    "An isometric educator reviewing a report and learning needs from participant responses",
+  "Eğitmen ve katılımcılar arasında etkileşimi gösteren izometrik öğrenme alanı":
+    "An isometric learning space showing interaction between an instructor and participants",
+  "Eğitmenin yapay zekâ katılımcı ajanlarıyla sesli provasını gösteren izometrik sahne":
+    "An isometric scene of an instructor rehearsing out loud with AI participant agents",
+  Değerlendirme: "Assessment",
+  Etkileşim: "Engagement",
+  Prova: "Rehearsal",
+  "Yapay zekâ ajanlarını keşfet": "Explore the AI agents",
+  "Şimdi dene, ücretsiz": "Try it now, for free",
+  "Eğitimine hazırlanırken, katılımcılarınla etkileşim kurarken ve öğrenme sonuçlarını değerlendirirken yapay zekâ ajanları yanında.":
+    "AI agents support you as you prepare your training, engage participants and assess learning outcomes.",
+  "Prova yapmana, katılımı artırmana ve öğrenmeyi değerlendirmene yardımcı olan yapay zekâ ajanları.":
+    "AI agents that help you rehearse, engage participants and assess learning.",
+  "yardımcı olan yapay zekâ ajanları.": "AI agents that help you",
+  "Ölçüp değerlendirmene": "assess learning.",
+  "Prova yapmana, katılımı artırmana ve ölçüp değerlendirmene yardımcı olan yapay zekâ.":
+    "AI that helps you rehearse, engage everyone, measure and evaluate.",
+  "Sunumunu yükle. Yapay zekâyla prova yap, eğitim sırasında etkileşim kur ve sonrasında sonuçları değerlendir.":
+    "Upload your slides. Rehearse with AI, engage participants during training and evaluate the results afterwards.",
+  "Eğitimden önce, eğitim sırasında, eğitimden sonra.":
+    "Before, during and after training.",
+  "Prova yap, katılımcılarını dahil et, öğrenme ihtiyaçlarını gör.":
+    "Rehearse, involve your participants and identify learning needs.",
   "Prova yapmana": "rehearse.",
   "Katılımı artırmana": "engage everyone.",
   "Öğrenmeyi sürdürmene": "keep learning.",

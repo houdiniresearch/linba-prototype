@@ -21,7 +21,7 @@ const audiences = [
     id: "academic",
     label: "Öğretim görevlisi",
     title: "Yanıtları topla. Düşünme biçimlerini gör.",
-    text: "Açık uçlu bir soruyla öğrencilerinden yazılı yanıtlar al. Yapay zekâ, yanıtlardaki ortak fikirleri ve kavram yanılgılarını özetlesin; sen nerede yeniden açıklama gerektiğini gör.",
+    text: "Açık uçlu bir soruyla öğrencilerinden yazılı yanıtlar al. Yapay zekâ ajanı ortak fikirleri ve kavram yanılgılarını özetlesin; sen nerede yeniden açıklama gerektiğini gör.",
     benefit: "Tek tek yanıtların ötesinde, sınıfın nasıl düşündüğünü anla.",
     filename: "Araştırma yöntemleri.pdf",
     scenes: ["Yanıtlar", "AI analizi", "Confusion spike"],
@@ -32,7 +32,7 @@ const audiences = [
     id: "independent",
     label: "Bağımsız eğitimci",
     title: "Atölyen bitsin. Öğrenme devam etsin.",
-    text: "Atölyenden sonra da katılımcılarına sunumunla öğrenme alanı bırak. Belirlediğin süre boyunca sorularını sorsunlar, kaynak slaytlara geri dönebilsinler.",
+    text: "Atölyenden sonra da katılımcılarına bir öğrenme ajanı sun. Belirlediğin süre boyunca sorularını sorsunlar, eğitim kaynaklarına geri dönebilsinler.",
     benefit: "Bilgiyi ihtiyaç duydukları anda erişilebilir tut.",
     filename: "Hücre biyolojisi.pdf",
     scenes: ["Sorunu sor", "Yanıtı keşfet", "Kaynağa dön"],
@@ -43,7 +43,7 @@ const audiences = [
     id: "institution",
     label: "Eğitim kurumları",
     title: "Öğrenci davranışlarını anlayın. Eğitimlerinizi geliştirin.",
-    text: "Öğrencilerimiz en çok hangi konularda zorlanıyor? Sonraki eğitimlerde neleri iyileştirebiliriz? Rapor asistanınızla katılımı, etkinlik yanıtlarını ve öğrenci davranışlarını birlikte değerlendirin.",
+    text: "Öğrencilerimiz en çok hangi konularda zorlanıyor? Sonraki eğitimlerde neleri iyileştirebiliriz? Rapor ajanınızla katılımı, etkinlik yanıtlarını ve öğrenci davranışlarını birlikte değerlendirin.",
     benefit: "Her eğitimden, bir sonraki eğitim için yol haritası çıkarın.",
     filename: "Araştırma yöntemleri · Eğitim raporu",
     scenes: ["Eğitim raporu", "Öğrenme ihtiyaçları", "Sonraki eğitim"],
@@ -824,7 +824,7 @@ export function LandingAudience() {
           <h2 id={`${id}-title`}>{t("Senin eğitimine göre.")}</h2>
           <p>
             {t(
-              "Farklı kitleler, farklı ihtiyaçlar. Aynı sunumdan başlayan bir eğitim alanı.",
+              "Farklı roller, farklı ihtiyaçlar. Prova, etkileşim ve değerlendirmede sana eşlik eden yapay zekâ ajanları.",
             )}
           </p>
         </div>
