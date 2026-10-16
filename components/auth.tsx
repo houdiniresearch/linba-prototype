@@ -80,13 +80,6 @@ export function Auth({
               "Sunumun, etkileşimli aktivitelerin ve dokümanına dayanan bir öğrenme asistanın. Hepsi aynı eğitimde.",
             )}
           </p>
-          <div className="auth-preview">
-            <Icon name="presentation" size={36} />
-            <div>
-              <strong>{t("Sunumdan eğitime")}</strong>
-              <span>{t("Önce dokümanını yükle. Gerisi eğitiminde.")}</span>
-            </div>
-          </div>
         </div>
         <section className="auth-form">
           <h2>
