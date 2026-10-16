@@ -1,5 +1,7 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Sana özel bir çalışma alanı açılır.":
+    "A private workspace will be created for you.",
   "LİNBA’yı deneyimle.": "Experience LİNBA in action.",
   "Örnek bir eğitimde LİNBA’nın yapay zekâ ajanlarını dene. Pratik yap, etkileşim kur ve öğrenme desteğini keşfet.":
     "Try LİNBA’s AI agents in a sample training. Practice, interact and explore learning support.",
@@ -717,7 +719,7 @@ const en: Record<string, string> = {
   veya: "or",
   "Örnek eğitimle dene": "Try a sample training",
   "Sana özel bir deneme alanı açılır.":
-    "A private demo workspace will be created for you.",
+    "A private workspace will be created for you.",
   "Eğitimin her aşamasında yanında.": "With you at every stage of training.",
   "EĞİTMEN VE KATILIMCI ÇALIŞMA ALANI": "INSTRUCTOR AND PARTICIPANT WORKSPACE",
   "Hazırla.": "Prepare.",

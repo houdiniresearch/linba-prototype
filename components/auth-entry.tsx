@@ -151,7 +151,7 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
             <Icon name={experiencing ? "spinner" : "arrow"} size={19} />
           </button>
           <p className="access-experience-note">
-            {t("Ücretsiz. Hesap oluşturmadan.")}
+            {t("Sana özel bir çalışma alanı açılır.")}
           </p>
         </section>
       </main>
