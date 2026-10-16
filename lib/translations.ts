@@ -1,6 +1,33 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
   "Eğitim kurumları": "Educational institutions",
+  "Öğrenci davranışlarını anlayın. Eğitimlerinizi geliştirin.":
+    "Understand student behaviour. Improve your training.",
+  "Öğrencilerimiz en çok hangi konularda zorlanıyor? Sonraki eğitimlerde neleri iyileştirebiliriz? Rapor asistanınızla katılımı, etkinlik yanıtlarını ve öğrenci davranışlarını birlikte değerlendirin.":
+    "Which topics do our students struggle with most? What can we improve in future training? Explore participation, activity responses and student behaviour with your report assistant.",
+  "Her eğitimden, bir sonraki eğitim için yol haritası çıkarın.":
+    "Build a roadmap for your next training from each session.",
+  "Öğrenme ihtiyaçları": "Learning needs",
+  "Eğitim raporu": "Training report",
+  "Araştırma yöntemleri": "Research methods",
+  "15 Ekim 2026 · Tamamlanan eğitim": "15 October 2026 · Completed training",
+  "Öğrenci katılımı": "Student participation",
+  "Etkinlik yanıtları": "Activity responses",
+  "Öğrenci davranışları": "Student behaviour",
+  "Örnek kurum raporu: 15 Ekim 2026 tarihli Araştırma yöntemleri eğitimi için katılım, etkinlik yanıtları ve öğrenci davranışları ele alınır. Kurum, öğrencilerinin en çok hangi konularda zorlandığını ve sonraki eğitimlerde neleri iyileştirebileceğini rapor asistanına sorar.":
+    "Example institutional report: participation, activity responses and student behaviour from the Research methods training on 15 October 2026. The institution asks its report assistant which topics students struggle with most and what to improve in future training.",
+  "Öğrencilerimiz en çok hangi konularda zorlanıyor?":
+    "Which topics do our students struggle with most?",
+  "Etkinlik yanıtları, korelasyon ile nedensellik ayrımında güçlük yaşandığına işaret ediyor.":
+    "Activity responses suggest difficulty distinguishing correlation from causation.",
+  "Dayanak: etkinlik yanıtları ve eğitim raporu":
+    "Based on activity responses and the training report",
+  "Sonraki eğitimlerde neleri iyileştirebiliriz?":
+    "What can we improve in future training?",
+  "Korelasyon ve nedensellik bölümüne karşı örnekler ekleyin. Kısa etkinliklerle öğrencilerin kavramı nasıl uyguladığını izleyin.":
+    "Add counterexamples to the correlation and causation section. Use short activities to see how students apply the concept.",
+  "Karşı örnekler → Uygulama → Geri bildirim":
+    "Counterexamples → Practice → Feedback",
   "Öğrencilerini anla. Sonraki eğitimi geliştir.":
     "Understand your students. Improve the next training.",
   "Eğitim raporunu asistanınla birlikte incele. Öğrencilerin hangi konularda zorlandığını sor, öğrenme ihtiyaçlarını keşfet ve sonraki eğitimini bu içgörülerle planla.":

@@ -42,13 +42,13 @@ const audiences = [
   {
     id: "institution",
     label: "Eğitim kurumları",
-    title: "Öğrencilerini anla. Sonraki eğitimi geliştir.",
-    text: "Eğitim raporunu asistanınla birlikte incele. Öğrencilerin hangi konularda zorlandığını sor, öğrenme ihtiyaçlarını keşfet ve sonraki eğitimini bu içgörülerle planla.",
-    benefit: "Öğrencilerinin sorularını somut eğitim kararlarına dönüştür.",
+    title: "Öğrenci davranışlarını anlayın. Eğitimlerinizi geliştirin.",
+    text: "Öğrencilerimiz en çok hangi konularda zorlanıyor? Sonraki eğitimlerde neleri iyileştirebiliriz? Rapor asistanınızla katılımı, etkinlik yanıtlarını ve öğrenci davranışlarını birlikte değerlendirin.",
+    benefit: "Her eğitimden, bir sonraki eğitim için yol haritası çıkarın.",
     filename: "Araştırma yöntemleri · Eğitim raporu",
-    scenes: ["Raporu aç", "Zorlanılan konular", "Sonraki eğitim"],
+    scenes: ["Eğitim raporu", "Öğrenme ihtiyaçları", "Sonraki eğitim"],
     summary:
-      "Örnek rapor asistanı: kurum, öğrencilerin korelasyon ve nedensellik hakkında sorduğu soruları inceler. Asistana nerede zorlandıklarını ve sonraki eğitimde neyi geliştirebileceğini sorar; rapora dayalı açıklama ve bir karşı örnek önerisi alır.",
+      "Örnek kurum raporu: 15 Ekim 2026 tarihli Araştırma yöntemleri eğitimi için katılım, etkinlik yanıtları ve öğrenci davranışları ele alınır. Kurum, öğrencilerinin en çok hangi konularda zorlandığını ve sonraki eğitimlerde neleri iyileştirebileceğini rapor asistanına sorar.",
   },
 ] as const;
 
@@ -63,29 +63,31 @@ function AudienceDemo({
   if (kind === "institution")
     return (
       <div className="audience-demo-stage" data-scene={scene}>
-        <div className="audience-demo-scene" data-active={scene === 0}>
-          <span className="audience-message-label">
-            <Icon name="chart" size={16} />
-            {t("Örnek eğitim raporu")}
+        <div
+          className="audience-demo-scene audience-report-cover"
+          data-active={scene === 0}
+        >
+          <span className="audience-report-cover-icon">
+            <Icon name="chart" size={36} />
           </span>
-          <h4 className="audience-scene-title">
-            {t("Öğrencilerden gelen sorular")}
-          </h4>
-          <div className="audience-report-questions">
-            <p>
-              <Icon name="chat" size={17} />
-              <span>
-                {t("Birlikte artıyorlarsa biri diğerinin nedeni değil mi?")}
-              </span>
-            </p>
-            <p>
-              <Icon name="chat" size={17} />
-              <span>{t("Üçüncü bir etken olduğunu nasıl anlarız?")}</span>
-            </p>
-          </div>
-          <div className="audience-demo-note">
-            <Icon name="file" size={17} />
-            <span>{t("Slayt 08 · Korelasyon ve nedensellik")}</span>
+          <span className="audience-message-label">{t("Eğitim raporu")}</span>
+          <h4 className="audience-scene-title">{t("Araştırma yöntemleri")}</h4>
+          <p className="audience-report-date">
+            {t("15 Ekim 2026 · Tamamlanan eğitim")}
+          </p>
+          <div className="audience-report-contents">
+            <span>
+              <Icon name="users" size={18} />
+              {t("Öğrenci katılımı")}
+            </span>
+            <span>
+              <Icon name="activity" size={18} />
+              {t("Etkinlik yanıtları")}
+            </span>
+            <span>
+              <Icon name="chart" size={18} />
+              {t("Öğrenci davranışları")}
+            </span>
           </div>
         </div>
         <div
@@ -93,7 +95,7 @@ function AudienceDemo({
           data-active={scene === 1}
         >
           <div className="audience-chat-question">
-            {t("Öğrenciler en çok hangi konuda zorlandı?")}
+            {t("Öğrencilerimiz en çok hangi konularda zorlanıyor?")}
           </div>
           <div className="audience-chat-answer">
             <span className="audience-message-label">
@@ -102,12 +104,12 @@ function AudienceDemo({
             </span>
             <p>
               {t(
-                "Sorular, korelasyon ile neden-sonuç ilişkisini ayırt etmede zorlanıldığını gösteriyor.",
+                "Etkinlik yanıtları, korelasyon ile nedensellik ayrımında güçlük yaşandığına işaret ediyor.",
               )}
             </p>
             <div className="audience-source">
               <Icon name="chart" size={17} />
-              {t("Dayanak: eğitimde sorulan sorular")}
+              {t("Dayanak: etkinlik yanıtları ve eğitim raporu")}
             </div>
           </div>
         </div>
@@ -116,7 +118,7 @@ function AudienceDemo({
           data-active={scene === 2}
         >
           <div className="audience-chat-question">
-            {t("Bir sonraki eğitimde neyi geliştirebilirim?")}
+            {t("Sonraki eğitimlerde neleri iyileştirebiliriz?")}
           </div>
           <div className="audience-chat-answer">
             <span className="audience-message-label">
@@ -125,14 +127,12 @@ function AudienceDemo({
             </span>
             <p>
               {t(
-                "Bu kavramı bir karşı örnekle yeniden ele al. Ardından kısa bir açık uçlu soruyla öğrencilerin gerekçelerini karşılaştır.",
+                "Korelasyon ve nedensellik bölümüne karşı örnekler ekleyin. Kısa etkinliklerle öğrencilerin kavramı nasıl uyguladığını izleyin.",
               )}
             </p>
             <div className="audience-report-next">
               <Icon name="presentation" size={19} />
-              <span>
-                {t("Karşı örnek → Açık uçlu soru → Birlikte tartışma")}
-              </span>
+              <span>{t("Karşı örnekler → Uygulama → Geri bildirim")}</span>
             </div>
           </div>
         </div>
