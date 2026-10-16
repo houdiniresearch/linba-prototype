@@ -275,15 +275,26 @@
   background: var(--lilac-ink);
 }
 .audience-academic {
+  position: relative;
   height: 317px;
   padding: 22px;
 }
-.audience-academic-scene:not([hidden]) {
-  height: 100%;
+.audience-academic-scene {
+  position: absolute;
+  inset: 22px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  animation: audience-scene-enter 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition:
+    opacity 450ms ease-out,
+    transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.audience-academic-scene[data-active="true"] {
+  opacity: 1;
+  transform: none;
 }
 .audience-activity-question > strong {
   display: block;
@@ -428,16 +439,6 @@
 .audience-confusion-suggestion > svg {
   flex-shrink: 0;
 }
-@keyframes audience-scene-enter {
-  from {
-    opacity: 0;
-    transform: translateY(7px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
 .audience-chat-question {
   width: fit-content;
   max-width: 86%;
@@ -478,9 +479,6 @@
 .audience-preview[data-paused="true"] .audience-arrival-one,
 .audience-preview[data-paused="true"] .audience-arrival-two,
 .audience-preview[data-paused="true"] .audience-arrival-three {
-  animation: none;
-}
-.audience-preview[data-paused="true"] .audience-academic-scene {
   animation: none;
 }
 @keyframes audience-copy-enter {
@@ -639,6 +637,9 @@
   .audience-academic {
     height: 319px;
     padding: 16px 14px;
+  }
+  .audience-academic-scene {
+    inset: 16px 14px;
   }
   .audience-activity-question > strong {
     font-size: 15px;

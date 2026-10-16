@@ -96,7 +96,7 @@ function AudienceDemo({
       <div className="audience-academic" data-scene={scene}>
         <div
           className="audience-academic-scene"
-          hidden={scene !== 0}
+          data-active={scene === 0}
           key="responses"
         >
           <div className="audience-activity-question">
@@ -124,7 +124,7 @@ function AudienceDemo({
         </div>
         <div
           className="audience-academic-scene"
-          hidden={scene !== 1}
+          data-active={scene === 1}
           key="analysis"
         >
           <div className="audience-analysis-map">
@@ -157,7 +157,7 @@ function AudienceDemo({
         </div>
         <div
           className="audience-academic-scene audience-confusion-signal"
-          hidden={scene !== 2}
+          data-active={scene === 2}
           key="confusion"
         >
           <div className="audience-confusion-heading">
@@ -258,7 +258,7 @@ export function LandingAudience() {
       return;
     const timer = window.setInterval(
       () => setAcademicScene((current) => (current + 1) % 3),
-      6000,
+      4500,
     );
     return () => window.clearInterval(timer);
   }, [audience.id, inView, visible, paused, reduced, academicScene]);
