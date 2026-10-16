@@ -10,12 +10,12 @@ const audiences = [
     id: "corporate",
     label: "Kurumsal eğitmen",
     title: "Yeni bir ekibe, hazırlıklı bir başlangıç.",
-    text: "Ürün eğitimini yeni başlayanlara anlatmadan önce kitleni tarif et. Farklı deneyimlere sahip yapay zekâ katılımcılarının sorularıyla anlatımını dene.",
+    text: "Ürün eğitimini yeni başlayanlara anlatmadan önce kitleni tarif et. Katılımcılarını temsil eden yapay zekâ ajanlarıyla sesli prova yap; anlatımın, tempon ve sorulara verdiğin yanıtlar hakkında geri bildirim al.",
     benefit: "Katılımcılarının sorularına hazırlıklı gir.",
     filename: "Ürün eğitimi.pdf",
     scenes: ["Kitleyi tanı", "Sesli prova", "Geri bildirim"],
     summary:
-      "Örnek prova: eğitmen kitlesini tarif eder, sunumunu sesli anlatır ve yapay zekâ katılımcısının fiyat sorusuna hazırlanmak için geri bildirim alır.",
+      "Örnek prova: eğitmen kitlesini tarif eder ve katılımcıları temsil eden yapay zekâ ajanlarıyla sesli prova yapar. Prova sonrasında anlatımının netliği, temposu ve sorulara verdiği yanıtlarla ilgili performans geri bildirimi alır.",
   },
   {
     id: "academic",
@@ -34,10 +34,10 @@ const audiences = [
     title: "Atölyen bitsin. Öğrenme devam etsin.",
     text: "Atölyenden sonra da katılımcılarına sunumunla öğrenme alanı bırak. Belirlediğin süre boyunca sorularını sorsunlar, kaynak slaytlara geri dönebilsinler.",
     benefit: "Bilgiyi ihtiyaç duydukları anda erişilebilir tut.",
-    filename: "Etkili iletişim atölyesi.pdf",
+    filename: "Zaman yönetimi atölyesi.pdf",
     scenes: ["Sorunu sor", "Yanıtı keşfet", "Kaynağa dön"],
     summary:
-      "Örnek eğitim sonrası sohbet: katılımcı aktif dinlemeyi sorar; asistan sunumdaki açıklama ve kaynak slaytla yanıt verir.",
+      "Örnek eğitim sonrası sohbet: atölye bittikten sonra katılımcı, hocanın anlattığı önemli ve acil iş ayrımını bir örnekle açıklamasını ister. Asistan sunuma dayalı yanıt verir ve ilgili slaydı gösterir.",
   },
   {
     id: "institution",
@@ -143,8 +143,8 @@ function AudienceDemo({
       <div className="audience-demo-stage" data-scene={scene}>
         <div className="audience-demo-scene" data-active={scene === 0}>
           <span className="audience-message-label">
-            <Icon name="users" size={16} />
-            {t("Prova kitlen")}
+            <Icon name="sparkle" size={16} />
+            {t("Yapay zekâ katılımcı ajanları")}
           </span>
           <h4 className="audience-scene-title">{t("Kitleni tarif et.")}</h4>
           <p className="audience-scene-description">
@@ -201,26 +201,28 @@ function AudienceDemo({
           </div>
           <div className="audience-demo-note">
             <Icon name="mic" size={17} />
-            <span>{t("Anlatımını sesli dene.")}</span>
+            <span>{t("Yapay zekâ ajanlarıyla sesli prova.")}</span>
           </div>
         </div>
         <div className="audience-demo-scene" data-active={scene === 2}>
-          <div className="audience-demo-message">
-            <span className="audience-message-label">
-              {t("Ece · Yeni başlayan")}
-            </span>
-            <p>{t("Müşteri doğrudan fiyatı sorarsa nasıl ilerlemeliyim?")}</p>
+          <span className="audience-message-label">
+            <Icon name="sparkle" size={16} />
+            {t("Prova performansın")}
+          </span>
+          <h4 className="audience-scene-title">
+            {t("Anlatımına dışarıdan bak.")}
+          </h4>
+          <div className="audience-performance-point">
+            <Icon name="check" size={18} />
+            <p>{t("Ana fikri net aktardın ve soruyu doğrudan yanıtladın.")}</p>
           </div>
-          <div className="audience-rehearsal-feedback">
-            <span className="audience-message-label">
-              <Icon name="sparkle" size={16} />
-              {t("Prova geri bildirimi")}
-            </span>
-            <p>{t("Önce ihtiyacı sor, sonra fiyatı bağlama oturt.")}</p>
-            <div className="audience-demo-note">
-              <Icon name="check" size={17} />
-              <span>{t("Soruyu karşıla. Anlatımını sürdür.")}</span>
-            </div>
+          <div className="audience-performance-point">
+            <Icon name="mic" size={18} />
+            <p>
+              {t(
+                "Örnek verirken hızlandın. Kritik noktadan sonra kısa bir duraklama bırak.",
+              )}
+            </p>
           </div>
         </div>
       </div>
@@ -352,14 +354,16 @@ function AudienceDemo({
           <Icon name="clock" size={16} />
           {t("Eğitimden sonra")}
         </span>
-        <h4 className="audience-scene-title">{t("Bir soru daha.")}</h4>
+        <h4 className="audience-scene-title">{t("Eğitimden sonra da sor.")}</h4>
         <p className="audience-scene-description">
-          {t("Sunumun, sorulara açık kalsın.")}
+          {t("Atölyede geçen bir konuyu yeniden keşfet.")}
         </p>
         <div className="audience-followup-question">
           <span className="audience-response-avatar">MK</span>
           <div className="audience-chat-question">
-            {t("Aktif dinlemeyi bir örnekle açıklar mısın?")}
+            {t(
+              "Hocanın anlattığı önemli ve acil iş ayrımını bir örnekle açıklar mısın?",
+            )}
           </div>
         </div>
       </div>
@@ -367,16 +371,16 @@ function AudienceDemo({
         <div className="audience-chat-answer">
           <span className="audience-message-label">
             <Icon name="sparkle" size={16} />
-            {t("Sunumuna dayanan asistan")}
+            {t("Eğitim sonrası asistanı")}
           </span>
           <p>
             {t(
-              "Karşındaki kişiyi kendi cümlelerinle özetlemek, doğru anlayıp anlamadığını kontrol etmene yardımcı olur.",
+              "Önemli bir iş seni hedefine yaklaştırır; acil bir iş ise hemen ilgi ister. Yarınki toplantıya hazırlanmak hem önemli hem acildir. Gelecek ayın planını yapmak önemlidir ama henüz acil değildir.",
             )}
           </p>
           <div className="audience-source">
             <Icon name="file" size={17} />
-            {t("Slayt 12 · Aktif dinleme")}
+            {t("Slayt 06 · Önemli ve acil işler")}
             <Icon name="arrow" size={14} />
           </div>
         </div>
@@ -387,14 +391,14 @@ function AudienceDemo({
           {t("Kaynağa geri dön.")}
         </span>
         <div className="audience-mini-slide audience-source-slide">
-          <span>{t("Aktif dinleme")}</span>
-          <p>{t("Önce dinle. Sonra kendi cümlelerinle özetle.")}</p>
+          <span>{t("Önemli mi, acil mi?")}</span>
+          <p>{t("Önemli: hedefe katkısı. Acil: zaman baskısı.")}</p>
           <div className="audience-slide-rule" />
-          <span className="audience-slide-caption">12 / 18</span>
+          <span className="audience-slide-caption">06 / 12</span>
         </div>
         <div className="audience-demo-note">
           <Icon name="clock" size={17} />
-          <span>{t("Erişim süresini sen belirlersin.")}</span>
+          <span>{t("Eğitim sonrası erişimi sen belirlersin.")}</span>
         </div>
       </div>
     </div>
@@ -404,29 +408,32 @@ function AudienceDemo({
 export function LandingAudience() {
   const { t } = useLocale();
   const [selected, setSelected] = useState(0);
-  const [paused, setPaused] = useState(false);
   const [inView, setInView] = useState(false);
   const [visible, setVisible] = useState(true);
   const [reduced, setReduced] = useState(false);
   const [scene, setScene] = useState(0);
+  const [sceneRestart, setSceneRestart] = useState(0);
   const section = useRef<HTMLElement>(null);
   const tabs = useRef<Array<HTMLButtonElement | null>>([]);
   const id = useId();
   const audience = audiences[selected];
+  const selectScene = (index: number) => {
+    setScene(index);
+    setSceneRestart((current) => current + 1);
+  };
   const selectAudience = (index: number) => {
     setSelected(index);
-    setScene(0);
-    setPaused(false);
+    selectScene(0);
   };
 
   useEffect(() => {
-    if (!inView || !visible || paused || reduced) return;
+    if (!inView || !visible || reduced) return;
     const timer = window.setInterval(
       () => setScene((current) => (current + 1) % 3),
       4500,
     );
     return () => window.clearInterval(timer);
-  }, [audience.id, inView, visible, paused, reduced, scene]);
+  }, [audience.id, inView, visible, reduced, scene, sceneRestart]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -519,24 +526,10 @@ export function LandingAudience() {
         </div>
         <div
           className="audience-preview"
-          data-running={inView && visible && !paused && !reduced}
-          data-motion={inView && !reduced}
-          data-paused={paused}
+          data-running={inView && visible && !reduced}
         >
           <div className="audience-preview-toolbar">
             <span>{t("Örnek senaryo")}</span>
-            {!reduced && (
-              <button
-                type="button"
-                onClick={() => setPaused(!paused)}
-                aria-label={t(
-                  paused ? "Animasyonu oynat" : "Animasyonu duraklat",
-                )}
-                aria-pressed={paused}
-              >
-                <Icon name={paused ? "play" : "pause"} size={17} />
-              </button>
-            )}
           </div>
           <div
             className="audience-demo-window"
@@ -565,10 +558,7 @@ export function LandingAudience() {
                 type="button"
                 aria-label={`${index + 1}. ${t(label)}`}
                 aria-pressed={scene === index}
-                onClick={() => {
-                  setScene(index);
-                  setPaused(true);
-                }}
+                onClick={() => selectScene(index)}
               >
                 <span className="audience-scene-number">{index + 1}</span>
                 <span>{t(label)}</span>

@@ -1,5 +1,34 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Ürün eğitimini yeni başlayanlara anlatmadan önce kitleni tarif et. Katılımcılarını temsil eden yapay zekâ ajanlarıyla sesli prova yap; anlatımın, tempon ve sorulara verdiğin yanıtlar hakkında geri bildirim al.":
+    "Describe your audience before delivering product training to new starters. Rehearse out loud with AI agents representing your participants, and get feedback on your delivery, pace and responses to questions.",
+  "Örnek prova: eğitmen kitlesini tarif eder ve katılımcıları temsil eden yapay zekâ ajanlarıyla sesli prova yapar. Prova sonrasında anlatımının netliği, temposu ve sorulara verdiği yanıtlarla ilgili performans geri bildirimi alır.":
+    "Example rehearsal: an instructor describes their audience and rehearses out loud with AI agents representing the participants. Afterwards, they receive performance feedback on clarity, pace and how they handled questions.",
+  "Yapay zekâ katılımcı ajanları": "AI participant agents",
+  "Yapay zekâ ajanlarıyla sesli prova.": "Voice rehearsal with AI agents.",
+  "Prova performansın": "Your rehearsal performance",
+  "Anlatımına dışarıdan bak.": "See your delivery from another perspective.",
+  "Ana fikri net aktardın ve soruyu doğrudan yanıtladın.":
+    "You explained the main idea clearly and answered the question directly.",
+  "Örnek verirken hızlandın. Kritik noktadan sonra kısa bir duraklama bırak.":
+    "You sped up during the example. Leave a short pause after the key point.",
+  "Zaman yönetimi atölyesi.pdf": "Time management workshop.pdf",
+  "Örnek eğitim sonrası sohbet: atölye bittikten sonra katılımcı, hocanın anlattığı önemli ve acil iş ayrımını bir örnekle açıklamasını ister. Asistan sunuma dayalı yanıt verir ve ilgili slaydı gösterir.":
+    "Example post-training conversation: after the workshop, a participant asks for an example explaining the instructor’s distinction between important and urgent tasks. The assistant answers from the presentation and points to the relevant slide.",
+  "Eğitimden sonra da sor.": "Keep asking after training.",
+  "Atölyede geçen bir konuyu yeniden keşfet.":
+    "Revisit a topic from the workshop.",
+  "Hocanın anlattığı önemli ve acil iş ayrımını bir örnekle açıklar mısın?":
+    "Can you give an example of the important vs urgent tasks the instructor mentioned?",
+  "Eğitim sonrası asistanı": "Post-training assistant",
+  "Önemli bir iş seni hedefine yaklaştırır; acil bir iş ise hemen ilgi ister. Yarınki toplantıya hazırlanmak hem önemli hem acildir. Gelecek ayın planını yapmak önemlidir ama henüz acil değildir.":
+    "An important task moves you towards your goal; an urgent one needs attention now. Preparing for tomorrow’s meeting is both important and urgent. Planning next month is important, but not yet urgent.",
+  "Slayt 06 · Önemli ve acil işler": "Slide 06 · Important and urgent tasks",
+  "Önemli mi, acil mi?": "Important or urgent?",
+  "Önemli: hedefe katkısı. Acil: zaman baskısı.":
+    "Important: contribution to your goal. Urgent: time pressure.",
+  "Eğitim sonrası erişimi sen belirlersin.":
+    "You decide how long post-training access lasts.",
   "Eğitim kurumları": "Educational institutions",
   "Öğrenci davranışlarını anlayın. Eğitimlerinizi geliştirin.":
     "Understand student behaviour. Improve your training.",
