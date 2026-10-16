@@ -5,18 +5,17 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useLocale } from "./locale-provider";
 import { Icon } from "./ui";
+import { LandingWaitlistButton } from "./landing-integrations";
 
 const moments = [
-  { headline: "hazırlıklı başla.", label: "Prova yap", icon: "mic" },
-  { headline: "herkesi dahil et.", label: "Etkileşim kur", icon: "activity" },
-  { headline: "öğrenmeyi sürdür.", label: "Öğrenmeyi sürdür", icon: "chat" },
+  "Prova yapmana",
+  "Katılımı artırmana",
+  "Öğrenmeyi sürdürmene",
 ] as const;
 
 export function LandingHero() {
   const { t } = useLocale();
   const [active, setActive] = useState(0);
-  const [restart, setRestart] = useState(0);
-  const [paused, setPaused] = useState(false);
   const [reduced, setReduced] = useState(true);
   const [inView, setInView] = useState(false);
   const [visible, setVisible] = useState(true);
@@ -43,13 +42,13 @@ export function LandingHero() {
   }, []);
 
   useEffect(() => {
-    if (reduced || paused || !inView || !visible) return;
+    if (reduced || !inView || !visible) return;
     const timer = window.setTimeout(
       () => setActive((current) => (current + 1) % moments.length),
-      4000,
+      3000,
     );
     return () => window.clearTimeout(timer);
-  }, [active, restart, reduced, paused, inView, visible]);
+  }, [active, reduced, inView, visible]);
 
   return (
     <section
@@ -65,18 +64,18 @@ export function LandingHero() {
           <h1
             id="landing-title"
             aria-label={t(
-              "Bir sunumla hazırlıklı başla, herkesi dahil et, öğrenmeyi sürdür.",
+              "Prova yapmana, katılımı artırmana ve öğrenmeyi sürdürmene yardımcı olan yapay zekâ.",
             )}
           >
-            <span className="landing-hero-prefix" aria-hidden="true">
-              {t("Bir sunumla,")}
-            </span>
             <span className="landing-hero-rotator" aria-hidden="true">
               {moments.map((moment, index) => (
-                <span key={moment.headline} data-active={index === active}>
-                  {t(moment.headline)}
+                <span key={moment} data-active={index === active}>
+                  {t(moment)}
                 </span>
               ))}
+            </span>
+            <span className="landing-hero-suffix" aria-hidden="true">
+              {t("yardımcı olan yapay zekâ.")}
             </span>
           </h1>
           <p className="landing-hero-description">
@@ -86,17 +85,11 @@ export function LandingHero() {
           </p>
           <div className="landing-hero-actions">
             <Link href="/giris?mod=kayit" className="button primary">
-              {t("Ücretsiz başla")}
+              {t("Ücretsiz dene")}
               <Icon name="arrow" size={19} />
             </Link>
-            <a href="#kimler-icin" className="landing-hero-explore">
-              {t("Senaryoları keşfet")}
-              <Icon name="down" size={17} />
-            </a>
+            <LandingWaitlistButton className="button landing-hero-waitlist" />
           </div>
-          <p className="landing-hero-format">
-            {t("PDF ve PPTX sunumlarınla çalışır.")}
-          </p>
         </div>
         <div className="landing-hero-visual">
           <div className="landing-hero-art">
@@ -112,43 +105,6 @@ export function LandingHero() {
               fetchPriority="high"
               unoptimized
             />
-          </div>
-          <div className="landing-hero-controls">
-            <div
-              className="landing-hero-moments"
-              role="group"
-              aria-label={t("Eğitimin üç aşaması")}
-            >
-              {moments.map((moment, index) => (
-                <button
-                  key={moment.label}
-                  type="button"
-                  aria-pressed={active === index}
-                  onClick={() => {
-                    setActive(index);
-                    setRestart((current) => current + 1);
-                  }}
-                >
-                  <Icon name={moment.icon} size={17} />
-                  <span>{t(moment.label)}</span>
-                </button>
-              ))}
-            </div>
-            {!reduced && (
-              <button
-                className="landing-hero-playback"
-                type="button"
-                onClick={() => setPaused((current) => !current)}
-                aria-pressed={paused}
-                aria-label={t(
-                  paused
-                    ? "Açılış animasyonunu oynat"
-                    : "Açılış animasyonunu duraklat",
-                )}
-              >
-                <Icon name={paused ? "play" : "pause"} size={15} />
-              </button>
-            )}
           </div>
         </div>
       </div>

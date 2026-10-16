@@ -373,7 +373,6 @@ function LandingContent() {
             <a href="#kimler-icin">{t("Kullanım senaryoları")}</a>
             <a href="#entegrasyonlar">{t("Entegrasyonlar")}</a>
             <a href="#sorular">{t("Sık sorulanlar")}</a>
-            <LandingWaitlistButton />
           </nav>
           <div className="landing-header-actions">
             <LandingLanguage />
@@ -413,7 +412,6 @@ function LandingContent() {
             <a href="#kimler-icin">{t("Kullanım senaryoları")}</a>
             <a href="#entegrasyonlar">{t("Entegrasyonlar")}</a>
             <a href="#sorular">{t("Sık sorulanlar")}</a>
-            <LandingWaitlistButton />
           </nav>
         </header>
       </div>
@@ -472,7 +470,7 @@ function LandingContent() {
             <p>{t("İlk adım, elindeki sunum.")}</p>
           </div>
           <Link href="/giris?mod=kayit" className="button primary">
-            {t("Ücretsiz başla")}
+            {t("Ücretsiz dene")}
             <Icon name="arrow" size={19} />
           </Link>
         </section>

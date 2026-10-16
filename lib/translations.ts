@@ -1,5 +1,12 @@
 export type Locale = "tr" | "en";
 const en: Record<string, string> = {
+  "Prova yapmana": "rehearse.",
+  "Katılımı artırmana": "engage everyone.",
+  "Öğrenmeyi sürdürmene": "keep learning.",
+  "yardımcı olan yapay zekâ.": "AI that helps you",
+  "Prova yapmana, katılımı artırmana ve öğrenmeyi sürdürmene yardımcı olan yapay zekâ.":
+    "AI that helps you rehearse, engage everyone and keep learning.",
+  "Ücretsiz dene": "Try for free",
   "Bir sunumla,": "One presentation.",
   "hazırlıklı başla.": "Start prepared.",
   "herkesi dahil et.": "Bring everyone in.",

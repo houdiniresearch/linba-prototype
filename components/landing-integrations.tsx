@@ -260,13 +260,17 @@ export function LandingIntegrations() {
   );
 }
 
-export function LandingWaitlistButton() {
+export function LandingWaitlistButton({
+  className = "landing-waitlist-trigger",
+}: {
+  className?: string;
+}) {
   const { t } = useLocale();
   const openWaitlist = useWaitlist();
   return (
     <button
       type="button"
-      className="landing-waitlist-trigger"
+      className={className}
       aria-haspopup="dialog"
       onClick={(event) => {
         const mobileNav = event.currentTarget.closest<HTMLElement>(
