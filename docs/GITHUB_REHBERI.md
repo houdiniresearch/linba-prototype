@@ -28,3 +28,11 @@ gh auth login --hostname github.com --git-protocol https --web
 ```
 
 Giriş kullanıcı tarafından kendi tarayıcısında tamamlanır. Şifre veya API anahtarı sohbet içine yazılmaz. Ortam dosyaları `.gitignore` ile depodan dışlanır.
+
+## Yeni sunum prototipi
+
+Yeni geliştirme `feature/presentation-prototype` dalında yapılır. Önceki `main` sürümü korunur. Bu dal yükleme, aktiviteler, gerçek tek model bağlantısı, sesli prova ve farklı cihazlardan katılım akışını içerir.
+
+**Geliştirme dalı** çalışan değişiklikleri ayrı tutar. **Pull request** bu değişiklikleri inceleyebileceğimiz sayfadır. **Merge** onayladığımız sürümü ana dala alır. Kodların GitHub'da olması siteyi internette yayımlamaz; şu anda uygulama bu bilgisayarda çalışır.
+
+API anahtarın ve eğitim dosyaların bilgisayarında kalır. GitHub'a yalnız kaynak kod ve kurulum belgeleri gönderilir.

@@ -1,0 +1,3 @@
+pypdf==6.10.0
+reportlab==4.4.9
+python-pptx==1.0.2
