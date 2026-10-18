@@ -63,7 +63,7 @@ Açık, Koyu ve Sistem seçenekleri ortak görünüm menüsündedir. İlk tercih
 
 ## Rapor sohbet alanı
 
-AhaSlides rapor asistanı referansı: bağımsız yeni sekme, solda rapor listesi, üstte seçili eğitim, ortada sade konuşma ve altta sabit mesaj alanı. Boş durumda kısa karşılama ve dört gerçek soru önerisi. Yeni sohbet düğmesi yerine raporlar seçilir; seçili rapor açık pembe vurgulanır. Asistan yanıtları geniş metin alanında, eğitmen mesajları sağa hizalı nötr yüzeyde yer alır. Kaynaklar açık lila bağlantılardır. Tema tokenları ve özgün logo kullanılır. Mobilde sol liste menüye dönüşür.
+AhaSlides rapor asistanı referansı: bağımsız yeni sekme, solda rapor listesi, üstte seçili eğitim, ortada sade konuşma ve altta sabit mesaj alanı. Boş durumda kısa karşılama ve dört gerçek soru önerisi. Yeni sohbet düğmesi yerine raporlar seçilir; seçili rapor açık pembe vurgulanır. Asistan yanıtları geniş metin alanında, eğitmen mesajları sağa hizalı nötr yüzeyde yer alır. Raporu aç düğmesi ve açık lila kaynak düğmeleri, raporu sohbetin sağındaki bağımsız kaydırılan panelde gösterir. Dar ekranlarda bu panel odak kilitli bir çekmeceye dönüşür; Escape ile kapanır. Sol üstteki Raporlara dön bağlantısı çerçeveli, 44 px yüksekliğinde bir gezinme düğmesidir. Tema tokenları ve özgün logo kullanılır. Mobilde sol liste menüye dönüşür.
 
 ## Yükleme durumları
 

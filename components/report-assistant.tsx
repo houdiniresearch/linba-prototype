@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { User } from "@/lib/types";
 import type { ReportChat, ReportItem, ReportTurn } from "@/lib/report-chat";
+import { ReportPreview } from "./report-preview";
 import { Auth } from "./auth";
 import { ThemeMenu } from "./theme-menu";
 import {
@@ -24,22 +25,6 @@ import {
   Logo,
   useResource,
 } from "./ui";
-
-export function ReportAssistantLink({ id }: { id?: string }) {
-  const { t } = useLocale();
-  return (
-    <a
-      className="button ai-button"
-      href={`/report-agent${id ? `?report=${encodeURIComponent(id)}` : ""}`}
-      target="_blank"
-      rel="noreferrer"
-    >
-      <AgentMark size={20} />
-      {t("Report agent")}
-      <Icon name="external" size={16} />
-    </a>
-  );
-}
 
 export function ReportAssistant() {
   const { t } = useLocale();
@@ -75,6 +60,15 @@ function ReportWorkspace({ user }: { user: User }) {
   const reports = useResource<{ reports: ReportItem[] }>("report-assistant");
   const [search, setSearch] = useState(""),
     [mobile, setMobile] = useState(false);
+  const [preview, setPreview] = useState<{
+    section: string;
+    request: number;
+  } | null>(null);
+  const reportTrigger = useRef<HTMLElement | null>(null);
+  function openReport(section: string, trigger: HTMLElement) {
+    reportTrigger.current = trigger;
+    setPreview({ section: `report-${section}`, request: Date.now() });
+  }
   const requested = params.get("report");
   const selected = requested
     ? reports.data?.reports.find((r) => r.id === requested)
@@ -146,8 +140,8 @@ function ReportWorkspace({ user }: { user: User }) {
             <Icon name="close" />
           </button>
         </div>
-        <a className="text-button report-workspace-back" href="/?view=reports">
-          <Icon name="back" size={17} />
+        <a className="button report-workspace-back" href="/?view=reports">
+          <Icon name="back" size={19} />
           {t("Back to reports")}
         </a>
         <h2>{t("Your reports")}</h2>
@@ -185,6 +179,11 @@ function ReportWorkspace({ user }: { user: User }) {
                 onClick={() => {
                   router.push(
                     `/report-agent?report=${encodeURIComponent(r.id)}`,
+                  );
+                  setPreview((current) =>
+                    current
+                      ? { section: "report-top", request: Date.now() }
+                      : null,
                   );
                   setMobile(false);
                 }}
@@ -238,46 +237,69 @@ function ReportWorkspace({ user }: { user: User }) {
           </div>
           <div className="report-header-tools">
             {selected && (
-              <a
+              <button
                 className="button"
-                href={`/?view=reports&report=${selected.id}`}
                 aria-label={t("Open report")}
-                target="_blank"
-                rel="noreferrer"
+                aria-expanded={!!preview}
+                aria-controls={preview ? "report-preview" : undefined}
+                onClick={(event) =>
+                  preview
+                    ? setPreview(null)
+                    : openReport("top", event.currentTarget)
+                }
               >
                 <Icon name="chart" size={17} />
                 <span>{t("Open report")}</span>
-              </a>
+              </button>
             )}
             <ThemeMenu />
           </div>
         </header>
-        {!reports.data ? (
-          reports.error ? (
-            <ResourceFailure error={reports.error} onRetry={reports.refresh} />
-          ) : (
-            <ReportConversationSkeleton />
-          )
-        ) : selected ? (
-          <ReportConversation key={selected.id} report={selected} />
-        ) : (
-          <div className="report-chat-fallback">
-            <Empty
-              icon="chart"
-              title={t(
-                requested ? "Report not found" : "No completed training yet",
-              )}
-              description={t(
-                requested
-                  ? "Choose another report from the list."
-                  : "Once training is complete, we can discuss its report here.",
-              )}
+        <div
+          className={`report-chat-body ${preview && selected ? "report-preview-open" : ""}`}
+        >
+          {!reports.data ? (
+            reports.error ? (
+              <ResourceFailure
+                error={reports.error}
+                onRetry={reports.refresh}
+              />
+            ) : (
+              <ReportConversationSkeleton />
+            )
+          ) : selected ? (
+            <ReportConversation
+              key={selected.id}
+              report={selected}
+              onOpenReport={openReport}
             />
-            <a className="button" href="/?view=courses">
-              {t("Back to my training")}
-            </a>
-          </div>
-        )}
+          ) : (
+            <div className="report-chat-fallback">
+              <Empty
+                icon="chart"
+                title={t(
+                  requested ? "Report not found" : "No completed training yet",
+                )}
+                description={t(
+                  requested
+                    ? "Choose another report from the list."
+                    : "Once training is complete, we can discuss its report here.",
+                )}
+              />
+              <a className="button" href="/?view=courses">
+                {t("Back to my training")}
+              </a>
+            </div>
+          )}
+          {selected && (
+            <ReportPreview
+              reportId={selected.id}
+              focusSection={preview}
+              onClose={() => setPreview(null)}
+              returnFocusRef={reportTrigger}
+            />
+          )}
+        </div>
       </main>
     </div>
   );
@@ -289,7 +311,13 @@ const suggestions = [
   "Summarize the activity responses.",
   "What can we improve in the next training?",
 ];
-function ReportConversation({ report }: { report: ReportItem }) {
+function ReportConversation({
+  report,
+  onOpenReport,
+}: {
+  report: ReportItem;
+  onOpenReport: (section: string, trigger: HTMLElement) => void;
+}) {
   const { t, locale } = useLocale();
   const chat = useResource<ReportChat>(`report-assistant/${report.id}`, 3000);
   const [draft, setDraft] = useState(""),
@@ -391,16 +419,16 @@ function ReportConversation({ report }: { report: ReportItem }) {
                         aria-label={t("Sources")}
                       >
                         {turn.sources.map((source) => (
-                          <a
+                          <button
                             key={source.id}
-                            href={`/?view=reports&report=${report.id}#report-${source.section}`}
-                            target="_blank"
-                            rel="noreferrer"
+                            onClick={(event) =>
+                              onOpenReport(source.section, event.currentTarget)
+                            }
                           >
                             <Icon name="chart" size={14} />
                             {t(source.label)}
-                            <Icon name="external" size={12} />
-                          </a>
+                            <Icon name="arrow" size={12} />
+                          </button>
                         ))}
                       </div>
                     )}

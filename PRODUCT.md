@@ -57,7 +57,7 @@ Mevcut Next.js/TypeScript yerel projeyi kullan. SQLite ve yerel dosyalar. GitHub
 
 ## Rapor asistanı
 
-Raporlar ve rapor detayından yeni sekmede açılır. Solda yalnız eğitmene ait tamamlanmış eğitim raporları vardır; her rapor ayrı ve kalıcı bir sohbeti temsil eder. Sorular ve aktivite sonuçları üzerinden konuşulur, kaynak bölümüne geçilebilir. Mevcut tek model kullanılır; başarısız yanıtlar geçmişe kaydedilmez. Başka rapora geçmek o konuşmayı açar; raporlar arası kıyaslama yoktur. Detay ve testler docs/RAPOR_ASISTANI.md'dedir.
+Raporlar ve rapor detayından yeni sekmede açılır. Solda yalnız eğitmene ait tamamlanmış eğitim raporları vardır; her rapor ayrı ve kalıcı bir sohbeti temsil eder. Sorular ve aktivite sonuçları üzerinden konuşulur. Ajan ekranındaki Raporu aç düğmesi ve sohbet kaynakları raporu aynı ekranın sağ panelinde açar; sohbet ve taslak korunur. Mobilde panel tam genişlikte açılır. Mevcut tek model kullanılır; başarısız yanıtlar geçmişe kaydedilmez. Başka rapora geçmek o konuşmayı açar; raporlar arası kıyaslama yoktur. Detay ve testler docs/RAPOR_ASISTANI.md'dedir.
 
 ## Yükleme deneyimi
 

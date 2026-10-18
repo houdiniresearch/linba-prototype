@@ -2,6 +2,8 @@
 
 Raporlar sayfasındaki Rapor ajanı bağlantısı yeni sekmede `/report-agent` adresini açar. Rapor detayındaki bağlantı `?report=<eğitim kimliği>` ile doğrudan ilgili konuşmayı açar. Soldaki listede eğitmene ait tamamlanmış eğitimler bulunur; her eğitim tek ve kalıcı bir sohbeti temsil eder. Yeni sohbet oluşturma düğmesi yoktur. İsim, tarih ve saat raporları ayırt etmeye yardımcı olur. Mobilde liste açılır bir paneldir; Escape, dış alan veya rapor seçimiyle kapanır.
 
+Rapor ajanının üstündeki **Open report / Raporu aç** düğmesi raporu aynı ekranın sağ panelinde açar. Sohbet taslağı ve geçmişi korunur. Kaynak düğmeleri aynı panelin ilgili bölümüne gider; rapor değiştirildiğinde panel yeni raporun başına döner. Panelde ana rapor ekranıyla ortak `training-report.tsx` bileşeni ve gerçek kayıtlar kullanılır. Panelin kaydırması sohbeti veya üst barı hareket ettirmez. Escape veya kapatma düğmesi paneli kapatır ve odağı açan düğmeye geri verir. 1200 px ve altında rapor odak kilitli bir sağ panel olarak, 600 px ve altında tam genişlikte açılır. **Back to reports / Raporlara dön** bağlantısı sol listede belirgin bir gezinme düğmesidir.
+
 ## Veri ve model
 
 - Yapılandırılmış mevcut model bağlantısı `modelJson` üzerinden kullanılır; ikinci model, embedding servisi veya ayrı sağlayıcı eklenmez.

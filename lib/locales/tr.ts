@@ -553,6 +553,7 @@ export const turkish: Record<string, string> = {
   "Your reports": "Raporların",
   "Open report list": "Rapor listesini aç",
   "Close report list": "Rapor listesini kapat",
+  "Close report": "Raporu kapat",
   "Search reports": "Raporlarda ara",
   "Search reports…": "Raporlarda ara…",
   "Choose a report": "Rapor seç",
