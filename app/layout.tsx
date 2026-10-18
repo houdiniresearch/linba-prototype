@@ -12,6 +12,7 @@ import "@/components/agent-identity.css";
 import "@/components/practice-workspace.css";
 import "@/components/activity-editor.css";
 import "@/components/editor-workspace.css";
+import "@/components/slide-rail.css";
 
 export const metadata: Metadata = {
   title: "LİNBA — Training workspace",

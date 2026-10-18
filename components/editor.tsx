@@ -19,6 +19,7 @@ import {
   Empty,
 } from "./ui";
 import { SlideView, slideTitle } from "./slides";
+import { SlideRail } from "./slide-rail";
 
 export function Editor({ id, live = false }: { id: string; live?: boolean }) {
   const { t, locale } = useLocale();
@@ -32,7 +33,6 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
     [end, setEnd] = useState(false),
     [busy, setBusy] = useState(false),
     [notice, setNotice] = useState(""),
-    [drag, setDrag] = useState(""),
     [showJoin, setShowJoin] = useState(false),
     [joinBase, setJoinBase] = useState(""),
     [saving, setSaving] = useState(false),
@@ -164,15 +164,6 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
       setBusy(false);
     }
   }
-  async function move(slideId: string, target: string) {
-    if (slideId === target) return;
-    const ids = c.slides.map((s) => s.id);
-    ids.splice(ids.indexOf(slideId), 1);
-    ids.splice(ids.indexOf(target), 0, slideId);
-    try {
-      await mutate({ action: "reorder", ids });
-    } catch {}
-  }
   async function join() {
     const status = await api("status");
     setJoinBase(status.joinOrigin || window.location.origin);
@@ -290,89 +281,16 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           )}
         </div>
       </header>
-      <aside className="slide-rail">
-        <div className="rail-heading">
-          {draft && !live ? (
-            <button className="text-button" onClick={openActivity}>
-              <Icon name="plus" />
-              {t("Add activity")}
-            </button>
-          ) : (
-            <strong>{t("Presentation flow")}</strong>
-          )}
-          <span>
-            {c.slides.length} {t("slides")}
-          </span>
-        </div>
-        <ol className="thumbnails">
-          {c.slides.map((s, i) => (
-            <li
-              key={s.id}
-              className={active.id === s.id ? "selected" : ""}
-              onDragOver={(e) => {
-                if (drag) e.preventDefault();
-              }}
-              onDrop={(e) => {
-                e.preventDefault();
-                void move(drag, s.id);
-                setDrag("");
-              }}
-            >
-              <span className="slide-number">{i + 1}</span>
-              <button
-                className="thumbnail"
-                onClick={() => select(s.id)}
-                draggable={draft && !live && s.kind === "activity"}
-                onDragStart={() => setDrag(s.id)}
-                onDragEnd={() => setDrag("")}
-                aria-label={`${t("Slide")} ${i + 1}: ${slideTitle(c, s, locale)}`}
-                aria-current={active.id === s.id ? "true" : undefined}
-              >
-                <SlideView course={c} slide={s} small />
-              </button>
-              {s.kind === "activity" && (
-                <div className="thumbnail-caption">
-                  <>
-                    <span>
-                      <Icon name="activity" size={13} />
-                      {t("Activity")}
-                    </span>
-                    {draft && !live && (
-                      <div>
-                        <button
-                          className="mini-button"
-                          aria-label={t("Move activity up")}
-                          disabled={i === 0}
-                          onClick={() => move(s.id, c.slides[i - 1].id)}
-                        >
-                          <Icon name="up" size={14} />
-                        </button>
-                        <button
-                          className="mini-button"
-                          aria-label={t("Move activity down")}
-                          disabled={i === c.slides.length - 1}
-                          onClick={async () => {
-                            const ids = c.slides.map((s) => s.id);
-                            [ids[i], ids[i + 1]] = [ids[i + 1], ids[i]];
-                            try {
-                              await mutate({ action: "reorder", ids });
-                            } catch {}
-                          }}
-                        >
-                          <Icon name="down" size={14} />
-                        </button>
-                      </div>
-                    )}
-                  </>
-                </div>
-              )}
-            </li>
-          ))}
-        </ol>
-        <div className="rail-bottom">
-          <Logo />
-        </div>
-      </aside>
+      <SlideRail
+        course={c}
+        editable={draft && !live}
+        disabled={saving || busy}
+        onAdd={openActivity}
+        onSelect={select}
+        onReorder={async (ids) => {
+          await mutate({ action: "reorder", ids });
+        }}
+      />
       <main className="editor-stage">
         <div className="stage-top">
           <span>

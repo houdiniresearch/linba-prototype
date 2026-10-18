@@ -1,5 +1,20 @@
 /** Turkish translations for the shared product interface. Keys are English. */
 export const productTurkish: Record<string, string> = {
+  "Slide order saved.": "Slayt sırası kaydedildi.",
+  "The move could not be saved. The previous order was restored.":
+    "Taşıma kaydedilemedi. Önceki sıra geri yüklendi.",
+  "To move an activity, press Space or Enter, use the arrow keys, then press Space or Enter to place it. Escape cancels.":
+    "Aktiviteyi taşımak için Boşluk veya Enter’a bas, ok tuşlarıyla konumunu seç ve yerleştirmek için tekrar Boşluk veya Enter’a bas. Escape ile iptal edebilirsin.",
+  "Activity picked up at position {position}.":
+    "{position}. sıradaki aktivite taşınıyor.",
+  "Place at position {position} of {count}.":
+    "{count} slayt içinde {position}. sıraya yerleştir.",
+  "Outside the slide list. Release to cancel.":
+    "Slayt listesinin dışındasın. İptal etmek için bırak.",
+  "Activity placed at position {position}.":
+    "Aktivite {position}. sıraya yerleştirildi.",
+  "Move cancelled.": "Taşıma iptal edildi.",
+  "Movable activity": "Taşınabilir aktivite",
   Content: "İçerik",
   Agents: "Ajanlar",
   Settings: "Ayarlar",
