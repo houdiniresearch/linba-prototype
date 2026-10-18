@@ -26,9 +26,7 @@ export type ReportChat = {
   pending: { requestId: string; question: string } | null;
   aiReady: boolean;
 };
-export type ReportItem = Pick<Course, "id" | "name" | "endedAt"> & {
-  coverPage?: number;
-};
+export type ReportItem = Pick<Course, "id" | "name" | "endedAt">;
 type ModelResult = { answer: string; sourceIds: string[] };
 type Generate = (instructions: string, input: string) => Promise<ModelResult>;
 type Job = { requestId: string; question: string; result: Promise<void> };
@@ -62,12 +60,7 @@ export function reportList(user: User): ReportItem[] {
     .sort((a, b) =>
       (b.endedAt || b.createdAt).localeCompare(a.endedAt || a.createdAt),
     )
-    .map(({ id, name, endedAt, pages }) => ({
-      id,
-      name,
-      endedAt,
-      coverPage: pages[0]?.number,
-    }));
+    .map(({ id, name, endedAt }) => ({ id, name, endedAt }));
 }
 function turnsOf(courseId: string, ownerId: string) {
   return all<ReportTurn>("report-turn")

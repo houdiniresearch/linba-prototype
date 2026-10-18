@@ -1,5 +1,5 @@
 "use client";
-import { AgentMark, AgentSourceFolio } from "./agent-identity";
+import { AgentMark, AgentIllustration } from "./agent-identity";
 import { OperationProgress } from "./operation-progress";
 import { ThemeMenu } from "./theme-menu";
 import { RehearsalSkeleton } from "./skeletons";
@@ -601,11 +601,7 @@ export function RehearsalView({ id }: { id: string }) {
       {!rehearsal ? (
         <main className="rehearsal-setup">
           <div className="practice-introduction">
-            <AgentSourceFolio
-              courseId={c.id}
-              pageNumber={c.pages[0]?.number}
-              kind="practice"
-            />
+            <AgentIllustration kind="practice" />
             <div className="practice-introduction-copy">
               <h2>{t("Prepare with AI participant agents")}</h2>
               <p>

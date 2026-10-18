@@ -1,6 +1,6 @@
 "use client";
 import { ThinkingDots } from "./operation-progress";
-import { AgentMark, AgentSourceFolio } from "./agent-identity";
+import { AgentMark, AgentIllustration } from "./agent-identity";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { User } from "@/lib/types";
@@ -426,11 +426,7 @@ function ReportConversation({ report }: { report: ReportItem }) {
         </div>
       ) : (
         <div className="report-chat-welcome">
-          <AgentSourceFolio
-            key={report.id}
-            courseId={report.id}
-            pageNumber={report.coverPage}
-          />
+          <AgentIllustration kind="report" />
           <h2>{t("Let’s explore this report together.")}</h2>
           <p>
             {t(

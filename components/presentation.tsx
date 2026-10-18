@@ -1,4 +1,5 @@
 "use client";
+import { AgentIllustration } from "./agent-identity";
 import { useLocale } from "./locale-provider";
 import { PreviewSkeleton, ProjectionSkeleton } from "./skeletons";
 import { useEffect, useState } from "react";
@@ -194,9 +195,7 @@ export function Preview({ id }: { id: string }) {
               </div>
             ) : (
               <div className="preview-chat">
-                <span className="assistant-avatar">
-                  <Icon name="agent" />
-                </span>
+                <AgentIllustration kind="learning" />
                 <h3>{t("Your learning agent")}</h3>
                 <p>
                   {t(

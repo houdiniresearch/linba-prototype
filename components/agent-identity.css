@@ -5,130 +5,20 @@
   overflow: hidden;
   vertical-align: middle;
 }
-.agent-source-folio {
-  position: relative;
+.agent-illustration {
   flex-shrink: 0;
-  width: 172px;
-  height: 134px;
-  margin-bottom: 28px;
-  isolation: isolate;
+  width: 210px;
+  aspect-ratio: 4 / 3;
+  margin-bottom: 20px;
 }
-.agent-folio-back {
-  position: absolute;
-  inset: 0 0 16px 24px;
-  background: var(--lilac-soft);
-  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
-}
-.agent-folio-back::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 18px;
-  height: 18px;
-  background: var(--brand-lilac);
-  opacity: 0.45;
-  clip-path: polygon(0 0, 100% 100%, 0 100%);
-}
-.agent-folio-index {
-  position: absolute;
-  left: 0;
-  top: 24px;
-  display: grid;
-  gap: 8px;
-}
-.agent-folio-index i {
-  width: 18px;
-  height: 13px;
-  border-radius: 3px 0 0 3px;
-  background: var(--line);
-}
-.agent-folio-index i:first-child {
-  background: var(--brand-lilac);
-}
-.agent-folio-page {
-  position: absolute;
-  inset: 12px 12px 0 9px;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) 34px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 5px;
-  background: var(--bg);
-}
-.agent-folio-source {
-  overflow: hidden;
-  background: var(--workspace);
-}
-.agent-folio-source img {
+.agent-illustration img {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
+  object-fit: contain;
 }
-.agent-folio-source-fallback {
-  padding: 14px 16px;
-  display: grid;
-  gap: 8px;
-}
-.agent-folio-source-fallback span {
-  height: 3px;
-  background: var(--line);
-  width: 80%;
-}
-.agent-folio-source-fallback span:first-child {
-  width: 56%;
-  background: var(--brand-lilac);
-}
-.agent-folio-source-fallback span:last-child {
-  width: 65%;
-}
-.agent-folio-annotation {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 3px 8px 3px 12px;
-  border-top: 1px solid var(--line);
-}
-.agent-folio-references {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  display: flex;
-  gap: 5px;
-  align-items: center;
-}
-.agent-folio-references i {
-  flex-shrink: 0;
-  width: 13px;
-  height: 4px;
-  border-radius: 1px;
-  background: var(--line);
-}
-.agent-folio-references i:first-child {
-  width: 24px;
-  background: var(--brand-lilac);
-}
-.agent-folio-voice {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  display: flex;
-  gap: 3px;
-  align-items: center;
-  color: var(--lilac-ink);
-  height: 26px;
-}
-.agent-folio-voice i {
-  flex-shrink: 0;
-  width: 2px;
-  border-radius: 2px;
-  background: currentColor;
-}
-.report-chat-welcome > .agent-source-folio {
-  margin-bottom: 28px;
+.report-chat-welcome {
+  padding: 26px 32px;
 }
 .report-suggestions button {
   gap: 16px;
@@ -196,13 +86,12 @@
   background: transparent;
 }
 @media (max-width: 760px) {
-  .report-chat-welcome > .agent-source-folio {
-    width: 146px;
-    height: 112px;
-    margin-bottom: 20px;
+  .report-chat-welcome > .agent-illustration {
+    width: 180px;
+    margin-bottom: 18px;
   }
   .report-chat-welcome {
-    padding-block: 28px;
+    padding-block: 20px;
   }
   .report-suggestions button > svg:last-child {
     display: block;
@@ -210,16 +99,15 @@
 }
 @media (max-width: 760px) and (max-height: 780px) {
   .report-chat-welcome {
-    padding: 14px 24px;
+    padding: 12px 24px;
   }
-  .report-chat-welcome > .agent-source-folio {
-    width: 112px;
-    height: 78px;
-    margin-bottom: 14px;
+  .report-chat-welcome > .agent-illustration {
+    width: 132px;
+    margin-bottom: 12px;
   }
 }
 @media (max-width: 760px) and (max-height: 660px) {
-  .report-chat-welcome > .agent-source-folio {
+  .report-chat-welcome > .agent-illustration {
     display: none;
   }
   .report-chat-welcome {
@@ -237,12 +125,13 @@
 }
 .practice-introduction {
   display: grid;
-  grid-template-columns: 172px minmax(0, 1fr);
+  grid-template-columns: 192px minmax(0, 1fr);
   align-items: center;
   gap: 28px;
   margin-bottom: 28px;
 }
-.practice-introduction > .agent-source-folio {
+.practice-introduction > .agent-illustration {
+  width: 192px;
   margin-bottom: 0;
 }
 .practice-introduction p {
@@ -257,18 +146,17 @@
     padding-block: 28px;
   }
   .practice-introduction {
-    grid-template-columns: minmax(0, 1fr) 96px;
+    grid-template-columns: minmax(0, 1fr) 132px;
     column-gap: 16px;
     row-gap: 18px;
   }
   .practice-introduction-copy {
     display: contents;
   }
-  .practice-introduction > .agent-source-folio {
+  .practice-introduction > .agent-illustration {
     grid-column: 2;
     grid-row: 1;
-    width: 96px;
-    height: 96px;
+    width: 132px;
   }
   .practice-introduction h2 {
     grid-column: 1;
@@ -282,4 +170,19 @@
 
 .button.primary > .agent-mark {
   filter: brightness(0) invert(1);
+}
+
+.chat-intro > .agent-illustration {
+  width: 164px;
+  margin: 0 auto 20px;
+}
+.preview-chat > .agent-illustration {
+  width: 140px;
+  margin: 0 auto 16px;
+}
+@media (max-width: 760px) {
+  .chat-intro > .agent-illustration {
+    width: 148px;
+    margin-bottom: 16px;
+  }
 }

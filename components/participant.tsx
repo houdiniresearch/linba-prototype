@@ -1,4 +1,5 @@
 "use client";
+import { AgentIllustration } from "./agent-identity";
 import { learningAccess } from "@/lib/training-access";
 import { ThemeMenu } from "./theme-menu";
 import { ParticipantSkeleton } from "./skeletons";
@@ -297,9 +298,13 @@ function ParticipantCourse({
         <>
           <div className="chat-messages">
             <div className="chat-intro">
-              <span className="assistant-avatar">
-                <Icon name="agent" />
-              </span>
+              {data.questions.length === 0 && chatOpen ? (
+                <AgentIllustration kind="learning" />
+              ) : (
+                <span className="assistant-avatar">
+                  <Icon name="agent" />
+                </span>
+              )}
               <h2>{t("Your learning agent")}</h2>
               <p>
                 {chatOpen
