@@ -1,12 +1,13 @@
 "use client";
 import { OperationProgress } from "./operation-progress";
+import { ActivityEditor } from "./activity-editor";
 import { ThemeMenu } from "./theme-menu";
 import { EditorSkeleton } from "./skeletons";
 import { useLocale } from "./locale-provider";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
-import type { Activity, Course, CourseState, Slide } from "@/lib/types";
+import type { Course, CourseState } from "@/lib/types";
 import {
   api,
   Icon,
@@ -18,215 +19,6 @@ import {
   Empty,
 } from "./ui";
 import { SlideView, slideTitle } from "./slides";
-
-function ActivityEditor({
-  course,
-  slide,
-  open,
-  onClose,
-  onSave,
-}: {
-  course: Course;
-  slide?: Slide;
-  open: boolean;
-  onClose: () => void;
-  onSave: (value: Activity) => Promise<void>;
-}) {
-  const { t } = useLocale();
-
-  const [type, setType] = useState<Activity["type"]>(
-      slide?.activity?.type || "poll",
-    ),
-    [question, setQuestion] = useState(slide?.activity?.question || ""),
-    [options, setOptions] = useState(
-      slide?.activity?.options.length ? slide.activity.options : ["", ""],
-    ),
-    [ai, setAI] = useState(!!slide?.activity?.aiGenerated),
-    [busy, setBusy] = useState(false),
-    [generating, setGenerating] = useState(false),
-    [error, setError] = useState("");
-  async function generate() {
-    if (busy) return;
-    setBusy(true);
-    setGenerating(true);
-    setError("");
-    try {
-      const active = course.slides.find((s) => s.id === course.activeSlideId);
-      const result = await api(`courses/${course.id}/generate-activity`, {
-        type,
-        pageId: active?.pageId,
-      });
-      setType(result.activity.type);
-      setQuestion(result.activity.question);
-      setOptions(result.activity.options);
-      setAI(true);
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setBusy(false);
-      setGenerating(false);
-    }
-  }
-  return (
-    <Modal
-      open={open}
-      onClose={() => !busy && onClose()}
-      closeDisabled={busy}
-      title={slide ? t("Edit activity") : t("Add activity")}
-      description={t("The activity is placed after the selected slide.")}
-      wide
-    >
-      <div className="activity-dialog">
-        <div>
-          <div className="activity-type-list">
-            {[
-              [
-                "poll",
-                "chart",
-                t("Poll"),
-                t("Collect answers from a set of options."),
-              ],
-              [
-                "open",
-                "chat",
-                t("Open question"),
-                t("Let participants answer in their own words."),
-              ],
-              [
-                "scenario",
-                "activity",
-                t("Scenario"),
-                t("Practice with a real-world situation."),
-              ],
-            ].map(([value, icon, title, desc]) => (
-              <button
-                className={type === value ? "selected" : ""}
-                key={value}
-                disabled={busy}
-                onClick={() => setType(value as Activity["type"])}
-              >
-                <Icon name={icon as "chart"} size={24} />
-                <span>
-                  <strong>{title}</strong>
-                  <small>{desc}</small>
-                </span>
-                <Icon name="right" size={16} />
-              </button>
-            ))}
-          </div>
-          <button
-            className="button ai-button"
-            disabled={busy}
-            onClick={generate}
-          >
-            <Icon name="agent" />
-            {busy ? t("Preparing…") : t("Generate from this slide with AI")}
-          </button>
-          <p className="small muted">
-            {t("Based on your document; review it before saving.")}
-          </p>
-        </div>
-        {generating && <OperationProgress kind="activity" compact />}
-        <form
-          hidden={generating}
-          onSubmit={async (e) => {
-            e.preventDefault();
-            setBusy(true);
-            setError("");
-            try {
-              await onSave({
-                type,
-                question,
-                options:
-                  type === "poll"
-                    ? options.map((v) => v.trim()).filter(Boolean)
-                    : [],
-                aiGenerated: ai,
-              });
-              onClose();
-            } catch (e) {
-              setError((e as Error).message);
-            } finally {
-              setBusy(false);
-            }
-          }}
-        >
-          <label>
-            {t("Activity question")}
-            <textarea
-              disabled={busy}
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder={t("What would you like to ask your participants?")}
-              rows={5}
-              maxLength={3000}
-              required
-            />
-          </label>
-          {type === "poll" && (
-            <fieldset className="activity-options-editor">
-              <legend>{t("Answer options")}</legend>
-              {options.map((option, index) => (
-                <div className="activity-option-row" key={index}>
-                  <span aria-hidden="true">
-                    {String.fromCharCode(65 + index)}
-                  </span>
-                  <input
-                    aria-label={t("Option {number}", { number: index + 1 })}
-                    placeholder={t("Option {number}", { number: index + 1 })}
-                    value={option}
-                    required
-                    maxLength={500}
-                    disabled={busy}
-                    onChange={(event) =>
-                      setOptions(
-                        options.map((value, i) =>
-                          i === index ? event.target.value : value,
-                        ),
-                      )
-                    }
-                  />
-                  <button
-                    type="button"
-                    className="icon-button"
-                    aria-label={t("Remove option {number}", {
-                      number: index + 1,
-                    })}
-                    disabled={busy || options.length <= 2}
-                    onClick={() =>
-                      setOptions(options.filter((_, i) => i !== index))
-                    }
-                  >
-                    <Icon name="close" size={16} />
-                  </button>
-                </div>
-              ))}
-              {options.length < 6 && (
-                <button
-                  type="button"
-                  className="text-button"
-                  disabled={busy}
-                  onClick={() => setOptions([...options, ""])}
-                >
-                  <Icon name="plus" size={16} />
-                  {t("Add answer option")}
-                </button>
-              )}
-              <p className="small muted">
-                {t("Use between two and six distinct options.")}
-              </p>
-            </fieldset>
-          )}
-          <ErrorNote message={error} />
-          <button className="button primary full" disabled={busy}>
-            <Icon name="check" />
-            {slide ? t("Save changes") : t("Add to flow")}
-          </button>
-        </form>
-      </div>
-    </Modal>
-  );
-}
 
 export function Editor({ id, live = false }: { id: string; live?: boolean }) {
   const { t, locale } = useLocale();
@@ -247,6 +39,18 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
     [toolsOpen, setToolsOpen] = useState(false);
   const toolsTrigger = useRef<HTMLButtonElement>(null);
   const toolsPanel = useRef<HTMLElement>(null);
+  const activityTrigger = useRef<HTMLElement | null>(null);
+  function openActivity(
+    event: React.MouseEvent<HTMLButtonElement>,
+    editing = false,
+  ) {
+    activityTrigger.current = toolsOpen
+      ? toolsTrigger.current
+      : event.currentTarget;
+    setToolsOpen(false);
+    if (editing) setEdit(true);
+    else setAdd(true);
+  }
   useEffect(() => {
     if (!toolsOpen) return;
     toolsPanel.current
@@ -491,7 +295,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
       <aside className="slide-rail">
         <div className="rail-heading">
           {draft && !live ? (
-            <button className="text-button" onClick={() => setAdd(true)}>
+            <button className="text-button" onClick={openActivity}>
               <Icon name="plus" />
               {t("Add activity")}
             </button>
@@ -724,7 +528,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                   <button
                     className="button full"
                     disabled={!draft}
-                    onClick={() => setAdd(true)}
+                    onClick={openActivity}
                   >
                     <Icon name="plus" />
                     {t("Add activity")}
@@ -768,7 +572,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                 <button
                   className="button full"
                   disabled={!draft}
-                  onClick={() => setEdit(true)}
+                  onClick={(event) => openActivity(event, true)}
                 >
                   {t("Edit activity")}
                 </button>
@@ -821,6 +625,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
       {add && (
         <ActivityEditor
           course={c}
+          returnFocusRef={activityTrigger}
           open
           onClose={() => setAdd(false)}
           onSave={async (activity) => {
@@ -835,6 +640,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
       {edit && (
         <ActivityEditor
           key={active.id}
+          returnFocusRef={activityTrigger}
           course={c}
           slide={active}
           open

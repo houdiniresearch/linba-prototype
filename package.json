@@ -20,6 +20,7 @@
     "test:landing": "node --import tsx --test tests/landing.test.ts",
     "test:product": "node --import tsx --test tests/product-ui.test.ts",
     "test:practice-workspace": "node --import tsx --test tests/practice-workspace.test.ts",
+    "test:activity-library": "node --import tsx --test tests/activity-library.test.ts",
     "test:practice-workspace:integration": "node --import tsx tests/practice-workspace.integration.ts",
     "test:routes": "node --import tsx --test tests/routes.test.ts"
   },

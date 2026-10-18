@@ -1,5 +1,35 @@
 /** Turkish translations for the shared product interface. Keys are English. */
 export const productTurkish: Record<string, string> = {
+  "poll vote choice": "anket oylama seçenek",
+  "open ended text written question": "açık uçlu metin yazılı soru",
+  "scenario situation case application": "senaryo durum vaka uygulama",
+  "Write an activity question first.": "Önce aktivite sorusunu yaz.",
+  "Choose how participants respond, then make the activity your own.":
+    "Katılımcının nasıl yanıt vereceğini seç, ardından aktiviteni düzenle.",
+  "Search activity types": "Aktivite türü ara",
+  "Activity types": "Aktivite türleri",
+  "No matching activity types": "Eşleşen aktivite türü yok",
+  "Try “poll”, “question” or “scenario”.":
+    "“Anket”, “soru” veya “senaryo” sözcüklerini dene.",
+  "Start with your training": "Eğitiminden yola çık",
+  "Let your activity agent draft a question from the selected slide.":
+    "Aktivite ajanın, seçili slayttan bir soru taslağı hazırlasın.",
+  "Generate an activity": "Aktivite oluştur",
+  "Review the draft before adding it.": "Eklemeden önce taslağı gözden geçir.",
+  "Participant preview": "Katılımcı görünümü",
+  "Preview only": "Önizleme",
+  "Changes apply to this activity.": "Değişiklikler bu aktiviteye uygulanır.",
+  "After slide {number}": "{number}. slayttan sonra",
+  "Single-choice response": "Tek seçenekli yanıt",
+  "Written response": "Yazılı yanıt",
+  "Which topic should we explore in more detail?":
+    "Hangi konuyu daha ayrıntılı ele alalım?",
+  "What is one idea you will put into practice?":
+    "Öğrendiklerinden hangisini uygulamaya geçireceksin?",
+  "A colleague interprets the same finding differently. How would you explain your reasoning?":
+    "Bir çalışma arkadaşın aynı bulguyu farklı yorumluyor. Kendi çıkarımını nasıl açıklarsın?",
+  "Practice duration must be a non-negative number of seconds.":
+    "Pratik süresi, sıfır veya daha büyük bir tam sayı olmalı.",
   "Your microphone is muted": "Mikrofonun kapalı",
   "Session ended": "Oturum tamamlandı",
   Speaking: "Konuşuyor",
