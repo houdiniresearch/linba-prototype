@@ -612,28 +612,32 @@ export function RehearsalView({ id }: { id: string }) {
           <h1>{t("Voice practice")}</h1>
           <span className="small muted">{c.name}</span>
         </div>
+        <ol
+          className="practice-steps practice-steps-inline"
+          aria-label={t("Practice progress")}
+        >
+          {["Your audience", "Practice", "Feedback"].map((label, step) => {
+            const current = !rehearsal
+              ? 0
+              : voice === "ended" || voice === "feedback"
+                ? 2
+                : 1;
+            return (
+              <li
+                key={label}
+                aria-current={step === current ? "step" : undefined}
+                className={step <= current ? "reached" : ""}
+              >
+                <span>{step + 1}</span>
+                {t(label)}
+              </li>
+            );
+          })}
+        </ol>
         <ThemeMenu />
         <Logo />
       </header>
-      <ol className="practice-steps" aria-label={t("Practice progress")}>
-        {["Your audience", "Practice", "Feedback"].map((label, step) => {
-          const current = !rehearsal
-            ? 0
-            : voice === "ended" || voice === "feedback"
-              ? 2
-              : 1;
-          return (
-            <li
-              key={label}
-              aria-current={step === current ? "step" : undefined}
-              className={step <= current ? "reached" : ""}
-            >
-              <span>{step + 1}</span>
-              {t(label)}
-            </li>
-          );
-        })}
-      </ol>
+
       {!rehearsal ? (
         <main className="rehearsal-setup">
           <div className="practice-introduction">

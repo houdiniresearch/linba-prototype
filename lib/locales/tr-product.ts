@@ -1,5 +1,11 @@
 /** Turkish translations for the shared product interface. Keys are English. */
 export const productTurkish: Record<string, string> = {
+  Content: "İçerik",
+  Agents: "Ajanlar",
+  Settings: "Ayarlar",
+  "Live answers": "Canlı yanıtlar",
+  Automatic: "Otomatik",
+  "Instructor review": "Eğitmen incelemesi",
   "poll vote choice": "anket oylama seçenek",
   "open ended text written question": "açık uçlu metin yazılı soru",
   "scenario situation case application": "senaryo durum vaka uygulama",

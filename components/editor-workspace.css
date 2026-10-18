@@ -1,0 +1,327 @@
+.editor-shell:not(.live-shell) {
+  position: relative;
+  grid-template-columns: 208px minmax(0, 1fr) 80px;
+}
+.editor-shell:not(.live-shell) > .editor-stage {
+  grid-column: 2;
+  grid-row: 2;
+}
+.editor-shell:not(.live-shell) > .slide-rail {
+  grid-column: 1;
+  grid-row: 2;
+}
+.editor-tool-dock {
+  grid-column: 3;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 16px 8px;
+  background: var(--bg);
+  border-left: 1px solid var(--line);
+  min-height: 0;
+  overflow-y: auto;
+  z-index: 10;
+}
+.editor-tool-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.editor-tool-group + .editor-tool-group {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  margin-top: 14px;
+}
+.editor-tool-dock .editor-tool-bottom {
+  margin-top: auto;
+}
+.editor-tool-dock button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 64px;
+  padding: 9px 3px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.3;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease;
+}
+.editor-tool-dock button:hover {
+  background: var(--workspace);
+  color: var(--ink);
+}
+.editor-tool-dock button[aria-expanded="true"] {
+  background: var(--lilac-soft);
+  color: var(--lilac-ink);
+}
+.editor-tool-dock button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.editor-tool-dock button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.editor-shell .editor-context-panel {
+  display: block;
+  position: absolute;
+  top: 76px;
+  right: 80px;
+  bottom: 0;
+  width: 300px;
+  padding: 0;
+  z-index: 9;
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  background: var(--bg);
+  box-shadow: -12px 0 32px oklch(0.15 0.01 300 / 0.06);
+  overflow-y: auto;
+}
+.editor-context-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px 12px 22px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.editor-context-heading h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.editor-context-panel .editor-tools-close {
+  display: inline-flex;
+  position: static;
+  width: 44px;
+  height: 44px;
+}
+.editor-context-body {
+  padding: 24px 22px;
+}
+.editor-context-body h3 {
+  font-size: 17px;
+  line-height: 1.4;
+  margin: 8px 0 16px;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+.editor-context-body p {
+  font-size: 13px;
+  line-height: 1.75;
+  margin: 12px 0 22px;
+}
+.editor-context-label {
+  font-size: 11px;
+  color: var(--muted);
+}
+.editor-context-body .button {
+  min-height: 44px;
+  font-size: 13px;
+}
+.editor-context-body > .text-button {
+  min-height: 44px;
+  margin-top: 12px;
+  font-size: 12px;
+}
+.editor-context-agent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.editor-context-agent h3 {
+  margin: 0;
+  font-size: 16px;
+}
+.editor-agent-settings {
+  margin: 24px 0;
+}
+.editor-agent-settings > div {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+}
+.editor-agent-settings dt {
+  max-width: 160px;
+  color: var(--muted);
+}
+.editor-agent-settings dd {
+  margin: 0;
+  flex-shrink: 0;
+  text-align: right;
+  font-weight: 500;
+}
+.editor-shell:not(.live-shell) .editor-tools-overlay {
+  display: block;
+  position: fixed;
+  inset: 0;
+  background: oklch(0.12 0.01 300 / 0.45);
+  z-index: calc(var(--z-modal) - 1);
+}
+.rehearsal-page .editor-header .practice-steps-inline {
+  display: flex;
+  flex-shrink: 0;
+  gap: 18px;
+  margin: 0 12px 0 auto;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+.rehearsal-page .practice-steps-inline li {
+  gap: 6px;
+  font-size: 11px;
+}
+.rehearsal-page .practice-steps-inline li > span {
+  width: 20px;
+  height: 20px;
+  font-size: 10px;
+}
+.rehearsal-page .practice-slide-stage {
+  height: clamp(210px, calc(100dvh - 440px), 670px);
+}
+@media (max-width: 1100px) {
+  .rehearsal-page .editor-header .practice-steps-inline {
+    display: none;
+  }
+}
+@media (max-width: 900px) {
+  .editor-shell:not(.live-shell) {
+    grid-template-columns: 96px minmax(0, 1fr);
+    grid-template-rows: 112px minmax(0, 1fr) calc(
+        76px + env(safe-area-inset-bottom, 0px)
+      );
+  }
+  .editor-shell:not(.live-shell) .editor-header {
+    height: 112px;
+    padding: 8px 14px;
+    gap: 4px 10px;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    align-content: center;
+  }
+  .editor-shell:not(.live-shell) .editor-header > .status {
+    display: none;
+  }
+  .editor-shell:not(.live-shell) .editor-name h1 {
+    max-width: none;
+    font-size: 15px;
+  }
+  .editor-shell:not(.live-shell) .editor-header-actions {
+    grid-column: 1 / -1;
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-end;
+    overflow: visible;
+  }
+  .editor-tool-dock {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    flex-direction: row;
+    align-items: stretch;
+    padding: 5px 6px calc(5px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--line);
+    border-left: 0;
+    overflow: visible;
+  }
+  .editor-tool-dock .editor-tool-group {
+    display: contents;
+  }
+  .editor-tool-dock button {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    min-height: 60px;
+    gap: 6px;
+    font-size: 10px;
+    padding: 6px 2px;
+  }
+  .editor-tool-dock button > svg {
+    width: 22px;
+    height: 22px;
+  }
+  .editor-shell.tools-open .editor-tools.editor-context-panel {
+    display: block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: min(340px, calc(100vw - 32px));
+    padding: 0;
+    z-index: var(--z-modal);
+  }
+  .editor-shell:not(.live-shell) .stage-note {
+    display: none;
+  }
+  .editor-shell:not(.live-shell) .stage-top > span:first-child {
+    display: none;
+  }
+  .editor-shell:not(.live-shell) .stage-top > span:last-child {
+    max-width: 100%;
+  }
+}
+@media (max-width: 850px) {
+  .rehearsal-page .practice-slide-stage {
+    height: clamp(230px, 45vw, 430px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .editor-tool-dock button {
+    transition: none;
+  }
+}
+
+.sk-editor-dock {
+  align-items: center;
+  gap: 32px;
+  padding-block: 28px;
+}
+.sk-editor-dock .sk-dot {
+  flex-shrink: 0;
+}
+@media (max-width: 1100px) {
+  .rehearsal-page .editor-header .theme-trigger {
+    margin-left: auto;
+  }
+}
+@media (max-width: 900px) {
+  .rehearsal-page .editor-header {
+    height: 76px;
+    flex-wrap: nowrap;
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .rehearsal-page .editor-name {
+    flex: 1;
+    min-width: 0;
+  }
+  .rehearsal-page .editor-name > span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .sk-editor-dock {
+    justify-content: space-around;
+    gap: 12px;
+    padding: 20px 10px;
+  }
+}

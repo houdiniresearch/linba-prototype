@@ -36,18 +36,42 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
     [showJoin, setShowJoin] = useState(false),
     [joinBase, setJoinBase] = useState(""),
     [saving, setSaving] = useState(false),
-    [toolsOpen, setToolsOpen] = useState(false);
+    [tool, setTool] = useState<"content" | "agents" | null>(null),
+    [compactTools, setCompactTools] = useState(false);
+  const toolsOpen = tool !== null;
   const toolsTrigger = useRef<HTMLButtonElement>(null);
   const toolsPanel = useRef<HTMLElement>(null);
   const activityTrigger = useRef<HTMLElement | null>(null);
+  const settingsTrigger = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 900px)");
+    const update = () => setCompactTools(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  function toggleTool(
+    event: React.MouseEvent<HTMLButtonElement>,
+    next: "content" | "agents",
+  ) {
+    toolsTrigger.current = event.currentTarget;
+    setTool(tool === next ? null : next);
+  }
+  function openSettings(event: React.MouseEvent<HTMLButtonElement>) {
+    settingsTrigger.current = toolsPanel.current?.contains(event.currentTarget)
+      ? toolsTrigger.current
+      : event.currentTarget;
+    setTool(null);
+    setSettings(true);
+  }
   function openActivity(
     event: React.MouseEvent<HTMLButtonElement>,
     editing = false,
   ) {
-    activityTrigger.current = toolsOpen
+    activityTrigger.current = toolsPanel.current?.contains(event.currentTarget)
       ? toolsTrigger.current
       : event.currentTarget;
-    setToolsOpen(false);
+    setTool(null);
     if (editing) setEdit(true);
     else setAdd(true);
   }
@@ -58,10 +82,10 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
       ?.focus();
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setToolsOpen(false);
+        setTool(null);
         toolsTrigger.current?.focus();
       }
-      if (event.key === "Tab") {
+      if (event.key === "Tab" && compactTools) {
         const controls = Array.from(
           toolsPanel.current?.querySelectorAll<HTMLElement>(
             'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, [tabindex="0"]',
@@ -80,7 +104,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [toolsOpen]);
+  }, [toolsOpen, compactTools]);
   async function mutate(body: unknown) {
     setNotice("");
     setSaving(true);
@@ -204,30 +228,18 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
         </button>
         <div className="editor-name">
           <h1>{c.name}</h1>
-          <span className="small muted">
-            {saving
-              ? t("Saving…")
-              : live
-                ? t("Instructor controls")
-                : t("Changes saved")}
-            <Icon name="check" size={14} />
-          </span>
+          {saving ? (
+            <span className="small muted" role="status">
+              <Icon name="spinner" size={14} className="spin" />
+              {t("Saving…")}
+            </span>
+          ) : live ? (
+            <span className="small muted">{t("Instructor controls")}</span>
+          ) : null}
         </div>
         <Status status={c.status} />
         <div className="editor-header-actions">
           <ThemeMenu />
-          {!live && (
-            <button
-              ref={toolsTrigger}
-              className="icon-button editor-tools-trigger"
-              aria-label={t("Training tools")}
-              aria-expanded={toolsOpen}
-              aria-controls="training-tools"
-              onClick={() => setToolsOpen(!toolsOpen)}
-            >
-              <Icon name="settings" />
-            </button>
-          )}
           {live ? (
             <>
               <button className="button" onClick={join}>
@@ -252,20 +264,6 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
             </>
           ) : (
             <>
-              <button
-                className="button"
-                onClick={() => router.push(`/training/${id}/preview`)}
-              >
-                <Icon name="eye" />
-                {t("Preview")}
-              </button>
-              <button
-                className="button"
-                onClick={() => router.push(`/training/${id}/practice`)}
-              >
-                <Icon name="mic" />
-                {t("Practice")}
-              </button>
               {draft ? (
                 <button className="button mint" disabled={busy} onClick={start}>
                   <Icon name="play" />
@@ -332,13 +330,8 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
               >
                 <SlideView course={c} slide={s} small />
               </button>
-              <div className="thumbnail-caption">
-                {s.kind === "document" ? (
-                  <span>
-                    {t("Presentation ·")}{" "}
-                    {c.pages.find((p) => p.id === s.pageId)?.number}
-                  </span>
-                ) : (
+              {s.kind === "activity" && (
+                <div className="thumbnail-caption">
                   <>
                     <span>
                       <Icon name="activity" size={13} />
@@ -371,8 +364,8 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                       </div>
                     )}
                   </>
-                )}
-              </div>
+                </div>
+              )}
             </li>
           ))}
         </ol>
@@ -470,74 +463,112 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           </div>
         )}
       </main>
-      {toolsOpen && (
+      {!live && (
+        <nav className="editor-tool-dock" aria-label={t("Training tools")}>
+          <div className="editor-tool-group">
+            <button
+              type="button"
+              aria-expanded={tool === "content"}
+              aria-controls="training-tools"
+              onClick={(event) => toggleTool(event, "content")}
+            >
+              <Icon name="presentation" size={23} />
+              <span>{t("Content")}</span>
+            </button>
+            <button type="button" disabled={!draft} onClick={openActivity}>
+              <Icon name="plus" size={23} />
+              <span>{t("Activities")}</span>
+            </button>
+            <button
+              type="button"
+              aria-expanded={tool === "agents"}
+              aria-controls="training-tools"
+              onClick={(event) => toggleTool(event, "agents")}
+            >
+              <Icon name="agent" size={23} />
+              <span>{t("Agents")}</span>
+            </button>
+          </div>
+          <div className="editor-tool-group">
+            <button
+              type="button"
+              onClick={() => router.push(`/training/${id}/practice`)}
+            >
+              <Icon name="mic" size={23} />
+              <span>{t("Practice")}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push(`/training/${id}/preview`)}
+            >
+              <Icon name="eye" size={23} />
+              <span>{t("Preview")}</span>
+            </button>
+          </div>
+          <div className="editor-tool-group editor-tool-bottom">
+            <button type="button" onClick={openSettings}>
+              <Icon name="settings" size={23} />
+              <span>{t("Settings")}</span>
+            </button>
+          </div>
+        </nav>
+      )}
+      {toolsOpen && compactTools && (
         <button
           className="editor-tools-overlay"
           aria-label={t("Close training tools")}
           onClick={() => {
-            setToolsOpen(false);
+            setTool(null);
             toolsTrigger.current?.focus();
           }}
         />
       )}
-      <aside
-        ref={toolsPanel}
-        id="training-tools"
-        role={toolsOpen ? "dialog" : undefined}
-        aria-modal={toolsOpen || undefined}
-        aria-label={t("Training tools")}
-        className={`editor-tools ${live ? "questions-panel" : ""}`}
-      >
-        {!live && (
-          <button
-            className="icon-button editor-tools-close"
-            aria-label={t("Close training tools")}
-            onClick={() => {
-              setToolsOpen(false);
-              toolsTrigger.current?.focus();
-            }}
-          >
-            <Icon name="close" />
-          </button>
-        )}
-        {live ? (
-          <QuestionPanel
-            data={data}
-            onAddress={async (questionId, value) => {
-              try {
-                await mutate({ action: "addressed", questionId, value });
-              } catch {}
-            }}
-          />
-        ) : (
-          <>
-            <div className="tool-title">
-              <h2>{active.kind === "document" ? t("Slide") : t("Activity")}</h2>
-              <Icon
-                name={active.kind === "document" ? "presentation" : "activity"}
-              />
-            </div>
-            {active.kind === "document" ? (
-              <>
-                <p className="muted small">{slideTitle(c, active, locale)}</p>
-                <div className="tool-block">
-                  <strong>{t("Make this slide interactive")}</strong>
-                  <p>
-                    {t("Ask for participants’ views or discuss a scenario.")}
-                  </p>
-                  <button
-                    className="button full"
-                    disabled={!draft}
-                    onClick={openActivity}
-                  >
-                    <Icon name="plus" />
-                    {t("Add activity")}
-                  </button>
-                </div>
-                <div className="tool-block">
-                  <Icon name="agent" />
-                  <strong>{t("Learning agent")}</strong>
-                  <p>
+      {(live || toolsOpen) && (
+        <aside
+          ref={toolsPanel}
+          id="training-tools"
+          role={toolsOpen ? "dialog" : undefined}
+          aria-modal={(toolsOpen && compactTools) || undefined}
+          aria-label={t(
+            live
+              ? "Instructor controls"
+              : tool === "agents"
+                ? "Agents"
+                : "Content",
+          )}
+          className={`editor-tools ${live ? "questions-panel" : "editor-context-panel"}`}
+        >
+          {live ? (
+            <QuestionPanel
+              data={data}
+              onAddress={async (questionId, value) => {
+                try {
+                  await mutate({ action: "addressed", questionId, value });
+                } catch {}
+              }}
+            />
+          ) : (
+            <>
+              <header className="editor-context-heading">
+                <h2>{t(tool === "agents" ? "Agents" : "Content")}</h2>
+                <button
+                  className="icon-button editor-tools-close"
+                  aria-label={t("Close training tools")}
+                  onClick={() => {
+                    setTool(null);
+                    toolsTrigger.current?.focus();
+                  }}
+                >
+                  <Icon name="close" size={19} />
+                </button>
+              </header>
+              {tool === "agents" ? (
+                <div className="editor-context-body">
+                  <div className="editor-context-agent">
+                    <Icon name="agent" size={28} />
+                    <h3>{t("Learning agent")}</h3>
+                  </div>
+                  <p className="muted">
                     {t(
                       "Your learning agent answers from the training materials and links to the source.",
                     )}
@@ -549,79 +580,95 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                       )}
                     />
                   )}
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="muted small">
-                  {active.activity?.type === "poll"
-                    ? t("Poll")
-                    : active.activity?.type === "scenario"
-                      ? t("Scenario")
-                      : t("Open question")}
-                </p>
-                <p className="activity-question-small">
-                  {active.activity?.question}
-                </p>
-                {active.activity?.aiGenerated && (
-                  <span className="ai-label">
-                    <Icon name="agent" size={16} />
-                    {t("Generated with AI")}
-                  </span>
-                )}
-                <button
-                  className="button full"
-                  disabled={!draft}
-                  onClick={(event) => openActivity(event, true)}
-                >
-                  {t("Edit activity")}
-                </button>
-                {draft && (
-                  <button
-                    className="text-button danger-text"
-                    onClick={async () => {
-                      try {
-                        await mutate({
-                          action: "remove-activity",
-                          slideId: active.id,
-                        });
-                      } catch {}
-                    }}
-                  >
-                    <Icon name="trash" />
-                    {t("Remove activity")}
+                  <dl className="editor-agent-settings">
+                    <div>
+                      <dt>{t("Learning agent access after training")}</dt>
+                      <dd>
+                        {c.accessDays} {t("days")}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>{t("Live answers")}</dt>
+                      <dd>
+                        {c.autoAnswer ? t("Automatic") : t("Instructor review")}
+                      </dd>
+                    </div>
+                  </dl>
+                  <button className="button full" onClick={openSettings}>
+                    <Icon name="settings" size={18} />
+                    {t("Training settings")}
                   </button>
-                )}
-                <div className="tool-block">
-                  <strong>{t("Move in flow")}</strong>
-                  <p>
-                    {t(
-                      "Drag the activity on the left or use the arrows to move it.",
-                    )}
-                  </p>
                 </div>
-              </>
-            )}
-            <button className="tool-settings" onClick={() => setSettings(true)}>
-              <Icon name="settings" />
-              {t("Training settings")}
-              <Icon name="right" size={16} />
-            </button>
-            <div className="tool-meta">
-              <span>
-                <Icon name="clock" size={16} />
-                {c.accessDays} {t("days of learning agent access")}
-              </span>
-              <span>
-                <Icon name="chat" size={16} />
-                {c.autoAnswer
-                  ? t("Live AI answers on")
-                  : t("Live AI answers off")}
-              </span>
-            </div>
-          </>
-        )}
-      </aside>
+              ) : (
+                <div className="editor-context-body">
+                  <span className="editor-context-label">
+                    {t("Slide")} {index + 1} / {c.slides.length}
+                  </span>
+                  <h3>{slideTitle(c, active, locale)}</h3>
+                  {active.kind === "document" ? (
+                    <>
+                      <p className="muted">
+                        {t(
+                          "The original presentation is preserved. You can add an activity after this slide.",
+                        )}
+                      </p>
+                      <button
+                        className="button full"
+                        disabled={!draft}
+                        onClick={openActivity}
+                      >
+                        <Icon name="plus" />
+                        {t("Add activity")}
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <p className="muted">
+                        {t(
+                          active.activity?.type === "poll"
+                            ? "Poll"
+                            : active.activity?.type === "scenario"
+                              ? "Scenario"
+                              : "Open question",
+                        )}
+                      </p>
+                      {active.activity?.aiGenerated && (
+                        <span className="ai-label">
+                          <Icon name="agent" size={16} />
+                          {t("Generated with AI")}
+                        </span>
+                      )}
+                      <button
+                        className="button full"
+                        disabled={!draft}
+                        onClick={(event) => openActivity(event, true)}
+                      >
+                        {t("Edit activity")}
+                      </button>
+                      {draft && (
+                        <button
+                          className="text-button danger-text"
+                          onClick={async () => {
+                            try {
+                              await mutate({
+                                action: "remove-activity",
+                                slideId: active.id,
+                              });
+                            } catch {}
+                          }}
+                        >
+                          <Icon name="trash" />
+                          {t("Remove activity")}
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </aside>
+      )}
       {add && (
         <ActivityEditor
           course={c}
@@ -656,6 +703,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
       )}
       {settings && (
         <Settings
+          returnFocusRef={settingsTrigger}
           course={c}
           onClose={() => setSettings(false)}
           onSave={async (body) => {
@@ -737,10 +785,12 @@ function Settings({
   course: c,
   onClose,
   onSave,
+  returnFocusRef,
 }: {
   course: Course;
   onClose: () => void;
   onSave: (body: object) => Promise<void>;
+  returnFocusRef?: React.RefObject<HTMLElement | null>;
 }) {
   const { t } = useLocale();
 
@@ -750,7 +800,12 @@ function Settings({
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   return (
-    <Modal open onClose={onClose} title={t("Training settings")}>
+    <Modal
+      open
+      onClose={onClose}
+      returnFocusRef={returnFocusRef}
+      title={t("Training settings")}
+    >
       <form
         onSubmit={async (e) => {
           e.preventDefault();

@@ -233,12 +233,20 @@ export function EditorSkeleton({ live = false }: { live?: boolean }) {
           </div>
         </div>
       </main>
-      <aside className="sk-editor-panel" aria-hidden="true">
-        <Skeleton className="sk-subtitle" />
-        <Lines />
-        <Skeleton className="sk-button" />
-        <Lines count={4} />
-      </aside>
+      {live ? (
+        <aside className="sk-editor-panel" aria-hidden="true">
+          <Skeleton className="sk-subtitle" />
+          <Lines />
+          <Skeleton className="sk-button" />
+          <Lines count={4} />
+        </aside>
+      ) : (
+        <aside className="editor-tool-dock sk-editor-dock" aria-hidden="true">
+          {Array.from({ length: 6 }, (_, i) => (
+            <Skeleton className="sk-dot" key={i} />
+          ))}
+        </aside>
+      )}
     </Region>
   );
 }
