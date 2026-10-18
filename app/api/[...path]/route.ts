@@ -66,7 +66,7 @@ const text = (value: unknown, max = 3000) =>
 function accessDays(value: unknown) {
   const days = Number(value);
   if (!Number.isInteger(days) || days < 0 || days > 365)
-    throw new AppError("Erişim süresi 0–365 gün arasında olmalı.");
+    throw new AppError("Access must be between 0 and 365 days.");
   return days;
 }
 function activity(value: Activity): Activity {
@@ -75,7 +75,7 @@ function activity(value: Activity): Activity {
     !["poll", "open", "scenario"].includes(value.type) ||
     !text(value.question)
   )
-    throw new AppError("Aktivite sorusunu yaz.");
+    throw new AppError("Enter the activity question.");
   const options = Array.isArray(value.options)
     ? value.options
         .map((v) => text(v, 200))
@@ -83,10 +83,10 @@ function activity(value: Activity): Activity {
         .slice(0, 6)
     : [];
   if (value.type === "poll" && options.length < 2)
-    throw new AppError("Anket için en az iki seçenek yaz.");
+    throw new AppError("Enter at least two poll options.");
   if (value.type === "poll" && hasDuplicateOptions(options))
     throw new AppError(
-      "Anket seçenekleri birbirinden farklı olmalı. Tekrar eden seçeneği değiştir.",
+      "Poll options must be different. Change the duplicate option.",
     );
   return {
     type: value.type,
@@ -112,7 +112,8 @@ async function handle(request: Request, context: Context): Promise<Response> {
         await logout();
         return json({ ok: true });
       }
-      if (method !== "POST") throw new AppError("İşlem desteklenmiyor.", 405);
+      if (method !== "POST")
+        throw new AppError("This action is not supported.", 405);
       const body = await request.json();
       if (body.action === "demo") {
         const user: User = {
@@ -144,7 +145,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
         password.length > 128
       )
         throw new AppError(
-          "Geçerli bir e-posta ve en az 8 karakterli şifre yaz.",
+          "Enter a valid email and a password of at least 8 characters.",
         );
       const existing = all<User & { password: string }>("user").find(
         (u) => u.email === email,
@@ -152,12 +153,14 @@ async function handle(request: Request, context: Context): Promise<Response> {
       let user: User;
       if (body.action === "register") {
         if (existing)
-          throw new AppError("Bu e-posta zaten kayıtlı. Giriş yapabilirsin.");
+          throw new AppError(
+            "This email is already registered. You can log in.",
+          );
         if (
           !["teacher", "participant"].includes(body.role) ||
           !text(body.name, 80)
         )
-          throw new AppError("Adını ve hesap tipini seç.");
+          throw new AppError("Enter your name and choose an account type.");
         user = {
           id: randomUUID(),
           name: text(body.name, 80),
@@ -167,7 +170,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
         put("user", { ...user, password: hashPassword(password) });
       } else {
         if (!existing?.password || !verifyPassword(password, existing.password))
-          throw new AppError("E-posta veya şifre eşleşmedi.", 401);
+          throw new AppError("The email or password is incorrect.", 401);
         user = {
           id: existing.id,
           name: existing.name,
@@ -181,7 +184,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
     if (parts[0] === "presentation" && method === "GET") {
       const c = get<Course>("course", parts[1]);
       if (!c || url.searchParams.get("key") !== c.displayKey)
-        throw new AppError("Sunum bağlantısı geçersiz.", 404);
+        throw new AppError("The presentation link is invalid.", 404);
       return json({
         course: {
           ...c,
@@ -202,9 +205,9 @@ async function handle(request: Request, context: Context): Promise<Response> {
     ) {
       const c = get<Course>("course", parts[1]);
       if (!c || url.searchParams.get("key") !== c.displayKey)
-        throw new AppError("Sunum bağlantısı geçersiz.", 404);
+        throw new AppError("The presentation link is invalid.", 404);
       const page = c.pages.find((p) => p.number === Number(parts[3]));
-      if (!page) throw new AppError("Slayt bulunamadı.", 404);
+      if (!page) throw new AppError("Slide not found.", 404);
       return new Response(
         await readFile(path.join(DATA_DIR, "files", c.id, page.image)),
         {
@@ -224,7 +227,8 @@ async function handle(request: Request, context: Context): Promise<Response> {
       ["public-waitlist", "integration-waitlist"].includes(parts[0]) &&
       parts.length === 1
     ) {
-      if (method !== "POST") throw new AppError("İşlem desteklenmiyor.", 405);
+      if (method !== "POST")
+        throw new AppError("This action is not supported.", 405);
       const body = await request.json();
       joinPublicWaitlist(body.email, body.locale);
       return json({ ok: true });
@@ -240,7 +244,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
             await sendReportMessage(user, parts[1], await request.json()),
           );
       }
-      throw new AppError("İşlem desteklenmiyor.", 405);
+      throw new AppError("This action is not supported.", 405);
     }
     if (parts[0] === "waitlist" && parts.length === 1) {
       if (method === "GET")
@@ -249,7 +253,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
         const body = await request.json();
         return json({ entry: joinWaitlist(user.id, body.email, body.locale) });
       }
-      throw new AppError("İşlem desteklenmiyor.", 405);
+      throw new AppError("This action is not supported.", 405);
     }
     if (parts[0] === "status" && method === "GET") {
       const addresses = localAddresses();
@@ -262,17 +266,14 @@ async function handle(request: Request, context: Context): Promise<Response> {
     }
     if (parts[0] === "join" && method === "POST") {
       if (user.role !== "participant")
-        throw new AppError(
-          "Eğitime katılmak için katılımcı hesabıyla giriş yap.",
-          403,
-        );
+        throw new AppError("Sign in as a participant to join training.", 403);
       const body = await request.json();
       const course = all<Course>("course").find(
         (c) => c.code === text(body.code, 6),
       );
       if (!course || (!canChat(course) && course.status !== "draft"))
         throw new AppError(
-          "Eğitim bulunamadı veya erişim süresi sona erdi.",
+          "Training was not found or access has expired.",
           404,
         );
       put("member", {
@@ -283,7 +284,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
       });
       return json({ id: course.id });
     }
-    if (parts[0] !== "courses") throw new AppError("Alan bulunamadı.", 404);
+    if (parts[0] !== "courses") throw new AppError("Resource not found.", 404);
     if (parts.length === 1) {
       if (method === "GET")
         return json({
@@ -296,13 +297,15 @@ async function handle(request: Request, context: Context): Promise<Response> {
             .map((c) => ({
               ...c,
               displayKey: "",
+              coverPage: c.pages[0]?.number,
               pages: [],
               slides: [],
               ownerId: "",
             })),
         });
       await requireUser("teacher");
-      if (method !== "POST") throw new AppError("İşlem desteklenmiyor.", 405);
+      if (method !== "POST")
+        throw new AppError("This action is not supported.", 405);
       const id = randomUUID();
       let name: string,
         originalName: string,
@@ -314,7 +317,8 @@ async function handle(request: Request, context: Context): Promise<Response> {
       ) {
         const form = await request.formData(),
           file = form.get("file");
-        if (!(file instanceof File)) throw new AppError("Sunum dosyanı seç.");
+        if (!(file instanceof File))
+          throw new AppError("Choose your presentation file.");
         name = text(form.get("name"), 120) || file.name.replace(/\.[^.]+$/, "");
         originalName = file.name;
         days = accessDays(form.get("accessDays"));
@@ -322,7 +326,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
         pages = await processDocument(id, file);
       } else {
         const body = await request.json();
-        if (!body.demo) throw new AppError("Sunum dosyanı seç.");
+        if (!body.demo) throw new AppError("Choose your presentation file.");
         name = text(body.name, 120) || "Dijital Pazarlama Temelleri";
         originalName = "Örnek sunum";
         days = accessDays(body.accessDays ?? 7);
@@ -343,7 +347,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
     }
     const id = parts[1],
       course = get<Course>("course", id);
-    if (!course) throw new AppError("Eğitim bulunamadı.", 404);
+    if (!course) throw new AppError("Training not found.", 404);
     const owner = course.ownerId === user.id;
     if (parts[2] === "page" && method === "GET") {
       if (
@@ -354,9 +358,9 @@ async function handle(request: Request, context: Context): Promise<Response> {
         ) &&
         url.searchParams.get("key") !== course.displayKey
       )
-        throw new AppError("Sunuma erişimin yok.", 403);
+        throw new AppError("You don’t have access to this presentation.", 403);
       const page = course.pages.find((p) => p.number === Number(parts[3]));
-      if (!page) throw new AppError("Slayt bulunamadı.", 404);
+      if (!page) throw new AppError("Slide not found.", 404);
       return new Response(
         await readFile(path.join(DATA_DIR, "files", id, page.image)),
         {
@@ -373,20 +377,23 @@ async function handle(request: Request, context: Context): Promise<Response> {
       );
     }
     if (!owner && !memberOf(id, user.id))
-      throw new AppError("Önce eğitim koduyla katıl.", 403);
+      throw new AppError("Join using the training code first.", 403);
     if (!owner && course.status === "ended" && !canChat(course))
-      throw new AppError("Bu eğitimin erişim süresi sona erdi.", 410);
+      throw new AppError("Access to this training has expired.", 410);
     if (parts.length === 2 && method === "GET")
       return json(stateFor(course, user));
     if (parts[2] === "questions" && method === "POST") {
       if (user.role !== "participant" || !canChat(course))
-        throw new AppError("Sohbet şu anda açık değil.", 403);
+        throw new AppError("Chat is not open right now.", 403);
       const body = await request.json(),
         question = text(body.text, 2000);
-      if (!question) throw new AppError("Sorunu yaz.");
+      if (!question) throw new AppError("Enter your question.");
       const prior = questionsOf(id);
       if (prior.some((q) => q.userId === user.id && q.status === "pending"))
-        throw new AppError("Önceki sorunun yanıtını bekle.", 429);
+        throw new AppError(
+          "Wait for the answer to your previous question.",
+          429,
+        );
       const q: Question = {
         id: randomUUID(),
         courseId: id,
@@ -419,7 +426,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
         } else {
           q.status = "escalated";
           q.reason =
-            "Yapay zekâ yanıtı şu anda alınamadı. Soru eğitmene iletildi.";
+            "An AI answer is unavailable. Your question was forwarded to the instructor.";
         }
       }
       if (groupResult.status === "fulfilled" && groupResult.value)
@@ -434,20 +441,20 @@ async function handle(request: Request, context: Context): Promise<Response> {
     if (parts[2] === "responses" && method === "POST") {
       if (user.role !== "participant" || course.status !== "live")
         throw new AppError(
-          "Aktivite yanıtları canlı eğitim sırasında alınır.",
+          "Activity responses are accepted during live training.",
           403,
         );
       const body = await request.json(),
         slide = activeSlide(course);
       if (slide.kind !== "activity" || slide.id !== body.slideId)
-        throw new AppError("Bu aktivite şu anda açık değil.");
+        throw new AppError("This activity is not open right now.");
       const value = text(body.value, 3000);
       if (
         !value ||
         (slide.activity!.type === "poll" &&
           !slide.activity!.options.includes(value))
       )
-        throw new AppError("Geçerli bir yanıt seç veya yaz.");
+        throw new AppError("Select or write a valid response.");
       return json({
         response: put("response", {
           id: `${slide.id}:${user.id}`,
@@ -466,7 +473,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
         const body = await request.json(),
           audience = text(body.audience);
         if (audience.length < 10)
-          throw new AppError("Katılımcı kitleni birkaç cümleyle tarif et.");
+          throw new AppError("Describe your audience in a few sentences.");
         try {
           const usage: UsageEntry[] = [];
           const personas = await createPersonas(
@@ -494,7 +501,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
           });
         } catch {
           throw new AppError(
-            "Katılımcılar oluşturulamadı. Model bağlantısını kontrol edip yeniden dene.",
+            "Participant agents could not be created. Check the connection and try again.",
             502,
           );
         }
@@ -503,21 +510,25 @@ async function handle(request: Request, context: Context): Promise<Response> {
         const body = await request.json(),
           r = get<Rehearsal>("rehearsal", body.id);
         if (!r || r.courseId !== id)
-          throw new AppError("Prova bulunamadı.", 404);
+          throw new AppError("Practice session not found.", 404);
         if (body.action === "voice") {
           if (r.endedAt)
-            throw new AppError("Tamamlanan provanın sesleri değiştirilemez.");
+            throw new AppError(
+              "Voice settings cannot be changed after practice ends.",
+            );
           if (
             !Number.isInteger(body.personaIndex) ||
             !r.personas[body.personaIndex] ||
             !["female", "male", "neutral"].includes(body.gender)
           )
-            throw new AppError("Katılımcı sesini seç.");
+            throw new AppError("Choose a participant voice.");
           const chosen = VOICES.find(
             (v) => v.id === body.voice && v.style === body.gender,
           );
           if (!chosen)
-            throw new AppError("Karakterin ses türüne uygun bir ses seç.");
+            throw new AppError(
+              "Choose a voice matching the participant’s voice style.",
+            );
           r.personas = assignVoices(r.personas);
           r.personas[body.personaIndex] = {
             ...r.personas[body.personaIndex],
@@ -550,7 +561,8 @@ async function handle(request: Request, context: Context): Promise<Response> {
     if (parts[2] === "rehearsal-usage" && method === "POST") {
       const body = await request.json(),
         r = get<Rehearsal>("rehearsal", body.rehearsalId);
-      if (!r || r.courseId !== id) throw new AppError("Prova bulunamadı.", 404);
+      if (!r || r.courseId !== id)
+        throw new AppError("Practice session not found.", 404);
       if (
         typeof body.responseId !== "string" ||
         !body.responseId.startsWith("resp_") ||
@@ -558,7 +570,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
         !body.usage ||
         typeof body.usage !== "object"
       )
-        throw new AppError("Kullanım kaydı geçersiz.");
+        throw new AppError("The usage record is invalid.");
       const saved = recordRehearsalUsage(r.id, {
         id: body.responseId,
         stage: "conversation",
@@ -571,18 +583,18 @@ async function handle(request: Request, context: Context): Promise<Response> {
       const body = await request.json(),
         r = get<Rehearsal>("rehearsal", body.rehearsalId);
       if (!r || r.courseId !== id || r.endedAt)
-        throw new AppError("Aktif prova bulunamadı.", 404);
+        throw new AppError("No active practice session was found.", 404);
       if (
         !Number.isInteger(body.personaIndex) ||
         !r.personas[body.personaIndex]
       )
-        throw new AppError("Katılımcı bulunamadı.");
+        throw new AppError("Participant not found.");
       const persona = r.personas[body.personaIndex],
         voice = personaVoice(persona);
       const line = body.preview
         ? `Merhaba, ben ${persona.name}. Eğitimde sizi dinliyor olacağım.`
         : text(body.text, 900);
-      if (!line) throw new AppError("Seslendirilecek replik boş.");
+      if (!line) throw new AppError("The spoken line is empty.");
       let entry: UsageEntry | undefined;
       try {
         const wav = await personaSpeech(line, voice, (responseId, usage) => {
@@ -604,7 +616,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
         });
       } catch {
         throw new AppError(
-          "Katılımcının sesi üretilemedi. Repliği ekrandan okuyabilir, yeniden dinlemeyi deneyebilirsin.",
+          "The participant voice could not be generated. Read the line on screen or try listening again.",
           502,
         );
       }
@@ -619,7 +631,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
         typeof body.sdp !== "string" ||
         body.sdp.length > 100000
       )
-        throw new AppError("Prova bağlantısı oluşturulamadı.");
+        throw new AppError("The practice connection could not be created.");
       const form = new FormData();
       form.set("sdp", body.sdp);
       form.set(
@@ -661,7 +673,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
         });
       } catch {
         throw new AppError(
-          "Sesli model bağlantısı kurulamadı. Yeniden dene.",
+          "The voice connection failed. Please try again.",
           502,
         );
       }
@@ -682,7 +694,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
         });
       } catch {
         throw new AppError(
-          "Aktivite oluşturulamadı. Soruyu kendin yazabilir veya yeniden deneyebilirsin.",
+          "The activity could not be generated. Write your own question or try again.",
           502,
         );
       }
@@ -691,7 +703,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
       const body = await request.json();
       if (body.action === "select") {
         if (!course.slides.some((s) => s.id === body.slideId))
-          throw new AppError("Slayt bulunamadı.");
+          throw new AppError("Slide not found.");
         course.activeSlideId = body.slideId;
         course.slideVersion++;
       } else if (body.action === "settings") {
@@ -700,14 +712,14 @@ async function handle(request: Request, context: Context): Promise<Response> {
         course.autoAnswer = !!body.autoAnswer;
       } else if (body.action === "start") {
         if (course.status !== "draft")
-          throw new AppError("Bu eğitim zaten başlatıldı.");
+          throw new AppError("This training has already started.");
         course.activeSlideId = course.slides[0].id;
         course.status = "live";
         course.startedAt = new Date().toISOString();
         course.slideVersion++;
       } else if (body.action === "end") {
         if (course.status !== "live")
-          throw new AppError("Eğitim şu anda canlı değil.");
+          throw new AppError("This training is not live.");
         course.status = "ended";
         course.endedAt = new Date().toISOString();
         put("course", course);
@@ -715,14 +727,14 @@ async function handle(request: Request, context: Context): Promise<Response> {
         return json(stateFor(get<Course>("course", id)!, user));
       } else if (body.action === "reorder") {
         if (course.status !== "draft")
-          throw new AppError("Slayt sırası eğitim başlamadan düzenlenebilir.");
+          throw new AppError("Reorder slides before training starts.");
         validateSlideOrder(course, body.ids);
         course.slides = body.ids.map((slideId: string) =>
           course.slides.find((s) => s.id === slideId)!,
         );
       } else if (body.action === "add-activity") {
         if (course.status !== "draft")
-          throw new AppError("Aktiviteleri eğitim başlamadan ekle.");
+          throw new AppError("Add activities before training starts.");
         const s = {
           id: randomUUID(),
           kind: "activity" as const,
@@ -733,15 +745,15 @@ async function handle(request: Request, context: Context): Promise<Response> {
         course.activeSlideId = s.id;
       } else if (body.action === "update-activity") {
         if (course.status !== "draft")
-          throw new AppError("Aktiviteler eğitim başlamadan düzenlenebilir.");
+          throw new AppError("Edit activities before training starts.");
         const s = course.slides.find(
           (s) => s.id === body.slideId && s.kind === "activity",
         );
-        if (!s) throw new AppError("Aktivite bulunamadı.");
+        if (!s) throw new AppError("Activity not found.");
         s.activity = activity(body.activity);
       } else if (body.action === "remove-activity") {
         if (course.status !== "draft")
-          throw new AppError("Aktiviteler eğitim başlamadan kaldırılabilir.");
+          throw new AppError("Remove activities before training starts.");
         course.slides = course.slides.filter(
           (s) => !(s.id === body.slideId && s.kind === "activity"),
         );
@@ -749,14 +761,14 @@ async function handle(request: Request, context: Context): Promise<Response> {
           course.activeSlideId = course.slides[0].id;
       } else if (body.action === "addressed") {
         const q = get<Question>("question", body.questionId);
-        if (!q || q.courseId !== id) throw new AppError("Soru bulunamadı.");
+        if (!q || q.courseId !== id) throw new AppError("Question not found.");
         put("question", { ...q, addressed: !!body.value });
         return json(stateFor(course, user));
-      } else throw new AppError("İşlem bulunamadı.");
+      } else throw new AppError("Action not found.");
       put("course", course);
       return json(stateFor(course, user));
     }
-    throw new AppError("İşlem bulunamadı.", 404);
+    throw new AppError("Action not found.", 404);
   } catch (error) {
     return apiError(error);
   }

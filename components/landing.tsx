@@ -28,40 +28,40 @@ import {
 
 const stages = [
   {
-    label: "Eğitimden önce",
+    label: "Before training",
     detailIcons: ["file", "mic"],
-    title: "Kitleni tanı. Anlatımını dene.",
-    text: "Kitleni tarif et. Katılımcılarını temsil eden yapay zekâ ajanlarıyla sesli pratik yap; anlatımını ve sorulara verdiğin yanıtları geliştir.",
+    title: "Meet your audience. Practice your delivery.",
+    text: "Describe your audience. Practice out loud with AI agents representing your participants, and improve your delivery and responses to questions.",
     details: [
-      "Kitlene göre oluşturulan yapay zekâ ajanları",
-      "Anlatımına ve tempona yönelik geri bildirim",
+      "AI agents tailored to your audience",
+      "Feedback on your delivery and pace",
     ],
     image: "/landing/rehearsal.webp",
-    alt: "Bir sunumun etrafındaki farklı katılımcı profilleri ve sesli konuşma akışının izometrik görünümü",
+    alt: "An isometric illustration of participant profiles and a voice conversation around a presentation",
   },
   {
-    label: "Eğitim sırasında",
+    label: "During training",
     detailIcons: ["activity", "chat"],
-    title: "Etkileşimi aç. Katılımcılarını dahil et.",
-    text: "Etkinliklerle yanıtları topla. Öğrenme ajanı katılımcıların sorularını eğitim kaynaklarına dayanarak yanıtlasın; sen de eğitimin akışına odaklan.",
+    title: "Start the conversation. Engage your participants.",
+    text: "Collect responses through activities. Let the learning agent answer participant questions using your training materials, while you focus on delivering the training.",
     details: [
-      "Anket, açık uçlu soru ve senaryolar",
-      "Eğitim kaynaklarına dayanan öğrenme ajanı",
+      "Polls, open questions and scenarios",
+      "A learning agent grounded in your training materials",
     ],
     image: "/landing/training.webp",
-    alt: "Eğitmen sunumu, katılımcı telefonu ve aktivite yanıtlarının izometrik görünümü",
+    alt: "An isometric illustration of a presenter’s slides, a participant’s phone and activity responses",
   },
   {
-    label: "Eğitimden sonra",
+    label: "After training",
     detailIcons: ["clock", "chart"],
-    title: "Eğitim biter. Öğrenme devam eder.",
-    text: "Katılımcılar öğrenme ajanına soru sormayı sürdürsün. Rapor ajanıyla yanıtları ve katılımı incele; sonraki eğitiminde neyi geliştirebileceğini gör.",
+    title: "Training ends. Learning continues.",
+    text: "Let participants keep asking their learning agent questions. Review responses and engagement with the report agent, and identify what to improve in your next training.",
     details: [
-      "Süresini senin belirlediğin öğrenme ajanı erişimi",
-      "Eğitim verilerini yorumlayan rapor ajanı",
+      "Learning agent access for a duration you choose",
+      "A report agent that helps interpret training data",
     ],
     image: "/landing/follow-up.webp",
-    alt: "Sunum kaynaklarıyla bağlantılı bir sohbet ve eğitim raporunun izometrik görünümü",
+    alt: "An isometric illustration of a conversation and training report linked to presentation sources",
   },
 ] as const;
 
@@ -215,7 +215,7 @@ function LandingLanguage() {
         onClick={position}
         aria-expanded={open}
         aria-controls={id}
-        aria-label={`${t("Dil")}: ${locale === "tr" ? "Türkçe" : "English"}`}
+        aria-label={`${t("Language")}: ${locale === "tr" ? "Türkçe" : "English"}`}
       >
         <Icon name="globe" size={17} />
         <span>{locale.toUpperCase()}</span>
@@ -226,7 +226,7 @@ function LandingLanguage() {
         ref={panel}
         popover="auto"
         role="group"
-        aria-label={t("Dil")}
+        aria-label={t("Language")}
         className="landing-language-menu"
         onToggle={(event) => {
           const expanded = event.newState === "open";
@@ -285,28 +285,28 @@ function LandingLanguage() {
 
 const questions = [
   [
-    "LİNBA’nın yapay zekâ ajanları ne yapar?",
-    "Eğitimden önce katılımcılarını temsil eden ajanlarla sesli pratik yaparsın. Eğitim sırasında öğrenme ajanı katılımcıların sorularını eğitim kaynaklarına dayanarak yanıtlar. Sonrasında rapor ajanıyla soruları, aktivite yanıtlarını ve öğrenme ihtiyaçlarını birlikte incelersin.",
+    "What do LİNBA’s AI agents do?",
+    "Before training, practice out loud with agents representing your participants. During training, a learning agent answers participant questions using your training materials. Afterwards, review questions, activity responses and learning needs with the report agent.",
   ],
   [
-    "Pratik ajanları kitleme nasıl uyum sağlar?",
-    "Kitleni, deneyim düzeyini ve eğitim bağlamını tarif edersin. Bu tanıma göre oluşturulan yapay zekâ ajanları sesli pratiğine sorularla katılır. Geri bildirim, senin anlatımının netliği, tempon ve sorulara verdiğin yanıtlarla ilgilidir.",
+    "How do practice agents adapt to my audience?",
+    "Describe your audience, their experience and the training context. AI agents created from this brief join your voice practice with questions. Feedback focuses on the clarity of your delivery, your pace and how you respond.",
   ],
   [
-    "Öğrenme ajanı yanıtlarını neye dayandırır?",
-    "Yüklediğin eğitim kaynaklarını kullanır ve ilgili slaytları gösterir. Kaynaklarda yanıt bulunmayan sorular eğitmene iletilir. Canlı eğitimde otomatik yanıtı açıp kapatabilirsin.",
+    "What does the learning agent base its answers on?",
+    "It uses the training materials you upload and points to relevant slides. Questions without an answer in the materials are passed to the instructor. You can enable or disable automatic answers during live training.",
   ],
   [
-    "Rapor ajanı ölçme ve değerlendirmeye nasıl yardımcı olur?",
-    "Katılımcı sorularını ve aktivite yanıtlarını incelemene yardımcı olur. Hangi konularda zorlanıldığını ve sonraki eğitimlerde neleri geliştirebileceğini sorabilirsin. Değerlendirme, eğitimde toplanan verilere dayanır; eğitimle ilgili kararları sen verirsin.",
+    "How does the report agent support learning assessment?",
+    "It helps you examine participant questions and activity responses. Ask which topics participants struggled with and what to improve in future training. Assessment is grounded in the data collected during training; you make the training decisions.",
   ],
   [
-    "Eğitim bitince öğrenme ajanına erişim devam eder mi?",
-    "Evet. Katılımcılar, eğitmenin belirlediği süre boyunca soru sormaya devam edebilir. Eğitim sonrası sorular da aynı eğitim raporuna eklenir.",
+    "Can participants keep using the learning agent after training?",
+    "Yes. Participants can keep asking questions for the duration set by their instructor. Post-training questions are added to the same training report.",
   ],
   [
-    "Nasıl deneyebilirim, bekleme listesi ne için?",
-    "LİNBA yakında kullanıma açılıyor. İlk haberdar olanlardan olmak için bekleme listesine katıl. O zamana kadar LİNBA’nın yapay zekâ ajanlarını ücretsiz deneyimleyebilirsin.",
+    "How can I try LİNBA, and what is the waitlist for?",
+    "LİNBA is launching soon. Join the waitlist to be among the first to know. In the meantime, you can experience LİNBA’s AI agents for free.",
     true,
   ],
 ] as const;
@@ -317,28 +317,28 @@ function LandingContent() {
   return (
     <div className="landing-page">
       <a className="landing-skip" href="#landing-main">
-        {t("İçeriğe geç")}
+        {t("Skip to content")}
       </a>
       <aside
         className="landing-participant-strip"
-        aria-label={t("Eğitime katıl")}
+        aria-label={t("Join training")}
       >
         <div className="landing-container">
           <form
-            id="egitime-katil"
+            id="join-training"
             className="landing-join"
-            action="/katil"
+            action="/join"
             method="get"
             tabIndex={-1}
             aria-labelledby="landing-join-label"
           >
             <label id="landing-join-label" htmlFor="landing-join-code">
-              {t("Katılımcı mısın?")}
+              {t("Are you a participant?")}
             </label>
             <div className="landing-join-fields">
               <input
                 id="landing-join-code"
-                name="kod"
+                name="code"
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]{6}"
@@ -347,12 +347,12 @@ function LandingContent() {
                 required
                 autoComplete="off"
                 spellCheck={false}
-                aria-label={t("Eğitim kodu")}
-                placeholder={t("6 haneli kod")}
-                title={t("Eğitmeninin paylaştığı 6 haneli kodu gir.")}
+                aria-label={t("Training code")}
+                placeholder={t("6-digit code")}
+                title={t("Enter the 6-digit code shared by your instructor.")}
               />
               <button type="submit" className="button landing-join-submit">
-                {t("Katıl")}
+                {t("Join")}
               </button>
             </div>
           </form>
@@ -360,33 +360,29 @@ function LandingContent() {
       </aside>
       <div className="landing-header-shell">
         <header className="landing-header landing-container">
-          <Link
-            href="/"
-            className="landing-brand"
-            aria-label={t("LİNBA ana sayfa")}
-          >
+          <Link href="/" className="landing-brand" aria-label={t("LİNBA home")}>
             <Logo />
           </Link>
-          <nav className="landing-nav" aria-label={t("Ana gezinme")}>
-            <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
-            <a href="#kimler-icin">{t("Kullanım senaryoları")}</a>
-            <a href="#entegrasyonlar">{t("Entegrasyonlar")}</a>
-            <a href="#sorular">{t("Sık sorulanlar")}</a>
+          <nav className="landing-nav" aria-label={t("Main navigation")}>
+            <a href="#how-it-works">{t("How it works")}</a>
+            <a href="#use-cases">{t("Use cases")}</a>
+            <a href="#integrations">{t("Integrations")}</a>
+            <a href="#faq">{t("FAQs")}</a>
           </nav>
           <div className="landing-header-actions">
             <LandingLanguage />
             <div className="landing-auth-actions">
-              <Link className="landing-login" href="/giris">
-                {t("Giriş yap")}
+              <Link className="landing-login" href="/login">
+                {t("Log in")}
               </Link>
-              <Link className="button primary landing-signup" href="/giris">
-                {t("Kayıt ol")}
+              <Link className="button primary landing-signup" href="/login">
+                {t("Sign up")}
               </Link>
             </div>
             <button
               className="icon-button landing-menu-trigger"
               popoverTarget={mobileMenuId}
-              aria-label={t("Menüyü aç")}
+              aria-label={t("Open menu")}
               onClick={(event) => {
                 const menu = document.getElementById(mobileMenuId);
                 if (menu)
@@ -400,16 +396,16 @@ function LandingContent() {
             id={mobileMenuId}
             popover="auto"
             className="landing-mobile-nav"
-            aria-label={t("Ana gezinme")}
+            aria-label={t("Main navigation")}
             onClick={(event) => {
               if ((event.target as Element).closest("a"))
                 document.getElementById(mobileMenuId)?.hidePopover();
             }}
           >
-            <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
-            <a href="#kimler-icin">{t("Kullanım senaryoları")}</a>
-            <a href="#entegrasyonlar">{t("Entegrasyonlar")}</a>
-            <a href="#sorular">{t("Sık sorulanlar")}</a>
+            <a href="#how-it-works">{t("How it works")}</a>
+            <a href="#use-cases">{t("Use cases")}</a>
+            <a href="#integrations">{t("Integrations")}</a>
+            <a href="#faq">{t("FAQs")}</a>
           </nav>
         </header>
       </div>
@@ -419,16 +415,14 @@ function LandingContent() {
 
         <section
           className="landing-flow landing-container"
-          id="nasil-calisir"
+          id="how-it-works"
           aria-labelledby="flow-title"
         >
           <div className="landing-flow-intro">
-            <h2 id="flow-title">
-              {t("Eğitimden önce, eğitim sırasında, eğitimden sonra.")}
-            </h2>
+            <h2 id="flow-title">{t("Before, during and after training.")}</h2>
             <p>
               {t(
-                "Pratik yap, katılımcılarını dahil et, öğrenme ihtiyaçlarını gör.",
+                "Practice, involve your participants and identify learning needs.",
               )}
             </p>
           </div>
@@ -441,14 +435,14 @@ function LandingContent() {
 
         <section
           className="landing-questions landing-container"
-          id="sorular"
+          id="faq"
           aria-labelledby="questions-title"
         >
           <div className="landing-faq-intro">
-            <h2 id="questions-title">{t("Sık sorulan sorular.")}</h2>
+            <h2 id="questions-title">{t("Frequently asked questions.")}</h2>
             <p>
               {t(
-                "Ajanların nasıl çalıştığını, neye dayandığını ve eğitimine nasıl eşlik ettiğini keşfet.",
+                "Explore how the agents work, what they rely on and how they support your training.",
               )}
             </p>
           </div>
@@ -464,8 +458,8 @@ function LandingContent() {
                   {tryLink && (
                     <>
                       {" "}
-                      <Link className="landing-faq-try" href="/giris">
-                        {t("Şimdi Dene, Ücretsiz!")}
+                      <Link className="landing-faq-try" href="/login">
+                        {t("Try Now, For Free!")}
                       </Link>
                     </>
                   )}
@@ -490,19 +484,19 @@ function LandingContent() {
           />
           <div className="landing-closing-copy">
             <h2 id="closing-title">
-              {t("Bir sonraki eğitimine ajanlarınla hazırlan.")}
+              {t("Prepare for your next training with your AI agents.")}
             </h2>
             <p>
               {t(
-                "Pratik yap, katılımcılarınla etkileşim kur, öğrenme ihtiyaçlarını keşfet.",
+                "Practice, engage your participants and discover learning needs.",
               )}
             </p>
             <div className="landing-cta-actions">
               <Link
-                href="/giris?mod=kayit"
+                href="/login?mode=signup"
                 className="button primary landing-try-button"
               >
-                <span>{t("Şimdi Dene, Ücretsiz!")}</span>
+                <span>{t("Try Now, For Free!")}</span>
                 <Icon name="arrow" size={18} />
               </Link>
               <LandingWaitlistButton className="button landing-waitlist-button" />
@@ -512,27 +506,26 @@ function LandingContent() {
       </main>
       <footer className="landing-footer landing-container">
         <div className="landing-footer-brand">
-          <Link
-            href="/"
-            className="landing-brand"
-            aria-label={t("LİNBA ana sayfa")}
-          >
+          <Link href="/" className="landing-brand" aria-label={t("LİNBA home")}>
             <Logo />
           </Link>
-          <p>{t("Eğitim için yapay zekâ ajanları.")}</p>
+          <p>{t("AI agents for education.")}</p>
         </div>
-        <nav className="landing-footer-links" aria-label={t("Alt gezinme")}>
-          <a href="#nasil-calisir">{t("Nasıl çalışır?")}</a>
-          <a href="#kimler-icin">{t("Kullanım senaryoları")}</a>
-          <a href="#entegrasyonlar">{t("Entegrasyonlar")}</a>
-          <a href="#sorular">{t("Sık sorulanlar")}</a>
+        <nav
+          className="landing-footer-links"
+          aria-label={t("Footer navigation")}
+        >
+          <a href="#how-it-works">{t("How it works")}</a>
+          <a href="#use-cases">{t("Use cases")}</a>
+          <a href="#integrations">{t("Integrations")}</a>
+          <a href="#faq">{t("FAQs")}</a>
           <LandingWaitlistButton />
-          <Link href="/giris">{t("Giriş yap")}</Link>
+          <Link href="/login">{t("Log in")}</Link>
         </nav>
         <div
           className="landing-footer-socials"
           role="group"
-          aria-label={t("Sosyal medya")}
+          aria-label={t("Social media")}
         >
           <div className="landing-footer-social-buttons">
             {[

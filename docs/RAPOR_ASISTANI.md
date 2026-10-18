@@ -1,6 +1,6 @@
-# Rapor asistanı
+# Rapor ajanı
 
-Raporlar sayfasındaki Rapor asistanı bağlantısı yeni sekmede `/rapor-asistani` adresini açar. Rapor detayındaki bağlantı `?rapor=<eğitim kimliği>` ile doğrudan ilgili konuşmayı açar. Soldaki listede eğitmene ait tamamlanmış eğitimler bulunur; her eğitim tek ve kalıcı bir sohbeti temsil eder. Yeni sohbet oluşturma düğmesi yoktur. İsim, tarih ve saat raporları ayırt etmeye yardımcı olur. Mobilde liste açılır bir paneldir; Escape, dış alan veya rapor seçimiyle kapanır.
+Raporlar sayfasındaki Rapor ajanı bağlantısı yeni sekmede `/report-agent` adresini açar. Rapor detayındaki bağlantı `?report=<eğitim kimliği>` ile doğrudan ilgili konuşmayı açar. Soldaki listede eğitmene ait tamamlanmış eğitimler bulunur; her eğitim tek ve kalıcı bir sohbeti temsil eder. Yeni sohbet oluşturma düğmesi yoktur. İsim, tarih ve saat raporları ayırt etmeye yardımcı olur. Mobilde liste açılır bir paneldir; Escape, dış alan veya rapor seçimiyle kapanır.
 
 ## Veri ve model
 

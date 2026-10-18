@@ -153,7 +153,8 @@ export async function api<T = any>(
     cache: "no-store",
   });
   const result = await response.json();
-  if (!response.ok) throw new Error(result.error || "İşlem tamamlanamadı.");
+  if (!response.ok)
+    throw new Error(result.error || "The action could not be completed.");
   return result;
 }
 export function useResource<T>(url: string, interval = 0, enabled = true) {
@@ -250,7 +251,7 @@ export function Modal({
             <Dialog.Title>{title}</Dialog.Title>
             <Dialog.Close
               className="icon-button"
-              aria-label={t("Kapat")}
+              aria-label={t("Close")}
               disabled={closeDisabled}
             >
               <Icon name="close" />
@@ -276,7 +277,7 @@ export function ErrorNote({ message }: { message?: string }) {
     </div>
   ) : null;
 }
-export function Loading({ label = "Yükleniyor…" }: { label?: string }) {
+export function Loading({ label = "Loading…" }: { label?: string }) {
   const { t } = useLocale();
   return (
     <div className="loading" role="status">
@@ -297,7 +298,7 @@ export function ResourceFailure({
     <div className="resource-failure">
       <ErrorNote message={error} />
       <button className="button" onClick={() => void onRetry()}>
-        {t("Yeniden dene")}
+        {t("Try again")}
       </button>
     </div>
   );
@@ -308,10 +309,10 @@ export function Status({ status }: { status: string }) {
   return (
     <span className={`status ${status}`}>
       {status === "live"
-        ? t("Canlı")
+        ? t("Live")
         : status === "ended"
-          ? t("Tamamlandı")
-          : t("Hazırlanıyor")}
+          ? t("Completed")
+          : t("Draft")}
     </span>
   );
 }

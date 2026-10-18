@@ -9,17 +9,17 @@ test("prelaunch welcome and existing login preserve authenticated workspace acce
   const root = await fetch(base);
   assert.equal(root.status, 200);
   assert.match(await root.text(), /class="landing-page"/);
-  const preview = await fetch(`${base}/kesfet`);
+  const preview = await fetch(`${base}/explore`);
   assert.equal(preview.status, 200);
   assert.match(await preview.text(), /class="landing-page"/);
 
-  for (const path of ["/giris", "/giris?mod=kayit"]) {
+  for (const path of ["/login", "/login?mode=signup"]) {
     const welcome = await (await fetch(`${base}${path}`)).text();
     assert.match(welcome, /access-waitlist-form/);
     assert.match(welcome, /LİNBA ajanlarını deneyimle/);
     assert.doesNotMatch(welcome, /type="password"/i);
   }
-  const login = await (await fetch(`${base}/giris?mod=giris`)).text();
+  const login = await (await fetch(`${base}/login?mode=signin`)).text();
   assert.match(login, /autoComplete="current-password"/i);
   assert.doesNotMatch(login, /autoComplete="name"/i);
 
@@ -42,7 +42,7 @@ test("prelaunch welcome and existing login preserve authenticated workspace acce
     const workspace = await fetch(base, { headers: { Cookie: cookie } });
     assert.equal(workspace.status, 200);
     assert.doesNotMatch(await workspace.text(), /class="landing-page"/);
-    const existingAccount = await fetch(`${base}/giris?mod=kayit`, {
+    const existingAccount = await fetch(`${base}/login?mode=signup`, {
       headers: { Cookie: cookie },
       redirect: "manual",
     });

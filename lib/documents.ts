@@ -12,15 +12,15 @@ const exec = promisify(execFile);
 export async function processDocument(id: string, file: File) {
   const extension = path.extname(file.name).toLowerCase();
   if (![".pdf", ".pptx"].includes(extension))
-    throw new AppError("PDF veya PPTX sunum yükleyebilirsin.");
+    throw new AppError("Upload a PDF or PPTX presentation.");
   if (file.size < 10 || file.size > 30 * 1024 * 1024)
-    throw new AppError("Dosya en fazla 30 MB olabilir.");
+    throw new AppError("The file must be no larger than 30 MB.");
   const bytes = Buffer.from(await file.arrayBuffer());
   if (
     (extension === ".pdf" && bytes.subarray(0, 4).toString() !== "%PDF") ||
     (extension === ".pptx" && bytes.subarray(0, 2).toString() !== "PK")
   )
-    throw new AppError("Dosya içeriği seçilen biçimle uyuşmuyor.");
+    throw new AppError("The file content does not match its format.");
   const directory = path.join(DATA_DIR, "files", id);
   await mkdir(directory, { recursive: true });
   const input = path.join(directory, `presentation${extension}`);
@@ -48,7 +48,7 @@ export async function processDocument(id: string, file: File) {
   } catch {
     await rm(directory, { recursive: true, force: true });
     throw new AppError(
-      "Sunum işlenemedi. Dosyanın şifresiz olduğundan emin ol veya PDF olarak dışa aktararak yeniden dene.",
+      "The presentation could not be processed. Check that it is not password protected or export it as a PDF and try again.",
       422,
     );
   }

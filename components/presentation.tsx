@@ -6,6 +6,7 @@ import { QRCodeSVG } from "qrcode.react";
 import type { Course, CourseState } from "@/lib/types";
 import { api, Icon, Logo, ResourceFailure, useResource } from "./ui";
 import { SlideView } from "./slides";
+import { learningAccess } from "@/lib/training-access";
 
 export function Projection({ id }: { id: string }) {
   const { t } = useLocale();
@@ -52,7 +53,7 @@ export function Projection({ id }: { id: string }) {
     <main className="projection">
       <header>
         <span>
-          {t("Katıl:")} <strong>{host}/katil</strong> {t("· Kod")}{" "}
+          {t("Join:")} <strong>{host}/join</strong> {t("· Code")}{" "}
           <b>{data.code}</b>
         </span>
         <Logo />
@@ -60,10 +61,14 @@ export function Projection({ id }: { id: string }) {
       {data.status === "ended" ? (
         <div className="projection-end">
           <Icon name="success" size={58} />
-          <h1>{t("Katılımın için teşekkürler.")}</h1>
+          <h1>{t("Thank you for taking part.")}</h1>
           <p>
-            {t("Eğitimin tamamlandı. Doküman asistanına")} {data.accessDays}{" "}
-            {t("gün erişebilirsin.")}
+            {learningAccess(data).canAsk
+              ? t(
+                  "You can continue asking the learning agent for {days} more days.",
+                  { days: learningAccess(data).remainingDays },
+                )
+              : t("Learning agent access for this training has ended.")}
           </p>
         </div>
       ) : (
@@ -76,7 +81,7 @@ export function Projection({ id }: { id: string }) {
         </span>
         <button
           className="icon-button"
-          aria-label={t("Tam ekran")}
+          aria-label={t("Full screen")}
           onClick={() => document.documentElement.requestFullscreen()}
         >
           <Icon name="expand" />
@@ -90,6 +95,15 @@ export function Preview({ id }: { id: string }) {
 
   const { data, error, refresh } = useResource<CourseState>(`courses/${id}`),
     [index, setIndex] = useState(0);
+  useEffect(() => {
+    if (!data) return;
+    const page = Number(new URLSearchParams(location.search).get("slide"));
+    const found = data.course.slides.findIndex(
+      (slide) =>
+        data.course.pages.find((p) => p.id === slide.pageId)?.number === page,
+    );
+    if (page && found >= 0) setIndex(found);
+  }, [data?.course.id]);
   if (!data)
     return error ? (
       <ResourceFailure error={error} onRetry={refresh} />
@@ -103,24 +117,24 @@ export function Preview({ id }: { id: string }) {
       <header>
         <a
           className="icon-button"
-          href={`/egitim/${id}`}
-          aria-label={t("Eğitime dön")}
+          href={`/training/${id}`}
+          aria-label={t("Back to training")}
         >
           <Icon name="back" />
         </a>
         <span>
           “<strong>{c.name}</strong>
-          {t("” eğitiminin önizlemesi")}
+          {t("” training preview")}
         </span>
         <Logo />
       </header>
       <div className="preview-layout">
         <section>
-          <h2>{t("Yansıtılan ekran")}</h2>
+          <h2>{t("Presentation screen")}</h2>
           <div className="presentation-canvas">
             <div className="canvas-join">
               <span>
-                {t("Katılım kodu:")} <strong>{c.code}</strong>
+                {t("Join code:")} <strong>{c.code}</strong>
               </span>
               <Logo />
             </div>
@@ -130,7 +144,7 @@ export function Preview({ id }: { id: string }) {
             <button
               className="icon-button"
               disabled={index === 0}
-              aria-label={t("Önceki slayt")}
+              aria-label={t("Previous slide")}
               onClick={() => setIndex(index - 1)}
             >
               <Icon name="left" />
@@ -141,7 +155,7 @@ export function Preview({ id }: { id: string }) {
             <button
               className="icon-button"
               disabled={index === c.slides.length - 1}
-              aria-label={t("Sonraki slayt")}
+              aria-label={t("Next slide")}
               onClick={() => setIndex(index + 1)}
             >
               <Icon name="right" />
@@ -149,20 +163,20 @@ export function Preview({ id }: { id: string }) {
           </div>
         </section>
         <section>
-          <h2>{t("Katılımcı ekranı")}</h2>
+          <h2>{t("Participant screen")}</h2>
           <div className="phone-preview">
             <Logo />
             <div className="participant-tabs">
               <span className={slide.kind === "document" ? "active" : ""}>
-                {t("Sohbet")}
+                {t("Chat")}
               </span>
               <span className={slide.kind === "activity" ? "active" : ""}>
-                {t("Aktiviteler")}
+                {t("Activities")}
               </span>
             </div>
             {slide.activity ? (
               <div className="preview-activity">
-                <span className="activity-label">{t("AKTİF AKTİVİTE")}</span>
+                <span className="activity-label">{t("ACTIVE ACTIVITY")}</span>
                 <h3>{slide.activity.question}</h3>
                 {slide.activity.type === "poll" ? (
                   slide.activity.options.map((o, i) => (
@@ -172,28 +186,30 @@ export function Preview({ id }: { id: string }) {
                     </div>
                   ))
                 ) : (
-                  <div className="preview-textarea">{t("Yanıtını yaz…")}</div>
+                  <div className="preview-textarea">
+                    {t("Write your answer…")}
+                  </div>
                 )}
-                <div className="button primary full">
-                  {t("Yanıtımı gönder")}
-                </div>
+                <div className="button primary full">{t("Submit answer")}</div>
               </div>
             ) : (
               <div className="preview-chat">
                 <span className="assistant-avatar">
                   <Icon name="sparkle" />
                 </span>
-                <h3>{t("Sunumun içinden, soruna yanıt.")}</h3>
+                <h3>{t("Your learning agent")}</h3>
                 <p>
-                  {t("Bu eğitimin dokümanına ilişkin sorularını sorabilirsin.")}
+                  {t(
+                    "Your learning agent answers from the training materials and links to the source.",
+                  )}
                 </p>
                 <div className="preview-textarea">
-                  {t("Eğitimle ilgili sorunu yaz…")}
+                  {t("Ask a question about the training…")}
                 </div>
               </div>
             )}
             <span className="small muted center">
-              {t("Önizleme · Gerçek yanıt gönderilmez")}
+              {t("Preview · No real answers are sent")}
             </span>
           </div>
         </section>

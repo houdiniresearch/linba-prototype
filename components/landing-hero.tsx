@@ -9,22 +9,22 @@ import { LandingWaitlistButton } from "./landing-integrations";
 
 const moments = [
   {
-    headline: "Pratik yapmana",
-    label: "Pratik",
+    headline: "practice.",
+    label: "Practice",
     image: "hero-agents-rehearsal.webp",
-    alt: "Eğitmenin yapay zekâ katılımcı ajanlarıyla sesli pratiğini gösteren izometrik sahne",
+    alt: "An isometric scene of an instructor practicing out loud with AI participant agents",
   },
   {
-    headline: "Katılımı artırmana",
-    label: "Etkileşim",
+    headline: "engage participants.",
+    label: "Engagement",
     image: "hero-learning-space.webp",
-    alt: "Eğitmen ve katılımcılar arasında etkileşimi gösteren izometrik öğrenme alanı",
+    alt: "An isometric learning space showing interaction between an instructor and participants",
   },
   {
-    headline: "Ölçüp değerlendirmene",
-    label: "Değerlendirme",
+    headline: "assess learning.",
+    label: "Assessment",
     image: "hero-agents-assessment.webp",
-    alt: "Katılımcı yanıtlarından öğrenme ihtiyaçlarını inceleyen eğitmen ve raporun izometrik görünümü",
+    alt: "An isometric educator reviewing a report and learning needs from participant responses",
   },
 ] as const;
 
@@ -77,7 +77,7 @@ export function LandingHero() {
           <h1
             id="landing-title"
             aria-label={t(
-              "Pratik yapmana, katılımı artırmana ve öğrenmeyi değerlendirmene yardımcı olan yapay zekâ ajanları.",
+              "AI agents that help you practice, engage participants and assess learning.",
             )}
           >
             <span className="landing-hero-rotator" aria-hidden="true">
@@ -88,20 +88,20 @@ export function LandingHero() {
               ))}
             </span>
             <span className="landing-hero-suffix" aria-hidden="true">
-              {t("yardımcı olan yapay zekâ ajanları.")}
+              {t("AI agents that help you")}
             </span>
           </h1>
           <p className="landing-hero-description">
             {t(
-              "Eğitimine hazırlanırken, katılımcılarınla etkileşim kurarken ve öğrenme sonuçlarını değerlendirirken yapay zekâ ajanları yanında.",
+              "AI agents support you as you prepare your training, engage participants and assess learning outcomes.",
             )}
           </p>
           <div className="landing-hero-actions landing-cta-actions">
             <Link
-              href="/giris?mod=kayit"
+              href="/login?mode=signup"
               className="button primary landing-try-button"
             >
-              {t("Şimdi Dene, Ücretsiz!")}
+              {t("Try Now, For Free!")}
               <Icon name="arrow" size={19} />
             </Link>
             <LandingWaitlistButton className="button landing-waitlist-button" />
@@ -132,7 +132,7 @@ export function LandingHero() {
           <div
             className="landing-hero-steps"
             role="group"
-            aria-label={t("Yapay zekâ ajanlarını keşfet")}
+            aria-label={t("Explore the AI agents")}
           >
             {moments.map((moment, index) => (
               <button

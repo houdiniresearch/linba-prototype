@@ -4,7 +4,7 @@ import "@/components/access-entry.css";
 
 export default function Loading() {
   return (
-    <div className="access-page" aria-busy="true" aria-label="LİNBA yükleniyor">
+    <div className="access-page" aria-busy="true" aria-label="Loading LİNBA">
       <header className="access-header">
         <Logo />
       </header>

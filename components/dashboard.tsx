@@ -10,8 +10,10 @@ import {
   ReportTableSkeleton,
 } from "./skeletons";
 import { useLocale } from "./locale-provider";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { learningSignals } from "@/lib/learning-insights";
+import { learningAccess } from "@/lib/training-access";
 import { pollResults } from "@/lib/activities";
 import type { Course, CourseState, User } from "@/lib/types";
 import { Landing } from "./landing";
@@ -29,6 +31,29 @@ import {
   date,
 } from "./ui";
 
+function TrainingCover({ course }: { course: Course }) {
+  const { t } = useLocale();
+  const [failed, setFailed] = useState(false);
+  const coverPage = course.coverPage ?? course.pages[0]?.number;
+  return (
+    <div className="training-cover training-cover-preview">
+      {coverPage && !failed ? (
+        <img
+          src={`/api/courses/${course.id}/page/${coverPage}`}
+          alt=""
+          loading="lazy"
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <div className="training-cover-fallback">
+          <Icon name="file" size={36} />
+          <span>{t("Training materials")}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function CreateTraining({
   open,
   onClose,
@@ -45,7 +70,21 @@ export function CreateTraining({
     [days, setDays] = useState(7),
     [auto, setAuto] = useState(true),
     [busy, setBusy] = useState(false),
+    [dragging, setDragging] = useState(false),
     [error, setError] = useState("");
+  function selectFile(selected?: File) {
+    if (!selected) return;
+    if (
+      !/\.(pdf|pptx)$/i.test(selected.name) ||
+      selected.size > 30 * 1024 * 1024
+    ) {
+      setError(t("Choose a PDF or PPTX file up to 30 MB."));
+      return;
+    }
+    setError("");
+    setFile(selected);
+    setName(selected.name.replace(/\.[^.]+$/, ""));
+  }
   async function create(demo = false) {
     if (busy) return;
     setError("");
@@ -54,7 +93,7 @@ export function CreateTraining({
       let body: FormData | object;
       if (demo) body = { demo: true, accessDays: days, autoAnswer: auto };
       else {
-        if (!file) throw new Error(t("Sunum dosyanı seç."));
+        if (!file) throw new Error(t("Choose your presentation file."));
         const form = new FormData();
         form.set("file", file);
         form.set("name", name);
@@ -75,8 +114,8 @@ export function CreateTraining({
       open={open}
       onClose={() => !busy && onClose()}
       closeDisabled={busy}
-      title={t("Yeni eğitim oluştur")}
-      description={t("Sunumunu yükle ve katılımcı erişimini belirle.")}
+      title={t("Create new training")}
+      description={t("Upload your presentation and set participant access.")}
     >
       {busy && <OperationProgress kind="training" />}
       <form
@@ -86,68 +125,103 @@ export function CreateTraining({
           void create();
         }}
       >
-        <label className={`upload-zone ${file ? "has-file" : ""}`}>
+        <label
+          className={`upload-zone ${file ? "has-file" : ""} ${dragging ? "is-dragging" : ""}`}
+          onDragOver={(event) => {
+            event.preventDefault();
+            setDragging(true);
+          }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={(event) => {
+            event.preventDefault();
+            setDragging(false);
+            if (!busy) selectFile(event.dataTransfer.files[0]);
+          }}
+        >
           <Icon name={file ? "file" : "upload"} size={32} />
           <strong>
-            {file ? file.name : t("Sunumunu buraya bırak veya dosya seç")}
+            {file
+              ? file.name
+              : t("Drop your presentation here or choose a file")}
           </strong>
-          <span>{t("PDF veya PPTX · En fazla 30 MB · 80 slayt")}</span>
+          <span>
+            {file
+              ? `${file.name.split(".").pop()?.toUpperCase()} · ${(file.size / 1024 / 1024).toFixed(1)} MB`
+              : t("PDF or PPTX · Up to 30 MB · 80 slides")}
+          </span>
+          {file && (
+            <span className="file-replace">{t("Choose a different file")}</span>
+          )}
           <input
             type="file"
             accept=".pdf,.pptx"
-            aria-label={t("Sunum dosyası")}
+            aria-label={t("Presentation file")}
             disabled={busy}
             onChange={(e) => {
-              const f = e.target.files?.[0];
-              setFile(f);
-              if (f) setName(f.name.replace(/\.[^.]+$/, ""));
+              selectFile(e.target.files?.[0]);
+              e.target.value = "";
             }}
           />
         </label>
         <label>
-          {t("Eğitim adı")}
+          {t("Training name")}
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder={t("Dosya adı otomatik kullanılır")}
+            placeholder={t("The file name is used automatically")}
             maxLength={120}
           />
         </label>
-        <label>
-          {t("Eğitim sonrası asistan erişimi")}
-          <div className="input-unit">
-            <input
-              type="number"
-              value={days}
-              onChange={(e) => setDays(Number(e.target.value))}
-              min={0}
-              max={365}
-              required
-            />
-            <span>{t("gün")}</span>
+        <details className="training-access-settings">
+          <summary>
+            <span>
+              <Icon name="sparkle" size={18} />
+              {t("Learning agent settings")}
+            </span>
+            <span>
+              {days} {t("days")}
+            </span>
+          </summary>
+          <div>
+            <label>
+              {t("Learning agent access after training")}
+              <div className="input-unit">
+                <input
+                  type="number"
+                  value={days}
+                  onChange={(e) => setDays(Number(e.target.value))}
+                  min={0}
+                  max={365}
+                  required
+                />
+                <span>{t("days")}</span>
+              </div>
+              <small>
+                {t(
+                  "Access starts when training ends. Choose 0 days to close it with the session.",
+                )}
+              </small>
+            </label>
+            <label className="toggle-field">
+              <span>
+                <strong>
+                  {t("Automatic AI answers during live training")}
+                </strong>
+                <small>
+                  {t(
+                    "Questions are answered from your document. Unanswered questions are forwarded to you.",
+                  )}
+                </small>
+              </span>
+              <input
+                type="checkbox"
+                role="switch"
+                checked={auto}
+                onChange={(e) => setAuto(e.target.checked)}
+              />
+            </label>
           </div>
-          <small>
-            {t(
-              "Süre eğitim bittiğinde başlar. 0 gün seçersen eğitimle birlikte kapanır.",
-            )}
-          </small>
-        </label>
-        <label className="toggle-field">
-          <span>
-            <strong>{t("Canlı eğitimde otomatik AI yanıtı")}</strong>
-            <small>
-              {t(
-                "Katılımcının sorusu dokümanından yanıtlanır. Yanıtlanamayanlar sana iletilir.",
-              )}
-            </small>
-          </span>
-          <input
-            type="checkbox"
-            role="switch"
-            checked={auto}
-            onChange={(e) => setAuto(e.target.checked)}
-          />
-        </label>
+        </details>
         <ErrorNote message={error} />
         <div className="modal-actions">
           <button
@@ -156,11 +230,11 @@ export function CreateTraining({
             disabled={busy}
             onClick={() => create(true)}
           >
-            {t("Örnek sunum kullan")}
+            {t("Use sample presentation")}
           </button>
           <button className="button primary" disabled={busy}>
             <Icon name="plus" />
-            {t("Eğitimi oluştur")}
+            {t("Create training")}
           </button>
         </div>
       </form>
@@ -193,6 +267,7 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
       <ReportDetailSkeleton />
     );
   const { course: c, questions, participants, responses } = data;
+  const signals = learningSignals(questions);
   const groups = [
     ...new Map(questions.map((q) => [q.groupId, q.groupTitle])).entries(),
   ];
@@ -200,15 +275,15 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
     <div className="report-detail">
       <button className="text-button" onClick={onBack}>
         <Icon name="back" />
-        {t("Raporlara dön")}
+        {t("Back to reports")}
       </button>
       <div className="page-title">
         <div>
-          <span className="eyebrow">{t("EĞİTİM RAPORU")}</span>
+          <span className="eyebrow">{t("TRAINING REPORT")}</span>
           <h1>{c.name}</h1>
           <p className="muted">
-            {c.endedAt ? date(c.endedAt, locale) : t("Henüz tamamlanmadı")}{" "}
-            {t("· Eğitim sonrası kayıtlarla güncellenir.")}
+            {c.endedAt ? date(c.endedAt, locale) : t("Not completed yet")}{" "}
+            {t("· Updated with records after training.")}
           </p>
         </div>
         <div className="report-title-actions">
@@ -218,13 +293,13 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
       </div>
       <div className="metrics" id="report-overview">
         {[
-          [participants.length, t("Katılımcı")],
-          [questions.length, t("Soru")],
+          [participants.length, t("Participant")],
+          [questions.length, t("Question")],
           [
             questions.filter((q) => q.status === "answered").length,
-            t("AI yanıtı"),
+            t("AI answer"),
           ],
-          [responses.length, t("Aktivite yanıtı")],
+          [responses.length, t("Activity response")],
         ].map(([number, label]) => (
           <div key={label}>
             <strong>{number}</strong>
@@ -232,40 +307,118 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
           </div>
         ))}
       </div>
+      <section className="report-section learning-overview">
+        <div className="section-title">
+          <h2>{t("Learning signals")}</h2>
+          <span className="small muted">
+            {t("From this training’s recorded questions and responses")}
+          </span>
+        </div>
+        <div className="insight-columns">
+          <div>
+            <h3>{t("Topics prompting questions")}</h3>
+            {signals.topics.length ? (
+              <ul className="topic-signals">
+                {signals.topics.slice(0, 4).map((topic) => (
+                  <li key={topic.id}>
+                    <a
+                      href={`#report-topic-${topic.id}`}
+                      onClick={() => {
+                        const group = document.getElementById(
+                          `report-topic-${topic.id}`,
+                        );
+                        if (group instanceof HTMLDetailsElement)
+                          group.open = true;
+                      }}
+                    >
+                      {topic.title}
+                    </a>
+                    <span>
+                      {topic.count} {t("questions")}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="muted">
+                {t(
+                  "There are not enough sourced answers to identify topics yet.",
+                )}
+              </p>
+            )}
+          </div>
+          <div>
+            <h3>{t("Questions to review")}</h3>
+            <p>
+              {t("{count} questions still need instructor review.", {
+                count: signals.needsReview.length,
+              })}
+            </p>
+            <p className="small muted">
+              {t(
+                "A question without a sourced answer is not evidence of a learning gap.",
+              )}
+            </p>
+            <a className="text-button" href="#report-questions">
+              {t("Review the records")}
+              <Icon name="arrow" size={16} />
+            </a>
+          </div>
+        </div>
+      </section>
       <section className="report-section">
         <div className="section-title">
-          <h2>{t("Eğitim özeti")}</h2>
+          <h2>{t("Training summary")}</h2>
           <span className="small muted">
-            {c.report?.ai
-              ? t("AI tarafından hazırlandı")
-              : t("Kayıtlardan derlendi")}
+            {c.report?.ai ? t("Prepared by AI") : t("Compiled from records")}
             {c.report && ` · ${date(c.report.updatedAt, locale)}`}
           </span>
         </div>
         <p>
-          {c.report?.summary ||
-            t("Eğitim tamamlandığında özet burada hazırlanır.")}
+          {c.report?.ai
+            ? c.report.summary
+            : t(
+                "{questions} questions and {responses} activity responses were recorded. {review} questions need instructor review.",
+                {
+                  questions: questions.length,
+                  responses: responses.length,
+                  review: signals.needsReview.length,
+                },
+              )}
         </p>
         {c.report?.recommendations.length ? (
-          <ul className="recommendations">
-            {c.report.recommendations.map((s, i) => (
-              <li key={i}>{s}</li>
-            ))}
-          </ul>
+          <details className="recommendations-panel">
+            <summary>{t("AI suggestions for your next training")}</summary>
+            <p className="small muted">
+              {t(
+                "Review suggestions against the source records before acting on them.",
+              )}
+            </p>
+            <ul className="recommendations">
+              {c.report.recommendations.map((suggestion, index) => (
+                <li key={index}>{suggestion}</li>
+              ))}
+            </ul>
+          </details>
         ) : null}
       </section>
       <section className="report-section" id="report-questions">
         <h2>
-          {t("Sorular ve yanıtlar")}{" "}
+          {t("Questions and answers")}{" "}
           <span className="count">{questions.length}</span>
         </h2>
         {groups.length ? (
           groups.map(([id, title]) => (
-            <details key={id} className="question-group">
+            <details
+              key={id}
+              id={`report-topic-${id}`}
+              className="question-group"
+            >
               <summary>
                 {title}
                 <span>
-                  {questions.filter((q) => q.groupId === id).length} {t("soru")}
+                  {questions.filter((q) => q.groupId === id).length}{" "}
+                  {t("questions")}
                 </span>
               </summary>
               {questions
@@ -275,33 +428,44 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
                     <div className="small muted">
                       {q.userName} ·{" "}
                       {q.stage === "followup"
-                        ? t("Eğitim sonrası")
-                        : t("Canlı eğitim")}{" "}
+                        ? t("After training")
+                        : t("Live training")}{" "}
                       · {date(q.createdAt, locale)}
                     </div>
                     <strong>{q.text}</strong>
                     <p>
                       {q.answer ||
                         (q.status === "manual"
-                          ? t("Eğitmene iletildi.")
-                          : q.reason || t("Sorun eğitmene iletildi."))}
+                          ? t("Forwarded to the instructor.")
+                          : q.reason ||
+                            t(
+                              "Your question was forwarded to the instructor.",
+                            ))}
                     </p>
                     {q.sources.length > 0 && (
-                      <span className="source">
-                        {t("Kaynak: Slayt")} {q.sources.join(", ")}
-                      </span>
+                      <div className="report-source-links">
+                        {q.sources.map((number) => (
+                          <a
+                            key={number}
+                            className="source"
+                            href={`/training/${c.id}/preview?slide=${number}`}
+                          >
+                            {t("Source: Slide")} {number}
+                          </a>
+                        ))}
+                      </div>
                     )}
                   </div>
                 ))}
             </details>
           ))
         ) : (
-          <p className="muted">{t("Henüz soru yok.")}</p>
+          <p className="muted">{t("No questions yet.")}</p>
         )}
       </section>
       <section className="report-section" id="report-activities">
         <h2>
-          {t("Aktivite sonuçları")}{" "}
+          {t("Activity results")}{" "}
           <span className="count">{responses.length}</span>
         </h2>
         {c.slides
@@ -312,7 +476,7 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
               <div className="activity-result" key={s.id}>
                 <h3>{s.activity?.question}</h3>
                 <p className="small muted">
-                  {rs.length} {t("yanıt")}
+                  {rs.length} {t("responses")}
                 </p>
                 {s.activity?.type === "poll"
                   ? pollResults(s.activity.options, rs).map(
@@ -342,7 +506,7 @@ export function Report({ id, onBack }: { id: string; onBack: () => void }) {
             );
           })}
         {!c.slides.some((s) => s.kind === "activity") && (
-          <p className="muted">{t("Bu eğitimde aktivite bulunmuyor.")}</p>
+          <p className="muted">{t("This training has no activities.")}</p>
         )}
       </section>
     </div>
@@ -366,6 +530,18 @@ export function Dashboard() {
     [create, setCreate] = useState(false),
     [report, setReport] = useState(""),
     [mobile, setMobile] = useState(false);
+  const mobileMenuTrigger = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!mobile) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobile(false);
+        mobileMenuTrigger.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobile]);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("view")) setView(params.get("view")!);
@@ -396,15 +572,15 @@ export function Dashboard() {
             }}
           >
             <Icon name="logout" />
-            {t("Çıkış")}
+            {t("Log out")}
           </button>
         </header>
         <div>
           <h1>
-            {t("Merhaba,")} {user.name.split(" ")[0]}.
+            {t("Hello,")} {user.name.split(" ")[0]}.
           </h1>
           <p className="muted">
-            {t("Eğitmeninin paylaştığı kodla eğitime katıl.")}
+            {t("Join with the code shared by your instructor.")}
           </p>
           <JoinForm />
           {!courses.data ? (
@@ -421,7 +597,7 @@ export function Dashboard() {
               <button
                 className="joined-course"
                 key={c.id}
-                onClick={() => router.push(`/katil?egitim=${c.id}`)}
+                onClick={() => router.push(`/join?training=${c.id}`)}
               >
                 <Icon name="presentation" />
                 <span>
@@ -457,8 +633,11 @@ export function Dashboard() {
     <div className="app-shell">
       <header className="app-header">
         <button
+          ref={mobileMenuTrigger}
           className="icon-button mobile-menu"
-          aria-label={t("Menüyü aç")}
+          aria-label={t("Open menu")}
+          aria-expanded={mobile}
+          aria-controls="workspace-navigation"
           onClick={() => setMobile(!mobile)}
         >
           <Icon name="menu" />
@@ -467,15 +646,15 @@ export function Dashboard() {
         <label className="header-search">
           <Icon name="search" />
           <input
-            aria-label={t("Eğitimlerde ara")}
-            placeholder={t("Eğitimlerinde ara…")}
+            aria-label={t("Search training")}
+            placeholder={t("Search your training…")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
           {search && (
             <button
               className="icon-button"
-              aria-label={t("Aramayı temizle")}
+              aria-label={t("Clear search")}
               onClick={() => setSearch("")}
             >
               <Icon name="close" size={16} />
@@ -493,16 +672,20 @@ export function Dashboard() {
           }}
         />
       </header>
-      <aside className={`sidebar ${mobile ? "open" : ""}`}>
+      <aside
+        id="workspace-navigation"
+        className={`sidebar ${mobile ? "open" : ""}`}
+      >
         <nav>
           {[
-            ["home", "home", t("Ana sayfa")],
-            ["courses", "folder", t("Eğitimlerim")],
-            ["reports", "chart", t("Raporlar")],
+            ["home", "home", t("Home")],
+            ["courses", "folder", t("My training")],
+            ["reports", "chart", t("Reports")],
           ].map(([v, icon, label]) => (
             <button
               key={v}
               className={view === v ? "active" : ""}
+              aria-current={view === v ? "page" : undefined}
               onClick={() => change(v)}
             >
               <Icon name={icon as "home"} />
@@ -511,21 +694,12 @@ export function Dashboard() {
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <div className="sidebar-note">
-            <Icon name="presentation" />
-            <strong>
-              {t("Bir sunum.")}
-              <br />
-              {t("Birlikte öğrenmenin yeni yolu.")}
-            </strong>
-            <p>{t("Eğitimden önce, eğitim sırasında ve sonrasında.")}</p>
-          </div>
           <button
             className={view === "settings" ? "active" : ""}
             onClick={() => change("settings")}
           >
             <Icon name="settings" />
-            {t("Ayarlar")}
+            {t("Settings")}
           </button>
           <button
             onClick={async () => {
@@ -534,7 +708,7 @@ export function Dashboard() {
             }}
           >
             <Icon name="logout" />
-            {t("Çıkış yap")}
+            {t("Log out")}
           </button>
         </div>
       </aside>
@@ -543,33 +717,38 @@ export function Dashboard() {
           <>
             <div className="page-title">
               <div>
-                <h1>{t("Ayarlar")}</h1>
-                <p className="muted">{t("Hesabın ve model bağlantısı.")}</p>
+                <h1>{t("Settings")}</h1>
+                <p className="muted">
+                  {t("Your profile, preferences and agent availability.")}
+                </p>
               </div>
             </div>
             <section className="settings-section">
-              <h2>{t("Hesap")}</h2>
+              <h2>{t("Account")}</h2>
               <dl>
-                <dt>{t("Ad soyad")}</dt>
+                <dt>{t("Full name")}</dt>
                 <dd>{user.name}</dd>
-                <dt>{t("Hesap tipi")}</dt>
-                <dd>{t("Eğitmen")}</dd>
-                <dt>{t("E-posta")}</dt>
-                <dd>{user.email || t("Deneme hesabı")}</dd>
+                <dt>{t("Account type")}</dt>
+                <dd>{t("Instructor")}</dd>
+                <dt>{t("Email")}</dt>
+                <dd>{user.email || t("Experience account")}</dd>
               </dl>
-              <h2>{t("Yapay zekâ bağlantısı")}</h2>
+              <h2>{t("Agent availability")}</h2>
               <p className={auth.data.aiReady ? "success-text" : "muted"}>
                 <Icon name={auth.data.aiReady ? "success" : "warning"} />
                 {auth.data.aiReady
-                  ? t("Model bağlantısı ayarlandı")
-                  : t("API anahtarı henüz eklenmedi")}
+                  ? t("Your AI agents are available")
+                  : t("Your AI agents are not available yet")}
               </p>
               <p className="muted">
                 {t(
-                  "Doküman sohbeti, aktiviteler ve sesli prova aynı modeli kullanır.",
+                  "Your learning, practice and report agents use your training context.",
                 )}
               </p>
-              <code>{auth.data.model}</code>
+              <details className="technical-details">
+                <summary>{t("Technical details")}</summary>
+                <code>{auth.data.model}</code>
+              </details>
             </section>
           </>
         ) : view === "reports" ? (
@@ -579,10 +758,10 @@ export function Dashboard() {
             <>
               <div className="page-title">
                 <div>
-                  <h1>{t("Raporlar")}</h1>
+                  <h1>{t("Reports")}</h1>
                   <p className="muted">
                     {t(
-                      "Tamamlanan eğitimlerinin soruları ve aktivite sonuçları.",
+                      "Questions and activity results from your completed training.",
                     )}
                   </p>
                 </div>
@@ -602,9 +781,9 @@ export function Dashboard() {
                   <table>
                     <thead>
                       <tr>
-                        <th>{t("Eğitim")}</th>
-                        <th>{t("Tamamlanma")}</th>
-                        <th>{t("Asistan erişimi")}</th>
+                        <th>{t("Training")}</th>
+                        <th>{t("Completed")}</th>
+                        <th>{t("Learning agent access")}</th>
                         <th />
                       </tr>
                     </thead>
@@ -621,7 +800,11 @@ export function Dashboard() {
                           </td>
                           <td>{c.endedAt && date(c.endedAt, locale)}</td>
                           <td>
-                            {c.accessDays} {t("gün")}
+                            {learningAccess(c).canAsk
+                              ? t("{days} days remaining", {
+                                  days: learningAccess(c).remainingDays,
+                                })
+                              : t("Access ended")}
                           </td>
                           <td>
                             <Icon name="arrow" />
@@ -634,9 +817,9 @@ export function Dashboard() {
               ) : (
                 <Empty
                   icon="chart"
-                  title={t("İlk raporun eğitimin bitince burada")}
+                  title={t("Your first report will appear after training ends")}
                   description={t(
-                    "Sorular, AI yanıtları ve aktiviteler otomatik olarak bir araya gelir.",
+                    "Questions, AI answers and activities are brought together automatically.",
                   )}
                 />
               )}
@@ -649,16 +832,18 @@ export function Dashboard() {
                 <h1>
                   {view === "home" ? (
                     <>
-                      {t("Merhaba,")} <span>{user.name.split(" ")[0]}.</span>
+                      {t("Hello,")} <span>{user.name.split(" ")[0]}.</span>
                     </>
                   ) : (
-                    t("Eğitimlerim")
+                    t("My training")
                   )}
                 </h1>
                 <p className="muted">
                   {view === "home"
-                    ? t("Bir sonraki eğitimine buradan başla.")
-                    : t("Sunumlarını hazırla, prova yap ve eğitimini başlat.")}
+                    ? t("Start your next training here.")
+                    : t(
+                        "Prepare your presentations, practice and start your training.",
+                      )}
                 </p>
               </div>
             </div>
@@ -668,11 +853,8 @@ export function Dashboard() {
                 onClick={() => setCreate(true)}
               >
                 <Icon name="plus" />
-                {t("Yeni eğitim")}
+                {t("New training")}
               </button>
-              <span className="small muted">
-                {t("PDF veya PPTX sunumundan oluştur.")}
-              </span>
             </div>
             {courses.data && courses.error && (
               <ErrorNote message={courses.error} />
@@ -681,17 +863,17 @@ export function Dashboard() {
               <div className="section-title">
                 <h2>
                   {search
-                    ? t("Arama sonuçları")
+                    ? t("Search results")
                     : view === "home"
-                      ? t("Son eğitimlerin")
-                      : t("Tüm eğitimler")}
+                      ? t("Recent training")
+                      : t("All training")}
                 </h2>
                 {view === "home" && (
                   <button
                     className="text-button"
                     onClick={() => change("courses")}
                   >
-                    {t("Tümünü gör")}
+                    {t("View all")}
                     <Icon name="right" />
                   </button>
                 )}
@@ -711,24 +893,32 @@ export function Dashboard() {
                     <button
                       className="training-card"
                       key={c.id}
-                      onClick={() => router.push(`/egitim/${c.id}`)}
+                      onClick={() =>
+                        c.status === "ended"
+                          ? openReport(c.id)
+                          : router.push(
+                              `/training/${c.id}${c.status === "live" ? "/live" : ""}`,
+                            )
+                      }
                     >
-                      <div className="training-cover">
-                        <div className="cover-decoration">
-                          <i />
-                          <i />
-                          <i />
-                        </div>
-                        <Logo />
-                        <strong>{c.name}</strong>
-                        <Icon name="presentation" size={25} />
-                      </div>
+                      <TrainingCover course={c} />
                       <div className="training-card-content">
                         <Status status={c.status} />
                         <h3>{c.name}</h3>
                         <div className="card-meta">
                           <span>{date(c.createdAt, locale)}</span>
-                          <Icon name="arrow" size={18} />
+                        </div>
+                        <div className="training-card-next">
+                          <span>
+                            {t(
+                              c.status === "ended"
+                                ? "View learning report"
+                                : c.status === "live"
+                                  ? "Return to live training"
+                                  : "Continue preparing",
+                            )}
+                          </span>
+                          <Icon name="arrow" size={17} />
                         </div>
                       </div>
                     </button>
@@ -738,42 +928,46 @@ export function Dashboard() {
                 <Empty
                   title={
                     search
-                      ? t("Eşleşen eğitim bulunamadı")
-                      : t("İlk eğitimini oluşturalım")
+                      ? t("No matching training found")
+                      : t("Create your first training")
                   }
                   description={
                     search
-                      ? t("Başka bir adla aramayı deneyebilirsin.")
+                      ? t("Try searching for another name.")
                       : t(
-                          "Sunumunu yükle. Aktiviteler ve sesli prova eğitim çalışma alanında seni bekliyor.",
+                          "Upload your presentation. Activities and voice practice await in your training workspace.",
                         )
                   }
                 >
                   {!search && (
                     <button className="button" onClick={() => setCreate(true)}>
                       <Icon name="plus" />
-                      {t("Eğitim oluştur")}
+                      {t("Create training")}
                     </button>
                   )}
                 </Empty>
               )}
             </section>
-            {view === "home" && (
+            {view === "home" && courses.data?.courses.length === 0 && (
               <section className="home-guide">
                 <div>
                   <span className="guide-number">01</span>
-                  <h3>{t("Sunumunu yükle")}</h3>
-                  <p>{t("Dokümanın, eğitiminin kaynağı olsun.")}</p>
+                  <h3>{t("Upload your presentation")}</h3>
+                  <p>{t("Make your document the source of your training.")}</p>
                 </div>
                 <div>
                   <span className="guide-number">02</span>
-                  <h3>{t("Akışını hazırla")}</h3>
-                  <p>{t("Aktivitelerini yerleştir, kitlenle prova yap.")}</p>
+                  <h3>{t("Prepare your flow")}</h3>
+                  <p>{t("Add activities and practice with your audience.")}</p>
                 </div>
                 <div>
                   <span className="guide-number">03</span>
-                  <h3>{t("Birlikte öğren")}</h3>
-                  <p>{t("Eğitimi başlat, soruları ve yanıtları takip et.")}</p>
+                  <h3>{t("Learn together")}</h3>
+                  <p>
+                    {t(
+                      "Start your training and follow the questions and answers.",
+                    )}
+                  </p>
                 </div>
               </section>
             )}
@@ -783,7 +977,7 @@ export function Dashboard() {
       <CreateTraining
         open={create}
         onClose={() => setCreate(false)}
-        onCreated={(c) => router.push(`/egitim/${c.id}`)}
+        onCreated={(c) => router.push(`/training/${c.id}`)}
       />
     </div>
   );
@@ -812,7 +1006,7 @@ export function JoinForm({
           const result = await api("join", { code });
           onJoin
             ? onJoin(result.id)
-            : router.push(`/katil?egitim=${result.id}`);
+            : router.push(`/join?training=${result.id}`);
         } catch (e) {
           setError((e as Error).message);
         } finally {
@@ -821,21 +1015,21 @@ export function JoinForm({
       }}
     >
       <label>
-        {t("Eğitim kodu")}
+        {t("Training code")}
         <input
           value={code}
           onChange={(e) =>
             setCode(e.target.value.replace(/\D/g, "").slice(0, 6))
           }
           inputMode="numeric"
-          placeholder={t("6 haneli kod")}
+          placeholder={t("6-digit code")}
           minLength={6}
           maxLength={6}
           required
         />
       </label>
       <button className="button primary" disabled={busy}>
-        {t("Eğitime katıl")}
+        {t("Join training")}
         <Icon name="arrow" />
       </button>
       <ErrorNote message={error} />

@@ -110,9 +110,12 @@ test("report conversations isolate owners and reports, count real records and re
             .sort(),
           ["first", "second"],
         );
-        assert.throws(() => reportChat(stranger, "first"), /Eğitim bulunamadı/);
-        assert.throws(() => reportChat(participant, "first"), /hesap tipi/);
-        assert.throws(() => reportChat(owner, "draft"), /tamamlandığında/);
+        assert.throws(
+          () => reportChat(stranger, "first"),
+          /Training not found/,
+        );
+        assert.throws(() => reportChat(participant, "first"), /account type/);
+        assert.throws(() => reportChat(owner, "draft"), /when training ends/);
         await assert.rejects(
           sendReportMessage(
             stranger,
@@ -174,7 +177,7 @@ test("report conversations isolate owners and reports, count real records and re
             { ...message("request-first-0001"), message: "Different" },
             generate,
           ),
-          /başka bir mesaj/,
+          /different message/,
         );
       },
     );
@@ -189,7 +192,7 @@ test("report conversations isolate owners and reports, count real records and re
             message("request-stale-001"),
             generate,
           ),
-          /başka bir sekmede/,
+          /another tab/,
         );
         let release!: () => void;
         const waiting = new Promise<void>((ok) => {
@@ -215,7 +218,7 @@ test("report conversations isolate owners and reports, count real records and re
             message("request-other-0001", previous),
             generate,
           ),
-          /yanıt hazırlanıyor/,
+          /answer is being prepared/,
         );
         await sendReportMessage(
           owner,
@@ -241,7 +244,7 @@ test("report conversations isolate owners and reports, count real records and re
           sendReportMessage(owner, "first", body, async () => {
             throw new Error("test failure");
           }),
-          /yanıtı alınamadı/,
+          /could not respond/,
         );
         assert.equal(reportChat(owner, "first").turns.length, history.length);
         assert.equal(reportChat(owner, "first").pending, null);

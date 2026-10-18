@@ -77,31 +77,31 @@ export function HeaderActions({
         <button
           className="language-trigger"
           popoverTarget={languageId}
-          aria-label={`${t("Dil")}: ${locale === "tr" ? "Türkçe" : "English"}`}
+          aria-label={`${t("Language")}: ${locale === "tr" ? "Türkçe" : "English"}`}
         >
           <Icon name="globe" size={20} />
           <span>{locale.toUpperCase()}</span>
           <Icon name="downCaret" size={12} />
         </button>
         <button
-          className="button upgrade upgrade-trigger"
+          className="button early-access-trigger"
           onClick={upgrade}
-          aria-label={t("Planı yükselt")}
+          aria-label={t("Early access")}
         >
           <Icon name="star" size={18} />
-          <span>{t("Planı yükselt")}</span>
+          <span>{t("Early access")}</span>
         </button>
         <button
           className="header-round"
           popoverTarget={notificationsId}
-          aria-label={t("Bildirimler")}
+          aria-label={t("Notifications")}
         >
           <Icon name="bell" size={21} />
         </button>
         <button
           className="profile-trigger"
           popoverTarget={profileId}
-          aria-label={t("Profil menüsü")}
+          aria-label={t("Profile menu")}
         >
           <span className="avatar">{initials}</span>
         </button>
@@ -111,9 +111,9 @@ export function HeaderActions({
         popover="auto"
         id={languageId}
         className="header-popover language-popover"
-        aria-label={t("Dil")}
+        aria-label={t("Language")}
       >
-        <h2>{t("Dil")}</h2>
+        <h2>{t("Language")}</h2>
         {(
           [
             ["tr", "Türkçe"],
@@ -139,9 +139,9 @@ export function HeaderActions({
         popover="auto"
         id={notificationsId}
         className="header-popover notifications-popover"
-        aria-label={t("Bildirimler")}
+        aria-label={t("Notifications")}
       >
-        <h2>{t("Bildirimler")}</h2>
+        <h2>{t("Notifications")}</h2>
         {reports.length ? (
           reports.map((c) => (
             <button
@@ -156,7 +156,7 @@ export function HeaderActions({
                 <Icon name="chart" />
               </span>
               <span>
-                <strong>{t("Raporun hazır")}</strong>
+                <strong>{t("Your report is ready")}</strong>
                 <span>{c.name}</span>
                 <small>{date(c.endedAt!, locale)}</small>
               </span>
@@ -166,8 +166,8 @@ export function HeaderActions({
         ) : (
           <div className="notification-empty">
             <Icon name="bell" size={28} />
-            <strong>{t("Henüz bildirim yok")}</strong>
-            <p>{t("Eğitimlerinle ilgili gelişmeler burada görünür.")}</p>
+            <strong>{t("No notifications yet")}</strong>
+            <p>{t("Updates about your training will appear here.")}</p>
           </div>
         )}
       </div>
@@ -176,19 +176,19 @@ export function HeaderActions({
         popover="auto"
         id={profileId}
         className="header-popover profile-popover"
-        aria-label={t("Profil menüsü")}
+        aria-label={t("Profile menu")}
       >
         <div className="profile-identity">
           <div>
             <strong>{user.name}</strong>
-            <span className="plan-badge">{t("Ücretsiz")}</span>
+            <span className="plan-badge">{t("Free")}</span>
           </div>
-          <p>{user.email || t("Deneme hesabı")}</p>
+          <p>{user.email || t("Demo account")}</p>
         </div>
         <div className="profile-upgrade">
-          <p>{t("LİNBA’nın yeni planlarını ilk deneyenlerden ol.")}</p>
+          <p>{t("Be among the first to try LİNBA’s new plans.")}</p>
           <button className="button upgrade" onClick={upgrade}>
-            {t("Planı yükselt")}
+            {t("Upgrade")}
             <Icon name="arrow" size={17} />
           </button>
         </div>
@@ -200,11 +200,11 @@ export function HeaderActions({
           }}
         >
           <Icon name="settings" />
-          {t("Hesap ayarları")}
+          {t("Account settings")}
         </button>
         <button className="popover-item" onClick={upgrade}>
           <Icon name="star" />
-          {t("Plan ve yükseltme")}
+          {t("Plan and upgrade")}
         </button>
         <hr />
         <ErrorNote message={accountError} />
@@ -221,7 +221,7 @@ export function HeaderActions({
           }}
         >
           <Icon name="logout" />
-          {t("Çıkış yap")}
+          {t("Log out")}
         </button>
       </div>
       <Modal
@@ -245,20 +245,20 @@ export function HeaderActions({
             <span>
               {t(
                 registered
-                  ? "Bekleme listesindesin"
+                  ? "You’re on the waitlist"
                   : editing
-                    ? "İletişimde kalalım."
-                    : "Yeni planlarda yerini al.",
+                    ? "Let’s stay in touch."
+                    : "Be part of what’s next.",
               )}
             </span>
           </span>
         }
         description={t(
           registered
-            ? "LİNBA’nın yeni planları hazır olduğunda seni haberdar edeceğiz."
+            ? "We’ll let you know when LİNBA’s new plans are ready."
             : editing
-              ? "Haberleri almak istediğin e-posta adresini güncelle."
-              : "LİNBA’nın bir sonraki adımına birlikte geçelim. Yeni planlarımız duyurulduğunda sana haber verelim.",
+              ? "Update the email address where you’d like to hear from us."
+              : "Take the next step with LİNBA. Leave your email to hear when our new plans are announced.",
         )}
       >
         {registered ? (
@@ -266,7 +266,7 @@ export function HeaderActions({
             <div className="waitlist-email-record">
               <Icon name="send" size={21} />
               <div>
-                <span>{t("Kayıtlı e-posta adresin")}</span>
+                <span>{t("Your registered email")}</span>
                 <strong>{waitlist.data!.entry!.email}</strong>
               </div>
             </div>
@@ -279,10 +279,10 @@ export function HeaderActions({
                   setEditing(true);
                 }}
               >
-                {t("E-postayı değiştir")}
+                {t("Change email")}
               </button>
               <button className="button mint" onClick={() => setOpen(false)}>
-                {t("Tamam")}
+                {t("Done")}
                 <Icon name="check" size={18} />
               </button>
             </div>
@@ -290,7 +290,7 @@ export function HeaderActions({
         ) : (
           <form className="waitlist-form" onSubmit={submit}>
             <label>
-              {t("E-posta adresin")}
+              {t("Your email address")}
               <input
                 type="email"
                 name="email"
@@ -300,23 +300,19 @@ export function HeaderActions({
                 disabled={busy}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder={t("sen@ornek.com")}
+                placeholder={t("you@example.com")}
               />
             </label>
             <ErrorNote message={error || waitlist.error} />
             <button className="button primary full" disabled={busy}>
               {busy && <Icon name="spinner" className="spin" size={18} />}
               {busy
-                ? t("Kaydediliyor…")
-                : t(
-                    editing
-                      ? "Değişiklikleri kaydet"
-                      : "Bekleme listesine katıl",
-                  )}
+                ? t("Saving…")
+                : t(editing ? "Save changes" : "Join the waitlist")}
               {!busy && <Icon name="arrow" size={19} />}
             </button>
             <p className="waitlist-footnote">
-              {t("E-posta adresini daha sonra değiştirebilirsin.")}
+              {t("You can change your email address later.")}
             </p>
           </form>
         )}

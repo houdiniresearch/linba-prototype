@@ -27,7 +27,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Eğitmen: [localhost:3000](http://localhost:3000). Katılımcı: [localhost:3000/katil](http://localhost:3000/katil). Farklı hesapları aynı anda denemek için farklı tarayıcı veya telefon kullan.
+Eğitmen: [localhost:3000](http://localhost:3000). Katılımcı: [localhost:3000/join](http://localhost:3000/join). Farklı hesapları aynı anda denemek için farklı tarayıcı veya telefon kullan.
 
 Telefondan katılım için aynı Wi-Fi ağında ol; canlı eğitimde **Katılım** düğmesi yerel ağ adresini ve QR kodunu gösterir. Sesli provayı bilgisayarda `localhost` üzerinden aç: tarayıcı mikrofonu güvenli bağlam gerektirir.
 

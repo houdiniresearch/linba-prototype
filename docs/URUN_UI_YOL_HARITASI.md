@@ -1,6 +1,6 @@
 # LİNBA — Ürün arayüzü iş listesi
 
-İnceleme tarihi: 18 Ekim 2026. Amaç: landing page’de ulaşılan görsel özeni ürünün mevcut akışlarına taşımak. Bu belge bir uygulama planıdır; listelenen değişiklikler henüz yapılmadı.
+İnceleme tarihi: 18 Ekim 2026. Amaç: landing page’de ulaşılan görsel özeni ürünün mevcut akışlarına taşımak. Bu belge ilk inceleme ve uygulama planının kaydıdır. Ortak ürün arayüzü, ekran düzenleri, ajan dili ve İngilizce URL geçişi 18 Ekim 2026’da uygulandı. Güncel kapsam ve doğrulama notları: [PRODUCT_UI_IMPLEMENTATION.md](PRODUCT_UI_IMPLEMENTATION.md). Aşağıdaki kutular ilk incelemenin kabul kontrolünü korur; gerçek telefon klavyesi ve yeni sesli oturum kontrolü ayrıca yapılmalıdır.
 
 ## Sonuç
 
@@ -159,7 +159,7 @@ P1: kullanıcıya yanlış durum gösterebilen veya ana görevi zorlaştıran i�
 
 **Tamamlanma ölçütü:** Taslak eğitim canlı gibi görünmüyor; eğitmen o anda neyin yayında olduğunu ve hangi soruya müdahale etmesi gerektiğini anlayabiliyor.
 
-**Dosyalar:** `app/egitim/[id]/canli/page.tsx`, `components/editor.tsx:477`, `components/editor.tsx:521`, `components/editor.tsx` içindeki `QuestionPanel`.
+**Dosyalar:** `app/training/[id]/live/page.tsx`, `components/editor.tsx:477`, `components/editor.tsx:521`, `components/editor.tsx` içindeki `QuestionPanel`.
 
 ### UI-08 — Katılımcı sohbeti ve eğitim sonrası erişim [P1]
 

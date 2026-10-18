@@ -29,12 +29,12 @@ export function ReportAssistantLink({ id }: { id?: string }) {
   return (
     <a
       className="button ai-button"
-      href={`/rapor-asistani${id ? `?rapor=${encodeURIComponent(id)}` : ""}`}
+      href={`/report-agent${id ? `?report=${encodeURIComponent(id)}` : ""}`}
       target="_blank"
       rel="noreferrer"
     >
       <Icon name="sparkle" size={18} />
-      {t("Rapor asistanı")}
+      {t("Report agent")}
       <Icon name="external" size={16} />
     </a>
   );
@@ -56,11 +56,11 @@ export function ReportAssistant() {
         <Logo />
         <Empty
           icon="chart"
-          title={t("Rapor asistanı eğitmen hesabında kullanılabilir.")}
+          title={t("The report agent is available to instructor accounts.")}
           description=""
         />
         <a className="button" href="/">
-          {t("Çalışma alanına dön")}
+          {t("Back to workspace")}
         </a>
       </main>
     );
@@ -74,7 +74,7 @@ function ReportWorkspace({ user }: { user: User }) {
   const reports = useResource<{ reports: ReportItem[] }>("report-assistant");
   const [search, setSearch] = useState(""),
     [mobile, setMobile] = useState(false);
-  const requested = params.get("rapor");
+  const requested = params.get("report");
   const selected = requested
     ? reports.data?.reports.find((r) => r.id === requested)
     : reports.data?.reports[0];
@@ -118,7 +118,7 @@ function ReportWorkspace({ user }: { user: User }) {
       {mobile && (
         <button
           className="report-sidebar-overlay"
-          aria-label={t("Rapor listesini kapat")}
+          aria-label={t("Close report list")}
           onClick={() => {
             setMobile(false);
             menuButton.current?.focus();
@@ -128,10 +128,10 @@ function ReportWorkspace({ user }: { user: User }) {
       <aside
         ref={sidebar}
         className="report-chat-sidebar"
-        aria-label={t("Raporların")}
+        aria-label={t("Your reports")}
       >
         <div className="report-sidebar-brand">
-          <a href="/?view=reports" aria-label={t("Raporlara dön")}>
+          <a href="/?view=reports" aria-label={t("Back to reports")}>
             <Logo />
           </a>
           <button
@@ -140,26 +140,26 @@ function ReportWorkspace({ user }: { user: User }) {
               setMobile(false);
               menuButton.current?.focus();
             }}
-            aria-label={t("Rapor listesini kapat")}
+            aria-label={t("Close report list")}
           >
             <Icon name="close" />
           </button>
         </div>
         <a className="text-button report-workspace-back" href="/?view=reports">
           <Icon name="back" size={17} />
-          {t("Raporlara dön")}
+          {t("Back to reports")}
         </a>
-        <h2>{t("Raporların")}</h2>
+        <h2>{t("Your reports")}</h2>
         <label className="report-search">
           <Icon name="search" size={18} />
           <input
-            aria-label={t("Raporlarda ara")}
-            placeholder={t("Raporlarda ara…")}
+            aria-label={t("Search reports")}
+            placeholder={t("Search reports…")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </label>
-        <nav className="report-chat-list" aria-label={t("Rapor seç")}>
+        <nav className="report-chat-list" aria-label={t("Choose a report")}>
           {reports.error && (
             <>
               <ErrorNote message={reports.error} />
@@ -167,7 +167,7 @@ function ReportWorkspace({ user }: { user: User }) {
                 className="text-button"
                 onClick={() => void reports.refresh()}
               >
-                {t("Yeniden dene")}
+                {t("Try again")}
               </button>
             </>
           )}
@@ -183,7 +183,7 @@ function ReportWorkspace({ user }: { user: User }) {
                 aria-current={r.id === selected?.id ? "page" : undefined}
                 onClick={() => {
                   router.push(
-                    `/rapor-asistani?rapor=${encodeURIComponent(r.id)}`,
+                    `/report-agent?report=${encodeURIComponent(r.id)}`,
                   );
                   setMobile(false);
                 }}
@@ -203,8 +203,8 @@ function ReportWorkspace({ user }: { user: User }) {
             <p className="small muted report-list-empty">
               {t(
                 search
-                  ? "Aramana uygun rapor bulunamadı."
-                  : "Tamamlanan eğitimlerin burada listelenir.",
+                  ? "No reports match your search."
+                  : "Your completed training sessions appear here.",
               )}
             </p>
           )}
@@ -219,19 +219,19 @@ function ReportWorkspace({ user }: { user: User }) {
           <button
             ref={menuButton}
             className="icon-button report-list-trigger"
-            aria-label={t("Rapor listesini aç")}
+            aria-label={t("Open report list")}
             aria-expanded={mobile}
             onClick={() => setMobile(true)}
           >
             <Icon name="menu" />
           </button>
           <div>
-            <span className="small muted">{t("Rapor asistanı")}</span>
+            <span className="small muted">{t("Report agent")}</span>
             <h1>
               {!reports.data ? (
                 <Skeleton className="sk-subtitle" />
               ) : (
-                selected?.name || t("Raporlarını birlikte inceleyelim")
+                selected?.name || t("Let’s explore your reports")
               )}
             </h1>
           </div>
@@ -240,12 +240,12 @@ function ReportWorkspace({ user }: { user: User }) {
               <a
                 className="button"
                 href={`/?view=reports&report=${selected.id}`}
-                aria-label={t("Raporu aç")}
+                aria-label={t("Open report")}
                 target="_blank"
                 rel="noreferrer"
               >
                 <Icon name="chart" size={17} />
-                <span>{t("Raporu aç")}</span>
+                <span>{t("Open report")}</span>
               </a>
             )}
             <ThemeMenu />
@@ -264,18 +264,16 @@ function ReportWorkspace({ user }: { user: User }) {
             <Empty
               icon="chart"
               title={t(
-                requested
-                  ? "Rapor bulunamadı"
-                  : "Henüz tamamlanmış eğitimin yok",
+                requested ? "Report not found" : "No completed training yet",
               )}
               description={t(
                 requested
-                  ? "Soldaki listeden başka bir rapor seçebilirsin."
-                  : "Eğitimini tamamladığında raporunu burada konuşabiliriz.",
+                  ? "Choose another report from the list."
+                  : "Once training is complete, we can discuss its report here.",
               )}
             />
             <a className="button" href="/?view=courses">
-              {t("Eğitimlerime dön")}
+              {t("Back to my training")}
             </a>
           </div>
         )}
@@ -285,10 +283,10 @@ function ReportWorkspace({ user }: { user: User }) {
 }
 
 const suggestions = [
-  "Bu eğitimde neler öne çıktı?",
-  "En çok hangi konularda soru soruldu?",
-  "Aktivite yanıtlarını özetle.",
-  "Bir sonraki eğitim için ne önerirsin?",
+  "What stood out in this training?",
+  "Where did students need the most support?",
+  "Summarize the activity responses.",
+  "What can we improve in the next training?",
 ];
 function ReportConversation({ report }: { report: ReportItem }) {
   const { t, locale } = useLocale();
@@ -370,7 +368,7 @@ function ReportConversation({ report }: { report: ReportItem }) {
         <div
           className="report-transcript"
           role="log"
-          aria-label={t("Rapor sohbeti")}
+          aria-label={t("Report conversation")}
           aria-live="polite"
           aria-relevant="additions"
         >
@@ -378,18 +376,18 @@ function ReportConversation({ report }: { report: ReportItem }) {
             {turns.map((turn) => (
               <div className="report-turn" key={turn.id}>
                 <div className="report-user-message">
-                  <span className="sr-only">{t("Sen")}: </span>
+                  <span className="sr-only">{t("You")}: </span>
                   {turn.question}
                 </div>
                 <div className="report-assistant-message">
                   <Icon name="sparkle" size={23} />
                   <div>
-                    <span className="sr-only">{t("Rapor asistanı")}: </span>
+                    <span className="sr-only">{t("Report agent")}: </span>
                     <p>{turn.answer}</p>
                     {turn.sources.length > 0 && (
                       <div
                         className="report-chat-sources"
-                        aria-label={t("Kaynaklar")}
+                        aria-label={t("Sources")}
                       >
                         {turn.sources.map((source) => (
                           <a
@@ -417,7 +415,7 @@ function ReportConversation({ report }: { report: ReportItem }) {
                   role="status"
                 >
                   <Icon name="sparkle" size={23} />
-                  <span>{t("Raporun inceleniyor…")}</span>
+                  <span>{t("Reviewing your report…")}</span>
                   <ThinkingDots />
                 </div>
               </div>
@@ -428,10 +426,10 @@ function ReportConversation({ report }: { report: ReportItem }) {
       ) : (
         <div className="report-chat-welcome">
           <Icon name="sparkle" size={34} />
-          <h2>{t("Bu raporu birlikte inceleyelim.")}</h2>
+          <h2>{t("Let’s explore this report together.")}</h2>
           <p>
             {t(
-              "Soruların, katılımın ve aktivite yanıtlarının ardındaki detayları konuşabiliriz.",
+              "Explore the questions, participation and activity responses in this training.",
             )}
           </p>
         </div>
@@ -455,7 +453,7 @@ function ReportConversation({ report }: { report: ReportItem }) {
         <ErrorNote message={error || chat.error} />
         {!chat.data.aiReady && (
           <p className="small muted">
-            {t("Rapor asistanını kullanmak için model bağlantısını ayarla.")}
+            {t("Configure the model connection to use the report agent.")}
           </p>
         )}
         <form
@@ -470,8 +468,8 @@ function ReportConversation({ report }: { report: ReportItem }) {
             maxLength={3000}
             value={draft}
             disabled={busy || !chat.data.aiReady}
-            aria-label={t("Rapor hakkında sorunu yaz")}
-            placeholder={t("Bu rapor hakkında bir şey sor…")}
+            aria-label={t("Write a question about this report")}
+            placeholder={t("Ask something about this report…")}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
               if (
@@ -487,7 +485,7 @@ function ReportConversation({ report }: { report: ReportItem }) {
           <button
             className="button primary report-send"
             disabled={!draft.trim() || busy || !chat.data.aiReady}
-            aria-label={t("Gönder")}
+            aria-label={t("Send")}
             type="submit"
           >
             <Icon
@@ -498,7 +496,7 @@ function ReportConversation({ report }: { report: ReportItem }) {
           </button>
         </form>
         <p className="report-composer-note">
-          {t("Yanıtlar yalnızca seçili raporun kayıtlarına dayanır.")}
+          {t("Answers use only the selected report’s records.")}
         </p>
       </div>
     </div>

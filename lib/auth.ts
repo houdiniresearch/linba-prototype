@@ -64,9 +64,9 @@ export async function currentUser(): Promise<User | undefined> {
 }
 export async function requireUser(role?: User["role"]) {
   const user = await currentUser();
-  if (!user) throw new AppError("Devam etmek için hesabına giriş yap.", 401);
+  if (!user) throw new AppError("Sign in to continue.", 401);
   if (role && user.role !== role)
-    throw new AppError("Bu alan bu hesap tipi için açık değil.", 403);
+    throw new AppError("This area is unavailable for this account type.", 403);
   return user;
 }
 export async function logout() {
@@ -78,7 +78,7 @@ export function checkOrigin(request: Request) {
   const origin = request.headers.get("origin");
   const host = request.headers.get("host") || new URL(request.url).host;
   if (origin && new URL(origin).host !== host)
-    throw new AppError("İstek doğrulanamadı.", 403);
+    throw new AppError("The request could not be verified.", 403);
 }
 export function apiError(error: unknown) {
   return Response.json(
@@ -86,7 +86,7 @@ export function apiError(error: unknown) {
       error:
         error instanceof AppError
           ? error.message
-          : "İşlem tamamlanamadı. Lütfen yeniden dene.",
+          : "The action could not be completed. Please try again.",
     },
     { status: error instanceof AppError ? error.status : 500 },
   );

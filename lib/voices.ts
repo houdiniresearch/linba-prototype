@@ -17,9 +17,9 @@ export const VOICES = [
 export type VoiceId = (typeof VOICES)[number]["id"];
 // Product listening categories, not gender labels supplied by the provider.
 export const VOICE_STYLE_LABELS: Record<VoiceStyle, string> = {
-  female: "Kadın tınılı",
-  male: "Erkek tınılı",
-  neutral: "Nötr",
+  female: "Feminine",
+  male: "Masculine",
+  neutral: "Neutral",
 };
 export function voiceStyle(value: unknown): VoiceStyle {
   return value === "female" || value === "male" ? value : "neutral";

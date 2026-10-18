@@ -12,8 +12,8 @@ export function slideTitle(
 ) {
   return slide.kind === "document"
     ? course.pages.find((p) => p.id === slide.pageId)?.title ||
-        translate("Sunum slaytı", locale)
-    : slide.activity?.question || translate("Aktivite", locale);
+        translate("Presentation slide", locale)
+    : slide.activity?.question || translate("Activity", locale);
 }
 export function SlideView({
   course,
@@ -45,11 +45,11 @@ export function SlideView({
       <div className="activity-slide-label">
         <Icon name={slide.activity?.type === "poll" ? "chart" : "chat"} />
         {slide.activity?.type === "poll"
-          ? t("Anket")
+          ? t("Poll")
           : slide.activity?.type === "scenario"
-            ? t("Senaryo")
-            : t("Açık uçlu soru")}
-        {slide.activity?.aiGenerated && <span>{t("· AI ile hazırlandı")}</span>}
+            ? t("Scenario")
+            : t("Open question")}
+        {slide.activity?.aiGenerated && <span>{t("· Generated with AI")}</span>}
       </div>
       <h2>{slide.activity?.question}</h2>
       {slide.activity?.type === "poll" ? (
@@ -62,9 +62,9 @@ export function SlideView({
           ))}
         </div>
       ) : (
-        <p>{t("Yanıtını telefonundaki Aktiviteler alanından paylaş.")}</p>
+        <p>{t("Share your answer in the Activities tab on your phone.")}</p>
       )}
-      <span className="slide-footer">{t("linba · Birlikte öğrenelim")}</span>
+      <span className="slide-footer">{t("linba · Let’s learn together")}</span>
     </div>
   );
 }
@@ -113,7 +113,7 @@ function DocumentSlide({
           aria-hidden={small || undefined}
         >
           <Icon name="warning" />
-          {!small && <span>{t("Slayt görseli yüklenemedi.")}</span>}
+          {!small && <span>{t("The slide image could not be loaded.")}</span>}
         </div>
       )}
     </div>

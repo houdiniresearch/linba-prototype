@@ -8,47 +8,48 @@ import "./landing-audience.css";
 const audiences = [
   {
     id: "corporate",
-    label: "Kurumsal eğitmen",
-    title: "Yeni bir ekibe, hazırlıklı bir başlangıç.",
-    text: "Ürün eğitimini yeni başlayanlara anlatmadan önce kitleni tarif et. Katılımcılarını temsil eden yapay zekâ ajanlarıyla sesli pratik yap; anlatımın, tempon ve sorulara verdiğin yanıtlar hakkında geri bildirim al.",
-    benefit: "Eğitimine hazırlıklı git.",
-    filename: "Ürün eğitimi.pdf",
-    scenes: ["Kitleyi tanı", "Sesli pratik", "Geri bildirim"],
+    label: "Corporate trainer",
+    title: "A confident start for a new team.",
+    text: "Describe your audience before delivering product training to new starters. Practice out loud with AI agents representing your participants, and get feedback on your delivery, pace and responses to questions.",
+    benefit: "Go into your training prepared.",
+    filename: "Product training.pdf",
+    scenes: ["Your audience", "Voice practice", "Feedback"],
     summary:
-      "Örnek pratik: eğitmen kitlesini tarif eder ve katılımcıları temsil eden yapay zekâ ajanlarıyla sesli pratik yapar. Pratik sonrasında anlatımının netliği, temposu ve sorulara verdiği yanıtlarla ilgili performans geri bildirimi alır.",
+      "Example practice: an instructor describes their audience and practices out loud with AI agents representing the participants. Afterwards, they receive performance feedback on clarity, pace and how they handled questions.",
   },
   {
     id: "academic",
-    label: "Öğretim görevlisi",
-    title: "Yanıtları topla. Düşünme biçimlerini gör.",
-    text: "Açık uçlu bir soruyla öğrencilerinden yazılı yanıtlar al. Yapay zekâ ajanı ortak fikirleri ve kavram yanılgılarını özetlesin; sen nerede yeniden açıklama gerektiğini gör.",
-    benefit: "Tek tek yanıtların ötesinde, sınıfın nasıl düşündüğünü anla.",
-    filename: "Araştırma yöntemleri.pdf",
-    scenes: ["Yanıtlar", "AI analizi", "Confusion spike"],
+    label: "University instructor",
+    title: "Collect responses. Understand the thinking behind them.",
+    text: "Invite written responses to an open question. An AI agent summarises shared ideas and misconceptions so you can see what needs another explanation.",
+    benefit:
+      "Understand how your class is thinking, beyond individual answers.",
+    filename: "Research methods.pdf",
+    scenes: ["Responses", "AI analysis", "Confusion spike"],
     summary:
-      "Örnek yapay zekâ etkinliği: öğrenciler korelasyon ve nedensellik sorusuna yazılı yanıt verir; yapay zekâ ortak kavram yanılgısını özetler. Önerilen confusion spike özelliği, benzer soruların bir slaytta yoğunlaştığını eğitmene gösterir.",
+      "Example AI activity: students write responses about correlation and causation, and AI summarises a shared misconception. The proposed confusion spike feature highlights similar questions concentrated on one slide for the instructor.",
   },
   {
     id: "independent",
-    label: "Bağımsız eğitimci",
-    title: "Atölyen bitsin. Öğrenme devam etsin.",
-    text: "Atölyenden sonra da katılımcılarına bir öğrenme ajanı sun. Belirlediğin süre boyunca sorularını sorsunlar, eğitim kaynaklarına geri dönebilsinler.",
-    benefit: "Bilgiyi ihtiyaç duydukları anda erişilebilir tut.",
-    filename: "Hücre biyolojisi.pdf",
-    scenes: ["Sorunu sor", "Yanıtı keşfet", "Kaynağa dön"],
+    label: "Independent educator",
+    title: "The workshop ends. Learning keeps going.",
+    text: "Give participants a learning agent after your workshop. Let them ask questions and revisit training materials for the period you choose.",
+    benefit: "Keep knowledge available when they need it.",
+    filename: "Cell biology.pdf",
+    scenes: ["Ask a question", "Explore the answer", "View the source"],
     summary:
-      "Örnek eğitim sonrası sohbet: katılımcı, hocanın gösterdiği bitki ve hayvan hücrelerini nasıl ayırt edeceğini sorar. Asistan sunumdaki farkları açıklar ve ilgili slaydı gösterir. Katılımcı, eğitmenin belirlediği 7 günlük asistan erişimi boyunca soru sormayı sürdürebilir.",
+      "Example post-training conversation: a participant asks how to tell apart the plant and animal cells shown by the instructor. The assistant explains the differences in the presentation and points to the relevant slide. The participant can keep asking questions during the 7-day assistant access period set by the instructor.",
   },
   {
     id: "institution",
-    label: "Eğitim kurumları",
-    title: "Öğrenci davranışlarını anlayın. Eğitimlerinizi geliştirin.",
-    text: "Öğrencilerimiz en çok hangi konularda zorlanıyor? Sonraki eğitimlerde neleri iyileştirebiliriz? Rapor ajanınızla katılımı, etkinlik yanıtlarını ve öğrenci davranışlarını birlikte değerlendirin.",
-    benefit: "Her eğitimden, bir sonraki eğitim için yol haritası çıkarın.",
-    filename: "Araştırma yöntemleri · Eğitim raporu",
-    scenes: ["Eğitim raporu", "Öğrenme ihtiyaçları", "Sonraki eğitim"],
+    label: "Educational institutions",
+    title: "Understand student behaviour. Improve your training.",
+    text: "Which topics do our students struggle with most? What can we improve in future training? Explore participation, activity responses and student behaviour with your report agent.",
+    benefit: "Build a roadmap for your next training from each session.",
+    filename: "Research methods · Training report",
+    scenes: ["Training report", "Learning needs", "Next training"],
     summary:
-      "Örnek kurum raporu: 15 Ekim 2026 tarihli Araştırma yöntemleri eğitimi için katılım, etkinlik yanıtları ve öğrenci davranışları ele alınır. Kurum, öğrencilerinin en çok hangi konularda zorlandığını ve sonraki eğitimlerde neleri iyileştirebileceğini rapor asistanına sorar.",
+      "Example institutional report: participation, activity responses and student behaviour from the Research methods training on 15 October 2026. The institution asks its report agent which topics students struggle with most and what to improve in future training.",
   },
 ] as const;
 
@@ -69,18 +70,18 @@ function AudienceDemo({
         >
           <div className="audience-report-heading">
             <div className="audience-report-topline">
-              <span>{t("Eğitim raporu")}</span>
+              <span>{t("Training report")}</span>
               <span className="audience-report-status">
                 <i />
-                {t("Tamamlandı")}
+                {t("Completed")}
               </span>
             </div>
-            <h4>{t("Araştırma yöntemleri")}</h4>
-            <p>{t("15 Ekim 2026 · Tamamlanan eğitim")}</p>
+            <h4>{t("Research methods")}</h4>
+            <p>{t("15 October 2026 · Completed training")}</p>
           </div>
           <div className="audience-report-visuals">
             <div className="audience-report-participation">
-              <h5>{t("Öğrenci katılımı")}</h5>
+              <h5>{t("Student participation")}</h5>
               <svg
                 viewBox="0 0 320 100"
                 preserveAspectRatio="none"
@@ -108,18 +109,22 @@ function AudienceDemo({
                 />
               </svg>
               <div className="audience-report-axis">
-                <span>{t("Başlangıç")}</span>
-                <span>{t("Etkinlik")}</span>
-                <span>{t("Bitiş")}</span>
+                <span>{t("Start")}</span>
+                <span>{t("Activity")}</span>
+                <span>{t("End")}</span>
               </div>
             </div>
             <div className="audience-report-responses">
-              <h5>{t("Etkinlik yanıtları")}</h5>
+              <h5>{t("Activity responses")}</h5>
               <div className="audience-report-response-bars">
                 {[
-                  { label: "Net açıklama", width: "48%", tone: "clear" },
-                  { label: "Kısmi açıklama", width: "34%", tone: "partial" },
-                  { label: "Tekrar gerekli", width: "18%", tone: "review" },
+                  { label: "Clear explanation", width: "48%", tone: "clear" },
+                  {
+                    label: "Partial explanation",
+                    width: "34%",
+                    tone: "partial",
+                  },
+                  { label: "Needs review", width: "18%", tone: "review" },
                 ].map((item) => (
                   <div key={item.tone} data-tone={item.tone}>
                     <span>{t(item.label)}</span>
@@ -134,10 +139,12 @@ function AudienceDemo({
           <div className="audience-report-focus">
             <span className="audience-report-focus-marker" />
             <div>
-              <span>{t("Yeniden ele alınmalı")}</span>
-              <strong>{t("Korelasyon ve nedensellik")}</strong>
+              <span>{t("Revisit this topic")}</span>
+              <strong>{t("Correlation and causation")}</strong>
               <p>
-                {t("Benzer sorular ve eksik yanıtlar bu konuda yoğunlaşıyor.")}
+                {t(
+                  "Similar questions and incomplete answers cluster around this topic.",
+                )}
               </p>
             </div>
           </div>
@@ -147,21 +154,21 @@ function AudienceDemo({
           data-active={scene === 1}
         >
           <div className="audience-chat-question">
-            {t("Öğrencilerimiz en çok hangi konularda zorlanıyor?")}
+            {t("Which topics do our students struggle with most?")}
           </div>
           <div className="audience-chat-answer">
             <span className="audience-message-label">
               <Icon name="sparkle" size={16} />
-              {t("Rapor asistanı")}
+              {t("Report agent")}
             </span>
             <p>
               {t(
-                "Etkinlik yanıtları, korelasyon ile nedensellik ayrımında güçlük yaşandığına işaret ediyor.",
+                "Activity responses suggest difficulty distinguishing correlation from causation.",
               )}
             </p>
             <div className="audience-source">
               <Icon name="chart" size={17} />
-              {t("Dayanak: etkinlik yanıtları ve eğitim raporu")}
+              {t("Based on activity responses and the training report")}
             </div>
           </div>
         </div>
@@ -170,21 +177,21 @@ function AudienceDemo({
           data-active={scene === 2}
         >
           <div className="audience-chat-question">
-            {t("Sonraki eğitimlerde neleri iyileştirebiliriz?")}
+            {t("What can we improve in future training?")}
           </div>
           <div className="audience-chat-answer">
             <span className="audience-message-label">
               <Icon name="sparkle" size={16} />
-              {t("Rapor asistanı")}
+              {t("Report agent")}
             </span>
             <p>
               {t(
-                "Korelasyon ve nedensellik bölümüne karşı örnekler ekleyin. Kısa etkinliklerle öğrencilerin kavramı nasıl uyguladığını izleyin.",
+                "Add counterexamples to the correlation and causation section. Use short activities to see how students apply the concept.",
               )}
             </p>
             <div className="audience-report-next">
               <Icon name="presentation" size={19} />
-              <span>{t("Karşı örnekler → Uygulama → Geri bildirim")}</span>
+              <span>{t("Counterexamples → Practice → Feedback")}</span>
             </div>
           </div>
         </div>
@@ -196,37 +203,37 @@ function AudienceDemo({
         <div className="audience-demo-scene" data-active={scene === 0}>
           <span className="audience-message-label">
             <Icon name="users" size={16} />
-            {t("Kitle tanımın")}
+            {t("Your audience brief")}
           </span>
           <blockquote className="audience-audience-brief">
             {t(
-              "Ürünü ilk kez anlatacak, müşteri deneyimi az olan yeni satış ekibi.",
+              "A new sales team presenting the product for the first time, with limited customer experience.",
             )}
           </blockquote>
           <span className="audience-message-label">
             <Icon name="sparkle" size={16} />
-            {t("Yapay zekâ katılımcı ajanları")}
+            {t("AI participant agents")}
           </span>
           <div className="audience-persona-list">
             <div>
               <span>EA</span>
               <p>
                 <strong>Ece</strong>
-                <small>{t("Yeni başlayan")}</small>
+                <small>{t("New starter")}</small>
               </p>
             </div>
             <div>
               <span>MK</span>
               <p>
                 <strong>Mert</strong>
-                <small>{t("Müşteri temsilcisi")}</small>
+                <small>{t("Customer representative")}</small>
               </p>
             </div>
             <div>
               <span>SY</span>
               <p>
                 <strong>Selin</strong>
-                <small>{t("Meraklı katılımcı")}</small>
+                <small>{t("Curious participant")}</small>
               </p>
             </div>
           </div>
@@ -236,8 +243,8 @@ function AudienceDemo({
           data-active={scene === 1}
         >
           <div className="audience-mini-slide">
-            <span>{t("Müşteriyi tanımakla başla.")}</span>
-            <p>{t("İhtiyacı anla. Doğru soruyu sor.")}</p>
+            <span>{t("Start by understanding your customer.")}</span>
+            <p>{t("Understand the need. Ask the right question.")}</p>
             <div className="audience-slide-rule" />
             <span className="audience-slide-caption">01 / 08</span>
           </div>
@@ -261,28 +268,36 @@ function AudienceDemo({
           </div>
           <div className="audience-demo-message audience-agent-question">
             <span className="audience-message-label">
-              {t("Ece · Yapay zekâ ajanı")}
+              {t("Ece · AI agent")}
             </span>
-            <p>{t("Müşteri doğrudan fiyatı sorarsa nasıl ilerlemeliyim?")}</p>
+            <p>
+              {t(
+                "How should I respond if the customer asks about price straight away?",
+              )}
+            </p>
           </div>
         </div>
         <div className="audience-demo-scene" data-active={scene === 2}>
           <span className="audience-message-label">
             <Icon name="sparkle" size={16} />
-            {t("Pratik performansın")}
+            {t("Your practice performance")}
           </span>
           <h4 className="audience-scene-title">
-            {t("Anlatımına dışarıdan bak.")}
+            {t("See your delivery from another perspective.")}
           </h4>
           <div className="audience-performance-point">
             <Icon name="check" size={18} />
-            <p>{t("Ana fikri net aktardın ve soruyu doğrudan yanıtladın.")}</p>
+            <p>
+              {t(
+                "You explained the main idea clearly and answered the question directly.",
+              )}
+            </p>
           </div>
           <div className="audience-performance-point">
             <Icon name="mic" size={18} />
             <p>
               {t(
-                "Örnek verirken hızlandın. Kritik noktadan sonra kısa bir duraklama bırak.",
+                "You sped up during the example. Leave a short pause after the key point.",
               )}
             </p>
           </div>
@@ -300,23 +315,23 @@ function AudienceDemo({
           <div className="audience-activity-question">
             <span className="audience-message-label">
               <Icon name="activity" size={16} />
-              {t("Yapay zekâ etkinliği")}
+              {t("AI activity")}
             </span>
-            <strong>{t("Korelasyon, nedensellik anlamına gelir mi?")}</strong>
+            <strong>{t("Does correlation imply causation?")}</strong>
           </div>
           <div className="audience-written-responses">
             <span className="audience-message-label">
-              {t("Örnek yazılı yanıtlar")}
+              {t("Example written responses")}
             </span>
             <div>
               <span className="audience-response-avatar">EA</span>
               <p>
-                {t("İki değer birlikte artıyorsa biri diğerinin nedenidir.")}
+                {t("If two values increase together, one causes the other.")}
               </p>
             </div>
             <div>
               <span className="audience-response-avatar">MK</span>
-              <p>{t("Üçüncü bir etken ikisini de etkiliyor olabilir.")}</p>
+              <p>{t("A third factor could be affecting both of them.")}</p>
             </div>
           </div>
         </div>
@@ -337,18 +352,18 @@ function AudienceDemo({
             </span>
             <span className="audience-analysis-connector" />
             <div className="audience-analysis-groups">
-              <span>{t("Ortak fikirler")}</span>
-              <span>{t("Kavram yanılgıları")}</span>
+              <span>{t("Shared ideas")}</span>
+              <span>{t("Misconceptions")}</span>
             </div>
           </div>
           <div className="audience-response-analysis">
             <span className="audience-message-label">
               <Icon name="sparkle" size={16} />
-              {t("Yapay zekâ analizi")}
+              {t("AI analysis")}
             </span>
             <p>
               {t(
-                "Bazı yanıtlar, birlikte değişimi doğrudan neden-sonuç ilişkisi olarak yorumluyor.",
+                "Some responses interpret correlation as a direct cause-and-effect relationship.",
               )}
             </p>
           </div>
@@ -361,9 +376,7 @@ function AudienceDemo({
           <div className="audience-confusion-heading">
             <strong>Confusion spike</strong>
           </div>
-          <p className="audience-confusion-subtitle">
-            {t("Kafa karışıklığı sinyali")}
-          </p>
+          <p className="audience-confusion-subtitle">{t("Confusion signal")}</p>
           <div className="audience-confusion-detail">
             <svg viewBox="0 0 400 106" aria-hidden="true">
               <path
@@ -400,11 +413,15 @@ function AudienceDemo({
               />
               <circle cx="288" cy="16" r="4" fill="currentColor" />
             </svg>
-            <p>{t("Slayt 08 · Benzer sorular bu kavramda yoğunlaşıyor.")}</p>
+            <p>
+              {t(
+                "Slide 08 · Similar questions are clustering around this concept.",
+              )}
+            </p>
           </div>
           <span className="audience-confusion-suggestion">
             <Icon name="chat" size={17} />
-            {t("Bir karşı örnekle yeniden açıklamayı düşün.")}
+            {t("Consider revisiting it with a counterexample.")}
           </span>
         </div>
       </div>
@@ -414,17 +431,19 @@ function AudienceDemo({
       <div className="audience-demo-scene" data-active={scene === 0}>
         <span className="audience-message-label">
           <Icon name="clock" size={16} />
-          {t("Eğitimden sonra")}
+          {t("After training")}
         </span>
-        <h4 className="audience-scene-title">{t("Eğitimden sonra da sor.")}</h4>
+        <h4 className="audience-scene-title">
+          {t("Keep asking after training.")}
+        </h4>
         <p className="audience-scene-description">
-          {t("Atölyede geçen bir konuyu yeniden keşfet.")}
+          {t("Revisit a topic from the workshop.")}
         </p>
         <div className="audience-followup-question">
           <span className="audience-response-avatar">MK</span>
           <div className="audience-chat-question">
             {t(
-              "Hocanın gösterdiği bitki ve hayvan hücrelerini nasıl ayırt ederiz?",
+              "How do we tell apart the plant and animal cells the instructor showed us?",
             )}
           </div>
         </div>
@@ -433,16 +452,16 @@ function AudienceDemo({
         <div className="audience-chat-answer">
           <span className="audience-message-label">
             <Icon name="sparkle" size={16} />
-            {t("Eğitim sonrası asistanı")}
+            {t("Post-training assistant")}
           </span>
           <p>
             {t(
-              "Bitki hücresinde hücre duvarı ve büyük merkezi koful bulunur; fotosentez yapan hücrelerinde kloroplast da vardır. Hayvan hücresinde hücre duvarı ve kloroplast yoktur. Her ikisinde de hücre zarı vardır.",
+              "Plant cells have a cell wall and a large central vacuole; photosynthetic cells also have chloroplasts. Animal cells have no cell wall or chloroplasts. Both have a cell membrane.",
             )}
           </p>
           <div className="audience-source">
             <Icon name="file" size={17} />
-            {t("Slayt 06 · Bitki ve hayvan hücresi")}
+            {t("Slide 06 · Plant and animal cells")}
             <Icon name="arrow" size={14} />
           </div>
         </div>
@@ -450,11 +469,11 @@ function AudienceDemo({
       <div className="audience-demo-scene" data-active={scene === 2}>
         <span className="audience-message-label">
           <Icon name="file" size={16} />
-          {t("Kaynağa geri dön.")}
+          {t("Return to the source.")}
         </span>
         <div className="audience-biology-slide">
           <div className="audience-biology-slide-heading">
-            <strong>{t("Bitki mi, hayvan mı?")}</strong>
+            <strong>{t("Plant or animal?")}</strong>
             <span>06 / 12</span>
           </div>
           <div className="audience-cell-comparison">
@@ -501,8 +520,8 @@ function AudienceDemo({
                 <ellipse cx="76" cy="48" rx="6" ry="3" fill="currentColor" />
                 <ellipse cx="31" cy="51" rx="6" ry="3" fill="currentColor" />
               </svg>
-              <strong>{t("Bitki hücresi")}</strong>
-              <span>{t("Hücre duvarı var")}</span>
+              <strong>{t("Plant cell")}</strong>
+              <span>{t("Cell wall present")}</span>
             </div>
             <div>
               <svg
@@ -548,8 +567,8 @@ function AudienceDemo({
                   opacity=".3"
                 />
               </svg>
-              <strong>{t("Hayvan hücresi")}</strong>
-              <span>{t("Hücre duvarı yok")}</span>
+              <strong>{t("Animal cell")}</strong>
+              <span>{t("No cell wall")}</span>
             </div>
           </div>
         </div>
@@ -558,11 +577,11 @@ function AudienceDemo({
             <Icon name="clock" size={22} />
           </span>
           <div>
-            <strong>
-              {t("7 gün boyunca soru sormaya devam edebilirsin.")}
-            </strong>
+            <strong>{t("You can keep asking questions for 7 days.")}</strong>
             <p>
-              {t("Bu eğitim için asistan erişim süresini eğitmenin belirledi.")}
+              {t(
+                "Your instructor set the assistant access period for this training.",
+              )}
             </p>
           </div>
         </div>
@@ -630,8 +649,8 @@ function AudiencePanel({
   return (
     <article
       className="audience-panel"
-      id={`senaryo-${audience.id}`}
-      aria-labelledby={`senaryo-${audience.id}-title`}
+      id={`scenario-${audience.id}`}
+      aria-labelledby={`scenario-${audience.id}-title`}
       data-active={active}
       aria-hidden={enhanced && !active ? true : undefined}
       inert={enhanced && !active}
@@ -639,7 +658,7 @@ function AudiencePanel({
     >
       <div className="audience-copy">
         <p className="audience-profile-label">{t(audience.label)}</p>
-        <h3 id={`senaryo-${audience.id}-title`}>{t(audience.title)}</h3>
+        <h3 id={`scenario-${audience.id}-title`}>{t(audience.title)}</h3>
         <p>{t(audience.text)}</p>
         <div className="audience-benefit">
           <Icon name="check" size={19} />
@@ -651,7 +670,7 @@ function AudiencePanel({
           <div
             className="audience-scene-controls"
             role="group"
-            aria-label={t("Örnek sahneleri")}
+            aria-label={t("Example scenes")}
           >
             {audience.scenes.map((label, index) => (
               <button
@@ -682,11 +701,9 @@ function AudiencePanel({
             <button
               type="button"
               onClick={onPause}
-              aria-label={t(
-                paused ? "Animasyonu oynat" : "Animasyonu duraklat",
-              )}
+              aria-label={t(paused ? "Play animation" : "Pause animation")}
               aria-pressed={paused}
-              title={t(paused ? "Animasyonu oynat" : "Animasyonu duraklat")}
+              title={t(paused ? "Play animation" : "Pause animation")}
             >
               <Icon name={paused ? "play" : "pause"} size={17} />
             </button>
@@ -814,25 +831,25 @@ export function LandingAudience() {
   return (
     <section
       className="landing-audience landing-container"
-      id="kimler-icin"
+      id="use-cases"
       aria-labelledby={`${id}-title`}
       data-scroll-enhanced={enhanced}
       ref={section}
     >
       <div className="audience-scroll-shell" ref={shell}>
         <div className="audience-heading">
-          <h2 id={`${id}-title`}>{t("Senin eğitimine göre.")}</h2>
+          <h2 id={`${id}-title`}>{t("Built around your training.")}</h2>
           <p>
             {t(
-              "Farklı roller, farklı ihtiyaçlar. Pratik, etkileşim ve değerlendirmede sana eşlik eden yapay zekâ ajanları.",
+              "Different roles, different needs. AI agents that support practice, engagement and assessment.",
             )}
           </p>
         </div>
-        <nav className="audience-tabs" aria-label={t("Eğitmen profilleri")}>
+        <nav className="audience-tabs" aria-label={t("Instructor profiles")}>
           {audiences.map((item, index) => (
             <a
               key={item.id}
-              href={`#senaryo-${item.id}`}
+              href={`#scenario-${item.id}`}
               aria-current={selected === index ? "step" : undefined}
               onClick={(event) => {
                 if (!enhanced || !section.current || !shell.current) return;

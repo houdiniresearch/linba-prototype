@@ -15,7 +15,7 @@ export function joinPublicWaitlist(value: unknown, locale: unknown) {
     value.length > 254 ||
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
   )
-    throw new AppError("Geçerli bir e-posta adresi yaz.");
+    throw new AppError("Enter a valid email address.");
   const email = value.trim().toLowerCase();
   const id = createHash("sha256").update(email).digest("hex");
   const previous = get<WaitlistEntry>("publicWaitlist", id);
@@ -37,7 +37,7 @@ export function joinWaitlist(userId: string, value: unknown, locale: unknown) {
     value.length > 254 ||
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
   )
-    throw new AppError("Geçerli bir e-posta adresi yaz.");
+    throw new AppError("Enter a valid email address.");
   const email = value.trim().toLowerCase();
   const previous = waitlistEntry(userId);
   const now = new Date().toISOString();

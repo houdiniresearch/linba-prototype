@@ -8,32 +8,33 @@ type Operation = "training" | "personas" | "report" | "feedback" | "activity";
 const operations = {
   training: {
     icon: "presentation",
-    title: "Eğitimin hazırlanıyor",
-    description: "Sunumun işleniyor ve slaytların eğitim akışına hazırlanıyor.",
+    title: "Preparing your training",
+    description:
+      "Your presentation is being processed and its slides prepared for your training.",
   },
   personas: {
     icon: "users",
-    title: "Prova katılımcıların hazırlanıyor",
+    title: "Creating your practice participants",
     description:
-      "Tarif ettiğin kitleye göre farklı deneyimleri, beklentileri ve soruları olan katılımcılar oluşturuluyor.",
+      "Participants with different experiences, expectations and questions are being created based on your audience description.",
   },
   report: {
     icon: "chart",
-    title: "Eğitimin tamamlanıyor",
+    title: "Completing your training",
     description:
-      "Sorular ve aktivite sonuçları raporun için bir araya getiriliyor.",
+      "Questions and activity results are being brought together for your report.",
   },
   feedback: {
     icon: "chart",
-    title: "Provan değerlendiriliyor",
+    title: "Reviewing your practice",
     description:
-      "Konuşman ve katılımcı yorumları üzerinden geri bildirimin hazırlanıyor.",
+      "Your feedback is being prepared from your conversation and participant comments.",
   },
   activity: {
     icon: "activity",
-    title: "Aktiviten hazırlanıyor",
+    title: "Preparing your activity",
     description:
-      "Seçili slaydın içeriğinden bir aktivite taslağı oluşturuluyor.",
+      "An activity draft is being created from the selected slide’s content.",
   },
 } as const;
 

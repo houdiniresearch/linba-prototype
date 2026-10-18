@@ -111,18 +111,14 @@ export function LandingWaitlistProvider({ children }: { children: ReactNode }) {
               )}
             </span>
             <span>
-              {t(
-                registered
-                  ? "Bekleme listesindesin"
-                  : "Bekleme listesine katıl",
-              )}
+              {t(registered ? "You’re on the waitlist" : "Join the waitlist")}
             </span>
           </span>
         }
         description={t(
           registered
-            ? "LİNBA bekleme listesine kaydın alındı."
-            : "LİNBA’daki yeniliklerden ve kullanıma açılıştan haberdar olmak için e-postanı bırak.",
+            ? "You’re on the LİNBA waitlist."
+            : "Leave your email for LİNBA updates and launch news.",
         )}
       >
         {registered ? (
@@ -130,13 +126,13 @@ export function LandingWaitlistProvider({ children }: { children: ReactNode }) {
             <div className="waitlist-email-record">
               <Icon name="send" size={21} />
               <div>
-                <span>{t("Kayıtlı e-posta adresin")}</span>
+                <span>{t("Your registered email")}</span>
                 <strong>{email.trim().toLowerCase()}</strong>
               </div>
             </div>
             <div className="waitlist-confirmation-actions">
               <button className="button mint" onClick={() => setOpen(false)}>
-                {t("Tamam")}
+                {t("Done")}
                 <Icon name="check" size={18} />
               </button>
             </div>
@@ -144,7 +140,7 @@ export function LandingWaitlistProvider({ children }: { children: ReactNode }) {
         ) : (
           <form className="waitlist-form" onSubmit={submit}>
             <label>
-              {t("E-posta adresin")}
+              {t("Your email address")}
               <input
                 type="email"
                 autoFocus
@@ -155,18 +151,16 @@ export function LandingWaitlistProvider({ children }: { children: ReactNode }) {
                 disabled={busy}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder={t("sen@ornek.com")}
+                placeholder={t("you@example.com")}
               />
             </label>
             <ErrorNote message={error} />
             <button className="button primary full" disabled={busy}>
               {busy && <Icon name="spinner" className="spin" size={18} />}
-              {t(busy ? "Kaydediliyor…" : "Bekleme listesine katıl")}
+              {t(busy ? "Saving…" : "Join the waitlist")}
               {!busy && <Icon name="arrow" size={19} />}
             </button>
-            <p className="waitlist-footnote">
-              {t("Yalnızca LİNBA ile ilgili haberler için.")}
-            </p>
+            <p className="waitlist-footnote">{t("Only for LİNBA updates.")}</p>
           </form>
         )}
       </Modal>
@@ -259,34 +253,34 @@ export function LandingIntegrations() {
   const groups = [
     {
       id: "presentations",
-      title: "Sunum araçları",
+      title: "Presentation tools",
       icon: "presentation",
       tools: ["powerpoint", "google-slides"],
     },
     {
       id: "meetings",
-      title: "Canlı eğitim",
+      title: "Live training",
       icon: "monitor",
       tools: ["teams", "zoom", "google-meet"],
     },
     {
       id: "assistants",
-      title: "Yapay zekâ asistanları",
+      title: "AI assistants",
       icon: "chat",
       tools: ["chatgpt", "claude"],
     },
   ] as const;
   return (
     <section
-      id="entegrasyonlar"
+      id="integrations"
       ref={section}
       className="landing-integrations landing-container"
       aria-labelledby="integrations-title"
     >
       <h2 id="integrations-title">
-        {t("Eğitimin, çalıştığın araçlarla buluşsun.")}
+        {t("Bring training into the tools you use.")}
       </h2>
-      <p>{t("Kullandığın araçlar için entegrasyonlar yolda.")}</p>
+      <p>{t("Integrations with the tools you use are on the way.")}</p>
       <div className="landing-integration-map">
         <svg
           className="landing-integration-paths"
@@ -342,7 +336,7 @@ export function LandingIntegrations() {
                     key={item.id}
                     type="button"
                     aria-haspopup="dialog"
-                    aria-label={t("{name} entegrasyonu", {
+                    aria-label={t("{name} integration", {
                       name: item.name,
                     })}
                     onClick={(event) => {
@@ -385,7 +379,7 @@ export function LandingWaitlistButton({
         if (returnTo) openWaitlist(null, returnTo);
       }}
     >
-      {t("Bekleme listesine katıl")}
+      {t("Join the waitlist")}
     </button>
   );
 }

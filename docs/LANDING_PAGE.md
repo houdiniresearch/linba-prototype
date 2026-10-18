@@ -6,7 +6,7 @@
 
 - Marka korundu: özgün logo, Inter, fuşya eylemler ve lila/mint ayrıntılar.
 - Üst çubuk cam yüzeyle sayfada sabit kalır; gezinme logonun yanında, dil ve giriş sağdadır. Tanıtımda tema seçici gösterilmez, mevcut görünüm tercihi korunur. Bölüm bağlantıları sabit çubuğun altında boşluk bırakarak yumuşak kayar; azaltılmış hareket tercihinde doğrudan gider.
-- “Katılımcı mısın?” formu ana menünün üzerindeki ince lila şeritte yer alır. Kod alanı ve Katıl düğmesi tek yüzeyde birleşir; önek kullanılmaz. Form ortalanır, şerit masaüstünde yaklaşık 45 px yüksekliğindedir. Odakta yalnız kutunun ince sınırı renk değiştirir, giriş alanına halka veya gölge eklenmez. Altı rakam doğrulanır ve `/katil?kod=…` adresine aktarılır. Hesabı olmayan katılımcı mevcut giriş/kayıt akışında ilerler; kod sayfa adresinde korunur. Üst/alt gezinmede ve mobil menüde “Entegrasyonlar” doğrudan bağlantı haritasına kaydırır. Gezinme bağlantıları içerik sırasıyla Nasıl çalışır → Kullanım senaryoları → Entegrasyonlar → Sık sorulanlar olarak sıralanır. Ayrı “Bekleme listesine katıl” düğmesi doğrudan genel kayıt penceresini açar; sayfa kaydırılmaz. Mobil gezinme menüsü klavye ve Escape destekler. Katılım formu üst şeritte kalır. Şerit kaydırmada geride kalır, ana menü sabit kalır.
+- “Katılımcı mısın?” formu ana menünün üzerindeki ince lila şeritte yer alır. Kod alanı ve Katıl düğmesi tek yüzeyde birleşir; önek kullanılmaz. Form ortalanır, şerit masaüstünde yaklaşık 45 px yüksekliğindedir. Odakta yalnız kutunun ince sınırı renk değiştirir, giriş alanına halka veya gölge eklenmez. Altı rakam doğrulanır ve `/join?code=…` adresine aktarılır. Hesabı olmayan katılımcı mevcut giriş/kayıt akışında ilerler; kod sayfa adresinde korunur. Üst/alt gezinmede ve mobil menüde “Entegrasyonlar” doğrudan bağlantı haritasına kaydırır. Gezinme bağlantıları içerik sırasıyla Nasıl çalışır → Kullanım senaryoları → Entegrasyonlar → Sık sorulanlar olarak sıralanır. Ayrı “Bekleme listesine katıl” düğmesi doğrudan genel kayıt penceresini açar; sayfa kaydırılmaz. Mobil gezinme menüsü klavye ve Escape destekler. Katılım formu üst şeritte kalır. Şerit kaydırmada geride kalır, ana menü sabit kalır.
 - Dil seçimi sistem select'i yerine tetikleyicisinin altında açılan yerel popover kullanır. Tam dil adları, seçim işareti, klavye yön tuşları, Escape ve dışarı tıklayarak kapatma desteklenir; panel kaydırma ve yeniden boyutlandırmada düğmeyi izler.
 - Arka plandaki ince izometrik çizgi deseni, üst görselin ve alt bölümün kenarlarında yumuşakça belirir. Metin çevresinde silikleşir; ortak lila tokenı iki temaya uyum sağlar. Küçük, yerel SVG yalnız dekoratif CSS maskesidir; hareket veya ek bağımlılık içermez.
 - Tasarım varyansı 6, hareket yoğunluğu 3, içerik yoğunluğu 2. İki satırlı ana mesaj ve tek izometrik sahne; uzun özellik ızgaraları yok.
@@ -19,10 +19,10 @@
 ## Yollar ve oturum
 
 - `/`: sunucuda mevcut oturum kontrol edilir; ziyaretçi tanıtımı, oturum açmış kullanıcı çalışma alanını görür.
-- `/kesfet`: mevcut oturumdan bağımsız tanıtım önizlemesi.
-- `/giris` ve `/giris?mod=kayit`: açılış öncesi bekleme listesi ve ajan deneyimi. `/giris?mod=giris`: mevcut kullanıcı girişi. Ajan deneyimi ve giriş tamamlanınca sunucu oturumunu okuyacak tam gezinme yapılır.
-- `/katil`: mevcut katılımcı yolu korunur.
-- `/giris/loading.tsx`: form düzenine uygun iskelet.
+- `/explore`: mevcut oturumdan bağımsız tanıtım önizlemesi.
+- `/login` ve `/login?mode=signup`: açılış öncesi bekleme listesi ve ajan deneyimi. `/login?mode=signin`: mevcut kullanıcı girişi. Ajan deneyimi ve giriş tamamlanınca sunucu oturumunu okuyacak tam gezinme yapılır.
+- `/join`: mevcut katılımcı yolu korunur.
+- `/login/loading.tsx`: form düzenine uygun iskelet.
 
 ## Doğrulama
 
@@ -66,9 +66,9 @@ Entegrasyon grup başlıkları, ikonla birlikte 14 px / 600 ağırlıkta ve ara�
 
 ## Açılış öncesi karşılama
 
-`/giris` ve eski `/giris?mod=kayit` bağlantıları, hesap alanları yerine genel bekleme listesi ve “LİNBA ajanlarını deneyimle” seçeneğini gösterir. Solda e-posta bekleme listesi formu; sağda sade başlık, açıklama ve ajanları deneyimleme düğmesi vardır. İzometrik tanıtım bloğu, küçük bekleme listesi etiketi ve tekrar eden ajan rolleri kaldırılmıştır. Alanlar yalnız ince ayırıcı ve boşlukla ayrılır. Bekleme listesi mevcut `public-waitlist` API’sine, deneyim mevcut örnek çalışma alanı akışına bağlanır. Başarı ve hata durumları ayrıdır. “Demo” sözcüğü kullanıcıya gösterilmez. Mevcut kullanıcı girişi küçük bağlantıdan `/giris?mod=giris` yolunda korunur. Katılımcı girişi değişmez. Mobilde iki eylem alanı alt alta, koyu temada ortak tokenlarla gösterilir.
+`/login` ve eski `/login?mode=signup` bağlantıları, hesap alanları yerine genel bekleme listesi ve “LİNBA ajanlarını deneyimle” seçeneğini gösterir. Solda e-posta bekleme listesi formu; sağda sade başlık, açıklama ve ajanları deneyimleme düğmesi vardır. İzometrik tanıtım bloğu, küçük bekleme listesi etiketi ve tekrar eden ajan rolleri kaldırılmıştır. Alanlar yalnız ince ayırıcı ve boşlukla ayrılır. Bekleme listesi mevcut `public-waitlist` API’sine, deneyim mevcut örnek çalışma alanı akışına bağlanır. Başarı ve hata durumları ayrıdır. “Demo” sözcüğü kullanıcıya gösterilmez. Mevcut kullanıcı girişi küçük bağlantıdan `/login?mode=signin` yolunda korunur. Katılımcı girişi değişmez. Mobilde iki eylem alanı alt alta, koyu temada ortak tokenlarla gösterilir.
 
-Ana sayfanın üst çubuğundaki “Kayıt ol” ve “Giriş yap” düğmeleri, alt gezinmedeki “Giriş yap” gibi doğrudan `/giris` karşılama ekranını açar.
+Ana sayfanın üst çubuğundaki “Kayıt ol” ve “Giriş yap” düğmeleri, alt gezinmedeki “Giriş yap” gibi doğrudan `/login` karşılama ekranını açar.
 
 Ajan deneyimi alanı görselsizdir: kısa başlık ve açıklama, içeriğe göre genişleyen lila düğme ve kısa ücretsiz kullanım notu bulunur. İzometrik görsel kullanılmaz; bekleme listesi ayrı sol sütunda kalır.
 

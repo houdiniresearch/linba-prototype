@@ -7,10 +7,12 @@ import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/inter/700.css";
 import "./globals.css";
+import "./product.css";
 
 export const metadata: Metadata = {
-  title: "LİNBA — Eğitim çalışma alanı",
-  description: "Sunumunu yükle, eğitimini prova et ve birlikte öğren.",
+  title: "LİNBA — Training workspace",
+  description:
+    "AI agents for practice, participant engagement and learning insights.",
 };
 
 export default async function RootLayout({

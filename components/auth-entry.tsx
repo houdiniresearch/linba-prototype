@@ -56,7 +56,7 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
   return (
     <div className="access-page">
       <header className="access-header">
-        <Link href="/kesfet" aria-label={t("LİNBA ana sayfa")}>
+        <Link href="/explore" aria-label={t("LİNBA home")}>
           <Logo />
         </Link>
         <div>
@@ -73,38 +73,36 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
               <span className="access-confirmation-icon">
                 <Icon name="check" size={28} />
               </span>
-              <h1 id="access-waitlist-title">{t("Listedesin.")}</h1>
+              <h1 id="access-waitlist-title">{t("You’re on the list.")}</h1>
               <p>
-                {t(
-                  "LİNBA kullanıma açıldığında ilk haberdar olanlardan olacaksın.",
-                )}
+                {t("You’ll be among the first to know when LİNBA launches.")}
               </p>
               <span className="access-saved-email">{email}</span>
               <button
                 className="access-text-action"
                 onClick={() => setRegistered(false)}
               >
-                {t("Farklı bir e-posta kullan")}
+                {t("Use a different email")}
               </button>
             </div>
           ) : (
             <>
               <h1 id="access-waitlist-title">
-                {t("İlk haberdar olanlardan ol.")}
+                {t("Be among the first to know.")}
               </h1>
               <p>
                 {t(
-                  "LİNBA yakında kullanıma açılıyor. Yerini al, açılış haberini sana iletelim.",
+                  "LİNBA is launching soon. Join the list and we’ll let you know when it’s ready.",
                 )}
               </p>
               <form className="access-waitlist-form" onSubmit={join}>
-                <label htmlFor="access-email">{t("E-posta adresin")}</label>
+                <label htmlFor="access-email">{t("Your email address")}</label>
                 <input
                   id="access-email"
                   name="email"
                   type="email"
                   autoComplete="email"
-                  placeholder={t("sen@ornek.com")}
+                  placeholder={t("you@example.com")}
                   maxLength={254}
                   required
                   value={email}
@@ -116,25 +114,25 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
                   className="button primary access-join"
                   disabled={joining}
                 >
-                  {t(joining ? "Kaydediliyor…" : "Bekleme listesine katıl")}
+                  {t(joining ? "Saving…" : "Join the waitlist")}
                   <Icon name={joining ? "spinner" : "arrow"} size={19} />
                 </button>
               </form>
               <p className="access-note">
-                {t("Yalnızca LİNBA’nın açılışı ve yenilikleri hakkında.")}
+                {t("Only updates about LİNBA’s launch and new features.")}
               </p>
             </>
           )}
           <p className="access-existing">
-            {t("Beta test kullanıcısı mısın?")}{" "}
-            <Link href="/giris?mod=giris">{t("Giriş yap")}</Link>
+            {t("Are you a beta tester?")}{" "}
+            <Link href="/login?mode=signin">{t("Log in")}</Link>
           </p>
         </section>
         <section className="access-experience" aria-labelledby="access-title">
-          <h2 id="access-title">{t("LİNBA’yı deneyimle.")}</h2>
+          <h2 id="access-title">{t("Experience LİNBA in action.")}</h2>
           <p>
             {t(
-              "Örnek bir eğitimde LİNBA’nın yapay zekâ ajanlarını dene. Pratik yap, etkileşim kur ve öğrenme desteğini keşfet.",
+              "Try LİNBA’s AI agents in a sample training. Practice, interact and explore learning support.",
             )}
           </p>
           <ErrorNote message={experienceError} />
@@ -145,19 +143,19 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
           >
             {t(
               experiencing
-                ? "Deneyimin hazırlanıyor…"
-                : "LİNBA ajanlarını deneyimle",
+                ? "Preparing your experience…"
+                : "Experience LİNBA agents",
             )}
             <Icon name={experiencing ? "spinner" : "arrow"} size={19} />
           </button>
           <p className="access-experience-note">
-            {t("Sana özel bir çalışma alanı açılır.")}
+            {t("A private workspace will be created for you.")}
           </p>
         </section>
       </main>
       <footer className="access-footer">
         <span>© {new Date().getFullYear()} LİNBA</span>
-        <span>{t("Eğitim için yapay zekâ ajanları.")}</span>
+        <span>{t("AI agents for education.")}</span>
       </footer>
     </div>
   );

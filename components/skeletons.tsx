@@ -23,7 +23,7 @@ function Region({
       aria-busy={nested ? undefined : true}
     >
       <SkeletonContext.Provider value={true}>
-        {!nested && <span className="sr-only">{t("Yükleniyor…")}</span>}
+        {!nested && <span className="sr-only">{t("Loading…")}</span>}
         {children}
       </SkeletonContext.Provider>
     </div>

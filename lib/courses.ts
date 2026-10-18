@@ -15,7 +15,7 @@ import { aiReady, modelName } from "./ai";
 export function courseForOwner(id: string, user: User) {
   const course = get<Course>("course", id);
   if (!course || course.ownerId !== user.id)
-    throw new AppError("Eğitim bulunamadı.", 404);
+    throw new AppError("Training not found.", 404);
   return course;
 }
 export function canChat(course: Course, now = Date.now()) {
@@ -84,7 +84,7 @@ export function participantQuestion(question: Question): Question {
 export function stateFor(course: Course, user: User): CourseState {
   const owner = course.ownerId === user.id;
   if (!owner && !memberOf(course.id, user.id))
-    throw new AppError("Önce eğitim koduyla katıl.", 403);
+    throw new AppError("Join using the training code first.", 403);
   const participants = all<{
     id: string;
     courseId: string;
@@ -120,7 +120,7 @@ export function validateSlideOrder(course: Course, ids: string[]) {
     new Set(ids).size !== ids.length ||
     ids.some((id) => !course.slides.some((s) => s.id === id))
   )
-    throw new AppError("Slayt sırası doğrulanamadı.");
+    throw new AppError("The slide order could not be verified.");
   const original = course.slides
     .filter((s) => s.kind === "document")
     .map((s) => s.id);
@@ -129,6 +129,6 @@ export function validateSlideOrder(course: Course, ids: string[]) {
   );
   if (original.join() !== updated.join())
     throw new AppError(
-      "Sunum slaytlarının sırası korunmalıdır. Aktiviteleri taşıyabilirsin.",
+      "Keep the original slide order. You can move activities.",
     );
 }

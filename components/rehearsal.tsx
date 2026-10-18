@@ -157,7 +157,7 @@ export function RehearsalView({ id }: { id: string }) {
       .catch(() =>
         setNotice(
           t(
-            "Kullanım kaydının bir bölümü kaydedilemedi; gösterilen tahmin eksik olabilir.",
+            "Some usage records could not be saved; the estimate may be incomplete.",
           ),
         ),
       );
@@ -241,7 +241,7 @@ export function RehearsalView({ id }: { id: string }) {
       if (version !== clipVersion.current) return;
       setNotice(
         (e as Error).message ||
-          t("Ses oynatılamadı. Tarayıcıda ses iznini kontrol et."),
+          t("Audio could not be played. Check the browser’s audio permission."),
       );
       if (!preview) setRetryLine({ personaIndex, text: line });
       stopClip();
@@ -341,7 +341,7 @@ export function RehearsalView({ id }: { id: string }) {
           .catch(() =>
             setNotice(
               t(
-                "Ses çalma izni alınamadı. Tarayıcıda sayfanın sesine izin ver.",
+                "Audio playback permission was not granted. Allow audio for this page.",
               ),
             ),
           );
@@ -428,7 +428,7 @@ export function RehearsalView({ id }: { id: string }) {
               }
               setNotice(
                 t(
-                  "Bir katılımcının yanıtı tamamlanamadı. Anlatımına devam edebilir veya sorunu yeniden sorabilirsin.",
+                  "A participant’s response could not be completed. Continue teaching or ask again.",
                 ),
               );
               setVoice("listening");
@@ -438,7 +438,7 @@ export function RehearsalView({ id }: { id: string }) {
         if (event.type === "error") {
           setNotice(
             t(
-              "Sesli oturumda bir yanıt alınamadı. Tekrar konuşabilir veya provayı bitirebilirsin.",
+              "No response was received in the voice session. Speak again or end practice.",
             ),
           );
           if (feedbackResolver.current) {
@@ -450,7 +450,7 @@ export function RehearsalView({ id }: { id: string }) {
       pc.onconnectionstatechange = () => {
         if (attempt !== activeSession.current) return;
         if (["failed", "disconnected"].includes(pc.connectionState)) {
-          setNotice(t("Ses bağlantısı kesildi. Yeniden bağlanabilirsin."));
+          setNotice(t("The audio connection was lost. You can reconnect."));
           close();
           setVoice("idle");
         }
@@ -475,9 +475,10 @@ export function RehearsalView({ id }: { id: string }) {
       setNotice(
         (e as Error).name === "NotAllowedError"
           ? t(
-              "Prova için mikrofon izni gerekiyor. Tarayıcıdan izin vererek yeniden başlatabilirsin.",
+              "Practice requires microphone permission. Allow access in your browser and try again.",
             )
-          : (e as Error).message || t("Ses bağlantısı kurulamadı."),
+          : (e as Error).message ||
+              t("The audio connection could not be established."),
       );
     }
   }
@@ -539,7 +540,7 @@ export function RehearsalView({ id }: { id: string }) {
       if (!result)
         setNotice(
           t(
-            "Prova kaydedildi, ancak modelden geri bildirim alınamadı. Katılımcı yorumlarını aşağıda görebilirsin.",
+            "The practice was saved, but model feedback was unavailable. Participant comments are shown below.",
           ),
         );
     } catch (e) {
@@ -564,40 +565,59 @@ export function RehearsalView({ id }: { id: string }) {
     <div className="rehearsal-page">
       <header className="editor-header">
         <a
-          href={`/egitim/${id}`}
+          href={`/training/${id}`}
           className="icon-button"
-          aria-label={t("Eğitime dön")}
+          aria-label={t("Back to training")}
         >
           <Icon name="back" />
         </a>
         <div className="editor-name">
-          <h1>{t("Sesli prova")}</h1>
+          <h1>{t("Voice practice")}</h1>
           <span className="small muted">{c.name}</span>
         </div>
         <ThemeMenu />
         <Logo />
       </header>
+      <ol className="practice-steps" aria-label={t("Practice progress")}>
+        {["Your audience", "Practice", "Feedback"].map((label, step) => {
+          const current = !rehearsal
+            ? 0
+            : voice === "ended" || voice === "feedback"
+              ? 2
+              : 1;
+          return (
+            <li
+              key={label}
+              aria-current={step === current ? "step" : undefined}
+              className={step <= current ? "reached" : ""}
+            >
+              <span>{step + 1}</span>
+              {t(label)}
+            </li>
+          );
+        })}
+      </ol>
       {!rehearsal ? (
         <main className="rehearsal-setup">
           <span className="empty-icon">
             <Icon name="mic" size={32} />
           </span>
-          <h1>{t("Eğitimini, kitlenle prova et.")}</h1>
+          <h2>{t("Prepare with AI participant agents")}</h2>
           <p>
             {t(
-              "Kimlere eğitim vereceksin? Deneyimlerini, konuya ne kadar hâkim olduklarını ve beklentilerini kendi sözlerinle anlat.",
+              "Who will you teach? Describe their experience, familiarity with the subject and expectations in your own words.",
             )}
           </p>
           {busy && <OperationProgress kind="personas" />}
           <form onSubmit={personas} hidden={busy}>
             <label>
-              {t("Katılımcı kitlen")}
+              {t("Your audience")}
               <textarea
                 rows={6}
                 value={audience}
                 onChange={(e) => setAudience(e.target.value)}
                 placeholder={t(
-                  "Örneğin: Kendi küçük işletmesini yöneten, dijital pazarlamaya yeni başlayan 10 kişilik bir grup. Bir kısmı sosyal medyayı aktif kullanıyor; diğerleri bütçe ayırmak konusunda çekingen…",
+                  "For example: A group of 10 small-business owners new to digital marketing. Some actively use social media; others are hesitant about allocating a budget…",
                 )}
                 minLength={10}
                 maxLength={3000}
@@ -606,27 +626,27 @@ export function RehearsalView({ id }: { id: string }) {
             </label>
             <p className="small muted">
               {t(
-                "AI, tarifine göre farklı katılımcılar oluşturur. Mikrofonun yalnızca provayı başlattığında açılır.",
+                "Your description shapes the AI participant agents. Your microphone is activated only when you start practice.",
               )}
             </p>
             <ErrorNote message={notice} />
             <button className="button primary" disabled={busy || !data.aiReady}>
               <Icon name="sparkle" />
               {busy
-                ? t("Katılımcılar hazırlanıyor…")
-                : t("Prova katılımcılarını oluştur")}
+                ? t("Preparing participants…")
+                : t("Create participant agents")}
             </button>
             {!data.aiReady && (
               <ErrorNote
                 message={t(
-                  "Model bağlantısı ayarlanmadan sesli prova başlatılamaz.",
+                  "Configure the model connection before starting voice practice.",
                 )}
               />
             )}
           </form>
           {data.rehearsals.length > 0 && (
             <section className="rehearsal-history">
-              <h2>{t("Provaların")}</h2>
+              <h2>{t("Your practice sessions")}</h2>
               {data.rehearsals.map((r) => (
                 <button
                   className="joined-course"
@@ -647,7 +667,7 @@ export function RehearsalView({ id }: { id: string }) {
                       locale === "en" ? "en-GB" : "tr-TR",
                     )}
                     {" · "}
-                    {r.endedAt ? t("Tamamlandı") : t("Devam et")}
+                    {r.endedAt ? t("Completed") : t("Continue")}
                     <small>{r.audience.slice(0, 110)}</small>
                   </span>
                   <Icon name="right" />
@@ -662,7 +682,7 @@ export function RehearsalView({ id }: { id: string }) {
             <div className="presentation-canvas">
               <div className="canvas-join">
                 <span>
-                  {t("PROVA ·")} {c.name}
+                  {t("PRACTICE ·")} {c.name}
                 </span>
                 <Logo />
               </div>
@@ -672,7 +692,7 @@ export function RehearsalView({ id }: { id: string }) {
               <button
                 className="icon-button"
                 disabled={!index}
-                aria-label={t("Önceki slayt")}
+                aria-label={t("Previous slide")}
                 onClick={() => {
                   setIndex(index - 1);
                   contextForSlide(index - 1);
@@ -686,7 +706,7 @@ export function RehearsalView({ id }: { id: string }) {
               <button
                 className="icon-button"
                 disabled={index === c.slides.length - 1}
-                aria-label={t("Sonraki slayt")}
+                aria-label={t("Next slide")}
                 onClick={() => {
                   setIndex(index + 1);
                   contextForSlide(index + 1);
@@ -704,37 +724,35 @@ export function RehearsalView({ id }: { id: string }) {
               <div>
                 <strong>
                   {voice === "connecting"
-                    ? t("Ses bağlantısı kuruluyor…")
+                    ? t("Connecting audio…")
                     : voice === "listening"
-                      ? t("Seni dinliyorlar")
+                      ? t("They’re listening")
                       : voice === "thinking"
-                        ? t("Katılımcılar düşünüyor")
+                        ? t("Participants are thinking")
                         : voice === "rendering"
-                          ? t("{name} söz alıyor…", {
+                          ? t("{name} is about to speak…", {
                               name:
                                 rehearsal.personas[speakingPersona ?? 0]
                                   ?.name || "",
                             })
                           : voice === "speaking"
-                            ? t("{name} konuşuyor", {
+                            ? t("{name} is speaking", {
                                 name:
                                   rehearsal.personas[speakingPersona ?? 0]
                                     ?.name || "",
                               })
                             : voice === "feedback"
-                              ? t("Prova değerlendiriliyor…")
+                              ? t("Reviewing practice…")
                               : voice === "ended"
-                                ? t("Prova tamamlandı")
-                                : t("Katılımcıların hazır")}
+                                ? t("Practice completed")
+                                : t("Your participants are ready")}
                 </strong>
                 <p>
                   {voice === "idle"
-                    ? t("Provayı başlat, eğitimini sesli anlat.")
+                    ? t("Start practice and teach aloud.")
                     : voice === "ended"
-                      ? t("Geri bildirimini aşağıdan inceleyebilirsin.")
-                      : t(
-                          "Slaytlarını ilerlet ve doğal şekilde anlatmaya devam et.",
-                        )}
+                      ? t("Review your feedback below.")
+                      : t("Advance your slides and keep teaching naturally.")}
                 </p>
               </div>
               {voice === "idle" ? (
@@ -744,7 +762,7 @@ export function RehearsalView({ id }: { id: string }) {
                   disabled={previewing !== null || editingVoice}
                 >
                   <Icon name="mic" />
-                  {t("Provayı başlat")}
+                  {t("Start practice")}
                 </button>
               ) : [
                   "connecting",
@@ -759,7 +777,7 @@ export function RehearsalView({ id }: { id: string }) {
                   disabled={busy || voice === "connecting"}
                 >
                   <Icon name="stop" />
-                  {t("Provayı bitir")}
+                  {t("End practice")}
                 </button>
               ) : voice === "ended" ? (
                 <button
@@ -770,7 +788,7 @@ export function RehearsalView({ id }: { id: string }) {
                     setFeedback(undefined);
                   }}
                 >
-                  {t("Yeni prova")}
+                  {t("New practice")}
                 </button>
               ) : (
                 <Icon name="spinner" className="spin" />
@@ -793,23 +811,23 @@ export function RehearsalView({ id }: { id: string }) {
                   onClick={() => speak(retryLine.personaIndex, retryLine.text)}
                 >
                   <Icon name="play" />
-                  {t("Katılımcı repliğini yeniden seslendir")}
+                  {t("Replay participant’s line")}
                 </button>
               </div>
             )}
-            <details className="rehearsal-cost" open={voice === "ended"}>
-              <summary>{t("Prova kullanımı ve tahmini ücret")}</summary>
+            <details className="rehearsal-cost">
+              <summary>{t("Technical usage details")}</summary>
               <div className="usage-figures">
                 <span>
-                  {t("Ölçülen toplam")}
+                  {t("Measured total")}
                   <strong>
                     {rehearsal.usage && meter.known
                       ? `$${meter.total.toFixed(5)}`
-                      : t("Kullanım kaydı yetersiz")}
+                      : t("Insufficient usage data")}
                   </strong>
                 </span>
                 <span>
-                  {t("Toplama dahil ek karakter sesleri")}
+                  {t("Additional persona audio included in total")}
                   <strong>
                     {rehearsal.usage && meter.known
                       ? `$${meter.extra.toFixed(5)}`
@@ -817,7 +835,7 @@ export function RehearsalView({ id }: { id: string }) {
                   </strong>
                 </span>
                 <span>
-                  {t("Toplama dahil ses örnekleri")}
+                  {t("Voice previews included in total")}
                   <strong>
                     {rehearsal.usage && meter.known
                       ? `$${meter.previews.toFixed(5)}`
@@ -827,24 +845,24 @@ export function RehearsalView({ id }: { id: string }) {
               </div>
               {!rehearsal.usage && (
                 <p className="small muted">
-                  {t("Bu eski prova için kullanım kaydı bulunmuyor.")}
+                  {t("No usage data is available for this earlier practice.")}
                 </p>
               )}
               <p className="small muted">
                 {meter.input.toLocaleString(
                   locale === "en" ? "en-GB" : "tr-TR",
                 )}{" "}
-                {t("giriş ·")}{" "}
+                {t("input ·")}{" "}
                 {meter.output.toLocaleString(
                   locale === "en" ? "en-GB" : "tr-TR",
                 )}{" "}
                 {t(
-                  "çıkış tokenı. Katılımcı oluşturma, konuşma, değerlendirme ve dinlenen ses örnekleri ölçüme dahildir.",
+                  "output tokens. Includes participant creation, conversation, feedback and played voice previews.",
                 )}
               </p>
               <p className="small muted">
                 {t(
-                  "Ses üretimi satırı, farklı sesler için ek çağrıları gösterir; eski sürümle toplam fiyat farkı değildir. Alınabilen kullanım kayıtları üzerinden USD tahminidir, fatura değildir. Bağlantı kesintilerinde kayıtlar eksik kalabilir. Birim fiyat kontrolü:",
+                  "The speech row shows extra calls for different voices, not the total price difference from the earlier version. This is a USD estimate based on available usage records, not an invoice. Disconnections may leave incomplete records. Pricing checked:",
                 )}{" "}
                 {PRICE_DATE}.
               </p>
@@ -853,13 +871,13 @@ export function RehearsalView({ id }: { id: string }) {
               <section className="report-section rehearsal-feedback">
                 <span className="ai-label">
                   <Icon name="sparkle" />
-                  {t("PROVA GERİ BİLDİRİMİ")}
+                  {t("PRACTICE FEEDBACK")}
                 </span>
-                <h2>{t("Bir sonraki anlatımın için")}</h2>
+                <h2>{t("For your next session")}</h2>
                 <p>{feedback.summary}</p>
                 {feedback.suggestions.length > 0 && (
                   <>
-                    <h3>{t("İyileştirme önerileri")}</h3>
+                    <h3>{t("Suggestions for improvement")}</h3>
                     <ul>
                       {feedback.suggestions.map((s, i) => (
                         <li key={i}>{s}</li>
@@ -869,7 +887,7 @@ export function RehearsalView({ id }: { id: string }) {
                 )}
                 {feedback.questions.length > 0 && (
                   <>
-                    <h3>{t("Provada sorulan sorular")}</h3>
+                    <h3>{t("Questions asked in practice")}</h3>
                     <ul>
                       {feedback.questions.map((s, i) => (
                         <li key={i}>{s}</li>
@@ -880,7 +898,7 @@ export function RehearsalView({ id }: { id: string }) {
               </section>
             )}
             <div className="rehearsal-remarks">
-              <h3>{t("Katılımcı yorumları")}</h3>
+              <h3>{t("Participant comments")}</h3>
               {remarks.length ? (
                 remarks.map((r, i) => (
                   <p key={i}>
@@ -891,7 +909,7 @@ export function RehearsalView({ id }: { id: string }) {
               ) : (
                 <p className="muted">
                   {t(
-                    "Prova başladığında katılımcıların soruları ve yorumları burada görünür.",
+                    "Participants’ questions and comments will appear here when practice starts.",
                   )}
                 </p>
               )}
@@ -899,12 +917,19 @@ export function RehearsalView({ id }: { id: string }) {
           </main>
           <aside>
             <div className="section-title">
-              <h2>{t("Prova kitlen")}</h2>
+              <h2>{t("AI participant agents")}</h2>
               <span className="count">{rehearsal.personas.length}</span>
             </div>
             <p className="small muted">
-              {t("Tarif ettiğin kitleden oluşturuldu.")}
+              {t("Created from your audience description.")}
             </p>
+            <details className="audience-details">
+              <summary>{t("My audience description")}</summary>
+              <p>{rehearsal.audience}</p>
+              <a className="text-button" href={`/training/${id}/practice`}>
+                {t("Prepare a different audience")}
+              </a>
+            </details>
             {assignVoices(rehearsal.personas).map((p, i) => (
               <div
                 className={`persona ${speakingPersona === i ? "persona-speaking" : ""}`}
@@ -916,79 +941,85 @@ export function RehearsalView({ id }: { id: string }) {
                   </span>
                   <h3>{p.name}</h3>
                 </div>
-                <p>{p.background}</p>
-                <span className="small muted">{p.behavior}</span>
-                <div className="persona-voice-controls">
-                  <label>
-                    {t("Ses türü")}
-                    <select
-                      aria-label={t("{name} ses türü", { name: p.name })}
-                      value={p.gender}
-                      disabled={!editable || !!rehearsal.endedAt}
-                      onChange={(e) => {
-                        const gender = voiceStyle(e.target.value);
-                        void changeVoice(i, gender, voicesFor(gender)[0].id);
-                      }}
-                    >
-                      {Object.entries(VOICE_STYLE_LABELS).map(
-                        ([value, label]) => (
-                          <option key={value} value={value}>
-                            {t(label)}
+                <p className="persona-summary">
+                  {p.background.split(/(?<=[.!?])\s/)[0]}
+                </p>
+                <p className="persona-approach">
+                  <span>{t("Question style")}</span>
+                  {p.behavior.split(/(?<=[.!?])\s/)[0]}
+                </p>
+                <details className="persona-details">
+                  <summary>{t("Profile and voice settings")}</summary>
+                  <p>{p.background}</p>
+                  <p className="muted">{p.behavior}</p>
+                  <div className="persona-voice-controls">
+                    <label>
+                      {t("Voice style")}
+                      <select
+                        aria-label={t("{name} voice style", { name: p.name })}
+                        value={p.gender}
+                        disabled={!editable || !!rehearsal.endedAt}
+                        onChange={(e) => {
+                          const gender = voiceStyle(e.target.value);
+                          void changeVoice(i, gender, voicesFor(gender)[0].id);
+                        }}
+                      >
+                        {Object.entries(VOICE_STYLE_LABELS).map(
+                          ([value, label]) => (
+                            <option key={value} value={value}>
+                              {t(label)}
+                            </option>
+                          ),
+                        )}
+                      </select>
+                    </label>
+                    <label>
+                      {t("Voice")}
+                      <select
+                        aria-label={t("{name} voice", { name: p.name })}
+                        value={p.voice}
+                        disabled={!editable || !!rehearsal.endedAt}
+                        onChange={(e) =>
+                          void changeVoice(
+                            i,
+                            voiceStyle(p.gender),
+                            e.target.value as VoiceId,
+                          )
+                        }
+                      >
+                        {voicesFor(voiceStyle(p.gender)).map((v) => (
+                          <option key={v.id} value={v.id}>
+                            {v.name}
                           </option>
-                        ),
-                      )}
-                    </select>
-                  </label>
-                  <label>
-                    {t("Ses")}
-                    <select
-                      aria-label={t("{name} sesi", { name: p.name })}
-                      value={p.voice}
-                      disabled={!editable || !!rehearsal.endedAt}
-                      onChange={(e) =>
-                        void changeVoice(
-                          i,
-                          voiceStyle(p.gender),
-                          e.target.value as VoiceId,
-                        )
-                      }
-                    >
-                      {voicesFor(voiceStyle(p.gender)).map((v) => (
-                        <option key={v.id} value={v.id}>
-                          {v.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  {!rehearsal.endedAt && (
-                    <button
-                      className="button"
-                      disabled={
-                        (!editable && previewing !== i) || previewing !== null
-                      }
-                      onClick={() => speak(i, "", true)}
-                    >
-                      <Icon
-                        name={previewing === i ? "spinner" : "play"}
-                        className={previewing === i ? "spin" : undefined}
-                      />
-                      {previewing === i
-                        ? t("Hazırlanıyor / çalıyor…")
-                        : t("Sesi dinle")}
-                    </button>
-                  )}
-                </div>
+                        ))}
+                      </select>
+                    </label>
+                    {!rehearsal.endedAt && (
+                      <button
+                        className="button"
+                        disabled={
+                          (!editable && previewing !== i) || previewing !== null
+                        }
+                        onClick={() => speak(i, "", true)}
+                      >
+                        <Icon
+                          name={previewing === i ? "spinner" : "play"}
+                          className={previewing === i ? "spin" : undefined}
+                        />
+                        {previewing === i
+                          ? t("Preparing / playing…")
+                          : t("Preview voice")}
+                      </button>
+                    )}
+                  </div>
+                </details>
               </div>
             ))}
             <p className="small muted">
               {t(
-                "Sesler yapay zekâ tarafından üretilir. Ses türü tınıyı belirtir; prova öncesinde dinleyip değiştirebilirsin. Ses örnekleri de API kullanımına dahildir.",
+                "Voices are AI-generated. Voice style describes timbre; preview and change it before practice. Voice previews also count toward API usage.",
               )}
             </p>
-            <details className="audience-details">
-              <summary>{t("Kitle tarifim")}</summary>
-              <p>{rehearsal.audience}</p>
-            </details>
           </aside>
         </div>
       )}

@@ -43,15 +43,18 @@ YANIT: Yalnız geçerli JSON: {"answer":"doğal yanıt","sourceIds":["counts"]}.
 
 function ownedReport(user: User, id: string) {
   if (user.role !== "teacher")
-    throw new AppError("Bu alan bu hesap tipi için açık değil.", 403);
+    throw new AppError("This area is unavailable for this account type.", 403);
   const course = courseForOwner(id, user);
   if (course.status !== "ended")
-    throw new AppError("Rapor asistanı eğitim tamamlandığında açılır.", 409);
+    throw new AppError(
+      "The report agent becomes available when training ends.",
+      409,
+    );
   return course;
 }
 export function reportList(user: User): ReportItem[] {
   if (user.role !== "teacher")
-    throw new AppError("Bu alan bu hesap tipi için açık değil.", 403);
+    throw new AppError("This area is unavailable for this account type.", 403);
   return all<Course>("course")
     .filter((c) => c.ownerId === user.id && c.status === "ended")
     .sort((a, b) =>
@@ -91,9 +94,9 @@ export function reportContext(course: Course) {
   ).filter((m) => m.courseId === course.id);
   const activities = course.slides.filter((s) => s.activity);
   const sources: ReportSource[] = [
-    { id: "counts", label: "Rapor özeti", section: "overview" },
-    { id: "questions", label: "Sorular ve yanıtlar", section: "questions" },
-    { id: "activities", label: "Aktivite sonuçları", section: "activities" },
+    { id: "counts", label: "Report overview", section: "overview" },
+    { id: "questions", label: "Questions and answers", section: "questions" },
+    { id: "activities", label: "Activity results", section: "activities" },
   ];
   const questionDetails = bounded(
     questions
@@ -207,23 +210,26 @@ export async function sendReportMessage(
 ) {
   const course = ownedReport(user, id);
   if (!body || typeof body !== "object" || Array.isArray(body))
-    throw new AppError("İstek doğrulanamadı.");
+    throw new AppError("The request could not be verified.");
   if (
     typeof body.message !== "string" ||
     !body.message.trim() ||
     body.message.length > 3000
   )
-    throw new AppError("Sorunu 1–3000 karakter arasında yaz.");
+    throw new AppError("Write a question between 1 and 3,000 characters.");
   if (
     typeof body.requestId !== "string" ||
     !/^[a-zA-Z0-9-]{16,80}$/.test(body.requestId)
   )
-    throw new AppError("İstek doğrulanamadı.");
+    throw new AppError("The request could not be verified.");
   const key = `${id}:${body.requestId}`;
   const existing = get<ReportTurn>("report-turn", key);
   if (existing) {
     if (existing.question !== body.message.trim())
-      throw new AppError("Bu istek başka bir mesaj için kullanıldı.", 409);
+      throw new AppError(
+        "This request was already used for a different message.",
+        409,
+      );
     return reportChat(user, id);
   }
   const running = jobs.get(id);
@@ -233,7 +239,7 @@ export async function sendReportMessage(
       running.question !== body.message.trim()
     )
       throw new AppError(
-        "Bu rapor için bir yanıt hazırlanıyor. Birazdan yeniden dene.",
+        "An answer is being prepared for this report. Please try again shortly.",
         409,
       );
     await running.result;
@@ -242,7 +248,7 @@ export async function sendReportMessage(
   const history = turnsOf(id, user.id);
   if (body.previousTurnId !== (history.at(-1)?.id || null))
     throw new AppError(
-      "Sohbet başka bir sekmede güncellendi. Son mesajları yenileyip tekrar dene.",
+      "This conversation changed in another tab. Refresh the messages and try again.",
       409,
     );
   const snapshot = reportContext(course);
@@ -274,7 +280,10 @@ export async function sendReportMessage(
       !answer.answer.trim() ||
       answer.answer.length > 8000
     )
-      throw new AppError("Asistan yanıtı alınamadı. Lütfen yeniden dene.", 502);
+      throw new AppError(
+        "The assistant could not respond. Please try again.",
+        502,
+      );
     const ids = Array.isArray(answer.sourceIds) ? answer.sourceIds : [];
     const sources = snapshot.sources
       .filter((source) => ids.includes(source.id))
@@ -296,7 +305,10 @@ export async function sendReportMessage(
     const failure =
       error instanceof AppError
         ? error
-        : new AppError("Asistan yanıtı alınamadı. Lütfen yeniden dene.", 502);
+        : new AppError(
+            "The assistant could not respond. Please try again.",
+            502,
+          );
     reject(failure);
     throw failure;
   } finally {

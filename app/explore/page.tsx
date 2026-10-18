@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Landing } from "@/components/landing";
 
 export const metadata: Metadata = {
-  title: "LİNBA | Eğitim için yapay zekâ ajanları",
+  title: "LİNBA | AI agents for training",
   description:
-    "Yapay zekâ ajanlarıyla sesli pratik yap, katılımcılarla etkileşim kur ve öğrenme sonuçlarını değerlendir.",
+    "Practice with AI agents, engage participants and evaluate learning outcomes.",
   alternates: { canonical: "/" },
 };
 

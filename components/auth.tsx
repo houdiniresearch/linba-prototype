@@ -55,32 +55,32 @@ export function Auth({
   return (
     <div className="auth-screen">
       <header>
-        <Link href="/" aria-label={t("LİNBA ana sayfa")}>
+        <Link href="/" aria-label={t("LİNBA home")}>
           <Logo />
         </Link>
         <div className="auth-header-actions">
-          <span className="muted">{t("Eğitimin her aşamasında yanında.")}</span>
+          <span className="muted">
+            {t("With you at every stage of training.")}
+          </span>
           <ThemeMenu />
         </div>
       </header>
       <div className="auth-layout">
         <div className="auth-copy">
           <h1>
-            {t("Yapay zekâ ajanların.")}
+            {t("Your AI agents.")}
             <br />
-            {t("Eğitiminin")}
+            {t("At every step")}
             <br />
-            <span>{t("her aşamasında.")}</span>
+            <span>{t("of your training.")}</span>
           </h1>
         </div>
         <section className="auth-form">
-          <h2>
-            {register ? t("LİNBA’ya hoş geldin") : t("Tekrar hoş geldin")}
-          </h2>
+          <h2>{register ? t("Welcome to LİNBA") : t("Welcome back")}</h2>
           <p className="muted">
             {register
-              ? t("Hesabını oluştur, çalışma alanına geç.")
-              : t("Eğitimlerine kaldığın yerden devam et.")}
+              ? t("Create an account and open your workspace.")
+              : t("Pick up where you left off.")}
           </p>
           {register && (
             <div className="segmented">
@@ -91,7 +91,7 @@ export function Auth({
                   onClick={() => setRole(r)}
                 >
                   <Icon name={r === "teacher" ? "presentation" : "users"} />
-                  {r === "teacher" ? t("Eğitmen") : t("Katılımcı")}
+                  {r === "teacher" ? t("Instructor") : t("Participant")}
                 </button>
               ))}
             </div>
@@ -99,33 +99,33 @@ export function Auth({
           <form onSubmit={submit}>
             {register && (
               <label>
-                {t("Ad soyad")}
+                {t("Full name")}
                 <input
                   name="name"
                   autoComplete="name"
-                  placeholder={t("Adın ve soyadın")}
+                  placeholder={t("Your full name")}
                   required
                   maxLength={80}
                 />
               </label>
             )}
             <label>
-              {t("E-posta")}
+              {t("Email")}
               <input
                 name="email"
                 type="email"
                 autoComplete="email"
-                placeholder={t("sen@ornek.com")}
+                placeholder={t("you@example.com")}
                 required
               />
             </label>
             <label>
-              {t("Şifre")}
+              {t("Password")}
               <input
                 name="password"
                 type="password"
                 autoComplete={register ? "new-password" : "current-password"}
-                placeholder={t("En az 8 karakter")}
+                placeholder={t("At least 8 characters")}
                 minLength={8}
                 maxLength={128}
                 required
@@ -134,30 +134,32 @@ export function Auth({
             <ErrorNote message={error} />
             <button className="button primary full" disabled={busy}>
               {busy
-                ? t("Biraz bekle…")
+                ? t("Please wait…")
                 : register
-                  ? t("Hesap oluştur")
-                  : t("Giriş yap")}
+                  ? t("Create account")
+                  : t("Log in")}
               <Icon name="arrow" />
             </button>
           </form>
           <p className="auth-switch">
-            {register ? t("Zaten hesabın var mı?") : t("Henüz hesabın yok mu?")}{" "}
+            {register
+              ? t("Already have an account?")
+              : t("Don’t have an account?")}{" "}
             <button onClick={() => setRegister(!register)}>
-              {register ? t("Giriş yap") : t("Hesap oluştur")}
+              {register ? t("Log in") : t("Create account")}
             </button>
           </p>
           {!participant && (
             <>
               <div className="or">
-                <span>{t("veya")}</span>
+                <span>{t("or")}</span>
               </div>
               <button className="button full" disabled={busy} onClick={demo}>
                 <Icon name="eye" />
-                {t("Örnek eğitimle dene")}
+                {t("Try a sample training")}
               </button>
               <p className="small muted center">
-                {t("Sana özel bir deneme alanı açılır.")}
+                {t("A private workspace will be created for you.")}
               </p>
             </>
           )}

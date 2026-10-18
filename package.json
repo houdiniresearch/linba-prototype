@@ -17,7 +17,9 @@
     "format": "prettier --write app components lib tests *.md docs/*.md",
     "test:report-assistant": "node --import tsx --test tests/report-chat.test.ts",
     "test:report-assistant:integration": "node --import tsx tests/report-assistant.integration.ts",
-    "test:landing": "node --import tsx --test tests/landing.test.ts"
+    "test:landing": "node --import tsx --test tests/landing.test.ts",
+    "test:product": "node --import tsx --test tests/product-ui.test.ts",
+    "test:routes": "node --import tsx --test tests/routes.test.ts"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",

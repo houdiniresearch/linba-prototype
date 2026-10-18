@@ -31,6 +31,7 @@ export type Course = {
   ownerId: string;
   name: string;
   originalName: string;
+  coverPage?: number;
   createdAt: string;
   accessDays: number;
   autoAnswer: boolean;

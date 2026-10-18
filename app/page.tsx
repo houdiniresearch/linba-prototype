@@ -4,9 +4,9 @@ import { currentUser } from "@/lib/auth";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "LİNBA | Eğitim için yapay zekâ ajanları",
+  title: "LİNBA | AI agents for training",
   description:
-    "Yapay zekâ ajanlarıyla sesli pratik yap, katılımcılarla etkileşim kur ve öğrenme sonuçlarını değerlendir.",
+    "Practice with AI agents, engage participants and explore learning outcomes.",
 };
 
 export default async function Page() {

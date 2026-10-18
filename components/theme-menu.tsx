@@ -5,9 +5,9 @@ import { useTheme } from "./theme-provider";
 import { Icon } from "./ui";
 
 const choices = [
-  { value: "light", label: "Açık", icon: "sun" },
-  { value: "dark", label: "Koyu", icon: "moon" },
-  { value: "system", label: "Sistem", icon: "monitor" },
+  { value: "light", label: "Light", icon: "sun" },
+  { value: "dark", label: "Dark", icon: "moon" },
+  { value: "system", label: "System", icon: "monitor" },
 ] as const;
 
 export function ThemeMenu() {
@@ -52,8 +52,8 @@ export function ThemeMenu() {
         className="header-round theme-trigger"
         popoverTarget={id}
         onClick={positionMenu}
-        aria-label={`${t("Görünüm")}: ${t(current.label)}`}
-        title={t("Görünüm")}
+        aria-label={`${t("Appearance")}: ${t(current.label)}`}
+        title={t("Appearance")}
       >
         <Icon name={current.icon} size={20} />
       </button>
@@ -63,9 +63,9 @@ export function ThemeMenu() {
         popover="auto"
         onToggle={(event) => setOpen(event.newState === "open")}
         className="header-popover theme-popover"
-        aria-label={t("Görünüm")}
+        aria-label={t("Appearance")}
       >
-        <h2>{t("Görünüm")}</h2>
+        <h2>{t("Appearance")}</h2>
         {choices.map((choice) => (
           <button
             key={choice.value}
