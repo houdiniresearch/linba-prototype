@@ -9,6 +9,7 @@ import "@fontsource/inter/700.css";
 import "./globals.css";
 import "./product.css";
 import "@/components/agent-identity.css";
+import "@/components/practice-workspace.css";
 
 export const metadata: Metadata = {
   title: "LİNBA — Training workspace",

@@ -1,5 +1,7 @@
 "use client";
 import { AgentMark, AgentIllustration } from "./agent-identity";
+import { PracticeWorkspace } from "./practice-workspace";
+import { PracticeClock } from "@/lib/practice-clock";
 import { OperationProgress } from "./operation-progress";
 import { ThemeMenu } from "./theme-menu";
 import { RehearsalSkeleton } from "./skeletons";
@@ -7,22 +9,13 @@ import { useLocale } from "./locale-provider";
 import { useEffect, useRef, useState } from "react";
 import type { CourseState, Rehearsal } from "@/lib/types";
 import { api, Icon, Logo, ResourceFailure, ErrorNote, useResource } from "./ui";
-import { SlideView } from "./slides";
 import {
   feedbackRequest,
   roleRepairRequest,
   participantCall,
   feedbackArguments,
 } from "@/lib/rehearsal-prompts";
-import {
-  assignVoices,
-  parsePersonaTurn,
-  voicesFor,
-  VOICE_STYLE_LABELS,
-  voiceStyle,
-  type VoiceId,
-  type VoiceStyle,
-} from "@/lib/voices";
+import { parsePersonaTurn, type VoiceId, type VoiceStyle } from "@/lib/voices";
 import {
   appendUsage,
   usageSummary,
@@ -72,6 +65,37 @@ export function RehearsalView({ id }: { id: string }) {
   } | null>(null);
   const usagePending = useRef(new Set<Promise<unknown>>()),
     speechPending = useRef(new Set<Promise<unknown>>());
+  const clock = useRef(new PracticeClock());
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [durationKnown, setDurationKnown] = useState(true);
+  const [micMuted, setMicMuted] = useState(false);
+  useEffect(() => {
+    const tick = setInterval(
+      () => setElapsedSeconds(clock.current.seconds(performance.now())),
+      1000,
+    );
+    return () => clearInterval(tick);
+  }, []);
+  function resetClock(session?: Rehearsal) {
+    clock.current.reset(session?.durationSeconds || 0);
+    setElapsedSeconds(session?.durationSeconds || 0);
+    setDurationKnown(
+      !session?.endedAt || typeof session.durationSeconds === "number",
+    );
+    setMicMuted(false);
+  }
+  function stopClock() {
+    const seconds = clock.current.stop(performance.now());
+    setElapsedSeconds(seconds);
+    return seconds;
+  }
+  function toggleMic() {
+    const muted = !micMuted;
+    stream.current?.getAudioTracks().forEach((track) => {
+      track.enabled = !muted;
+    });
+    setMicMuted(muted);
+  }
   function stopClip() {
     if (clipTurn.current) {
       playbackContext(
@@ -94,6 +118,7 @@ export function RehearsalView({ id }: { id: string }) {
     setPreviewing(null);
   }
   function close() {
+    stopClock();
     stopClip();
     activeSession.current++;
     stream.current?.getTracks().forEach((t) => t.stop());
@@ -219,6 +244,7 @@ export function RehearsalView({ id }: { id: string }) {
           !clipTurn.current.started
         ) {
           clipTurn.current.started = true;
+          setVoice("speaking");
           playbackContext(clipTurn.current, "started");
           allRemarks.current.push(
             `${rehearsal.personas[personaIndex].name}: ${line}`,
@@ -236,7 +262,6 @@ export function RehearsalView({ id }: { id: string }) {
           if (!preview) setVoice("listening");
         }
       };
-      if (!preview) setVoice("speaking");
       await audio.play();
     } catch (e) {
       if (version !== clipVersion.current) return;
@@ -303,6 +328,8 @@ export function RehearsalView({ id }: { id: string }) {
       const result = await api(`courses/${id}/rehearsal`, { audience });
       setRehearsal(result.rehearsal);
       setFeedback(undefined);
+      resetClock(result.rehearsal);
+      setIndex(0);
       setRemarks([]);
       allRemarks.current = [];
       setVoice("idle");
@@ -317,6 +344,7 @@ export function RehearsalView({ id }: { id: string }) {
     if (!rehearsal) return;
     setNotice("");
     setVoice("connecting");
+    setMicMuted(false);
     finishing.current = false;
     roleRepairUsed.current = false;
     const attempt = ++activeSession.current;
@@ -351,6 +379,9 @@ export function RehearsalView({ id }: { id: string }) {
       const dc = pc.createDataChannel("oai-events");
       channel.current = dc;
       dc.onopen = () => {
+        if (attempt !== activeSession.current) return;
+        clock.current.start(performance.now());
+        setDurationKnown(true);
         setVoice("listening");
         contextForSlide(index);
       };
@@ -485,6 +516,7 @@ export function RehearsalView({ id }: { id: string }) {
   }
   async function finish() {
     if (!rehearsal) return;
+    const durationSeconds = stopClock();
     setBusy(true);
     finishing.current = true;
     setVoice("feedback");
@@ -533,7 +565,12 @@ export function RehearsalView({ id }: { id: string }) {
       ]);
       const saved = await api(
         `courses/${id}/rehearsal`,
-        { id: rehearsal.id, remarks: allRemarks.current, feedback: result },
+        {
+          id: rehearsal.id,
+          remarks: allRemarks.current,
+          feedback: result,
+          durationSeconds,
+        },
         "PATCH",
       );
       setRehearsal(saved.rehearsal);
@@ -558,8 +595,7 @@ export function RehearsalView({ id }: { id: string }) {
     ) : (
       <RehearsalSkeleton />
     );
-  const c = data.course,
-    slide = c.slides[index];
+  const c = data.course;
   const meter = usageSummary(rehearsal?.usage || []),
     editable = voice === "idle" && !editingVoice && previewing === null;
   return (
@@ -657,6 +693,8 @@ export function RehearsalView({ id }: { id: string }) {
                   key={r.id}
                   onClick={() => {
                     setRehearsal(r);
+                    resetClock(r);
+                    setIndex(0);
                     setVoice(r.endedAt ? "ended" : "idle");
                     setAudience(r.audience);
                     setFeedback(r.feedback);
@@ -680,123 +718,41 @@ export function RehearsalView({ id }: { id: string }) {
           )}
         </main>
       ) : (
-        <div className="rehearsal-layout">
-          <main>
-            <div className="presentation-canvas">
-              <div className="canvas-join">
-                <span>
-                  {t("PRACTICE ·")} {c.name}
-                </span>
-                <Logo />
-              </div>
-              <SlideView course={c} slide={slide} />
-            </div>
-            <div className="slide-controls">
-              <button
-                className="icon-button"
-                disabled={!index}
-                aria-label={t("Previous slide")}
-                onClick={() => {
-                  setIndex(index - 1);
-                  contextForSlide(index - 1);
-                }}
-              >
-                <Icon name="left" />
-              </button>
-              <span>
-                {index + 1} / {c.slides.length}
-              </span>
-              <button
-                className="icon-button"
-                disabled={index === c.slides.length - 1}
-                aria-label={t("Next slide")}
-                onClick={() => {
-                  setIndex(index + 1);
-                  contextForSlide(index + 1);
-                }}
-              >
-                <Icon name="right" />
-              </button>
-            </div>
-            <div
-              className={`voice-console ${["listening", "speaking", "thinking", "rendering"].includes(voice) ? "connected" : ""}`}
-            >
-              <span className="mic-orb">
-                <Icon name="mic" size={28} />
-              </span>
-              <div>
-                <strong>
-                  {voice === "connecting"
-                    ? t("Connecting audio…")
-                    : voice === "listening"
-                      ? t("They’re listening")
-                      : voice === "thinking"
-                        ? t("Participants are thinking")
-                        : voice === "rendering"
-                          ? t("{name} is about to speak…", {
-                              name:
-                                rehearsal.personas[speakingPersona ?? 0]
-                                  ?.name || "",
-                            })
-                          : voice === "speaking"
-                            ? t("{name} is speaking", {
-                                name:
-                                  rehearsal.personas[speakingPersona ?? 0]
-                                    ?.name || "",
-                              })
-                            : voice === "feedback"
-                              ? t("Reviewing practice…")
-                              : voice === "ended"
-                                ? t("Practice completed")
-                                : t("Your participants are ready")}
-                </strong>
-                <p>
-                  {voice === "idle"
-                    ? t("Start practice and teach aloud.")
-                    : voice === "ended"
-                      ? t("Review your feedback below.")
-                      : t("Advance your slides and keep teaching naturally.")}
-                </p>
-              </div>
-              {voice === "idle" ? (
-                <button
-                  className="button primary"
-                  onClick={connect}
-                  disabled={previewing !== null || editingVoice}
-                >
-                  <Icon name="mic" />
-                  {t("Start practice")}
-                </button>
-              ) : [
-                  "connecting",
-                  "listening",
-                  "speaking",
-                  "thinking",
-                  "rendering",
-                ].includes(voice) ? (
-                <button
-                  className="button danger"
-                  onClick={finish}
-                  disabled={busy || voice === "connecting"}
-                >
-                  <Icon name="stop" />
-                  {t("End practice")}
-                </button>
-              ) : voice === "ended" ? (
-                <button
-                  className="button"
-                  onClick={() => {
-                    setRehearsal(undefined);
-                    setVoice("idle");
-                    setFeedback(undefined);
-                  }}
-                >
-                  {t("New practice")}
-                </button>
-              ) : (
-                <Icon name="spinner" className="spin" />
-              )}
-            </div>
+        <div className="practice-workspace-shell">
+          <PracticeWorkspace
+            key={rehearsal.id}
+            course={c}
+            rehearsal={rehearsal}
+            voice={voice}
+            slideIndex={index}
+            onSlide={(next) => {
+              setIndex(next);
+              contextForSlide(next);
+            }}
+            speakingPersona={speakingPersona}
+            elapsedSeconds={elapsedSeconds}
+            durationKnown={durationKnown}
+            micMuted={micMuted}
+            onToggleMic={toggleMic}
+            onStart={connect}
+            onEnd={finish}
+            onNew={() => {
+              close();
+              resetClock();
+              setRehearsal(undefined);
+              setVoice("idle");
+              setFeedback(undefined);
+              setNotice("");
+              setRetryLine(undefined);
+            }}
+            editable={editable}
+            previewing={previewing}
+            editingVoice={editingVoice}
+            busy={busy}
+            onChangeVoice={changeVoice}
+            onPreviewVoice={(i) => speak(i, "", true)}
+          />
+          <main className="practice-session-details">
             {voice === "feedback" && (
               <OperationProgress kind="feedback" compact />
             )}
@@ -900,8 +856,10 @@ export function RehearsalView({ id }: { id: string }) {
                 )}
               </section>
             )}
-            <div className="rehearsal-remarks">
-              <h3>{t("Participant comments")}</h3>
+            <details className="rehearsal-remarks practice-transcript">
+              <summary>
+                {t("Participant comments")} <span>{remarks.length}</span>
+              </summary>
               {remarks.length ? (
                 remarks.map((r, i) => (
                   <p key={i}>
@@ -916,114 +874,8 @@ export function RehearsalView({ id }: { id: string }) {
                   )}
                 </p>
               )}
-            </div>
-          </main>
-          <aside>
-            <div className="section-title">
-              <h2>{t("AI participant agents")}</h2>
-              <span className="count">{rehearsal.personas.length}</span>
-            </div>
-            <p className="small muted">
-              {t("Created from your audience description.")}
-            </p>
-            <details className="audience-details">
-              <summary>{t("My audience description")}</summary>
-              <p>{rehearsal.audience}</p>
-              <a className="text-button" href={`/training/${id}/practice`}>
-                {t("Prepare a different audience")}
-              </a>
             </details>
-            {assignVoices(rehearsal.personas).map((p, i) => (
-              <div
-                className={`persona ${speakingPersona === i ? "persona-speaking" : ""}`}
-                key={i}
-              >
-                <div className="persona-title">
-                  <span className={`avatar persona-${i}`}>
-                    {p.name.slice(0, 1)}
-                  </span>
-                  <h3>{p.name}</h3>
-                </div>
-                <p className="persona-summary">
-                  {p.background.split(/(?<=[.!?])\s/)[0]}
-                </p>
-                <p className="persona-approach">
-                  <span>{t("Question style")}</span>
-                  {p.behavior.split(/(?<=[.!?])\s/)[0]}
-                </p>
-                <details className="persona-details">
-                  <summary>{t("Profile and voice settings")}</summary>
-                  <p>{p.background}</p>
-                  <p className="muted">{p.behavior}</p>
-                  <div className="persona-voice-controls">
-                    <label>
-                      {t("Voice style")}
-                      <select
-                        aria-label={t("{name} voice style", { name: p.name })}
-                        value={p.gender}
-                        disabled={!editable || !!rehearsal.endedAt}
-                        onChange={(e) => {
-                          const gender = voiceStyle(e.target.value);
-                          void changeVoice(i, gender, voicesFor(gender)[0].id);
-                        }}
-                      >
-                        {Object.entries(VOICE_STYLE_LABELS).map(
-                          ([value, label]) => (
-                            <option key={value} value={value}>
-                              {t(label)}
-                            </option>
-                          ),
-                        )}
-                      </select>
-                    </label>
-                    <label>
-                      {t("Voice")}
-                      <select
-                        aria-label={t("{name} voice", { name: p.name })}
-                        value={p.voice}
-                        disabled={!editable || !!rehearsal.endedAt}
-                        onChange={(e) =>
-                          void changeVoice(
-                            i,
-                            voiceStyle(p.gender),
-                            e.target.value as VoiceId,
-                          )
-                        }
-                      >
-                        {voicesFor(voiceStyle(p.gender)).map((v) => (
-                          <option key={v.id} value={v.id}>
-                            {v.name}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    {!rehearsal.endedAt && (
-                      <button
-                        className="button"
-                        disabled={
-                          (!editable && previewing !== i) || previewing !== null
-                        }
-                        onClick={() => speak(i, "", true)}
-                      >
-                        <Icon
-                          name={previewing === i ? "spinner" : "play"}
-                          className={previewing === i ? "spin" : undefined}
-                        />
-                        {previewing === i
-                          ? t("Preparing / playing…")
-                          : t("Preview voice")}
-                      </button>
-                    )}
-                  </div>
-                </details>
-              </div>
-            ))}
-            <p className="small muted">
-              {t(
-                "Voices are AI-generated. Voice style describes timbre; preview and change it before practice. Voice previews also count toward API usage.",
-              )}
-            </p>
-          </aside>
+          </main>
         </div>
       )}
     </div>

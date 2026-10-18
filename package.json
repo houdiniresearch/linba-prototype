@@ -19,6 +19,8 @@
     "test:report-assistant:integration": "node --import tsx tests/report-assistant.integration.ts",
     "test:landing": "node --import tsx --test tests/landing.test.ts",
     "test:product": "node --import tsx --test tests/product-ui.test.ts",
+    "test:practice-workspace": "node --import tsx --test tests/practice-workspace.test.ts",
+    "test:practice-workspace:integration": "node --import tsx tests/practice-workspace.integration.ts",
     "test:routes": "node --import tsx --test tests/routes.test.ts"
   },
   "dependencies": {

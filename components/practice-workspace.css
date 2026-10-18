@@ -1,0 +1,701 @@
+.practice-workspace-shell {
+  padding: 22px clamp(16px, 2.5vw, 40px) 48px;
+  background: var(--workspace);
+}
+.practice-workbench {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+.practice-brief {
+  min-width: 0;
+  padding: 4px 0;
+}
+.practice-section-heading {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 0 0 18px;
+}
+.practice-section-heading h2 {
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.practice-section-heading > span {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.practice-audience {
+  padding: 0 0 18px;
+  border-bottom: 1px solid var(--line);
+}
+.practice-audience summary,
+.practice-profile-details summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.practice-audience summary::after,
+.practice-profile-details summary::after {
+  content: "+";
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 400;
+}
+.practice-audience[open] summary::after,
+.practice-profile-details[open] summary::after {
+  content: "−";
+}
+.practice-audience summary::-webkit-details-marker,
+.practice-profile-details summary::-webkit-details-marker {
+  display: none;
+}
+.practice-audience p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.65;
+  margin: 2px 0 0;
+  white-space: pre-line;
+}
+.practice-profile-picker {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 18px 2px 20px;
+}
+.practice-profile-picker button {
+  flex: 1 0 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 3px;
+  min-height: 82px;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  font-size: 12px;
+}
+.practice-profile-picker img {
+  border-radius: 50%;
+  object-fit: cover;
+  outline: 2px solid transparent;
+  outline-offset: 3px;
+  transition: outline-color 160ms ease;
+}
+.practice-profile-picker [aria-pressed="true"] {
+  color: var(--lilac-ink);
+  font-weight: 600;
+}
+.practice-profile-picker [aria-pressed="true"] img {
+  outline-color: var(--lilac-ink);
+}
+.practice-profile-picker button:hover {
+  background: var(--lilac-soft);
+}
+.practice-agent-profile {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+}
+.practice-profile-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.practice-profile-heading > img {
+  width: 76px;
+  height: 76px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+.practice-eyebrow {
+  color: var(--lilac-ink);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+.practice-profile-heading h3 {
+  margin: 3px 0;
+  font-size: 18px;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
+}
+.practice-profile-status {
+  font-size: 12px;
+  color: var(--muted);
+}
+.practice-agent-profile > p,
+.practice-profile-details p,
+.practice-agent-profile dd {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--muted);
+  margin: 16px 0;
+  overflow-wrap: anywhere;
+}
+.practice-agent-profile dl {
+  margin: 18px 0 0;
+}
+.practice-agent-profile dt {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.practice-agent-profile dd {
+  margin: 5px 0 16px;
+}
+.practice-profile-details {
+  border-top: 1px solid var(--line);
+}
+.practice-profile-details p {
+  margin: 4px 0 14px;
+}
+.practice-mood {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+}
+.practice-mood > span:last-child {
+  color: var(--muted);
+}
+.practice-voice-settings .persona-voice-controls {
+  margin: 4px 0 0;
+}
+.practice-voice-settings label {
+  font-size: 12px;
+}
+.practice-voice-settings select {
+  min-height: 44px;
+  font-size: 13px;
+}
+.practice-voice-settings .button {
+  width: 100%;
+  min-height: 44px;
+  font-size: 13px;
+}
+.practice-disclosure {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.65;
+  margin: 14px 4px 0;
+}
+.practice-room {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--bg);
+}
+.practice-room:fullscreen {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  border-radius: 0;
+  padding: 0 max(0px, calc((100vw - 1600px) / 2));
+}
+.practice-room-header {
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 18px;
+  border-bottom: 1px solid var(--line);
+}
+.practice-room-header > div:first-child {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+}
+.practice-room-header strong {
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+}
+.practice-session-dot {
+  flex: 0 0 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.practice-session-dot.is-connected {
+  background: var(--green);
+}
+.practice-room-course {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-left: 1px solid var(--line);
+  padding-left: 12px;
+  margin-left: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.practice-room-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.practice-timer {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.practice-room-tools .icon-button {
+  width: 44px;
+  height: 44px;
+}
+.practice-agent-strip {
+  display: flex;
+  gap: 10px;
+  padding: 16px 18px;
+  overflow-x: auto;
+  background: var(--bg);
+}
+.practice-agent-tile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 0 190px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--workspace);
+  color: var(--ink);
+  text-align: left;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+.practice-agent-tile:hover {
+  border-color: var(--brand-lilac);
+}
+.practice-agent-tile[aria-pressed="true"] {
+  border-color: var(--lilac-ink);
+}
+.practice-agent-tile.is-speaking {
+  background: var(--lilac-soft);
+  border-color: var(--lilac-ink);
+}
+.practice-tile-portrait {
+  position: relative;
+  flex: 0 0 56px;
+  height: 56px;
+}
+.practice-tile-portrait img {
+  border-radius: 8px;
+  object-fit: cover;
+}
+.practice-tile-portrait > span {
+  position: absolute;
+  right: -3px;
+  bottom: -4px;
+  font-size: 9px;
+  line-height: 16px;
+  min-width: 21px;
+  text-align: center;
+  font-weight: 600;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--lilac-ink);
+  border-radius: 4px;
+}
+.practice-tile-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.practice-tile-copy strong {
+  font-size: 13px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+.practice-agent-state {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.is-speaking .practice-agent-state {
+  color: var(--lilac-ink);
+}
+.practice-tile-mood {
+  display: flex;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.practice-speaking-bars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 12px;
+}
+.practice-speaking-bars i {
+  background: currentColor;
+  width: 2px;
+  height: 5px;
+  animation: practice-speaking 750ms ease-in-out infinite alternate;
+}
+.practice-speaking-bars i:nth-child(2) {
+  animation-delay: -260ms;
+  height: 11px;
+}
+.practice-speaking-bars i:nth-child(3) {
+  animation-delay: -480ms;
+  height: 7px;
+}
+@keyframes practice-speaking {
+  to {
+    transform: scaleY(0.4);
+  }
+}
+.practice-slide-stage {
+  height: clamp(240px, calc(100dvh - 397px), 620px);
+  display: grid;
+  place-items: center;
+  padding: 14px 22px;
+  background: var(--workspace);
+  border-block: 1px solid var(--line);
+  overflow: hidden;
+}
+.practice-slide-stage .slide-frame {
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: var(--slide-ratio, 16 / 9);
+  background: transparent;
+}
+.practice-slide-stage .slide-image {
+  object-fit: contain;
+}
+.practice-slide-stage .activity-slide {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+  padding: 24px;
+}
+.practice-slide-stage .activity-slide h2 {
+  font-size: clamp(20px, 2.3vw, 32px);
+}
+.practice-room:fullscreen .practice-slide-stage {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+.practice-slide-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 14px 4px 22px;
+  border-bottom: 1px solid var(--line);
+}
+.practice-slide-navigation > p {
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+.practice-slide-navigation nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.practice-slide-navigation nav > span {
+  font-size: 12px;
+  min-width: 42px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.practice-slide-navigation nav > span > span {
+  color: var(--muted);
+}
+.practice-slide-navigation .icon-button {
+  width: 44px;
+  height: 44px;
+}
+.practice-room-controls {
+  min-height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 22px;
+}
+.practice-connection-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.practice-connection-copy strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+.practice-connection-copy > span {
+  color: var(--muted);
+  font-size: 12px;
+}
+.practice-room-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.practice-room-actions .button {
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.practice-end {
+  color: var(--red);
+}
+.practice-finishing {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+.practice-mute {
+  position: relative;
+  width: 44px;
+  height: 44px;
+}
+.practice-mute.is-muted {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.practice-mute-slash {
+  position: absolute;
+  width: 24px;
+  height: 2px;
+  background: currentColor;
+  transform: rotate(-45deg);
+  border: 1px solid var(--bg);
+  box-sizing: content-box;
+}
+.practice-fullscreen-error {
+  padding: 0 22px 12px;
+  margin: 0;
+  color: var(--red);
+  font-size: 12px;
+}
+.practice-session-details {
+  max-width: 1600px;
+  margin: 24px auto 0;
+  padding: 0 0 0 324px;
+}
+.practice-session-details > .error-note {
+  margin-block: 16px;
+}
+.practice-session-details .rehearsal-cost {
+  margin: 16px 0;
+  background: var(--bg);
+}
+.practice-session-details .rehearsal-feedback {
+  margin: 24px 0;
+}
+.practice-transcript {
+  border-block: 1px solid var(--line);
+  margin: 20px 0 0;
+}
+.practice-transcript summary {
+  cursor: pointer;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.practice-transcript summary span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+.practice-transcript p {
+  font-size: 13px;
+}
+@media (min-width: 1600px) {
+  .practice-workbench {
+    grid-template-columns: 330px minmax(0, 1fr);
+    gap: 32px;
+  }
+  .practice-session-details {
+    padding-left: 362px;
+  }
+}
+@media (max-width: 1100px) {
+  .practice-workbench {
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 16px;
+  }
+  .practice-session-details {
+    padding-left: 276px;
+  }
+  .practice-agent-profile {
+    padding: 16px;
+  }
+  .practice-agent-tile {
+    flex-basis: 170px;
+    gap: 10px;
+  }
+  .practice-room-course {
+    display: none;
+  }
+  .practice-tile-portrait,
+  .practice-tile-portrait img {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+  }
+}
+@media (max-width: 850px) {
+  .practice-workspace-shell {
+    padding: 16px 16px 32px;
+  }
+  .practice-workbench {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .practice-room {
+    width: 100%;
+    order: -1;
+  }
+  .practice-brief {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 24px;
+  }
+  .practice-section-heading {
+    grid-column: 1 / -1;
+  }
+  .practice-profile-picker {
+    grid-column: 1;
+    grid-row: 3;
+    align-self: start;
+  }
+  .practice-agent-profile {
+    grid-column: 2;
+    grid-row: 2 / 5;
+  }
+  .practice-disclosure {
+    grid-column: 1;
+  }
+  .practice-session-details {
+    padding: 0;
+  }
+  .practice-slide-stage {
+    height: clamp(230px, 45vw, 430px);
+  }
+  .practice-room-controls {
+    padding: 16px;
+  }
+}
+@media (max-width: 520px) {
+  .practice-workspace-shell {
+    padding-inline: 10px;
+  }
+  .practice-room-header {
+    padding-inline: 12px;
+  }
+  .practice-room-tools {
+    gap: 2px;
+  }
+  .practice-agent-strip {
+    padding: 12px;
+    gap: 8px;
+  }
+  .practice-agent-tile {
+    flex-basis: 167px;
+    padding: 10px;
+  }
+  .practice-slide-stage {
+    padding: 10px;
+    height: 230px;
+  }
+  .practice-room-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .practice-room-actions {
+    justify-content: flex-end;
+  }
+  .practice-room-actions > .button {
+    flex: 1;
+  }
+  .practice-brief {
+    display: block;
+    padding: 8px;
+  }
+  .practice-profile-picker {
+    padding-block: 20px;
+  }
+  .practice-profile-heading > img {
+    width: 88px;
+    height: 88px;
+  }
+  .practice-slide-navigation {
+    padding-left: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .practice-speaking-bars i {
+    animation: none;
+  }
+  .practice-agent-tile,
+  .practice-profile-picker img {
+    transition: none;
+  }
+}
+
+/* Keep the start/end controls visible on a standard laptop viewport. */
+.rehearsal-page:has(.practice-workbench) .practice-steps {
+  padding-block: 12px;
+}
+.practice-slide-stage {
+  height: clamp(190px, calc(100dvh - 490px), 620px);
+}
+@media (max-width: 850px) {
+  .practice-slide-stage {
+    height: clamp(230px, 45vw, 430px);
+  }
+}

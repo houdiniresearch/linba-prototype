@@ -77,6 +77,7 @@ export type ActivityResponse = {
   createdAt: string;
 };
 export type Persona = {
+  portraitId?: string;
   name: string;
   background: string;
   behavior: string;
@@ -95,6 +96,7 @@ export type Rehearsal = {
   personas: Persona[];
   createdAt: string;
   endedAt?: string;
+  durationSeconds?: number;
   remarks: string[];
   usage?: import("./voice-usage").UsageEntry[];
   feedback?: { summary: string; suggestions: string[]; questions: string[] };

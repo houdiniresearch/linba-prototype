@@ -46,6 +46,7 @@ import { reportList, reportChat, sendReportMessage } from "@/lib/report-chat";
 import { VOICES, assignVoices, personaVoice, voiceStyle } from "@/lib/voices";
 import { cleanUsage, type UsageEntry } from "@/lib/voice-usage";
 import { recordRehearsalUsage } from "@/lib/rehearsal-usage";
+import { assignPortraits } from "@/lib/agent-portraits";
 import { personaSpeech } from "@/lib/persona-speech";
 import {
   buildRehearsalInstructions,
@@ -487,12 +488,13 @@ async function handle(request: Request, context: Context): Promise<Response> {
                 usage: cleanUsage(tokens),
               }),
           );
+          const rehearsalId = randomUUID();
           return json({
             rehearsal: put("rehearsal", {
-              id: randomUUID(),
+              id: rehearsalId,
               courseId: id,
               audience,
-              personas,
+              personas: assignPortraits(personas, rehearsalId),
               promptVersion: REHEARSAL_PROMPT_VERSION,
               createdAt: new Date().toISOString(),
               remarks: [],
@@ -529,7 +531,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
             throw new AppError(
               "Choose a voice matching the participant’s voice style.",
             );
-          r.personas = assignVoices(r.personas);
+          r.personas = assignVoices(assignPortraits(r.personas, r.id));
           r.personas[body.personaIndex] = {
             ...r.personas[body.personaIndex],
             gender: voiceStyle(body.gender),
@@ -537,6 +539,17 @@ async function handle(request: Request, context: Context): Promise<Response> {
           };
           return json({ rehearsal: put("rehearsal", r) });
         }
+        if (body.durationSeconds !== undefined) {
+          if (
+            !Number.isSafeInteger(body.durationSeconds) ||
+            body.durationSeconds < 0
+          )
+            throw new AppError(
+              "Practice duration must be a non-negative number of seconds.",
+            );
+          r.durationSeconds = body.durationSeconds;
+        }
+        r.personas = assignPortraits(r.personas, r.id);
         r.endedAt = new Date().toISOString();
         r.remarks = Array.isArray(body.remarks)
           ? body.remarks.slice(0, 100).map((v: unknown) => text(v))

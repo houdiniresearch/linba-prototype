@@ -1,5 +1,41 @@
 /** Turkish translations for the shared product interface. Keys are English. */
 export const productTurkish: Record<string, string> = {
+  "Your microphone is muted": "Mikrofonun kapalı",
+  "Session ended": "Oturum tamamlandı",
+  Speaking: "Konuşuyor",
+  "Preparing to speak": "Yanıtını hazırlıyor",
+  Listening: "Dinliyor",
+  Ready: "Hazır",
+  "Practice brief": "Pratik hazırlığı",
+  "Your practice audience": "Pratik kitlen",
+  "Audience brief": "Kitle tanımın",
+  "Agent profiles": "Ajan profilleri",
+  "View {name}’s profile": "{name} profilini aç",
+  "AI participant": "Yapay zekâ katılımcı",
+  "Learning goal": "Öğrenme hedefi",
+  "Approach and prior knowledge": "Yaklaşımı ve ön bilgisi",
+  "Emotion signals will be available when configured.":
+    "Duygu durumu, yapılandırıldığında burada görünecek.",
+  Emotion: "Duygu durumu",
+  "Not available yet": "Henüz mevcut değil",
+  "Voice settings": "Ses ayarları",
+  "Fictional AI participants. All agents take part; selecting a profile only changes this panel.":
+    "Katılımcılar kurgusal yapay zekâ ajanlarıdır. Tümü pratiğe katılır; profil seçimi yalnızca bu paneli değiştirir.",
+  "Practice room": "Pratik odası",
+  "Practice duration": "Pratik süresi",
+  "Connected practice time": "Bağlantı açıkken geçen pratik süresi",
+  "Duration was not recorded for this session.":
+    "Bu oturumun süresi kaydedilmemiş.",
+  "Toggle full screen": "Tam ekranı aç veya kapat",
+  "No training slides available.": "Gösterilecek eğitim slaytı yok.",
+  "Slide navigation": "Slaytlar arasında gezinme",
+  "Your feedback focuses on your teaching performance.":
+    "Geri bildirim, senin eğitmenlik performansına odaklanır.",
+  "Unmute microphone": "Mikrofonu aç",
+  "Mute microphone": "Mikrofonu kapat",
+  "Preparing feedback": "Geri bildirim hazırlanıyor",
+  "Full screen is unavailable in this browser.":
+    "Bu tarayıcıda tam ekran kullanılamıyor.",
   "Training materials": "Eğitim kaynakları",
   "Learning agent settings": "Öğrenme ajanı ayarları",
   "Learning agent access after training":
