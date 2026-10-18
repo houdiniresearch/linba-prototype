@@ -235,12 +235,7 @@ export function HeaderActions({
               className={`waitlist-emblem ${registered ? "is-registered" : ""}`}
               aria-hidden="true"
             >
-              <Icon name={registered ? "check" : "star"} size={27} />
-              {!registered && (
-                <span className="waitlist-emblem-spark">
-                  <Icon name="sparkle" size={17} />
-                </span>
-              )}
+              <Icon name={registered ? "check" : "agent"} size={32} />
             </span>
             <span>
               {t(

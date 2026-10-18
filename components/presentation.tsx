@@ -195,7 +195,7 @@ export function Preview({ id }: { id: string }) {
             ) : (
               <div className="preview-chat">
                 <span className="assistant-avatar">
-                  <Icon name="sparkle" />
+                  <Icon name="agent" />
                 </span>
                 <h3>{t("Your learning agent")}</h3>
                 <p>

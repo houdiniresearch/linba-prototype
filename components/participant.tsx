@@ -298,7 +298,7 @@ function ParticipantCourse({
           <div className="chat-messages">
             <div className="chat-intro">
               <span className="assistant-avatar">
-                <Icon name="sparkle" />
+                <Icon name="agent" />
               </span>
               <h2>{t("Your learning agent")}</h2>
               <p>
@@ -334,7 +334,7 @@ function ParticipantCourse({
                     <Icon
                       name={
                         q.answer
-                          ? "sparkle"
+                          ? "agent"
                           : q.status === "pending"
                             ? "spinner"
                             : "presentation"

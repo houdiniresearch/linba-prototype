@@ -1,5 +1,6 @@
 "use client";
 import { useLocale } from "./locale-provider";
+import { AgentMark } from "./agent-identity";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -24,7 +25,6 @@ import {
   Users,
   Chats,
   Lightning,
-  Sparkle,
   Check,
   Clock,
   SignOut,
@@ -71,7 +71,7 @@ const icons = {
   users: Users,
   chat: Chats,
   activity: Lightning,
-  sparkle: Sparkle,
+  agent: AgentMark,
   check: Check,
   clock: Clock,
   logout: SignOut,
@@ -106,6 +106,7 @@ export function Icon({
   size?: number;
   className?: string;
 }) {
+  if (name === "agent") return <AgentMark size={size} {...props} />;
   const Component = icons[name];
   return (
     <Component size={size} weight="regular" aria-hidden="true" {...props} />

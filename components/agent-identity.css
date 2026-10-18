@@ -1,0 +1,285 @@
+/* LİNBA's original folded-page symbol identifies agent-authored content. */
+.agent-mark {
+  display: inline-block;
+  flex: 0 0 auto;
+  overflow: hidden;
+  vertical-align: middle;
+}
+.agent-source-folio {
+  position: relative;
+  flex-shrink: 0;
+  width: 172px;
+  height: 134px;
+  margin-bottom: 28px;
+  isolation: isolate;
+}
+.agent-folio-back {
+  position: absolute;
+  inset: 0 0 16px 24px;
+  background: var(--lilac-soft);
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+}
+.agent-folio-back::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 18px;
+  height: 18px;
+  background: var(--brand-lilac);
+  opacity: 0.45;
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+}
+.agent-folio-index {
+  position: absolute;
+  left: 0;
+  top: 24px;
+  display: grid;
+  gap: 8px;
+}
+.agent-folio-index i {
+  width: 18px;
+  height: 13px;
+  border-radius: 3px 0 0 3px;
+  background: var(--line);
+}
+.agent-folio-index i:first-child {
+  background: var(--brand-lilac);
+}
+.agent-folio-page {
+  position: absolute;
+  inset: 12px 12px 0 9px;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) 34px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--bg);
+}
+.agent-folio-source {
+  overflow: hidden;
+  background: var(--workspace);
+}
+.agent-folio-source img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.agent-folio-source-fallback {
+  padding: 14px 16px;
+  display: grid;
+  gap: 8px;
+}
+.agent-folio-source-fallback span {
+  height: 3px;
+  background: var(--line);
+  width: 80%;
+}
+.agent-folio-source-fallback span:first-child {
+  width: 56%;
+  background: var(--brand-lilac);
+}
+.agent-folio-source-fallback span:last-child {
+  width: 65%;
+}
+.agent-folio-annotation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 3px 8px 3px 12px;
+  border-top: 1px solid var(--line);
+}
+.agent-folio-references {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.agent-folio-references i {
+  flex-shrink: 0;
+  width: 13px;
+  height: 4px;
+  border-radius: 1px;
+  background: var(--line);
+}
+.agent-folio-references i:first-child {
+  width: 24px;
+  background: var(--brand-lilac);
+}
+.agent-folio-voice {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  color: var(--lilac-ink);
+  height: 26px;
+}
+.agent-folio-voice i {
+  flex-shrink: 0;
+  width: 2px;
+  border-radius: 2px;
+  background: currentColor;
+}
+.report-chat-welcome > .agent-source-folio {
+  margin-bottom: 28px;
+}
+.report-suggestions button {
+  gap: 16px;
+}
+.report-suggestions button > span {
+  flex: 1;
+}
+.report-suggestions button > svg:last-child {
+  width: 18px;
+  height: 18px;
+}
+.report-assistant-message > .agent-mark {
+  margin-top: 1px;
+}
+.assistant-avatar:has(> .agent-mark) {
+  background: transparent;
+  border-radius: 0;
+}
+.assistant-avatar > .agent-mark {
+  width: 32px;
+  height: 32px;
+}
+.operation-scene {
+  width: 100px;
+  height: 98px;
+}
+.operation-source-frame {
+  position: absolute;
+  inset: 0 18px 8px 0;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--bg);
+  padding: 14px;
+  text-align: left;
+  color: var(--muted);
+}
+.operation-source-rules {
+  display: grid;
+  gap: 5px;
+  margin-top: 10px;
+}
+.operation-source-rules i {
+  height: 2px;
+  background: var(--line);
+}
+.operation-source-rules i:last-child {
+  width: 65%;
+}
+.operation-agent-seal {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  background: var(--bg);
+}
+.operation-compact .operation-scene {
+  width: 88px;
+  height: 82px;
+}
+.waitlist-emblem:has(> .agent-mark) {
+  background: transparent;
+}
+@media (max-width: 760px) {
+  .report-chat-welcome > .agent-source-folio {
+    width: 146px;
+    height: 112px;
+    margin-bottom: 20px;
+  }
+  .report-chat-welcome {
+    padding-block: 28px;
+  }
+  .report-suggestions button > svg:last-child {
+    display: block;
+  }
+}
+@media (max-width: 760px) and (max-height: 780px) {
+  .report-chat-welcome {
+    padding: 14px 24px;
+  }
+  .report-chat-welcome > .agent-source-folio {
+    width: 112px;
+    height: 78px;
+    margin-bottom: 14px;
+  }
+}
+@media (max-width: 760px) and (max-height: 660px) {
+  .report-chat-welcome > .agent-source-folio {
+    display: none;
+  }
+  .report-chat-welcome {
+    flex: 0 0 auto;
+    padding-block: 18px;
+  }
+  .report-chat-welcome p {
+    display: none;
+  }
+}
+
+.rehearsal-setup {
+  margin-block: 32px;
+  padding-block: 32px;
+}
+.practice-introduction {
+  display: grid;
+  grid-template-columns: 172px minmax(0, 1fr);
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 28px;
+}
+.practice-introduction > .agent-source-folio {
+  margin-bottom: 0;
+}
+.practice-introduction p {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.8;
+  margin: 0;
+}
+@media (max-width: 760px) {
+  .rehearsal-setup {
+    margin-block: 0;
+    padding-block: 28px;
+  }
+  .practice-introduction {
+    grid-template-columns: minmax(0, 1fr) 96px;
+    column-gap: 16px;
+    row-gap: 18px;
+  }
+  .practice-introduction-copy {
+    display: contents;
+  }
+  .practice-introduction > .agent-source-folio {
+    grid-column: 2;
+    grid-row: 1;
+    width: 96px;
+    height: 96px;
+  }
+  .practice-introduction h2 {
+    grid-column: 1;
+    grid-row: 1;
+    margin-bottom: 0;
+  }
+  .practice-introduction p {
+    grid-column: 1 / -1;
+  }
+}
+
+.button.primary > .agent-mark {
+  filter: brightness(0) invert(1);
+}

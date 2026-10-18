@@ -778,20 +778,6 @@ label small {
   color: var(--lilac-ink);
   border-radius: 14px;
 }
-.waitlist-emblem-spark {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  right: -9px;
-  bottom: -5px;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--mint);
-  color: var(--mint-ink);
-  outline: 4px solid var(--bg);
-}
 .waitlist-emblem.is-registered {
   background: var(--mint);
   color: var(--mint-ink);
@@ -3914,66 +3900,6 @@ tbody tr:hover {
   height: 112px;
   flex-shrink: 0;
 }
-.operation-tile {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  width: 72px;
-  height: 88px;
-  color: var(--lilac-ink);
-  background: var(--lilac-soft);
-}
-.operation-tile-back {
-  left: 10px;
-  top: 5px;
-  transform: rotate(-12deg);
-  animation: operation-back 3s ease-in-out infinite;
-}
-.operation-tile-front {
-  left: 47px;
-  top: 18px;
-  background: var(--accent-soft);
-  color: var(--accent);
-  flex-direction: column;
-  gap: 10px;
-  transform: rotate(7deg);
-  animation: operation-front 3s ease-in-out infinite;
-}
-.operation-mini-lines {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 32px;
-}
-.operation-mini-lines i {
-  display: block;
-  height: 3px;
-  border-radius: 2px;
-  background: currentColor;
-  opacity: 0.25;
-}
-.operation-mini-lines i:last-child {
-  width: 65%;
-}
-.operation-spark {
-  position: absolute;
-  right: 0;
-  top: 0;
-  color: var(--accent);
-  animation: operation-spark 3s ease-in-out infinite;
-}
-.operation-personas .operation-tile {
-  width: 68px;
-  height: 76px;
-}
-.operation-personas .operation-tile-back {
-  top: 18px;
-}
-.operation-personas .operation-tile-front {
-  top: 28px;
-}
 .operation-copy {
   max-width: 44ch;
 }
@@ -4032,35 +3958,6 @@ tbody tr:hover {
 form[hidden],
 .modal-actions[hidden] {
   display: none;
-}
-@keyframes operation-front {
-  0%,
-  100% {
-    transform: translateY(0) rotate(7deg);
-  }
-  50% {
-    transform: translateY(-6px) rotate(3deg);
-  }
-}
-@keyframes operation-back {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-12deg);
-  }
-  50% {
-    transform: translateY(3px) rotate(-7deg);
-  }
-}
-@keyframes operation-spark {
-  0%,
-  100% {
-    opacity: 0.45;
-    transform: scale(0.85);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1);
-  }
 }
 @keyframes operation-dot {
   0%,

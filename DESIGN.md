@@ -126,3 +126,13 @@ Ajan deneyimi alanı görselsizdir: kısa başlık ve açıklama, içeriğe gör
 Karşılama ekranının arka planında ana sayfayla aynı `/landing/isometric-grid.svg` deseni düşük opaklıkta kullanılır; merkezde maske ile silikleşerek içeriği okunaklı tutar. Ajan deneyimi düğmesinin altında kişiye özel çalışma alanı açılacağı belirtilir; “demo” sözcüğü gösterilmez.
 
 Aynı hafif geometrik desen beta giriş ve hesap oluşturma durumlarında da uygulanır. Karşılama ve Auth ekranları desen stilini ortak CSS seçicilerinden alır; form yüzeyi opak, merkezdeki desen silik kalır.
+
+## Agent identity — 18 October 2026
+
+Avoid generic AI sparkles, magic wands, star badges and decorative emoji substitutes. Agent authorship uses the original folded LİNBA symbol through `AgentMark`; its geometry and proportions remain unchanged. On saturated primary buttons it uses the white silhouette for contrast. This is an application of the existing identity, not a replacement logo.
+
+`AgentSourceFolio` gives report and practice entry states a source-based visual: the actual training's first page, a flat file index, the folded-page brand detail and a small agent signature. The practice variant uses a static voice motif; it is not an audio meter. No generated success metrics or invented analytics appear in these visuals. If an image is missing, a quiet document fallback replaces it.
+
+Suggested questions do not repeat an agent icon in every row. Standard functional icons remain for navigation, microphone, playback, sources and actions. Processing views pair the actual operation with the agent signature and the existing indeterminate status indicator; floating decorative cards and sparkle animations are removed. Decoration is hidden from assistive technology, does not animate continuously and does not replace readable state labels. All new visuals inherit existing light/dark tokens and work at narrow widths.
+
+Implementation: `components/agent-identity.tsx` and `components/agent-identity.css`. Use this vocabulary across product and landing examples instead of introducing unrelated AI symbols.

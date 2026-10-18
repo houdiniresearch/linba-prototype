@@ -158,7 +158,7 @@ function AudienceDemo({
           </div>
           <div className="audience-chat-answer">
             <span className="audience-message-label">
-              <Icon name="sparkle" size={16} />
+              <Icon name="agent" size={16} />
               {t("Report agent")}
             </span>
             <p>
@@ -181,7 +181,7 @@ function AudienceDemo({
           </div>
           <div className="audience-chat-answer">
             <span className="audience-message-label">
-              <Icon name="sparkle" size={16} />
+              <Icon name="agent" size={16} />
               {t("Report agent")}
             </span>
             <p>
@@ -211,7 +211,7 @@ function AudienceDemo({
             )}
           </blockquote>
           <span className="audience-message-label">
-            <Icon name="sparkle" size={16} />
+            <Icon name="agent" size={16} />
             {t("AI participant agents")}
           </span>
           <div className="audience-persona-list">
@@ -279,7 +279,7 @@ function AudienceDemo({
         </div>
         <div className="audience-demo-scene" data-active={scene === 2}>
           <span className="audience-message-label">
-            <Icon name="sparkle" size={16} />
+            <Icon name="agent" size={16} />
             {t("Your practice performance")}
           </span>
           <h4 className="audience-scene-title">
@@ -348,7 +348,7 @@ function AudienceDemo({
             </div>
             <span className="audience-analysis-connector" />
             <span className="audience-analysis-core">
-              <Icon name="sparkle" size={32} />
+              <Icon name="agent" size={32} />
             </span>
             <span className="audience-analysis-connector" />
             <div className="audience-analysis-groups">
@@ -358,7 +358,7 @@ function AudienceDemo({
           </div>
           <div className="audience-response-analysis">
             <span className="audience-message-label">
-              <Icon name="sparkle" size={16} />
+              <Icon name="agent" size={16} />
               {t("AI analysis")}
             </span>
             <p>
@@ -451,7 +451,7 @@ function AudienceDemo({
       <div className="audience-demo-scene" data-active={scene === 1}>
         <div className="audience-chat-answer">
           <span className="audience-message-label">
-            <Icon name="sparkle" size={16} />
+            <Icon name="agent" size={16} />
             {t("Post-training assistant")}
           </span>
           <p>

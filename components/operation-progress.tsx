@@ -1,6 +1,7 @@
 "use client";
 
 import { Icon } from "./ui";
+import { AgentMark } from "./agent-identity";
 import { useLocale } from "./locale-provider";
 
 type Operation = "training" | "personas" | "report" | "feedback" | "activity";
@@ -56,18 +57,16 @@ export function OperationProgress({
       aria-atomic="true"
     >
       <div className="operation-scene" aria-hidden="true">
-        <span className="operation-tile operation-tile-back">
-          <Icon name={operation.icon} size={24} />
-        </span>
-        <span className="operation-tile operation-tile-front">
-          <Icon name={operation.icon} size={32} />
-          <span className="operation-mini-lines">
+        <div className="operation-source-frame">
+          <Icon name={operation.icon} size={25} />
+          <span className="operation-source-rules">
+            <i />
             <i />
             <i />
           </span>
-        </span>
-        <span className="operation-spark">
-          <Icon name="sparkle" size={20} />
+        </div>
+        <span className="operation-agent-seal">
+          <AgentMark size={35} />
         </span>
       </div>
       <div className="operation-copy">

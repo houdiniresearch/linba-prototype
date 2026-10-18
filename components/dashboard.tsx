@@ -175,7 +175,7 @@ export function CreateTraining({
         <details className="training-access-settings">
           <summary>
             <span>
-              <Icon name="sparkle" size={18} />
+              <Icon name="agent" size={18} />
               {t("Learning agent settings")}
             </span>
             <span>

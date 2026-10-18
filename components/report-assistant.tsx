@@ -1,5 +1,6 @@
 "use client";
 import { ThinkingDots } from "./operation-progress";
+import { AgentMark, AgentSourceFolio } from "./agent-identity";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { User } from "@/lib/types";
@@ -33,7 +34,7 @@ export function ReportAssistantLink({ id }: { id?: string }) {
       target="_blank"
       rel="noreferrer"
     >
-      <Icon name="sparkle" size={18} />
+      <AgentMark size={20} />
       {t("Report agent")}
       <Icon name="external" size={16} />
     </a>
@@ -380,7 +381,7 @@ function ReportConversation({ report }: { report: ReportItem }) {
                   {turn.question}
                 </div>
                 <div className="report-assistant-message">
-                  <Icon name="sparkle" size={23} />
+                  <AgentMark size={26} />
                   <div>
                     <span className="sr-only">{t("Report agent")}: </span>
                     <p>{turn.answer}</p>
@@ -414,7 +415,7 @@ function ReportConversation({ report }: { report: ReportItem }) {
                   className="report-assistant-message report-answer-pending"
                   role="status"
                 >
-                  <Icon name="sparkle" size={23} />
+                  <AgentMark size={26} />
                   <span>{t("Reviewing your report…")}</span>
                   <ThinkingDots />
                 </div>
@@ -425,7 +426,11 @@ function ReportConversation({ report }: { report: ReportItem }) {
         </div>
       ) : (
         <div className="report-chat-welcome">
-          <Icon name="sparkle" size={34} />
+          <AgentSourceFolio
+            key={report.id}
+            courseId={report.id}
+            pageNumber={report.coverPage}
+          />
           <h2>{t("Let’s explore this report together.")}</h2>
           <p>
             {t(
@@ -443,7 +448,6 @@ function ReportConversation({ report }: { report: ReportItem }) {
                 disabled={!chat.data?.aiReady}
                 onClick={() => void send(t(suggestion))}
               >
-                <Icon name="sparkle" size={17} />
                 <span>{t(suggestion)}</span>
                 <Icon name="arrow" size={15} />
               </button>

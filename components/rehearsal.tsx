@@ -1,4 +1,5 @@
 "use client";
+import { AgentMark, AgentSourceFolio } from "./agent-identity";
 import { OperationProgress } from "./operation-progress";
 import { ThemeMenu } from "./theme-menu";
 import { RehearsalSkeleton } from "./skeletons";
@@ -599,15 +600,21 @@ export function RehearsalView({ id }: { id: string }) {
       </ol>
       {!rehearsal ? (
         <main className="rehearsal-setup">
-          <span className="empty-icon">
-            <Icon name="mic" size={32} />
-          </span>
-          <h2>{t("Prepare with AI participant agents")}</h2>
-          <p>
-            {t(
-              "Who will you teach? Describe their experience, familiarity with the subject and expectations in your own words.",
-            )}
-          </p>
+          <div className="practice-introduction">
+            <AgentSourceFolio
+              courseId={c.id}
+              pageNumber={c.pages[0]?.number}
+              kind="practice"
+            />
+            <div className="practice-introduction-copy">
+              <h2>{t("Prepare with AI participant agents")}</h2>
+              <p>
+                {t(
+                  "Who will you teach? Describe their experience, familiarity with the subject and expectations in your own words.",
+                )}
+              </p>
+            </div>
+          </div>
           {busy && <OperationProgress kind="personas" />}
           <form onSubmit={personas} hidden={busy}>
             <label>
@@ -631,7 +638,7 @@ export function RehearsalView({ id }: { id: string }) {
             </p>
             <ErrorNote message={notice} />
             <button className="button primary" disabled={busy || !data.aiReady}>
-              <Icon name="sparkle" />
+              <AgentMark />
               {busy
                 ? t("Preparing participants…")
                 : t("Create participant agents")}
@@ -870,7 +877,7 @@ export function RehearsalView({ id }: { id: string }) {
             {feedback && (
               <section className="report-section rehearsal-feedback">
                 <span className="ai-label">
-                  <Icon name="sparkle" />
+                  <AgentMark />
                   {t("PRACTICE FEEDBACK")}
                 </span>
                 <h2>{t("For your next session")}</h2>

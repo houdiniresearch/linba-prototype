@@ -119,7 +119,7 @@ function ActivityEditor({
             disabled={busy}
             onClick={generate}
           >
-            <Icon name="sparkle" />
+            <Icon name="agent" />
             {busy ? t("Preparing…") : t("Generate from this slide with AI")}
           </button>
           <p className="small muted">
@@ -731,7 +731,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                   </button>
                 </div>
                 <div className="tool-block">
-                  <Icon name="sparkle" />
+                  <Icon name="agent" />
                   <strong>{t("Learning agent")}</strong>
                   <p>
                     {t(
@@ -761,7 +761,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                 </p>
                 {active.activity?.aiGenerated && (
                   <span className="ai-label">
-                    <Icon name="sparkle" size={16} />
+                    <Icon name="agent" size={16} />
                     {t("Generated with AI")}
                   </span>
                 )}
