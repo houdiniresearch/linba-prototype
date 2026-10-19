@@ -12,6 +12,10 @@
   --accent: light-dark(oklch(0.531 0.214 3.02), oklch(0.8 0.14 350));
   --accent-hover: light-dark(oklch(0.4788 0.1934 1.86), oklch(0.88 0.09 350));
   --accent-soft: light-dark(oklch(0.9673 0.0167 343.61), oklch(0.27 0.008 310));
+  --mint-soft: oklch(0.948 0.039 157);
+  --mint-soft-hover: oklch(0.912 0.046 157);
+  --mint-soft-ink: oklch(0.39 0.061 160);
+  --selection: light-dark(oklch(0.965 0.004 285), oklch(0.285 0.004 285));
   --mint: oklch(0.8394 0.1416 176.11);
   --mint-hover: oklch(0.7897 0.139 175.38);
   --mint-ink: oklch(0.3243 0.0485 178.27);

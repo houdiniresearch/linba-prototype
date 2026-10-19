@@ -5,7 +5,12 @@ import { ReportAssistantLink } from "./report-assistant-link";
 import { Report } from "./training-report";
 import { HomeUpdates } from "./home-updates";
 import { AccountSettings, WorkspaceHelp } from "./account-settings";
-import { DateFilter, GroupManager, TrainingCardMenu } from "./library-controls";
+import {
+  DateFilter,
+  GroupManager,
+  TrainingCardMenu,
+  TrainingGroups,
+} from "./library-controls";
 import { ALL_TIME, withinLibraryPeriod } from "@/lib/library-filters";
 import type { TrainingGroup } from "@/lib/workspace-library";
 import {
@@ -272,14 +277,23 @@ export function Dashboard() {
     [groupOpen, setGroupOpen] = useState(false),
     [waitlistRequest, setWaitlistRequest] = useState(0),
     [groupFilter, setGroupFilter] = useState("all");
+  const activeGroup = useRef<HTMLButtonElement>(null),
+    newTrainingTrigger = useRef<HTMLButtonElement>(null);
+  const [libraryNotice, setLibraryNotice] = useState<{
+    message: string;
+    groupId?: string;
+    trash?: boolean;
+  } | null>(null);
   const [trainingPeriod, setTrainingPeriod] = useState(ALL_TIME),
     [reportPeriod, setReportPeriod] = useState(ALL_TIME);
   const settingsTrigger = useRef<HTMLElement | null>(null),
     helpTrigger = useRef<HTMLElement | null>(null),
     groupTrigger = useRef<HTMLElement | null>(null);
   function openSettings(trigger?: HTMLElement) {
-    settingsTrigger.current =
-      trigger || (document.activeElement as HTMLElement);
+    setMobile(false);
+    settingsTrigger.current = mobile
+      ? mobileMenuTrigger.current
+      : trigger || (document.activeElement as HTMLElement);
     setAccountOpen(true);
   }
   const [view, setView] = useState("home"),
@@ -406,11 +420,26 @@ export function Dashboard() {
             b.createdAt.localeCompare(a.createdAt)
           : b.createdAt.localeCompare(a.createdAt),
       );
+  const groupCounts: Record<string, number> = { all: 0, ungrouped: 0 };
+  for (const course of visibleTrainingSessions(
+    (courses.data?.courses || []).filter((course) => !course.trashedAt),
+  )) {
+    groupCounts.all++;
+    const key = course.groupId || "ungrouped";
+    groupCounts[key] = (groupCounts[key] || 0) + 1;
+  }
+  const emptyGroup =
+    view === "courses" &&
+    groupFilter !== "all" &&
+    !search &&
+    trainingPeriod.period === "all" &&
+    !groupCounts[groupFilter];
   const hasTrainingFilters =
     !!search ||
     (view === "courses" &&
       (groupFilter !== "all" || trainingPeriod.period !== "all"));
   function change(next: string) {
+    setLibraryNotice(null);
     setView(next);
     setReport("");
     setMobile(false);
@@ -522,7 +551,10 @@ export function Dashboard() {
           </button>
           <button
             onClick={(event) => {
-              helpTrigger.current = event.currentTarget;
+              helpTrigger.current = mobile
+                ? mobileMenuTrigger.current
+                : event.currentTarget;
+              setMobile(false);
               setHelpOpen(true);
             }}
           >
@@ -531,7 +563,7 @@ export function Dashboard() {
           </button>
         </div>
       </aside>
-      <main className="dashboard-main">
+      <main className={`dashboard-main dashboard-view-${view}`}>
         {view === "trash" ? (
           <TrainingTrash
             courses={courses.data?.courses}
@@ -554,8 +586,24 @@ export function Dashboard() {
                 </div>
                 <ReportAssistantLink />
               </div>
-              <div className="library-toolbar">
+              <div className="library-toolbar report-library-toolbar">
+                <span className="library-result-count" role="status">
+                  {courses.data
+                    ? t("{count} sessions", { count: reports.length })
+                    : t("Loading…")}
+                </span>
                 <DateFilter value={reportPeriod} onChange={setReportPeriod} />
+                {(search || reportPeriod.period !== "all") && (
+                  <button
+                    className="text-button library-clear"
+                    onClick={() => {
+                      setSearch("");
+                      setReportPeriod(ALL_TIME);
+                    }}
+                  >
+                    {t("Clear filters")}
+                  </button>
+                )}
               </div>
               {!courses.data ? (
                 courses.error ? (
@@ -567,7 +615,7 @@ export function Dashboard() {
                   <ReportTableSkeleton />
                 )
               ) : reports.length ? (
-                <div className="table-wrap">
+                <div className="table-wrap session-report-table">
                   <table>
                     <thead>
                       <tr>
@@ -595,9 +643,15 @@ export function Dashboard() {
                             </button>
                           </td>
                           <td>
-                            {c.startedAt ? dateTime(c.startedAt, locale) : "—"}
+                            {c.startedAt ? (
+                              <ReportDate value={c.startedAt} />
+                            ) : (
+                              "—"
+                            )}
                           </td>
-                          <td>{c.endedAt && dateTime(c.endedAt, locale)}</td>
+                          <td>
+                            {c.endedAt && <ReportDate value={c.endedAt} />}
+                          </td>
                           <td>
                             {learningAccess(c).canAsk
                               ? t("{days} days remaining", {
@@ -655,61 +709,87 @@ export function Dashboard() {
                   </p>
                 </div>
               </div>
-              <div className="page-actions">
+              <div
+                className={`page-actions ${view === "courses" ? "library-actions" : ""}`}
+              >
                 <button
+                  ref={newTrainingTrigger}
                   className="button primary"
                   onClick={() => setCreate(true)}
                 >
                   <Icon name="plus" />
                   {t("New training")}
                 </button>
+                {view === "courses" && (
+                  <div className="library-toolbar">
+                    <DateFilter
+                      value={trainingPeriod}
+                      onChange={setTrainingPeriod}
+                    />
+                    {hasTrainingFilters && (
+                      <button
+                        className="text-button library-clear"
+                        onClick={() => {
+                          setSearch("");
+                          setGroupFilter("all");
+                          setTrainingPeriod(ALL_TIME);
+                        }}
+                      >
+                        {t("Clear filters")}
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
               {view === "courses" && (
-                <div className="library-toolbar">
-                  <label className="library-group-filter">
-                    <span className="sr-only">{t("Training group")}</span>
-                    <select
-                      aria-label={t("Training group")}
-                      value={groupFilter}
-                      onChange={(event) => setGroupFilter(event.target.value)}
-                    >
-                      <option value="all">{t("All groups")}</option>
-                      <option value="ungrouped">{t("Ungrouped")}</option>
-                      {groups.data?.groups.map((group) => (
-                        <option key={group.id} value={group.id}>
-                          {group.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <DateFilter
-                    value={trainingPeriod}
-                    onChange={setTrainingPeriod}
-                  />
-                  <button
-                    className="button library-manage-groups"
-                    onClick={(event) => {
-                      groupTrigger.current = event.currentTarget;
+                <>
+                  <TrainingGroups
+                    groups={groups.data?.groups || []}
+                    activeRef={activeGroup}
+                    counts={groupCounts}
+                    loading={!courses.data}
+                    value={groupFilter}
+                    onChange={setGroupFilter}
+                    onManage={(trigger) => {
+                      groupTrigger.current = trigger;
                       setGroupOpen(true);
                     }}
-                  >
-                    {t("Manage groups")}
-                  </button>
+                  />
                   <ErrorNote message={groups.error} />
-                </div>
+                </>
               )}
               {courses.data && courses.error && (
                 <ErrorNote message={courses.error} />
               )}
-              <section className="training-section">
-                <div className="section-title">
+              <section
+                className="training-section"
+                aria-label={t(
+                  view === "home" ? "Recent training" : "Training library",
+                )}
+              >
+                <div
+                  className={
+                    view === "courses"
+                      ? "sr-only"
+                      : `section-title ${view === "courses" ? "library-section-title" : ""}`
+                  }
+                >
                   <h2>
                     {search
                       ? t("Search results")
                       : view === "home"
                         ? t("Recent training")
-                        : t("All training")}
+                        : groupFilter !== "all"
+                          ? groups.data?.groups.find(
+                              (group) => group.id === groupFilter,
+                            )?.name || t("Ungrouped")
+                          : t("All training")}
                   </h2>
+                  {view === "courses" && courses.data && (
+                    <span className="library-result-count" role="status">
+                      {t("{count} training", { count: trainingList.length })}
+                    </span>
+                  )}
                   {view === "home" && (
                     <button
                       className="text-button"
@@ -764,15 +844,19 @@ export function Dashboard() {
                                 <h3>{c.name}</h3>
                                 <div className="card-meta">
                                   <span>
-                                    {t("Session {number}", {
-                                      number: c.sessionNumber || 1,
-                                    })}{" "}
-                                    ·{" "}
+                                    {(c.sessionNumber || 1) > 1 && (
+                                      <>
+                                        {t("Session {number}", {
+                                          number: c.sessionNumber || 1,
+                                        })}{" "}
+                                        ·{" "}
+                                      </>
+                                    )}
                                     {dateTime(
                                       c.startedAt || c.createdAt,
                                       locale,
                                     )}
-                                    {c.groupId && (
+                                    {c.groupId && view === "home" && (
                                       <small>
                                         {
                                           groups.data?.groups.find(
@@ -800,7 +884,31 @@ export function Dashboard() {
                             <TrainingCardMenu
                               course={c}
                               groups={groups.data?.groups || []}
-                              onChanged={courses.refresh}
+                              onChanged={async (change) => {
+                                await courses.refresh();
+                                setLibraryNotice({
+                                  message:
+                                    change.action === "trash"
+                                      ? t("{name} moved to Trash.", {
+                                          name: change.name,
+                                        })
+                                      : t("Moved to {group}.", {
+                                          group:
+                                            groups.data?.groups.find(
+                                              (group) =>
+                                                group.id === change.groupId,
+                                            )?.name || t("Ungrouped"),
+                                        }),
+                                  groupId:
+                                    change.action === "group"
+                                      ? change.groupId || "ungrouped"
+                                      : undefined,
+                                  trash: change.action === "trash",
+                                });
+                                if (view === "courses")
+                                  activeGroup.current?.focus();
+                                else newTrainingTrigger.current?.focus();
+                              }}
                             />
                           </article>
                         </Fragment>
@@ -809,19 +917,36 @@ export function Dashboard() {
                 ) : (
                   <Empty
                     title={
-                      hasTrainingFilters
-                        ? t("No matching training found")
-                        : t("Create your first training")
+                      emptyGroup
+                        ? t("This group is ready for your training")
+                        : hasTrainingFilters
+                          ? t("No matching training found")
+                          : t("Create your first training")
                     }
                     description={
-                      hasTrainingFilters
-                        ? t("Adjust your search, group or date filters.")
-                        : t(
-                            "Upload your presentation. Activities and voice practice await in your training workspace.",
+                      emptyGroup
+                        ? t(
+                            "Move training here from the options menu on a training card.",
                           )
+                        : hasTrainingFilters
+                          ? t("Adjust your search, group or date filters.")
+                          : t(
+                              "Upload your presentation. Activities and voice practice await in your training workspace.",
+                            )
                     }
                   >
-                    {!hasTrainingFilters && (
+                    {hasTrainingFilters ? (
+                      <button
+                        className="button"
+                        onClick={() => {
+                          setSearch("");
+                          setGroupFilter("all");
+                          setTrainingPeriod(ALL_TIME);
+                        }}
+                      >
+                        {t(emptyGroup ? "View all training" : "Clear filters")}
+                      </button>
+                    ) : (
                       <button
                         className="button"
                         onClick={() => setCreate(true)}
@@ -889,6 +1014,32 @@ export function Dashboard() {
           </div>
         )}
       </main>
+      {libraryNotice && (
+        <div className="workspace-feedback" role="status">
+          <Icon name="check" size={18} />
+          <span>{libraryNotice.message}</span>
+          <button
+            className="text-button"
+            onClick={() => {
+              if (libraryNotice.trash) change("trash");
+              else {
+                change("courses");
+                setGroupFilter(libraryNotice.groupId || "all");
+              }
+              setLibraryNotice(null);
+            }}
+          >
+            {t(libraryNotice.trash ? "Open Trash" : "View group")}
+          </button>
+          <button
+            className="icon-button"
+            aria-label={t("Dismiss")}
+            onClick={() => setLibraryNotice(null)}
+          >
+            <Icon name="close" size={16} />
+          </button>
+        </div>
+      )}
       <AccountSettings
         open={accountOpen}
         user={user}
@@ -910,8 +1061,17 @@ export function Dashboard() {
         groups={groups.data?.groups || []}
         returnFocusRef={groupTrigger}
         onChanged={async () => {
-          await Promise.all([groups.refresh(), courses.refresh()]);
-          setGroupFilter("all");
+          const [updated] = await Promise.all([
+            groups.refresh(),
+            courses.refresh(),
+          ]);
+          if (
+            groupFilter !== "all" &&
+            groupFilter !== "ungrouped" &&
+            updated &&
+            !updated.groups.some((group) => group.id === groupFilter)
+          )
+            setGroupFilter("all");
         }}
       />
 
@@ -921,6 +1081,22 @@ export function Dashboard() {
         onCreated={(c) => router.push(`/training/${c.id}`)}
       />
     </div>
+  );
+}
+function ReportDate({ value }: { value: string }) {
+  const { locale } = useLocale();
+  return (
+    <time dateTime={value} className="report-date">
+      <span>{date(value, locale)}</span>
+      <strong>
+        {new Intl.DateTimeFormat(locale, {
+          hour: "2-digit",
+          minute: "2-digit",
+          hourCycle: "h23",
+          timeZone: "Europe/Istanbul",
+        }).format(new Date(value))}
+      </strong>
+    </time>
   );
 }
 function TrainingTrash({

@@ -1,9 +1,45 @@
 "use client";
-import { useEffect, useState, type RefObject } from "react";
+import { useEffect, useId, useRef, useState, type RefObject } from "react";
 import type { User } from "@/lib/types";
 import { useLocale } from "./locale-provider";
 import { useTheme, type Theme } from "./theme-provider";
-import { api, ErrorNote, Modal, ResourceFailure, useResource } from "./ui";
+import {
+  api,
+  ErrorNote,
+  Icon,
+  Modal,
+  ResourceFailure,
+  useResource,
+} from "./ui";
+
+const sections = [
+  {
+    id: "profile",
+    title: "My profile",
+    icon: "user",
+    description: "Your name and account details.",
+  },
+  {
+    id: "security",
+    title: "Security",
+    icon: "shield",
+    description: "Keep access to your account secure.",
+  },
+  {
+    id: "billing",
+    title: "Billing & payments",
+    icon: "creditCard",
+    description: "Your plan and billing history, in one place.",
+  },
+  {
+    id: "preferences",
+    title: "General preferences",
+    icon: "preferences",
+    description: "Make your workspace feel right for you.",
+  },
+] as const;
+type Section = (typeof sections)[number]["id"];
+
 export function AccountSettings({
   open,
   user,
@@ -26,7 +62,7 @@ export function AccountSettings({
     0,
     open,
   );
-  const [tab, setTab] = useState("profile"),
+  const [tab, setTab] = useState<Section>("profile"),
     [name, setName] = useState(user.name),
     [email, setEmail] = useState(user.email);
   const [currentPassword, setCurrentPassword] = useState(""),
@@ -34,18 +70,45 @@ export function AccountSettings({
     [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
-    [saved, setSaved] = useState(false);
+    [saved, setSaved] = useState(false),
+    [discard, setDiscard] = useState(false);
+  const [compact, setCompact] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 760px)");
+    const update = () => setCompact(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  const id = useId(),
+    tabs = useRef<Array<HTMLButtonElement | null>>([]);
+  const dirty =
+    name.trim() !== user.name || (!user.demo && email.trim() !== user.email);
+  const passwordsDirty = !!(currentPassword || newPassword || confirm);
+  const section = sections.find((item) => item.id === tab)!;
   useEffect(() => {
     if (open) {
       setName(user.name);
       setEmail(user.email);
       setError("");
       setSaved(false);
+      setDiscard(false);
       setCurrentPassword("");
       setNewPassword("");
       setConfirm("");
     }
   }, [open, user.name, user.email]);
+  function requestClose() {
+    if (busy) return;
+    if (dirty || passwordsDirty) setDiscard(true);
+    else onClose();
+  }
+  useEffect(() => {
+    if (open && compact)
+      tabs.current[
+        sections.findIndex((item) => item.id === tab)
+      ]?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [tab, compact, open]);
   async function save(action: "profile" | "security") {
     if (busy) return;
     setError("");
@@ -76,46 +139,75 @@ export function AccountSettings({
       setBusy(false);
     }
   }
-  const titles: Record<string, string> = {
-    profile: "My profile",
-    security: "Security",
-    billing: "Billing & payments",
-    preferences: "General preferences",
-  };
+  function selectTab(next: Section) {
+    setTab(next);
+    setError("");
+    setSaved(false);
+  }
   return (
     <Modal
       open={open}
-      onClose={() => !busy && onClose()}
+      onClose={requestClose}
       closeDisabled={busy}
       title={t("Settings")}
       className="account-settings-modal"
       returnFocusRef={returnFocusRef}
     >
       <div className="account-settings-layout">
-        <nav aria-label={t("Settings sections")}>
-          {Object.entries(titles).map(([key, title]) => (
+        <nav
+          className="settings-navigation"
+          role="tablist"
+          aria-orientation={compact ? "horizontal" : "vertical"}
+          aria-label={t("Settings sections")}
+        >
+          {sections.map((item, index) => (
             <button
-              key={key}
+              key={item.id}
+              ref={(element) => {
+                tabs.current[index] = element;
+              }}
               type="button"
-              aria-current={tab === key ? "page" : undefined}
+              role="tab"
+              id={`${id}-${item.id}`}
+              aria-controls={`${id}-panel`}
+              aria-selected={tab === item.id}
+              tabIndex={tab === item.id ? 0 : -1}
               disabled={busy}
-              onClick={() => {
-                setTab(key);
-                setError("");
-                setSaved(false);
+              onClick={() => selectTab(item.id)}
+              onKeyDown={(event) => {
+                let next = index;
+                if (["ArrowDown", "ArrowRight"].includes(event.key))
+                  next = (index + 1) % sections.length;
+                else if (["ArrowUp", "ArrowLeft"].includes(event.key))
+                  next = (index - 1 + sections.length) % sections.length;
+                else if (event.key === "Home") next = 0;
+                else if (event.key === "End") next = sections.length - 1;
+                else return;
+                event.preventDefault();
+                selectTab(sections[next].id);
+                tabs.current[next]?.focus();
               }}
             >
-              {t(title)}
+              <Icon name={item.icon} size={19} />
+              <span>{t(item.title)}</span>
             </button>
           ))}
         </nav>
         <section
+          id={`${id}-panel`}
+          role="tabpanel"
+          aria-labelledby={`${id}-${tab}`}
           className="account-settings-content"
-          aria-labelledby="account-settings-section"
+          tabIndex={0}
         >
-          <h3 id="account-settings-section">{t(titles[tab])}</h3>
+          <header className="settings-section-heading">
+            <h3>{t(section.title)}</h3>
+            <p>{t(section.description)}</p>
+          </header>
           {tab === "profile" && (
             <form
+              id={`${id}-profile`}
+              className="settings-form"
               onSubmit={(event) => {
                 event.preventDefault();
                 void save("profile");
@@ -140,33 +232,38 @@ export function AccountSettings({
                   value={name}
                   disabled={busy}
                   required
-                  onChange={(event) => setName(event.target.value)}
+                  onChange={(event) => {
+                    setName(event.target.value);
+                    setSaved(false);
+                  }}
                 />
               </label>
-              <label>
-                {t("Email")}
-                <input
-                  type="email"
-                  autoComplete="email"
-                  maxLength={254}
-                  value={email}
-                  disabled={busy || user.demo}
-                  required={!user.demo}
-                  onChange={(event) => setEmail(event.target.value)}
-                />
-              </label>
-              <ErrorNote message={error} />
-              {saved && (
-                <p className="success-text" role="status">
-                  {t("Profile updated.")}
-                </p>
+              {user.demo ? (
+                <div className="settings-account-note">
+                  <Icon name="shield" size={19} />
+                  <p>
+                    {t(
+                      "You’re exploring with an experience account. Email and password settings are available for registered accounts.",
+                    )}
+                  </p>
+                </div>
+              ) : (
+                <label>
+                  {t("Email")}
+                  <input
+                    type="email"
+                    autoComplete="email"
+                    maxLength={254}
+                    value={email}
+                    disabled={busy}
+                    required
+                    onChange={(event) => {
+                      setEmail(event.target.value);
+                      setSaved(false);
+                    }}
+                  />
+                </label>
               )}
-              <button
-                className="button primary"
-                disabled={busy || !name.trim()}
-              >
-                {t(busy ? "Saving…" : "Save profile")}
-              </button>
             </form>
           )}
           {tab === "security" &&
@@ -177,16 +274,20 @@ export function AccountSettings({
                   onRetry={account.refresh}
                 />
               ) : (
-                <p role="status">{t("Loading…")}</p>
+                <div className="settings-loading" role="status">
+                  {t("Loading…")}
+                </div>
               )
             ) : account.data.hasPassword ? (
               <form
+                id={`${id}-security`}
+                className="settings-form"
                 onSubmit={(event) => {
                   event.preventDefault();
                   void save("security");
                 }}
               >
-                <p className="muted">
+                <p className="settings-account-note">
                   {t(
                     "Change your password. Other sessions will be signed out.",
                   )}
@@ -215,6 +316,7 @@ export function AccountSettings({
                     required
                     onChange={(event) => setNewPassword(event.target.value)}
                   />
+                  <small>{t("At least 8 characters")}</small>
                 </label>
                 <label>
                   {t("Confirm new password")}
@@ -229,49 +331,59 @@ export function AccountSettings({
                     onChange={(event) => setConfirm(event.target.value)}
                   />
                 </label>
-                <ErrorNote message={error} />
-                {saved && (
-                  <p className="success-text" role="status">
-                    {t("Password updated.")}
-                  </p>
-                )}
-                <button className="button primary" disabled={busy}>
-                  {t(busy ? "Saving…" : "Update password")}
-                </button>
               </form>
             ) : (
-              <p className="muted">
-                {t("Password settings are available for registered accounts.")}
-              </p>
+              <div className="settings-empty-state">
+                <Icon name="shield" size={30} />
+                <h4>{t("Your experience account is ready")}</h4>
+                <p>
+                  {t(
+                    "No password is needed to explore. Password settings become available with a registered account.",
+                  )}
+                </p>
+              </div>
             ))}
           {tab === "billing" && (
             <div className="settings-billing">
-              <div>
-                <span>{t("Current plan")}</span>
-                <strong>{t("Free")}</strong>
-                <p>{t("Your account has no active paid subscription.")}</p>
+              <div className="settings-plan">
+                <div>
+                  <span>{t("Current plan")}</span>
+                  <strong>{t("Free")}</strong>
+                  <p>{t("Your account has no active paid subscription.")}</p>
+                </div>
+                <span className="settings-plan-badge">{t("Current plan")}</span>
+              </div>
+              <div className="settings-invoices">
+                <h4>{t("Invoices")}</h4>
+                <Icon name="creditCard" size={26} />
+                <p>{t("No invoices yet.")}</p>
+                <span>
+                  {t(
+                    "Your invoices will appear here when billing is available.",
+                  )}
+                </span>
               </div>
               <button
-                className="button mint"
+                className="text-button"
                 onClick={() => {
                   onClose();
                   onWaitlist();
                 }}
               >
-                {t("Join the waitlist")}
+                {t("Get launch updates")}
+                <Icon name="arrow" size={17} />
               </button>
-              <h4>{t("Invoices")}</h4>
-              <p className="muted">{t("No invoices yet.")}</p>
             </div>
           )}
           {tab === "preferences" && (
-            <div>
-              <p className="muted">
-                {t("These preferences apply across your workspace.")}
-              </p>
-              <label>
-                {t("Language")}
+            <div className="settings-preferences">
+              <div className="settings-preference-row">
+                <div>
+                  <label htmlFor={`${id}-language`}>{t("Language")}</label>
+                  <p>{t("The language used across your workspace.")}</p>
+                </div>
                 <select
+                  id={`${id}-language`}
                   value={locale}
                   onChange={(event) =>
                     setLocale(event.target.value as "tr" | "en")
@@ -280,22 +392,105 @@ export function AccountSettings({
                   <option value="tr">Türkçe</option>
                   <option value="en">English</option>
                 </select>
-              </label>
-              <label>
-                {t("Appearance")}
-                <select
-                  value={theme}
-                  onChange={(event) => setTheme(event.target.value as Theme)}
-                >
-                  <option value="light">{t("Light")}</option>
-                  <option value="dark">{t("Dark")}</option>
-                  <option value="system">{t("System")}</option>
-                </select>
-              </label>
+              </div>
+              <fieldset className="settings-appearance">
+                <legend>{t("Appearance")}</legend>
+                <p>{t("Choose a theme, or follow your device.")}</p>
+                <div className="theme-options">
+                  {(["light", "dark", "system"] as const).map((option) => (
+                    <label
+                      key={option}
+                      className={`theme-option theme-option-${option}`}
+                    >
+                      <input
+                        type="radio"
+                        name={`${id}-theme`}
+                        value={option}
+                        checked={theme === option}
+                        onChange={() => setTheme(option as Theme)}
+                      />
+                      <span className="theme-preview" aria-hidden="true">
+                        <i />
+                        <span>
+                          <i />
+                          <i />
+                          <i />
+                        </span>
+                      </span>
+                      <span className="theme-option-label">
+                        {t(
+                          option === "light"
+                            ? "Light"
+                            : option === "dark"
+                              ? "Dark"
+                              : "System",
+                        )}
+                        <span className="theme-choice-indicator">
+                          {theme === option && <Icon name="check" size={12} />}
+                        </span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <p className="settings-auto-save">
+                <Icon name="check" size={15} />
+                {t("Preferences are saved automatically.")}
+              </p>
             </div>
           )}
+          <ErrorNote message={error} />
         </section>
       </div>
+      <footer className="settings-footer">
+        {discard ? (
+          <div className="settings-discard" role="alert">
+            <span>{t("Discard your unsaved changes?")}</span>
+            <button className="button" onClick={() => setDiscard(false)}>
+              {t("Keep editing")}
+            </button>
+            <button className="button danger" onClick={onClose}>
+              {t("Discard changes")}
+            </button>
+          </div>
+        ) : (
+          <>
+            <span className="settings-save-status" role="status">
+              {saved && (
+                <>
+                  <Icon name="check" size={16} />
+                  {t(
+                    tab === "security"
+                      ? "Password updated."
+                      : "Profile updated.",
+                  )}
+                </>
+              )}
+            </span>
+            <button className="button" disabled={busy} onClick={requestClose}>
+              {t("Close")}
+            </button>
+            {tab === "profile" && (
+              <button
+                className="button primary"
+                form={`${id}-profile`}
+                disabled={busy || !name.trim() || !dirty}
+              >
+                {t(busy ? "Saving…" : "Save changes")}
+              </button>
+            )}
+            {tab === "security" && account.data?.hasPassword && (
+              <button
+                className="button primary"
+                form={`${id}-security`}
+                disabled={busy || !currentPassword || !newPassword || !confirm}
+              >
+                {t(busy ? "Saving…" : "Update password")}
+              </button>
+            )}
+          </>
+        )}
+      </footer>
     </Modal>
   );
 }

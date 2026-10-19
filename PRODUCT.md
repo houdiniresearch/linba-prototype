@@ -78,3 +78,7 @@ Eğitmen ana sayfasında son eğitimlerin sağında LİNBA'ya ait üç görselli
 ## Training library and account settings — 19 October 2026
 
 See [WORKSPACE_LIBRARY.md](docs/WORKSPACE_LIBRARY.md) for reusable sessions, user-owned training groups, Istanbul calendar filters, recoverable Trash, private slide notes and account settings. Logout is only in the profile menu. Product integration marks moved into the sidebar and open the account waitlist.
+
+## Ongoing UI quality
+
+For future UI/UX work, inspect the existing product first, research relevant patterns in authoritative design-system and usability sources, and verify the actual interaction in the browser. Preserve LİNBA’s established identity. A passing test or build alone does not establish visual quality. Favor clear task hierarchy, progressive disclosure, accessible state and focus behavior, restrained selection colors and responsive layouts over generic decoration.

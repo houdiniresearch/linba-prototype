@@ -92,7 +92,6 @@ export function HeaderActions({
           onClick={upgrade}
           aria-label={t("Early access")}
         >
-          <Icon name="star" size={18} />
           <span>{t("Early access")}</span>
         </button>
         <button

@@ -1,5 +1,59 @@
 // Turkish UI translations. Application source strings are English.
 export const turkish: Record<string, string> = {
+  "This group is ready for your training": "Bu grup eğitimlerin için hazır",
+  "Move training here from the options menu on a training card.":
+    "Eğitim kartındaki seçenekler menüsünden bu gruba eğitim taşıyabilirsin.",
+  "View all training": "Tüm eğitimleri gör",
+  "{name} moved to Trash.": "{name} çöp kutusuna taşındı.",
+  "Moved to {group}.": "{group} grubuna taşındı.",
+  "View group": "Grubu aç",
+  "Open Trash": "Çöp kutusunu aç",
+  Dismiss: "Bildirimi kapat",
+  "The end date must be on or after the start date.":
+    "Bitiş tarihi, başlangıç tarihinden önce olamaz.",
+  "Apply range": "Tarihleri uygula",
+  "Clear filters": "Filtreleri temizle",
+  "Create a group": "Grup oluştur",
+  "{count} sessions": "{count} oturum",
+  "{count} training": "{count} eğitim",
+  "Training library": "Eğitim kütüphanesi",
+  "Organize your library by topic or team.":
+    "Eğitimlerini konuya veya ekibe göre düzenle.",
+  "A place for every topic": "Her konuya bir grup",
+  "Keep sales training, onboarding and technical sessions in their own groups.":
+    "Satış, oryantasyon ve teknik eğitimlerini ayrı gruplarda bir arada tut.",
+  "Move training into a group from its options menu.":
+    "Eğitim kartındaki seçenekler menüsünden gruba taşıyabilirsin.",
+  "Adding…": "Ekleniyor…",
+  "Remove {name}?": "{name} grubu kaldırılsın mı?",
+  "Your training stays in your library, without this group.":
+    "Eğitimlerin, bu grup olmadan kütüphanende kalır.",
+  "Removing…": "Kaldırılıyor…",
+  "Remove group": "Grubu kaldır",
+  "Rename {name}": "{name} grubunu yeniden adlandır",
+  "Remove {name}": "{name} grubunu kaldır",
+  "Your name and account details.": "Adın ve hesap bilgilerin.",
+  "Keep access to your account secure.": "Hesabına erişimi güvende tut.",
+  "Your plan and billing history, in one place.":
+    "Planın ve fatura geçmişin bir arada.",
+  "Make your workspace feel right for you.":
+    "Çalışma alanını kendine göre düzenle.",
+  "You’re exploring with an experience account. Email and password settings are available for registered accounts.":
+    "Bir deneyim hesabı kullanıyorsun. E-posta ve parola ayarları kayıtlı hesaplarda kullanılabilir.",
+  "Your experience account is ready": "Deneyim hesabın hazır",
+  "No password is needed to explore. Password settings become available with a registered account.":
+    "Keşfetmek için parolaya ihtiyacın yok. Parola ayarları kayıtlı bir hesapla kullanılabilir.",
+  "Your invoices will appear here when billing is available.":
+    "Faturalandırma açıldığında faturaların burada görünecek.",
+  "Get launch updates": "Açılıştan haberdar ol",
+  "The language used across your workspace.":
+    "Çalışma alanında kullanılan dil.",
+  "Choose a theme, or follow your device.":
+    "Bir tema seç veya cihazının tercihini kullan.",
+  "Preferences are saved automatically.": "Tercihlerin otomatik kaydedilir.",
+  "Discard your unsaved changes?": "Kaydedilmemiş değişiklikler silinsin mi?",
+  "Keep editing": "Düzenlemeye devam et",
+  "Discard changes": "Değişiklikleri sil",
   "Notes could not be saved. Try again before continuing.":
     "Notlar kaydedilemedi. Devam etmeden önce tekrar dene.",
   "We’ll keep you posted about LİNBA’s launch and integrations.":

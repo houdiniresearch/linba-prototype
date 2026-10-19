@@ -42,9 +42,9 @@
   border-radius: 8px;
 }
 .app-header .profile-trigger .avatar {
-  width: 34px;
-  height: 34px;
-  font-size: 12px;
+  width: 40px;
+  height: 40px;
+  font-size: 13px;
 }
 .app-header .profile-trigger > svg {
   color: var(--muted);
@@ -132,5 +132,79 @@
   .app-header .profile-trigger .avatar {
     width: 30px;
     height: 30px;
+  }
+}
+
+.app-header .header-search {
+  margin-left: 60px;
+}
+.app-header .early-access-trigger {
+  background: var(--mint-soft);
+  color: var(--mint-soft-ink);
+  border-color: transparent;
+  padding-inline: 16px;
+  min-height: 36px;
+}
+.app-header .early-access-trigger:hover {
+  background: var(--mint-soft-hover);
+}
+.app-shell .sidebar {
+  overflow-y: auto;
+}
+.app-shell .sidebar nav > button {
+  font-size: 14px;
+}
+.app-shell .sidebar button.active {
+  background: var(--selection);
+  color: var(--ink);
+}
+.app-shell .sidebar button.active > svg {
+  color: var(--accent);
+}
+.sidebar-integrations {
+  margin: auto 4px 0;
+  padding-top: 32px;
+}
+.sidebar-integrations > span {
+  display: block;
+  padding: 0 8px 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.sidebar-integrations > div {
+  display: flex;
+  gap: 0;
+}
+.app-shell .sidebar .sidebar-integrations button {
+  justify-content: center;
+  width: 36px;
+  min-height: 40px;
+  padding: 6px;
+  border-radius: 6px;
+}
+.sidebar-integrations img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+.app-shell .sidebar-bottom {
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.app-shell .sidebar-bottom > button:last-child {
+  color: var(--ink);
+}
+@media (max-width: 760px) {
+  .app-header .header-search {
+    margin-left: 0;
+  }
+  .sidebar-integrations > div {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .app-shell .sidebar .sidebar-integrations button {
+    width: 44px;
+    min-height: 44px;
   }
 }

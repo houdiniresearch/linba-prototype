@@ -142,3 +142,9 @@ Implementation: `components/agent-identity.tsx` and `components/agent-identity.c
 Use a 64 px app header and 200 px sidebar. Align the desktop search with the main creation button; retain 44 px primary control targets, a 40 px profile avatar and a small chevron. Early access uses pale mint. Sidebar integration marks open the account waitlist; Settings, Trash and Help follow below. Logout belongs only in the profile menu. Settings uses one responsive dialog with profile, security, billing and preferences. Dark selections use quiet neutral surfaces rather than saturated purple.
 
 Training groups and calendar filters precede the library. Reports show session number and separate start/completion dates and times. A completed training can create a new isolated session. Slide notes replace the original-presentation notice below the canvas; they are private to the instructor. The training heading is directly editable.
+
+## Workspace interaction quality — 19 October 2026
+
+Group navigation uses a compact underline and counts rather than another form select. Keep the primary create action and the date trigger in one row. Date presets commit immediately; custom ranges commit explicitly within a viewport-bound popover. Show confirmation and a destination action when training is moved. Contextual group lists belong behind Move to group.
+
+Settings separates navigation, scrollable content and commit actions. Preserve keyboard focus, warn before discarding unsaved edits, and show an unchanged form’s Save action as disabled. Appearance uses recognizable previews and neutral selection borders. Quiet functional surfaces, readable labels and consistent controls take priority over decorative effects. Review notes and primary design references are in [WORKSPACE_DESIGN_REVIEW.md](docs/WORKSPACE_DESIGN_REVIEW.md).
