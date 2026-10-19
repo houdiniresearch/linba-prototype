@@ -23,7 +23,9 @@
     "test:activity-library": "node --import tsx --test tests/activity-library.test.ts",
     "test:slide-order": "node --import tsx --test tests/slide-order.test.ts",
     "test:practice-workspace:integration": "node --import tsx tests/practice-workspace.integration.ts",
-    "test:routes": "node --import tsx --test tests/routes.test.ts"
+    "test:routes": "node --import tsx --test tests/routes.test.ts",
+    "test:feedback": "node --import tsx --test tests/feedback.test.ts",
+    "test:feedback:integration": "node --import tsx tests/feedback.integration.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "6.3.1",

@@ -3,6 +3,7 @@ import { OperationProgress } from "./operation-progress";
 import { ThemeMenu } from "./theme-menu";
 import { ReportAssistantLink } from "./report-assistant-link";
 import { Report } from "./training-report";
+import { HomeUpdates } from "./home-updates";
 import {
   CardListSkeleton,
   DashboardSkeleton,
@@ -553,152 +554,188 @@ export function Dashboard() {
             </>
           )
         ) : (
-          <>
-            <div className="page-title">
-              <div>
-                <h1>
-                  {view === "home" ? (
-                    <>
-                      {t("Hello,")} <span>{user.name.split(" ")[0]}.</span>
-                    </>
-                  ) : (
-                    t("My training")
-                  )}
-                </h1>
-                <p className="muted">
-                  {view === "home"
-                    ? t("Start your next training here.")
-                    : t(
-                        "Prepare your presentations, practice and start your training.",
-                      )}
-                </p>
-              </div>
-            </div>
-            <div className="page-actions">
-              <button
-                className="button primary"
-                onClick={() => setCreate(true)}
-              >
-                <Icon name="plus" />
-                {t("New training")}
-              </button>
-            </div>
-            {courses.data && courses.error && (
-              <ErrorNote message={courses.error} />
-            )}
-            <section className="training-section">
-              <div className="section-title">
-                <h2>
-                  {search
-                    ? t("Search results")
-                    : view === "home"
-                      ? t("Recent training")
-                      : t("All training")}
-                </h2>
-                {view === "home" && (
-                  <button
-                    className="text-button"
-                    onClick={() => change("courses")}
-                  >
-                    {t("View all")}
-                    <Icon name="right" />
-                  </button>
-                )}
-              </div>
-              {!courses.data ? (
-                courses.error ? (
-                  <ResourceFailure
-                    error={courses.error}
-                    onRetry={courses.refresh}
-                  />
-                ) : (
-                  <CardListSkeleton />
-                )
-              ) : list.length ? (
-                <div className="training-grid">
-                  {list.slice(0, view === "home" ? 6 : undefined).map((c) => (
-                    <button
-                      className="training-card"
-                      key={c.id}
-                      onClick={() =>
-                        c.status === "ended"
-                          ? openReport(c.id)
-                          : router.push(
-                              `/training/${c.id}${c.status === "live" ? "/live" : ""}`,
-                            )
-                      }
-                    >
-                      <TrainingCover course={c} />
-                      <div className="training-card-content">
-                        <Status status={c.status} />
-                        <h3>{c.name}</h3>
-                        <div className="card-meta">
-                          <span>{date(c.createdAt, locale)}</span>
-                        </div>
-                        <div className="training-card-next">
-                          <span>
-                            {t(
-                              c.status === "ended"
-                                ? "View learning report"
-                                : c.status === "live"
-                                  ? "Return to live training"
-                                  : "Continue preparing",
-                            )}
-                          </span>
-                          <Icon name="arrow" size={17} />
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <Empty
-                  title={
-                    search
-                      ? t("No matching training found")
-                      : t("Create your first training")
-                  }
-                  description={
-                    search
-                      ? t("Try searching for another name.")
-                      : t(
-                          "Upload your presentation. Activities and voice practice await in your training workspace.",
-                        )
-                  }
-                >
-                  {!search && (
-                    <button className="button" onClick={() => setCreate(true)}>
-                      <Icon name="plus" />
-                      {t("Create training")}
-                    </button>
-                  )}
-                </Empty>
-              )}
-            </section>
-            {view === "home" && courses.data?.courses.length === 0 && (
-              <section className="home-guide">
+          <div
+            className={view === "home" ? "dashboard-home-layout" : undefined}
+          >
+            <div className="dashboard-home-content">
+              <div className="page-title">
                 <div>
-                  <span className="guide-number">01</span>
-                  <h3>{t("Upload your presentation")}</h3>
-                  <p>{t("Make your document the source of your training.")}</p>
-                </div>
-                <div>
-                  <span className="guide-number">02</span>
-                  <h3>{t("Prepare your flow")}</h3>
-                  <p>{t("Add activities and practice with your audience.")}</p>
-                </div>
-                <div>
-                  <span className="guide-number">03</span>
-                  <h3>{t("Learn together")}</h3>
-                  <p>
-                    {t(
-                      "Start your training and follow the questions and answers.",
+                  <h1>
+                    {view === "home" ? (
+                      <>
+                        {t("Hello,")} <span>{user.name.split(" ")[0]}.</span>
+                      </>
+                    ) : (
+                      t("My training")
                     )}
+                  </h1>
+                  <p className="muted">
+                    {view === "home"
+                      ? t("Start your next training here.")
+                      : t(
+                          "Prepare your presentations, practice and start your training.",
+                        )}
                   </p>
                 </div>
+              </div>
+              <div className="page-actions">
+                <button
+                  className="button primary"
+                  onClick={() => setCreate(true)}
+                >
+                  <Icon name="plus" />
+                  {t("New training")}
+                </button>
+              </div>
+              {courses.data && courses.error && (
+                <ErrorNote message={courses.error} />
+              )}
+              <section className="training-section">
+                <div className="section-title">
+                  <h2>
+                    {search
+                      ? t("Search results")
+                      : view === "home"
+                        ? t("Recent training")
+                        : t("All training")}
+                  </h2>
+                  {view === "home" && (
+                    <button
+                      className="text-button"
+                      onClick={() => change("courses")}
+                    >
+                      {t("View all")}
+                      <Icon name="right" />
+                    </button>
+                  )}
+                </div>
+                {!courses.data ? (
+                  courses.error ? (
+                    <ResourceFailure
+                      error={courses.error}
+                      onRetry={courses.refresh}
+                    />
+                  ) : (
+                    <CardListSkeleton />
+                  )
+                ) : list.length ? (
+                  <div className="training-grid">
+                    {list.slice(0, view === "home" ? 6 : undefined).map((c) => (
+                      <button
+                        className="training-card"
+                        key={c.id}
+                        onClick={() =>
+                          c.status === "ended"
+                            ? openReport(c.id)
+                            : router.push(
+                                `/training/${c.id}${c.status === "live" ? "/live" : ""}`,
+                              )
+                        }
+                      >
+                        <TrainingCover course={c} />
+                        <div className="training-card-content">
+                          <Status status={c.status} />
+                          <h3>{c.name}</h3>
+                          <div className="card-meta">
+                            <span>{date(c.createdAt, locale)}</span>
+                          </div>
+                          <div className="training-card-next">
+                            <span>
+                              {t(
+                                c.status === "ended"
+                                  ? "View learning report"
+                                  : c.status === "live"
+                                    ? "Return to live training"
+                                    : "Continue preparing",
+                              )}
+                            </span>
+                            <Icon name="arrow" size={17} />
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <Empty
+                    title={
+                      search
+                        ? t("No matching training found")
+                        : t("Create your first training")
+                    }
+                    description={
+                      search
+                        ? t("Try searching for another name.")
+                        : t(
+                            "Upload your presentation. Activities and voice practice await in your training workspace.",
+                          )
+                    }
+                  >
+                    {!search && (
+                      <button
+                        className="button"
+                        onClick={() => setCreate(true)}
+                      >
+                        <Icon name="plus" />
+                        {t("Create training")}
+                      </button>
+                    )}
+                  </Empty>
+                )}
               </section>
+              {view === "home" && courses.data?.courses.length === 0 && (
+                <section className="home-guide">
+                  <div>
+                    <span className="guide-number">01</span>
+                    <h3>{t("Upload your presentation")}</h3>
+                    <p>
+                      {t("Make your document the source of your training.")}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="guide-number">02</span>
+                    <h3>{t("Prepare your flow")}</h3>
+                    <p>
+                      {t("Add activities and practice with your audience.")}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="guide-number">03</span>
+                    <h3>{t("Learn together")}</h3>
+                    <p>
+                      {t(
+                        "Start your training and follow the questions and answers.",
+                      )}
+                    </p>
+                  </div>
+                </section>
+              )}
+            </div>
+            {view === "home" && (
+              <HomeUpdates
+                hasDraft={
+                  !!courses.data?.courses.some(
+                    (course) => course.status === "draft",
+                  )
+                }
+                onExplore={(feature) => {
+                  if (feature === "reports") {
+                    change("reports");
+                    return;
+                  }
+                  const course = courses.data?.courses.find(
+                    (course) => course.status === "draft",
+                  );
+                  if (!course) {
+                    setCreate(true);
+                    return;
+                  }
+                  router.push(
+                    `/training/${course.id}${feature === "practice" ? "/practice" : ""}`,
+                  );
+                }}
+              />
             )}
-          </>
+          </div>
         )}
       </main>
       <CreateTraining

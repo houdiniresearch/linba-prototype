@@ -1,5 +1,54 @@
 // Turkish UI translations. Application source strings are English.
 export const turkish: Record<string, string> = {
+  "Refresh the page and try again.": "Sayfayı yenileyip tekrar dene.",
+  "Discover LİNBA": "LİNBA’yı keşfet",
+  "What’s new": "Yenilikler",
+  "What’s new in LİNBA": "LİNBA’daki yenilikler",
+  "Practice agent": "Pratik ajanı",
+  "Meet your audience before you teach.":
+    "Eğitimden önce katılımcılarınla tanış.",
+  "Describe your participants, practice out loud and get feedback on your delivery with AI agents tailored to your audience.":
+    "Katılımcılarını tarif et, kitlene göre oluşturulan yapay zekâ ajanlarıyla sesli pratik yap ve anlatımına dair geri bildirim al.",
+  "A practice room built around your audience":
+    "Senin kitlene göre bir pratik alanı",
+  "Make room for every participant’s voice.": "Her katılımcının sesine yer aç.",
+  "Add polls, open questions and scenarios. Preview the participant experience and place activities anywhere in your training flow.":
+    "Anket, açık uçlu soru ve senaryolar ekle. Katılımcı deneyimini önizle, aktiviteleri eğitim akışında istediğin yere taşı.",
+  "From a question to a shared conversation": "Bir soruyla başlayan etkileşim",
+  "Keep the conversation close to the evidence.":
+    "Raporun, sohbetin hemen yanında.",
+  "Ask about your completed training and explore the source records in a report panel, right beside your conversation.":
+    "Tamamlanan eğitimin hakkında sorular sor. Kaynak kayıtlarını sohbetin hemen yanındaki rapor panelinde incele.",
+  "Your conversation and report, side by side": "Sohbetin ve raporun yan yana",
+  "View reports": "Raporları gör",
+  "Open your workspace": "Çalışma alanını aç",
+  "Choose an update": "Yenilik seç",
+  "Previous update": "Önceki yenilik",
+  "Next update": "Sonraki yenilik",
+  "Make LİNBA better, together.": "LİNBA’yı birlikte geliştirelim.",
+  "An idea, a rough edge, something you need? We’re listening.":
+    "Bir fikrin, yaşadığın bir sorun ya da ihtiyacın mı var? Seni dinliyoruz.",
+  "Share feedback": "Görüşünü paylaş",
+  "Stay connected": "Bağlantıda kal",
+  "Thanks for helping shape LİNBA.": "LİNBA’ya katkın için teşekkürler.",
+  "What would make LİNBA better for you?":
+    "LİNBA’yı senin için nasıl geliştirebiliriz?",
+  "Your feedback has been saved. Thank you for sharing it with us.":
+    "Geri bildirimin kaydedildi. Bizimle paylaştığın için teşekkür ederiz.",
+  "Feedback type": "Geri bildirim türü",
+  "An idea": "Bir fikrim var",
+  "Something isn’t working": "Bir sorun yaşıyorum",
+  "Something else": "Başka bir konu",
+  "Your feedback": "Geri bildirimin",
+  "Tell us what you had in mind…": "Aklındakileri bizimle paylaş…",
+  "Your feedback is saved with your account.":
+    "Geri bildirimin hesabınla birlikte kaydedilir.",
+  "Send feedback": "Geri bildirim gönder",
+  "Enter your feedback.": "Geri bildirimini yaz.",
+  "Write feedback between 1 and 2,000 characters.":
+    "Geri bildirimin 1–2.000 karakter arasında olmalı.",
+  "Choose a feedback type.": "Bir geri bildirim türü seç.",
+
   "Your AI agents.": "Yapay zekâ ajanların.",
   "At every step": "Eğitiminin",
   "of your training.": "her aşamasında.",

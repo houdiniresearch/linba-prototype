@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { saveFeedback } from "@/lib/feedback";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { localAddresses, joinOrigin } from "@/lib/network";
@@ -235,6 +236,12 @@ async function handle(request: Request, context: Context): Promise<Response> {
       return json({ ok: true });
     }
     const user = await requireUser();
+    if (parts[0] === "feedback" && parts.length === 1) {
+      if (method !== "POST")
+        throw new AppError("This action is not supported.", 405);
+      const entry = saveFeedback(user, await request.json());
+      return json({ id: entry.id });
+    }
     if (parts[0] === "report-assistant") {
       if (parts.length === 1 && method === "GET")
         return json({ reports: reportList(user) });

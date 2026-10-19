@@ -1,0 +1,327 @@
+"use client";
+import { useRef, useState } from "react";
+import {
+  InstagramLogo,
+  LinkedinLogo,
+  XLogo,
+  YoutubeLogo,
+} from "@phosphor-icons/react";
+import { AgentMark } from "./agent-identity";
+import { useLocale } from "./locale-provider";
+import { api, ErrorNote, Icon, Modal } from "./ui";
+
+const updates = [
+  {
+    id: "practice",
+    category: "Practice agent",
+    title: "Meet your audience before you teach.",
+    description:
+      "Describe your participants, practice out loud and get feedback on your delivery with AI agents tailored to your audience.",
+    image: "/agents/practice-editorial.webp",
+    detail: "A practice room built around your audience",
+  },
+  {
+    id: "activities",
+    category: "Activities",
+    title: "Make room for every participant’s voice.",
+    description:
+      "Add polls, open questions and scenarios. Preview the participant experience and place activities anywhere in your training flow.",
+    image: "/agents/learning-editorial.webp",
+    detail: "From a question to a shared conversation",
+  },
+  {
+    id: "reports",
+    category: "Report agent",
+    title: "Keep the conversation close to the evidence.",
+    description:
+      "Ask about your completed training and explore the source records in a report panel, right beside your conversation.",
+    image: "/agents/report-editorial.webp",
+    detail: "Your conversation and report, side by side",
+  },
+] as const;
+export type HomeFeature = (typeof updates)[number]["id"];
+
+export function HomeUpdates({
+  onExplore,
+  hasDraft,
+}: {
+  onExplore: (feature: HomeFeature) => void;
+  hasDraft: boolean;
+}) {
+  const { t, locale } = useLocale();
+  const [active, setActive] = useState(0);
+  const [allOpen, setAllOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [category, setCategory] = useState("idea");
+  const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
+  const requestId = useRef("");
+  const feedbackTrigger = useRef<HTMLButtonElement>(null);
+  const allTrigger = useRef<HTMLButtonElement>(null);
+  const update = updates[active];
+  function actionLabel(feature: HomeFeature) {
+    return feature === "reports"
+      ? t("View reports")
+      : hasDraft
+        ? t("Open your workspace")
+        : t("Create training");
+  }
+  async function sendFeedback() {
+    if (busy || !message.trim()) return;
+    setBusy(true);
+    setError("");
+    requestId.current ||= crypto.randomUUID();
+    try {
+      await api("feedback", {
+        message,
+        category,
+        locale,
+        requestId: requestId.current,
+      });
+      setSent(true);
+      setMessage("");
+      requestId.current = "";
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <aside className="home-updates" aria-label={t("Discover LİNBA")}>
+      <section className="home-news" aria-labelledby="home-news-heading">
+        <div className="home-panel-heading">
+          <h2 id="home-news-heading">{t("What’s new")}</h2>
+          <button
+            ref={allTrigger}
+            className="text-button"
+            onClick={() => setAllOpen(true)}
+          >
+            {t("View all")}
+            <Icon name="right" size={15} />
+          </button>
+        </div>
+        <article aria-live="polite" aria-atomic="true">
+          <div className={`home-news-art home-news-art-${update.id}`}>
+            <div className="home-news-brand">
+              <AgentMark size={22} />
+              <span>{t(update.category)}</span>
+            </div>
+            <strong>{t(update.detail)}</strong>
+            <img src={update.image} alt="" width="800" height="600" />
+          </div>
+          <div className="home-news-copy">
+            <h3>{t(update.title)}</h3>
+            <p>{t(update.description)}</p>
+            <button
+              className="text-button home-news-action"
+              onClick={() => onExplore(update.id)}
+            >
+              {actionLabel(update.id)}
+              <Icon name="arrow" size={17} />
+            </button>
+          </div>
+        </article>
+        <div className="home-news-controls">
+          <div
+            className="home-news-dots"
+            role="group"
+            aria-label={t("Choose an update")}
+          >
+            {updates.map((item, index) => (
+              <button
+                key={item.id}
+                aria-label={t(item.category)}
+                aria-pressed={active === index}
+                onClick={() => setActive(index)}
+              >
+                <span />
+              </button>
+            ))}
+          </div>
+          <span className="home-news-position">
+            {active + 1} / {updates.length}
+          </span>
+          <div className="home-news-arrows">
+            <button
+              className="icon-button"
+              disabled={active === 0}
+              aria-label={t("Previous update")}
+              onClick={() => setActive(active - 1)}
+            >
+              <Icon name="left" size={18} />
+            </button>
+            <button
+              className="icon-button"
+              disabled={active === updates.length - 1}
+              aria-label={t("Next update")}
+              onClick={() => setActive(active + 1)}
+            >
+              <Icon name="right" size={18} />
+            </button>
+          </div>
+        </div>
+      </section>
+      <section className="home-feedback">
+        <div className="home-feedback-mark" aria-hidden="true">
+          <AgentMark size={32} />
+        </div>
+        <div>
+          <h2>{t("Make LİNBA better, together.")}</h2>
+          <p>
+            {t("An idea, a rough edge, something you need? We’re listening.")}
+          </p>
+        </div>
+        <button
+          ref={feedbackTrigger}
+          className="text-button"
+          onClick={() => {
+            setSent(false);
+            setError("");
+            setFeedbackOpen(true);
+          }}
+        >
+          {t("Share feedback")}
+          <Icon name="arrow" size={17} />
+        </button>
+      </section>
+      <section className="home-socials" aria-labelledby="home-socials-heading">
+        <h2 id="home-socials-heading">{t("Stay connected")}</h2>
+        <div role="group" aria-label={t("Social media")}>
+          {[
+            { name: "LinkedIn", Symbol: LinkedinLogo },
+            { name: "Instagram", Symbol: InstagramLogo },
+            { name: "YouTube", Symbol: YoutubeLogo },
+            { name: "X", Symbol: XLogo },
+          ].map(({ name, Symbol }) => (
+            <button key={name} type="button" disabled aria-label={name}>
+              <Symbol size={18} aria-hidden="true" />
+              <span>{name}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+      <Modal
+        open={allOpen}
+        onClose={() => setAllOpen(false)}
+        title={t("What’s new in LİNBA")}
+        returnFocusRef={allTrigger}
+        className="home-updates-modal"
+      >
+        <div className="home-update-list">
+          {updates.map((item) => (
+            <article key={item.id}>
+              <img
+                src={item.image}
+                alt=""
+                width="800"
+                height="600"
+                loading="lazy"
+              />
+              <div>
+                <span>{t(item.category)}</span>
+                <h3>{t(item.title)}</h3>
+                <p>{t(item.description)}</p>
+                <button
+                  className="text-button"
+                  onClick={() => {
+                    setAllOpen(false);
+                    onExplore(item.id);
+                  }}
+                >
+                  {actionLabel(item.id)}
+                  <Icon name="arrow" size={16} />
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </Modal>
+      <Modal
+        open={feedbackOpen}
+        onClose={() => !busy && setFeedbackOpen(false)}
+        closeDisabled={busy}
+        title={t(
+          sent
+            ? "Thanks for helping shape LİNBA."
+            : "What would make LİNBA better for you?",
+        )}
+        returnFocusRef={feedbackTrigger}
+      >
+        {sent ? (
+          <div className="home-feedback-success" role="status">
+            <Icon name="check" size={24} />
+            <p>
+              {t(
+                "Your feedback has been saved. Thank you for sharing it with us.",
+              )}
+            </p>
+            <button className="button" onClick={() => setFeedbackOpen(false)}>
+              {t("Done")}
+            </button>
+          </div>
+        ) : (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              void sendFeedback();
+            }}
+          >
+            <label>
+              {t("Feedback type")}
+              <select
+                value={category}
+                disabled={busy}
+                onChange={(event) => {
+                  setCategory(event.target.value);
+                  requestId.current = "";
+                }}
+              >
+                <option value="idea">{t("An idea")}</option>
+                <option value="issue">{t("Something isn’t working")}</option>
+                <option value="other">{t("Something else")}</option>
+              </select>
+            </label>
+            <label>
+              {t("Your feedback")}
+              <textarea
+                rows={5}
+                maxLength={2000}
+                required
+                disabled={busy}
+                value={message}
+                placeholder={t("Tell us what you had in mind…")}
+                onChange={(event) => {
+                  setMessage(event.target.value);
+                  requestId.current = "";
+                }}
+              />
+            </label>
+            <p className="small muted">
+              {t("Your feedback is saved with your account.")}
+            </p>
+            <ErrorNote message={error} />
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="text-button"
+                disabled={busy}
+                onClick={() => setFeedbackOpen(false)}
+              >
+                {t("Cancel")}
+              </button>
+              <button
+                className="button primary"
+                disabled={busy || !message.trim()}
+              >
+                {t(busy ? "Saving…" : "Send feedback")}
+              </button>
+            </div>
+          </form>
+        )}
+      </Modal>
+    </aside>
+  );
+}

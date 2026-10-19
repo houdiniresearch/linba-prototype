@@ -116,20 +116,43 @@ export function ReportTableSkeleton() {
 }
 export function DashboardContentSkeleton({ view = "home" }: { view?: string }) {
   return (
-    <Region className="sk-dashboard-content">
-      <Title />
-      <div className="sk-actions" aria-hidden="true">
-        <Skeleton className="sk-button" />
-        <Skeleton className="sk-line sk-medium" />
-      </div>
-      {view === "reports" ? (
-        <ReportTableSkeleton />
-      ) : (
-        <div className="training-grid">
-          {[0, 1, 2].map((i) => (
-            <Card key={i} />
-          ))}
+    <Region
+      className={`sk-dashboard-content ${view === "home" ? "dashboard-home-layout" : ""}`}
+    >
+      <div className="dashboard-home-content">
+        <Title />
+        <div className="sk-actions" aria-hidden="true">
+          <Skeleton className="sk-button" />
+          <Skeleton className="sk-line sk-medium" />
         </div>
+        {view === "reports" ? (
+          <ReportTableSkeleton />
+        ) : (
+          <div className="training-grid">
+            {[0, 1, 2].map((i) => (
+              <Card key={i} />
+            ))}
+          </div>
+        )}
+      </div>
+      {view === "home" && (
+        <aside className="home-updates sk-home-updates" aria-hidden="true">
+          <div className="home-news">
+            <Skeleton className="sk-line sk-medium" />
+            <Skeleton className="sk-home-news-art" />
+            <Skeleton className="sk-subtitle" />
+            <Skeleton className="sk-line" />
+            <Skeleton className="sk-line sk-medium" />
+          </div>
+          <div className="home-feedback">
+            <Skeleton className="sk-subtitle" />
+            <Skeleton className="sk-line" />
+          </div>
+          <div className="home-socials">
+            <Skeleton className="sk-subtitle" />
+            <Skeleton className="sk-line" />
+          </div>
+        </aside>
       )}
     </Region>
   );
