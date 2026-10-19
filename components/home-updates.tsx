@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   InstagramLogo,
   LinkedinLogo,
@@ -50,6 +50,9 @@ export function HomeUpdates({
 }) {
   const { t, locale } = useLocale();
   const [active, setActive] = useState(0);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [canRotate, setCanRotate] = useState(false);
   const [allOpen, setAllOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -61,6 +64,25 @@ export function HomeUpdates({
   const feedbackTrigger = useRef<HTMLButtonElement>(null);
   const allTrigger = useRef<HTMLButtonElement>(null);
   const update = updates[active];
+  useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setCanRotate(!document.hidden && !reduced.matches);
+    update();
+    document.addEventListener("visibilitychange", update);
+    reduced.addEventListener("change", update);
+    return () => {
+      document.removeEventListener("visibilitychange", update);
+      reduced.removeEventListener("change", update);
+    };
+  }, []);
+  useEffect(() => {
+    if (!canRotate || hovered || focused || allOpen || feedbackOpen) return;
+    const timer = window.setTimeout(
+      () => setActive((current) => (current + 1) % updates.length),
+      6000,
+    );
+    return () => window.clearTimeout(timer);
+  }, [active, canRotate, hovered, focused, allOpen, feedbackOpen]);
   function actionLabel(feature: HomeFeature) {
     return feature === "reports"
       ? t("View reports")
@@ -91,7 +113,17 @@ export function HomeUpdates({
   }
   return (
     <aside className="home-updates" aria-label={t("Discover LİNBA")}>
-      <section className="home-news" aria-labelledby="home-news-heading">
+      <section
+        className="home-news"
+        aria-labelledby="home-news-heading"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onFocusCapture={() => setFocused(true)}
+        onBlurCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null))
+            setFocused(false);
+        }}
+      >
         <div className="home-panel-heading">
           <h2 id="home-news-heading">{t("What’s new")}</h2>
           <button
@@ -103,7 +135,11 @@ export function HomeUpdates({
             <Icon name="right" size={15} />
           </button>
         </div>
-        <article aria-live="polite" aria-atomic="true">
+        <article
+          key={update.id}
+          aria-live={hovered || focused ? "polite" : "off"}
+          aria-atomic="true"
+        >
           <div className={`home-news-art home-news-art-${update.id}`}>
             <div className="home-news-brand">
               <AgentMark size={22} />
@@ -141,27 +177,6 @@ export function HomeUpdates({
               </button>
             ))}
           </div>
-          <span className="home-news-position">
-            {active + 1} / {updates.length}
-          </span>
-          <div className="home-news-arrows">
-            <button
-              className="icon-button"
-              disabled={active === 0}
-              aria-label={t("Previous update")}
-              onClick={() => setActive(active - 1)}
-            >
-              <Icon name="left" size={18} />
-            </button>
-            <button
-              className="icon-button"
-              disabled={active === updates.length - 1}
-              aria-label={t("Next update")}
-              onClick={() => setActive(active + 1)}
-            >
-              <Icon name="right" size={18} />
-            </button>
-          </div>
         </div>
       </section>
       <section className="home-feedback">
@@ -191,13 +206,25 @@ export function HomeUpdates({
         <h2 id="home-socials-heading">{t("Stay connected")}</h2>
         <div role="group" aria-label={t("Social media")}>
           {[
-            { name: "LinkedIn", Symbol: LinkedinLogo },
-            { name: "Instagram", Symbol: InstagramLogo },
-            { name: "YouTube", Symbol: YoutubeLogo },
-            { name: "X", Symbol: XLogo },
-          ].map(({ name, Symbol }) => (
-            <button key={name} type="button" disabled aria-label={name}>
-              <Symbol size={18} aria-hidden="true" />
+            { name: "LinkedIn", Symbol: LinkedinLogo, brand: "linkedin" },
+            { name: "Instagram", Symbol: InstagramLogo, brand: "instagram" },
+            { name: "YouTube", Symbol: YoutubeLogo, brand: "youtube" },
+            { name: "X", Symbol: XLogo, brand: "x" },
+          ].map(({ name, Symbol, brand }) => (
+            <button
+              className={`social-${brand}`}
+              key={name}
+              type="button"
+              disabled
+              aria-label={name}
+            >
+              <Symbol
+                size={18}
+                weight={
+                  brand === "instagram" || brand === "x" ? "regular" : "fill"
+                }
+                aria-hidden="true"
+              />
               <span>{name}</span>
             </button>
           ))}

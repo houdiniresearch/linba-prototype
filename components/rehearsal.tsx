@@ -3,7 +3,6 @@ import { AgentMark, AgentIllustration } from "./agent-identity";
 import { PracticeWorkspace } from "./practice-workspace";
 import { PracticeClock } from "@/lib/practice-clock";
 import { OperationProgress } from "./operation-progress";
-import { ThemeMenu } from "./theme-menu";
 import { RehearsalSkeleton } from "./skeletons";
 import { useLocale } from "./locale-provider";
 import { useEffect, useRef, useState } from "react";
@@ -634,7 +633,6 @@ export function RehearsalView({ id }: { id: string }) {
             );
           })}
         </ol>
-        <ThemeMenu />
         <Logo />
       </header>
 

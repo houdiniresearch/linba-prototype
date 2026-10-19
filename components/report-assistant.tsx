@@ -7,7 +7,6 @@ import type { User } from "@/lib/types";
 import type { ReportChat, ReportItem, ReportTurn } from "@/lib/report-chat";
 import { ReportPreview } from "./report-preview";
 import { Auth } from "./auth";
-import { ThemeMenu } from "./theme-menu";
 import {
   ReportConversationSkeleton,
   ReportListSkeleton,
@@ -17,7 +16,7 @@ import {
 import { useLocale } from "./locale-provider";
 import {
   api,
-  date,
+  dateTime,
   Empty,
   ErrorNote,
   Icon,
@@ -192,9 +191,9 @@ function ReportWorkspace({ user }: { user: User }) {
                 <span>
                   <strong>{r.name}</strong>
                   <small>
-                    {r.endedAt
-                      ? `${date(r.endedAt, locale)} · ${new Date(r.endedAt).toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" })}`
-                      : ""}
+                    {t("Session {number}", { number: r.sessionNumber || 1 })}
+                    {r.endedAt &&
+                      ` · ${dateTime(r.startedAt || r.endedAt, locale)}`}
                   </small>
                 </span>
               </button>
@@ -252,7 +251,6 @@ function ReportWorkspace({ user }: { user: User }) {
                 <span>{t("Open report")}</span>
               </button>
             )}
-            <ThemeMenu />
           </div>
         </header>
         <div

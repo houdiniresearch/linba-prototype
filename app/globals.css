@@ -1,20 +1,17 @@
 :root {
   color-scheme: light dark;
-  --bg: light-dark(oklch(1 0 0), oklch(0.205 0.008 300));
-  --workspace: light-dark(oklch(0.9797 0.0026 286.35), oklch(0.17 0.007 300));
+  --bg: light-dark(oklch(1 0 0), oklch(0.205 0.003 285));
+  --workspace: light-dark(oklch(0.9797 0.0026 286.35), oklch(0.17 0.003 285));
   --ink: light-dark(oklch(0.2616 0.0223 284.75), oklch(0.96 0.004 300));
   --muted: light-dark(oklch(0.5117 0.022 285.6), oklch(0.74 0.014 300));
-  --line: light-dark(oklch(0.9294 0.0067 286.27), oklch(0.33 0.012 300));
+  --line: light-dark(oklch(0.9294 0.0067 286.27), oklch(0.33 0.005 285));
   --brand-lilac: oklch(0.7044 0.1301 304.43);
   --brand-fuchsia: oklch(0.6021 0.2426 3.28);
-  --lilac-soft: light-dark(oklch(0.9561 0.0155 306.41), oklch(0.285 0.038 306));
-  --lilac-ink: light-dark(oklch(0.4434 0.1144 305.67), oklch(0.83 0.085 306));
+  --lilac-soft: light-dark(oklch(0.9561 0.0155 306.41), oklch(0.27 0.008 295));
+  --lilac-ink: light-dark(oklch(0.4434 0.1144 305.67), oklch(0.84 0.035 300));
   --accent: light-dark(oklch(0.531 0.214 3.02), oklch(0.8 0.14 350));
   --accent-hover: light-dark(oklch(0.4788 0.1934 1.86), oklch(0.88 0.09 350));
-  --accent-soft: light-dark(
-    oklch(0.9673 0.0167 343.61),
-    oklch(0.285 0.045 345)
-  );
+  --accent-soft: light-dark(oklch(0.9673 0.0167 343.61), oklch(0.27 0.008 310));
   --mint: oklch(0.8394 0.1416 176.11);
   --mint-hover: oklch(0.7897 0.139 175.38);
   --mint-ink: oklch(0.3243 0.0485 178.27);

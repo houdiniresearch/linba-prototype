@@ -1,10 +1,9 @@
 "use client";
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { Course, User } from "@/lib/types";
 import type { WaitlistEntry } from "@/lib/waitlist";
 import { useLocale } from "./locale-provider";
-import { ThemeMenu } from "./theme-menu";
-import { api, date, ErrorNote, Icon, Modal, useResource } from "./ui";
+import { api, ErrorNote, Icon, Modal, useResource, dateTime } from "./ui";
 
 export function HeaderActions({
   user,
@@ -12,12 +11,14 @@ export function HeaderActions({
   onSettings,
   onReport,
   onLogout,
+  waitlistRequest = 0,
 }: {
   user: User;
   courses: Course[];
-  onSettings: () => void;
+  onSettings: (trigger?: HTMLElement) => void;
   onReport: (id: string) => void;
   onLogout: () => Promise<void>;
+  waitlistRequest?: number;
 }) {
   const { locale, setLocale, t } = useLocale();
   const profileId = useId(),
@@ -26,6 +27,7 @@ export function HeaderActions({
   const profile = useRef<HTMLDivElement>(null),
     language = useRef<HTMLDivElement>(null),
     notifications = useRef<HTMLDivElement>(null);
+  const profileTrigger = useRef<HTMLButtonElement>(null);
   const waitlist = useResource<{ entry: WaitlistEntry | null }>("waitlist");
   const [open, setOpen] = useState(false),
     [email, setEmail] = useState(user.email),
@@ -41,7 +43,7 @@ export function HeaderActions({
     .join("")
     .toLocaleUpperCase(locale);
   const reports = courses
-    .filter((c) => c.status === "ended" && c.endedAt)
+    .filter((c) => c.status === "ended" && c.endedAt && !c.trashedAt)
     .sort((a, b) => b.endedAt!.localeCompare(a.endedAt!))
     .slice(0, 4);
   function upgrade() {
@@ -51,6 +53,9 @@ export function HeaderActions({
     setEmail(waitlist.data?.entry?.email || user.email);
     setOpen(true);
   }
+  useEffect(() => {
+    if (waitlistRequest) upgrade();
+  }, [waitlistRequest]);
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return;
@@ -73,7 +78,6 @@ export function HeaderActions({
   return (
     <>
       <div className="header-actions">
-        <ThemeMenu />
         <button
           className="language-trigger"
           popoverTarget={languageId}
@@ -99,11 +103,13 @@ export function HeaderActions({
           <Icon name="bell" size={21} />
         </button>
         <button
+          ref={profileTrigger}
           className="profile-trigger"
           popoverTarget={profileId}
           aria-label={t("Profile menu")}
         >
           <span className="avatar">{initials}</span>
+          <Icon name="downCaret" size={13} />
         </button>
       </div>
       <div
@@ -158,7 +164,7 @@ export function HeaderActions({
               <span>
                 <strong>{t("Your report is ready")}</strong>
                 <span>{c.name}</span>
-                <small>{date(c.endedAt!, locale)}</small>
+                <small>{dateTime(c.endedAt!, locale)}</small>
               </span>
               <Icon name="right" size={16} />
             </button>
@@ -196,7 +202,7 @@ export function HeaderActions({
           className="popover-item"
           onClick={() => {
             profile.current?.hidePopover();
-            onSettings();
+            onSettings(profileTrigger.current || undefined);
           }}
         >
           <Icon name="settings" />
@@ -243,17 +249,17 @@ export function HeaderActions({
                   ? "You’re on the waitlist"
                   : editing
                     ? "Let’s stay in touch."
-                    : "Be part of what’s next.",
+                    : "Join the waitlist",
               )}
             </span>
           </span>
         }
         description={t(
           registered
-            ? "We’ll let you know when LİNBA’s new plans are ready."
+            ? "We’ll keep you posted about LİNBA’s launch and integrations."
             : editing
               ? "Update the email address where you’d like to hear from us."
-              : "Take the next step with LİNBA. Leave your email to hear when our new plans are announced.",
+              : "Leave your email for LİNBA’s launch, new features and integrations.",
         )}
       >
         {registered ? (

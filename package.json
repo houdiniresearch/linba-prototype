@@ -25,7 +25,10 @@
     "test:practice-workspace:integration": "node --import tsx tests/practice-workspace.integration.ts",
     "test:routes": "node --import tsx --test tests/routes.test.ts",
     "test:feedback": "node --import tsx --test tests/feedback.test.ts",
-    "test:feedback:integration": "node --import tsx tests/feedback.integration.ts"
+    "test:feedback:integration": "node --import tsx tests/feedback.integration.ts",
+    "test:training-sessions": "node --import tsx --test tests/training-sessions.test.ts",
+    "test:workspace": "node --import tsx --test tests/workspace.test.ts",
+    "test:workspace:integration": "node --import tsx tests/workspace.integration.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "6.3.1",

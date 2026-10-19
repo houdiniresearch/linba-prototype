@@ -1,5 +1,129 @@
 // Turkish UI translations. Application source strings are English.
 export const turkish: Record<string, string> = {
+  "Notes could not be saved. Try again before continuing.":
+    "Notlar kaydedilemedi. Devam etmeden önce tekrar dene.",
+  "We’ll keep you posted about LİNBA’s launch and integrations.":
+    "LİNBA’nın açılışından ve entegrasyonlarından seni haberdar edeceğiz.",
+  "Leave your email for LİNBA’s launch, new features and integrations.":
+    "LİNBA’nın açılışı, yeni özellikleri ve entegrasyonları için e-posta adresini bırak.",
+  "My profile": "Profilim",
+  Security: "Güvenlik",
+  "Billing & payments": "Fatura ve ödeme",
+  "General preferences": "Genel tercihler",
+  "Settings sections": "Ayarlar bölümleri",
+  "Profile updated.": "Profilin güncellendi.",
+  "Save profile": "Profili kaydet",
+  "Change your password. Other sessions will be signed out.":
+    "Parolanı değiştir. Diğer oturumların kapatılır.",
+  "Current password": "Mevcut parola",
+  "New password": "Yeni parola",
+  "Confirm new password": "Yeni parolayı doğrula",
+  "The new passwords do not match.": "Yeni parolalar eşleşmiyor.",
+  "Password updated.": "Parolan güncellendi.",
+  "Update password": "Parolayı güncelle",
+  "Current plan": "Mevcut plan",
+  "Your account has no active paid subscription.":
+    "Hesabında aktif bir ücretli abonelik yok.",
+  Invoices: "Faturalar",
+  "No invoices yet.": "Henüz faturan yok.",
+  "These preferences apply across your workspace.":
+    "Bu tercihler tüm çalışma alanında geçerli olur.",
+  "How can we help?": "Nasıl yardımcı olabiliriz?",
+  "A few useful places to get started.":
+    "Başlarken işine yarayacak birkaç bilgi.",
+  "Prepare and reuse training": "Eğitim hazırla ve yeniden kullan",
+  "Upload your material, add activities and practice. After a session ends, use the training again to prepare a fresh session with its own participants and report.":
+    "Materyalini yükle, aktiviteler ekle ve pratik yap. Oturum bittikten sonra aynı eğitimi yeniden kullanarak katılımcıları ve raporu ayrı bir oturum hazırlayabilirsin.",
+  "Open my training": "Eğitimlerimi aç",
+  "Find a session’s report": "Bir oturumun raporunu bul",
+  "Reports are separate for each session. Use the dates and time filters to find the group you are looking for.":
+    "Her oturumun raporu ayrıdır. Aradığın grubu bulmak için tarihleri ve zaman filtrelerini kullanabilirsin.",
+  "Groups and Trash": "Gruplar ve çöp kutusu",
+  "Create groups in My training to organize your library. Moving training to Trash keeps its records; restore it whenever you need it.":
+    "Eğitimlerim bölümünde gruplar oluşturup kütüphaneni düzenleyebilirsin. Çöp kutusuna taşınan eğitimin kayıtları korunur; istediğinde geri yükleyebilirsin.",
+  "Filter by date": "Tarihe göre filtrele",
+  "All time": "Tüm zamanlar",
+  "Recent · last 7 days": "Son 7 gün",
+  "This month": "Bu ay",
+  "This year": "Bu yıl",
+  "Custom range": "Özel tarih aralığı",
+  From: "Başlangıç",
+  To: "Bitiş",
+  "Training groups": "Eğitim grupları",
+  "Organize training by topic, team or any system that works for you.":
+    "Eğitimlerini konuya, ekibe veya sana uygun bir düzene göre grupla.",
+  "New group": "Yeni grup",
+  "For example: Sales training": "Örneğin: Satış eğitimleri",
+  "Add group": "Grup ekle",
+  "Deleting a group keeps its training in your library.":
+    "Grubu sildiğinde eğitimlerin kütüphanende kalır.",
+  "Group name": "Grup adı",
+  "Save group": "Grubu kaydet",
+  "Delete group": "Grubu sil",
+  "Training options for {name}": "{name} için eğitim seçenekleri",
+  "Move to group": "Gruba taşı",
+  Ungrouped: "Gruplanmamış",
+  "Move to Trash": "Çöp kutusuna taşı",
+  "Instructor notes": "Eğitmen notları",
+  "Only visible to you": "Yalnızca sen görürsün",
+  "Add a reminder, a talking point or a question for this slide…":
+    "Bu slayt için bir hatırlatma, anlatım notu veya soru ekle…",
+  "Rename training": "Eğitimin adını değiştir",
+  "Rename training: {name}": "Eğitimin adını değiştir: {name}",
+  "Training group": "Eğitim grubu",
+  "All groups": "Tüm gruplar",
+  "Manage groups": "Grupları yönet",
+  Trash: "Çöp kutusu",
+  Help: "Yardım",
+  "Your training and its session records stay here until you restore them.":
+    "Geri yükleyene kadar eğitimin ve oturum kayıtları burada korunur.",
+  "Restoring…": "Geri yükleniyor…",
+  Restore: "Geri yükle",
+  "Trash is empty": "Çöp kutusu boş",
+  "Training moved to Trash will appear here.":
+    "Çöp kutusuna taşıdığın eğitimler burada görünür.",
+  "Group not found.": "Grup bulunamadı.",
+  "Use a group name between 1 and 60 characters.":
+    "Grup adı 1–60 karakter arasında olmalı.",
+  "A group with this name already exists.": "Bu isimde bir grup zaten var.",
+  "Choose a training group.": "Bir eğitim grubu seç.",
+  "End the live session before moving this training to Trash.":
+    "Bu eğitimi çöp kutusuna taşımadan önce canlı oturumu bitir.",
+  "Account not found.": "Hesap bulunamadı.",
+  "Enter a name between 1 and 80 characters.":
+    "1–80 karakter arasında bir ad gir.",
+  "Password settings are available for registered accounts.":
+    "Parola ayarları kayıtlı hesaplarda kullanılabilir.",
+  "The current password is incorrect.": "Mevcut parola yanlış.",
+  "Use a password between 8 and 128 characters.":
+    "8–128 karakter arasında bir parola kullan.",
+  "Choose a different password.": "Farklı bir parola seç.",
+  "Restore this training from Trash first.":
+    "Önce bu eğitimi çöp kutusundan geri yükle.",
+  "Enter a training name between 1 and 120 characters.":
+    "Eğitim adı 1–120 karakter arasında olmalı.",
+  "Notes must be no longer than 10,000 characters.":
+    "Notlar en fazla 10.000 karakter olabilir.",
+  "No reports match your filters": "Filtrelerine uygun rapor bulunamadı",
+  "Adjust the search or date range to find a session.":
+    "Bir oturum bulmak için aramayı veya tarih aralığını değiştir.",
+  "Adjust your search, group or date filters.":
+    "Arama, grup veya tarih filtrelerini değiştir.",
+
+  Started: "Başladı",
+  "Session {number}": "Oturum {number}",
+  "Use training again": "Eğitimi yeniden kullan",
+  "Preparing new session…": "Yeni oturum hazırlanıyor…",
+  "Prepare another session": "Yeni oturum hazırla",
+  "This session’s records will be saved in its report. You can use the same training again with a new group.":
+    "Bu oturumun kayıtları raporunda saklanacak. Aynı eğitimi yeni bir grupla tekrar kullanabilirsin.",
+  "Finish this session before using the training again.":
+    "Eğitimi yeniden kullanmadan önce bu oturumu tamamla.",
+  "The training materials could not be copied. Try again.":
+    "Eğitim materyalleri kopyalanamadı. Tekrar dene.",
+  "The training materials could not be copied.":
+    "Eğitim materyalleri kopyalanamadı.",
+
   "Refresh the page and try again.": "Sayfayı yenileyip tekrar dene.",
   "Discover LİNBA": "LİNBA’yı keşfet",
   "What’s new": "Yenilikler",

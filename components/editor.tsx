@@ -1,7 +1,8 @@
 "use client";
 import { OperationProgress } from "./operation-progress";
 import { ActivityEditor } from "./activity-editor";
-import { ThemeMenu } from "./theme-menu";
+import { EditableTrainingTitle, SlideNotes } from "./slide-notes";
+import { RepeatTrainingButton } from "./repeat-training-button";
 import { EditorSkeleton } from "./skeletons";
 import { useLocale } from "./locale-provider";
 import { useEffect, useRef, useState } from "react";
@@ -27,6 +28,8 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
   const router = useRouter(),
     resource = useResource<CourseState>(`courses/${id}`, live ? 1800 : 0),
     { data, error, setData, refresh } = resource;
+  const latestData = useRef<CourseState | undefined>(data);
+  latestData.current = data;
   const [add, setAdd] = useState(false),
     [edit, setEdit] = useState(false),
     [settings, setSettings] = useState(false),
@@ -38,6 +41,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
     [saving, setSaving] = useState(false),
     [tool, setTool] = useState<"content" | "agents" | null>(null),
     [compactTools, setCompactTools] = useState(false);
+  const notesFlush = useRef<(() => Promise<void>) | null>(null);
   const toolsOpen = tool !== null;
   const toolsTrigger = useRef<HTMLButtonElement>(null);
   const toolsPanel = useRef<HTMLElement>(null);
@@ -146,6 +150,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
   async function start() {
     setBusy(true);
     try {
+      await notesFlush.current?.();
       await mutate({ action: "start" });
       router.push(`/training/${id}/live`);
     } catch {
@@ -218,7 +223,22 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           <Icon name="back" />
         </button>
         <div className="editor-name">
-          <h1>{c.name}</h1>
+          <EditableTrainingTitle
+            name={c.name}
+            onSave={async (name) => {
+              const result = await api<CourseState>(
+                `courses/${id}`,
+                { action: "rename", name },
+                "PATCH",
+              );
+              const current = latestData.current;
+              if (current)
+                setData({
+                  ...current,
+                  course: { ...current.course, name: result.course.name },
+                });
+            }}
+          />
           {saving ? (
             <span className="small muted" role="status">
               <Icon name="spinner" size={14} className="spin" />
@@ -230,7 +250,6 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
         </div>
         <Status status={c.status} />
         <div className="editor-header-actions">
-          <ThemeMenu />
           {live ? (
             <>
               <button className="button" onClick={join}>
@@ -269,13 +288,21 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                   {t("Back to live training")}
                 </button>
               ) : (
-                <button
-                  className="button report"
-                  onClick={() => router.push(`/?view=reports&report=${id}`)}
-                >
-                  <Icon name="chart" />
-                  {t("Open report")}
-                </button>
+                <>
+                  <RepeatTrainingButton
+                    id={id}
+                    beforeRepeat={() =>
+                      notesFlush.current?.() || Promise.resolve()
+                    }
+                  />
+                  <button
+                    className="button report"
+                    onClick={() => router.push(`/?view=reports&report=${id}`)}
+                  >
+                    <Icon name="chart" />
+                    {t("Open report")}
+                  </button>
+                </>
               )}
             </>
           )}
@@ -340,7 +367,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           </button>
         </div>
         <ErrorNote message={notice || error} />
-        {live ? (
+        {live && (
           <div className="live-status-strip">
             <span>
               <Icon name="chat" />
@@ -359,27 +386,8 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                 : t("Questions are forwarded to you")}
             </span>
           </div>
-        ) : (
-          <div className="stage-note">
-            <Icon name="file" />
-            <div>
-              <strong>
-                {active.kind === "document"
-                  ? t("Original presentation slide")
-                  : t("Interactive activity")}
-              </strong>
-              <p>
-                {active.kind === "document"
-                  ? t(
-                      "The original presentation is preserved. You can add an activity after this slide.",
-                    )
-                  : t(
-                      "During live training, this slide opens participants’ Activities tab.",
-                    )}
-              </p>
-            </div>
-          </div>
         )}
+        <SlideNotes courseId={id} slide={active} flushRef={notesFlush} />
       </main>
       {!live && (
         <nav className="editor-tool-dock" aria-label={t("Training tools")}>
@@ -642,7 +650,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
       >
         <p hidden={busy}>
           {t(
-            "Questions and activity results will be added to your report. This session cannot be restarted.",
+            "This session’s records will be saved in its report. You can use the same training again with a new group.",
           )}
         </p>
         {busy && <OperationProgress kind="report" />}

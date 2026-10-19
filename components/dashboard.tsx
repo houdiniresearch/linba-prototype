@@ -4,6 +4,14 @@ import { ThemeMenu } from "./theme-menu";
 import { ReportAssistantLink } from "./report-assistant-link";
 import { Report } from "./training-report";
 import { HomeUpdates } from "./home-updates";
+import { AccountSettings, WorkspaceHelp } from "./account-settings";
+import { DateFilter, GroupManager, TrainingCardMenu } from "./library-controls";
+import { ALL_TIME, withinLibraryPeriod } from "@/lib/library-filters";
+import type { TrainingGroup } from "@/lib/workspace-library";
+import {
+  trainingFamily,
+  visibleTrainingSessions,
+} from "@/lib/training-sessions";
 import {
   CardListSkeleton,
   DashboardSkeleton,
@@ -11,7 +19,7 @@ import {
   ReportTableSkeleton,
 } from "./skeletons";
 import { useLocale } from "./locale-provider";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { learningAccess } from "@/lib/training-access";
 import type { Course, User } from "@/lib/types";
@@ -28,6 +36,7 @@ import {
   api,
   useResource,
   date,
+  dateTime,
 } from "./ui";
 
 function TrainingCover({ course }: { course: Course }) {
@@ -250,9 +259,29 @@ export function Dashboard() {
   );
   const courses = useResource<{ courses: Course[] }>(
     `courses?account=${auth.data?.user?.id || ""}`,
-    0,
+    5000,
     !!auth.data?.user,
   );
+  const groups = useResource<{ groups: TrainingGroup[] }>(
+    "groups",
+    0,
+    auth.data?.user?.role === "teacher",
+  );
+  const [accountOpen, setAccountOpen] = useState(false),
+    [helpOpen, setHelpOpen] = useState(false),
+    [groupOpen, setGroupOpen] = useState(false),
+    [waitlistRequest, setWaitlistRequest] = useState(0),
+    [groupFilter, setGroupFilter] = useState("all");
+  const [trainingPeriod, setTrainingPeriod] = useState(ALL_TIME),
+    [reportPeriod, setReportPeriod] = useState(ALL_TIME);
+  const settingsTrigger = useRef<HTMLElement | null>(null),
+    helpTrigger = useRef<HTMLElement | null>(null),
+    groupTrigger = useRef<HTMLElement | null>(null);
+  function openSettings(trigger?: HTMLElement) {
+    settingsTrigger.current =
+      trigger || (document.activeElement as HTMLElement);
+    setAccountOpen(true);
+  }
   const [view, setView] = useState("home"),
     [search, setSearch] = useState(""),
     [create, setCreate] = useState(false),
@@ -272,7 +301,10 @@ export function Dashboard() {
   }, [mobile]);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("view")) setView(params.get("view")!);
+    if (params.get("view") === "settings") {
+      setAccountOpen(true);
+      setView("home");
+    } else if (params.get("view")) setView(params.get("view")!);
     if (params.get("report")) {
       setView("reports");
       setReport(params.get("report")!);
@@ -340,12 +372,44 @@ export function Dashboard() {
         </div>
       </div>
     );
-  const list = (courses.data?.courses || []).filter((c) =>
-      c.name
-        .toLocaleLowerCase("tr-TR")
-        .includes(search.toLocaleLowerCase("tr-TR")),
+  const list = (courses.data?.courses || []).filter(
+      (c) =>
+        !c.trashedAt &&
+        c.name
+          .toLocaleLowerCase(locale)
+          .includes(search.toLocaleLowerCase(locale)),
     ),
-    reports = list.filter((c) => c.status === "ended");
+    reports = list
+      .filter(
+        (c) =>
+          c.status === "ended" && withinLibraryPeriod(c.endedAt, reportPeriod),
+      )
+      .sort((a, b) =>
+        (b.endedAt || b.createdAt).localeCompare(a.endedAt || a.createdAt),
+      ),
+    trainingList = visibleTrainingSessions(list)
+      .filter(
+        (course) =>
+          view !== "courses" ||
+          (withinLibraryPeriod(
+            course.startedAt || course.createdAt,
+            trainingPeriod,
+          ) &&
+            (groupFilter === "all" ||
+              (groupFilter === "ungrouped"
+                ? !course.groupId
+                : course.groupId === groupFilter))),
+      )
+      .sort((a, b) =>
+        view === "courses" && groupFilter === "all"
+          ? (a.groupId || "").localeCompare(b.groupId || "") ||
+            b.createdAt.localeCompare(a.createdAt)
+          : b.createdAt.localeCompare(a.createdAt),
+      );
+  const hasTrainingFilters =
+    !!search ||
+    (view === "courses" &&
+      (groupFilter !== "all" || trainingPeriod.period !== "all"));
   function change(next: string) {
     setView(next);
     setReport("");
@@ -392,7 +456,8 @@ export function Dashboard() {
         <HeaderActions
           user={user}
           courses={courses.data?.courses || []}
-          onSettings={() => change("settings")}
+          onSettings={openSettings}
+          waitlistRequest={waitlistRequest}
           onReport={openReport}
           onLogout={async () => {
             await api("auth", undefined, "DELETE");
@@ -421,64 +486,58 @@ export function Dashboard() {
             </button>
           ))}
         </nav>
+        <div className="sidebar-integrations" aria-label={t("Integrations")}>
+          <span>{t("Integrations")}</span>
+          <div>
+            {[
+              ["Google Meet", "/integrations/google-meet.svg"],
+              ["Microsoft Teams", "/integrations/teams.svg"],
+              ["Zoom", "/integrations/zoom.png"],
+              ["PowerPoint", "/integrations/powerpoint.svg"],
+              ["Google Slides", "/integrations/google-slides.svg"],
+            ].map(([name, src]) => (
+              <button
+                type="button"
+                key={name}
+                aria-label={t("Join the waitlist for {name}", { name })}
+                title={name}
+                onClick={() => setWaitlistRequest((current) => current + 1)}
+              >
+                <img src={src} alt="" width={26} height={26} />
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="sidebar-bottom">
-          <button
-            className={view === "settings" ? "active" : ""}
-            onClick={() => change("settings")}
-          >
+          <button onClick={(event) => openSettings(event.currentTarget)}>
             <Icon name="settings" />
             {t("Settings")}
           </button>
           <button
-            onClick={async () => {
-              await api("auth", undefined, "DELETE");
-              await auth.refresh();
+            className={view === "trash" ? "active" : ""}
+            onClick={() => change("trash")}
+          >
+            <Icon name="trash" />
+            {t("Trash")}
+          </button>
+          <button
+            onClick={(event) => {
+              helpTrigger.current = event.currentTarget;
+              setHelpOpen(true);
             }}
           >
-            <Icon name="logout" />
-            {t("Log out")}
+            <Icon name="help" />
+            {t("Help")}
           </button>
         </div>
       </aside>
       <main className="dashboard-main">
-        {view === "settings" ? (
-          <>
-            <div className="page-title">
-              <div>
-                <h1>{t("Settings")}</h1>
-                <p className="muted">
-                  {t("Your profile, preferences and agent availability.")}
-                </p>
-              </div>
-            </div>
-            <section className="settings-section">
-              <h2>{t("Account")}</h2>
-              <dl>
-                <dt>{t("Full name")}</dt>
-                <dd>{user.name}</dd>
-                <dt>{t("Account type")}</dt>
-                <dd>{t("Instructor")}</dd>
-                <dt>{t("Email")}</dt>
-                <dd>{user.email || t("Experience account")}</dd>
-              </dl>
-              <h2>{t("Agent availability")}</h2>
-              <p className={auth.data.aiReady ? "success-text" : "muted"}>
-                <Icon name={auth.data.aiReady ? "success" : "warning"} />
-                {auth.data.aiReady
-                  ? t("Your AI agents are available")
-                  : t("Your AI agents are not available yet")}
-              </p>
-              <p className="muted">
-                {t(
-                  "Your learning, practice and report agents use your training context.",
-                )}
-              </p>
-              <details className="technical-details">
-                <summary>{t("Technical details")}</summary>
-                <code>{auth.data.model}</code>
-              </details>
-            </section>
-          </>
+        {view === "trash" ? (
+          <TrainingTrash
+            courses={courses.data?.courses}
+            error={courses.error}
+            onChanged={courses.refresh}
+          />
         ) : view === "reports" ? (
           report ? (
             <Report id={report} onBack={() => change("reports")} />
@@ -495,6 +554,9 @@ export function Dashboard() {
                 </div>
                 <ReportAssistantLink />
               </div>
+              <div className="library-toolbar">
+                <DateFilter value={reportPeriod} onChange={setReportPeriod} />
+              </div>
               {!courses.data ? (
                 courses.error ? (
                   <ResourceFailure
@@ -510,6 +572,7 @@ export function Dashboard() {
                     <thead>
                       <tr>
                         <th>{t("Training")}</th>
+                        <th>{t("Started")}</th>
                         <th>{t("Completed")}</th>
                         <th>{t("Learning agent access")}</th>
                         <th />
@@ -524,9 +587,17 @@ export function Dashboard() {
                               onClick={() => openReport(c.id)}
                             >
                               {c.name}
+                              <small className="report-session-label">
+                                {t("Session {number}", {
+                                  number: c.sessionNumber || 1,
+                                })}
+                              </small>
                             </button>
                           </td>
-                          <td>{c.endedAt && date(c.endedAt, locale)}</td>
+                          <td>
+                            {c.startedAt ? dateTime(c.startedAt, locale) : "—"}
+                          </td>
+                          <td>{c.endedAt && dateTime(c.endedAt, locale)}</td>
                           <td>
                             {learningAccess(c).canAsk
                               ? t("{days} days remaining", {
@@ -545,9 +616,15 @@ export function Dashboard() {
               ) : (
                 <Empty
                   icon="chart"
-                  title={t("Your first report will appear after training ends")}
+                  title={t(
+                    search || reportPeriod.period !== "all"
+                      ? "No reports match your filters"
+                      : "Your first report will appear after training ends",
+                  )}
                   description={t(
-                    "Questions, AI answers and activities are brought together automatically.",
+                    search || reportPeriod.period !== "all"
+                      ? "Adjust the search or date range to find a session."
+                      : "Questions, AI answers and activities are brought together automatically.",
                   )}
                 />
               )}
@@ -587,6 +664,40 @@ export function Dashboard() {
                   {t("New training")}
                 </button>
               </div>
+              {view === "courses" && (
+                <div className="library-toolbar">
+                  <label className="library-group-filter">
+                    <span className="sr-only">{t("Training group")}</span>
+                    <select
+                      aria-label={t("Training group")}
+                      value={groupFilter}
+                      onChange={(event) => setGroupFilter(event.target.value)}
+                    >
+                      <option value="all">{t("All groups")}</option>
+                      <option value="ungrouped">{t("Ungrouped")}</option>
+                      {groups.data?.groups.map((group) => (
+                        <option key={group.id} value={group.id}>
+                          {group.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <DateFilter
+                    value={trainingPeriod}
+                    onChange={setTrainingPeriod}
+                  />
+                  <button
+                    className="button library-manage-groups"
+                    onClick={(event) => {
+                      groupTrigger.current = event.currentTarget;
+                      setGroupOpen(true);
+                    }}
+                  >
+                    {t("Manage groups")}
+                  </button>
+                  <ErrorNote message={groups.error} />
+                </div>
+              )}
               {courses.data && courses.error && (
                 <ErrorNote message={courses.error} />
               )}
@@ -618,59 +729,99 @@ export function Dashboard() {
                   ) : (
                     <CardListSkeleton />
                   )
-                ) : list.length ? (
+                ) : trainingList.length ? (
                   <div className="training-grid">
-                    {list.slice(0, view === "home" ? 6 : undefined).map((c) => (
-                      <button
-                        className="training-card"
-                        key={c.id}
-                        onClick={() =>
-                          c.status === "ended"
-                            ? openReport(c.id)
-                            : router.push(
-                                `/training/${c.id}${c.status === "live" ? "/live" : ""}`,
-                              )
-                        }
-                      >
-                        <TrainingCover course={c} />
-                        <div className="training-card-content">
-                          <Status status={c.status} />
-                          <h3>{c.name}</h3>
-                          <div className="card-meta">
-                            <span>{date(c.createdAt, locale)}</span>
-                          </div>
-                          <div className="training-card-next">
-                            <span>
-                              {t(
-                                c.status === "ended"
-                                  ? "View learning report"
-                                  : c.status === "live"
-                                    ? "Return to live training"
-                                    : "Continue preparing",
-                              )}
-                            </span>
-                            <Icon name="arrow" size={17} />
-                          </div>
-                        </div>
-                      </button>
-                    ))}
+                    {trainingList
+                      .slice(0, view === "home" ? 6 : undefined)
+                      .map((c, cardIndex) => (
+                        <Fragment key={c.id}>
+                          {view === "courses" &&
+                            groupFilter === "all" &&
+                            !!groups.data?.groups.length &&
+                            (cardIndex === 0 ||
+                              trainingList[cardIndex - 1].groupId !==
+                                c.groupId) && (
+                              <div className="library-group-heading">
+                                <h3>
+                                  {groups.data.groups.find(
+                                    (group) => group.id === c.groupId,
+                                  )?.name || t("Ungrouped")}
+                                </h3>
+                              </div>
+                            )}
+                          <article className="training-card" key={c.id}>
+                            <button
+                              className="training-card-open"
+                              onClick={() =>
+                                router.push(
+                                  `/training/${c.id}${c.status === "live" ? "/live" : ""}`,
+                                )
+                              }
+                            >
+                              <TrainingCover course={c} />
+                              <div className="training-card-content">
+                                <Status status={c.status} />
+                                <h3>{c.name}</h3>
+                                <div className="card-meta">
+                                  <span>
+                                    {t("Session {number}", {
+                                      number: c.sessionNumber || 1,
+                                    })}{" "}
+                                    ·{" "}
+                                    {dateTime(
+                                      c.startedAt || c.createdAt,
+                                      locale,
+                                    )}
+                                    {c.groupId && (
+                                      <small>
+                                        {
+                                          groups.data?.groups.find(
+                                            (group) => group.id === c.groupId,
+                                          )?.name
+                                        }
+                                      </small>
+                                    )}
+                                  </span>
+                                </div>
+                                <div className="training-card-next">
+                                  <span>
+                                    {t(
+                                      c.status === "ended"
+                                        ? "Prepare another session"
+                                        : c.status === "live"
+                                          ? "Return to live training"
+                                          : "Continue preparing",
+                                    )}
+                                  </span>
+                                  <Icon name="arrow" size={17} />
+                                </div>
+                              </div>
+                            </button>
+                            <TrainingCardMenu
+                              course={c}
+                              groups={groups.data?.groups || []}
+                              onChanged={courses.refresh}
+                            />
+                          </article>
+                        </Fragment>
+                      ))}
                   </div>
                 ) : (
                   <Empty
                     title={
-                      search
+                      hasTrainingFilters
                         ? t("No matching training found")
                         : t("Create your first training")
                     }
                     description={
-                      search
-                        ? t("Try searching for another name.")
+                      hasTrainingFilters
+                        ? t("Adjust your search, group or date filters.")
                         : t(
                             "Upload your presentation. Activities and voice practice await in your training workspace.",
                           )
                     }
                   >
-                    {!search && (
+                    {!hasTrainingFilters && (
                       <button
                         className="button"
                         onClick={() => setCreate(true)}
@@ -714,7 +865,7 @@ export function Dashboard() {
               <HomeUpdates
                 hasDraft={
                   !!courses.data?.courses.some(
-                    (course) => course.status === "draft",
+                    (course) => course.status === "draft" && !course.trashedAt,
                   )
                 }
                 onExplore={(feature) => {
@@ -723,7 +874,7 @@ export function Dashboard() {
                     return;
                   }
                   const course = courses.data?.courses.find(
-                    (course) => course.status === "draft",
+                    (course) => course.status === "draft" && !course.trashedAt,
                   );
                   if (!course) {
                     setCreate(true);
@@ -738,6 +889,32 @@ export function Dashboard() {
           </div>
         )}
       </main>
+      <AccountSettings
+        open={accountOpen}
+        user={user}
+        onClose={() => setAccountOpen(false)}
+        onSaved={auth.refresh}
+        onWaitlist={() => setWaitlistRequest((current) => current + 1)}
+        returnFocusRef={settingsTrigger}
+      />
+      <WorkspaceHelp
+        open={helpOpen}
+        onClose={() => setHelpOpen(false)}
+        onTraining={() => change("courses")}
+        onReports={() => change("reports")}
+        returnFocusRef={helpTrigger}
+      />
+      <GroupManager
+        open={groupOpen}
+        onClose={() => setGroupOpen(false)}
+        groups={groups.data?.groups || []}
+        returnFocusRef={groupTrigger}
+        onChanged={async () => {
+          await Promise.all([groups.refresh(), courses.refresh()]);
+          setGroupFilter("all");
+        }}
+      />
+
       <CreateTraining
         open={create}
         onClose={() => setCreate(false)}
@@ -746,6 +923,87 @@ export function Dashboard() {
     </div>
   );
 }
+function TrainingTrash({
+  courses,
+  error: loadError,
+  onChanged,
+}: {
+  courses?: Course[];
+  error?: string;
+  onChanged: () => Promise<unknown>;
+}) {
+  const { t, locale } = useLocale();
+  const [busy, setBusy] = useState(""),
+    [error, setError] = useState("");
+  const list = visibleTrainingSessions(
+    (courses || []).filter((course) => course.trashedAt),
+  ).filter(
+    (course, index, items) =>
+      items.findIndex(
+        (item) => trainingFamily(item) === trainingFamily(course),
+      ) === index,
+  );
+  if (!courses)
+    return loadError ? (
+      <ResourceFailure error={loadError} onRetry={onChanged} />
+    ) : (
+      <CardListSkeleton />
+    );
+  return (
+    <section>
+      <div className="page-title">
+        <div>
+          <h1>{t("Trash")}</h1>
+          <p className="muted">
+            {t(
+              "Your training and its session records stay here until you restore them.",
+            )}
+          </p>
+        </div>
+      </div>
+      <ErrorNote message={error} />
+      {list.length ? (
+        <div className="trash-list">
+          {list.map((course) => (
+            <div key={course.id}>
+              <div>
+                <strong>{course.name}</strong>
+                <span>
+                  {course.trashedAt && dateTime(course.trashedAt, locale)}
+                </span>
+              </div>
+              <button
+                className="button"
+                disabled={!!busy}
+                onClick={async () => {
+                  setBusy(course.id);
+                  setError("");
+                  try {
+                    await api(`courses/${course.id}/restore`, {});
+                    await onChanged();
+                  } catch (error) {
+                    setError((error as Error).message);
+                  } finally {
+                    setBusy("");
+                  }
+                }}
+              >
+                {t(busy === course.id ? "Restoring…" : "Restore")}
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <Empty
+          icon="trash"
+          title={t("Trash is empty")}
+          description={t("Training moved to Trash will appear here.")}
+        />
+      )}
+    </section>
+  );
+}
+
 export function JoinForm({
   onJoin,
   initialCode = "",

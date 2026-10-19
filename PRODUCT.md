@@ -14,7 +14,7 @@ Sunum merkezli platform. Kullanıcının 13 Ekim 2026 konuşmasındaki kararlar�
 
 ## Confirmed Workflow
 
-- Sidebar: Ana sayfa, Eğitimlerim, Raporlar; altta Ayarlar ve hesap. Ana sayfada AI oluşturma kutusu yok.
+- Sidebar: Ana sayfa, Eğitimlerim, Raporlar; altta entegrasyonlar, Ayarlar, Çöp kutusu ve Yardım. Ana sayfada AI oluşturma kutusu yok.
 - Eğitim oluştur: doküman yükle, dosya adından gelen eğitim adını gerekirse değiştir, eğitim sonrası RAG süresini seç, canlı otomatik yanıtı aç/kapat.
 - Yüklenen sunum metni/görselleri düzenlenmez. Ayrı çalışma ekranında solda slayt sırası, ortada seçili slayt, sağda aktivite ayarları.
 - Aktivite seçili slayttan sonra eklenir ve sürüklenerek taşınır. Türler sonraya bırakılmıştır; temel anket/açık uçlu/senaryo altyapısı ilk sürüme yeterlidir.
@@ -45,7 +45,7 @@ Türkçe/İngilizce arayüz; görünür odak; klavye/dokunma; azaltılmış hare
 
 ## Header & Account
 
-Sağ üst sıra: dil seçimi, mint Planı yükselt butonu (İngilizce: Upgrade), bildirim simgesi ve profil avatarı. Profil menüsü ad/e-posta, ücretsiz plan etiketi, Upgrade alanı, hesap ayarları, plan/bekleme listesi ve çıkış içerir. Var olmayan faturalama veya ekip yönetimi ekranları eklenmez. Upgrade bekleme listesi kaydını açar; kayıt hesaba bağlı ve SQLite'da kalıcıdır, tekrar gönderimde güncellenir. Bildirim listesi kullanıcıya ait tamamlanan eğitim raporlarından türetilir. Otomatik e-posta gönderimi henüz bağlı değildir.
+Sağ üst sıra: dil seçimi, açık mint Erken erişim butonu, bildirim simgesi ve aşağı oklu 40 px profil avatarı. Profil menüsü ad/e-posta, ücretsiz plan etiketi, Upgrade alanı, hesap ayarları, plan/bekleme listesi ve çıkış içerir. Hesap ayarları; profil, güvenlik, fatura ve ödeme, genel tercihler bölümlerini içeren bir penceredir. Fatura alanı mevcut ücretsiz planı ve gerçek fatura bulunmadığını gösterir; ödeme servisi bağlı değildir. Upgrade bekleme listesi kaydını açar; kayıt hesaba bağlı ve SQLite'da kalıcıdır, tekrar gönderimde güncellenir. Bildirim listesi kullanıcıya ait tamamlanan eğitim raporlarından türetilir. Otomatik e-posta gönderimi henüz bağlı değildir.
 
 ## Project
 
@@ -53,7 +53,7 @@ Mevcut Next.js/TypeScript yerel projeyi kullan. SQLite ve yerel dosyalar. GitHub
 
 ## Görünüm tercihi
 
-Ürün genelinde Açık / Koyu / Sistem temaları desteklenir. Sağ üst görünüm menüsü eğitmen paneli, eğitim düzenleme, sesli prova, katılımcı ve giriş ekranlarında erişilebilirdir. Tercih tarayıcıda bir yıl saklanır, yenilemede korunur ve tüm ekranlara uygulanır. Yüklenen sunum sayfalarının renkleri değişmez.
+Ürün genelinde Açık / Koyu / Sistem temaları desteklenir. Eğitmen çalışma alanında görünüm tercihi Ayarlar → Genel tercihler içindedir; katılımcı ve giriş ekranlarında görünüm menüsü korunur. Tercih tarayıcıda bir yıl saklanır, yenilemede korunur ve tüm ekranlara uygulanır. Yüklenen sunum sayfalarının renkleri değişmez.
 
 ## Rapor asistanı
 
@@ -73,4 +73,8 @@ Tanıtımda “Senin eğitimine göre” bölümü kurumsal eğitmen, öğretim 
 
 ## Ürün ana sayfasında keşif alanı
 
-Eğitmen ana sayfasında son eğitimlerin sağında LİNBA'ya ait üç görselli yenilik gösterilir: pratik ajanı, aktiviteler ve sohbetin yanındaki rapor paneli. Kullanıcı oklarla veya nokta düğmeleriyle geçiş yapar; otomatik dönüş, sahte yayın tarihi veya değerlendirme puanı yoktur. Tümünü gör aynı yenilikleri ayrıntılarıyla açar. Çalışma alanını aç ilk taslak eğitime, pratik için onun /practice adresine gider; taslak yoksa eğitim oluşturma formu açılır. Raporlar düğmesi gerçek rapor listesine gider. Sosyal düğmeler mevcut tanıtım sayfasındaki gibi şimdilik devre dışıdır. Görüşünü paylaş formu kategori ve en fazla 2.000 karakterlik metni hesapla ilişkilendirerek yerel SQLite feedback kayıtlarına kaydeder; e-posta veya dış servis gönderimi yapmaz.
+Eğitmen ana sayfasında son eğitimlerin sağında LİNBA'ya ait üç görselli yenilik gösterilir: pratik ajanı, aktiviteler ve sohbetin yanındaki rapor paneli. İçerik altı saniyede bir döner; nokta düğmeleriyle doğrudan seçilebilir. Ok, sayısal sayaç, sahte yayın tarihi veya değerlendirme puanı yoktur. Odak, hover, gizli sekme, açık keşif pencereleri ve azaltılmış hareket otomatik dönüşü durdurur. Tümünü gör aynı yenilikleri ayrıntılarıyla açar. Çalışma alanını aç ilk taslak eğitime, pratik için onun /practice adresine gider; taslak yoksa eğitim oluşturma formu açılır. Raporlar düğmesi gerçek rapor listesine gider. Sosyal düğmeler mevcut tanıtım sayfasındaki gibi şimdilik devre dışıdır. Görüşünü paylaş formu kategori ve en fazla 2.000 karakterlik metni hesapla ilişkilendirerek yerel SQLite feedback kayıtlarına kaydeder; e-posta veya dış servis gönderimi yapmaz.
+
+## Training library and account settings — 19 October 2026
+
+See [WORKSPACE_LIBRARY.md](docs/WORKSPACE_LIBRARY.md) for reusable sessions, user-owned training groups, Istanbul calendar filters, recoverable Trash, private slide notes and account settings. Logout is only in the profile menu. Product integration marks moved into the sidebar and open the account waitlist.

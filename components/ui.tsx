@@ -6,6 +6,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   House,
+  PencilSimple,
+  Question,
   Folder,
   ChartBar,
   Gear,
@@ -52,6 +54,8 @@ import {
 } from "@phosphor-icons/react";
 const icons = {
   home: House,
+  edit: PencilSimple,
+  help: Question,
   folder: Folder,
   chart: ChartBar,
   settings: Gear,
@@ -322,6 +326,17 @@ export function date(value: string, locale: "tr" | "en" = "tr") {
     day: "numeric",
     month: "short",
     year: "numeric",
+    timeZone: "Europe/Istanbul",
+  }).format(new Date(value));
+}
+export function dateTime(value: string, locale: "tr" | "en" = "tr") {
+  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "tr-TR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
     timeZone: "Europe/Istanbul",
   }).format(new Date(value));
 }

@@ -15,6 +15,8 @@ import "@/components/editor-workspace.css";
 import "@/components/slide-rail.css";
 import "@/components/report-preview.css";
 import "@/components/home-updates.css";
+import "@/components/workspace-chrome.css";
+import "@/components/workspace-library.css";
 
 export const metadata: Metadata = {
   title: "LİNBA — Training workspace",

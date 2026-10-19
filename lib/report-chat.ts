@@ -26,7 +26,10 @@ export type ReportChat = {
   pending: { requestId: string; question: string } | null;
   aiReady: boolean;
 };
-export type ReportItem = Pick<Course, "id" | "name" | "endedAt">;
+export type ReportItem = Pick<
+  Course,
+  "id" | "name" | "endedAt" | "startedAt" | "sessionNumber"
+>;
 type ModelResult = { answer: string; sourceIds: string[] };
 type Generate = (instructions: string, input: string) => Promise<ModelResult>;
 type Job = { requestId: string; question: string; result: Promise<void> };
@@ -45,6 +48,7 @@ function ownedReport(user: User, id: string) {
   if (user.role !== "teacher")
     throw new AppError("This area is unavailable for this account type.", 403);
   const course = courseForOwner(id, user);
+  if (course.trashedAt) throw new AppError("Report not found.", 404);
   if (course.status !== "ended")
     throw new AppError(
       "The report agent becomes available when training ends.",
@@ -56,11 +60,19 @@ export function reportList(user: User): ReportItem[] {
   if (user.role !== "teacher")
     throw new AppError("This area is unavailable for this account type.", 403);
   return all<Course>("course")
-    .filter((c) => c.ownerId === user.id && c.status === "ended")
+    .filter(
+      (c) => c.ownerId === user.id && c.status === "ended" && !c.trashedAt,
+    )
     .sort((a, b) =>
       (b.endedAt || b.createdAt).localeCompare(a.endedAt || a.createdAt),
     )
-    .map(({ id, name, endedAt }) => ({ id, name, endedAt }));
+    .map(({ id, name, endedAt, startedAt, sessionNumber }) => ({
+      id,
+      name,
+      endedAt,
+      startedAt,
+      sessionNumber,
+    }));
 }
 function turnsOf(courseId: string, ownerId: string) {
   return all<ReportTurn>("report-turn")

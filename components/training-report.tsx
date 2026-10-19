@@ -4,9 +4,17 @@ import type { CourseState } from "@/lib/types";
 import { learningSignals } from "@/lib/learning-insights";
 import { pollResults } from "@/lib/activities";
 import { ReportAssistantLink } from "./report-assistant-link";
+import { RepeatTrainingButton } from "./repeat-training-button";
 import { ReportDetailSkeleton } from "./skeletons";
 import { useLocale } from "./locale-provider";
-import { Icon, ResourceFailure, Status, date, useResource } from "./ui";
+import {
+  Icon,
+  ResourceFailure,
+  Status,
+  date,
+  dateTime,
+  useResource,
+} from "./ui";
 
 function scrollReport(
   root: HTMLDivElement | null,
@@ -102,13 +110,26 @@ export function Report({
           <span className="eyebrow">{t("TRAINING REPORT")}</span>
           <Heading>{c.name}</Heading>
           <p className="muted">
-            {c.endedAt ? date(c.endedAt, locale) : t("Not completed yet")}{" "}
+            {t("Session {number}", { number: c.sessionNumber || 1 })}
+            {c.startedAt && (
+              <>
+                {" "}
+                · {t("Started")}: {dateTime(c.startedAt, locale)}
+              </>
+            )}
+            {c.endedAt && (
+              <>
+                {" "}
+                · {t("Completed")}: {dateTime(c.endedAt, locale)}
+              </>
+            )}{" "}
             {t("· Updated with records after training.")}
           </p>
         </div>
         {!embedded && (
           <div className="report-title-actions">
             <Status status={c.status} />
+            {c.status === "ended" && <RepeatTrainingButton id={c.id} />}
             <ReportAssistantLink id={c.id} />
           </div>
         )}

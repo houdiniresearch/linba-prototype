@@ -59,7 +59,7 @@ Mevcut Phosphor ikon ailesi ve Radix. Aktif slayt fuşya odak çizgisi ve açık
 
 ## Tema
 
-Açık, Koyu ve Sistem seçenekleri ortak görünüm menüsündedir. İlk tercih Sistem'dir; kullanıcı seçimi bir yıl süreli linba_theme çerezinde saklanır ve sunucu ilk HTML'ye uygular. Sistem seçimi işletim sistemindeki değişiklikleri CSS color-scheme ile anında izler; tema için sayfa yüklenirken JavaScript beklenmez. Koyu temada nötr yüzeyler hafif lila tonlu kömür, ana metin kırık beyaz, yardımcı metin açık gridir. Fuşya ve mint dolgulu eylemler aynı kalır; etkileşimli metinler koyu zeminde daha açık ton kullanır. Sunum görselleri dönüştürülmez. Logonun yalnız yazısı koyu temada açılır; özgün sembol, fuşya nokta ve geometri korunur.
+Açık, Koyu ve Sistem seçenekleri eğitmen çalışma alanında Ayarlar → Genel tercihler içindedir. İlk tercih Sistem'dir; kullanıcı seçimi bir yıl süreli linba_theme çerezinde saklanır ve sunucu ilk HTML'ye uygular. Sistem seçimi işletim sistemindeki değişiklikleri CSS color-scheme ile anında izler; tema için sayfa yüklenirken JavaScript beklenmez. Koyu temada nötr yüzeyler düşük doygunluklu kömür, ana metin kırık beyaz, yardımcı metin açık gridir. Fuşya ve mint dolgulu eylemler aynı kalır; etkileşimli metinler koyu zeminde daha açık ton kullanır. Sunum görselleri dönüştürülmez. Logonun yalnız yazısı koyu temada açılır; özgün sembol, fuşya nokta ve geometri korunur.
 
 ## Rapor sohbet alanı
 
@@ -136,3 +136,9 @@ Avoid generic AI sparkles, magic wands, star badges and decorative emoji substit
 Suggested questions do not repeat an agent icon in every row. Standard functional icons remain for navigation, microphone, playback, sources and actions. Processing views pair the actual operation with the agent signature and the existing indeterminate status indicator; floating decorative cards and sparkle animations are removed. Decoration is hidden from assistive technology, does not animate continuously and does not replace readable state labels. All new visuals inherit existing light/dark tokens and work at narrow widths.
 
 Implementation: `components/agent-identity.tsx` and `components/agent-identity.css`. Use this vocabulary across product and landing examples instead of introducing unrelated AI symbols.
+
+## Workspace refinements — 19 October 2026
+
+Use a 64 px app header and 200 px sidebar. Align the desktop search with the main creation button; retain 44 px primary control targets, a 40 px profile avatar and a small chevron. Early access uses pale mint. Sidebar integration marks open the account waitlist; Settings, Trash and Help follow below. Logout belongs only in the profile menu. Settings uses one responsive dialog with profile, security, billing and preferences. Dark selections use quiet neutral surfaces rather than saturated purple.
+
+Training groups and calendar filters precede the library. Reports show session number and separate start/completion dates and times. A completed training can create a new isolated session. Slide notes replace the original-presentation notice below the canvas; they are private to the instructor. The training heading is directly editable.

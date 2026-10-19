@@ -1,0 +1,136 @@
+.app-shell {
+  --header: 64px;
+  grid-template-columns: 200px minmax(0, 1fr);
+  grid-template-rows: var(--header) minmax(calc(100dvh - var(--header)), auto);
+}
+.app-shell .app-header {
+  height: var(--header);
+  padding-inline: 20px;
+  gap: 24px;
+}
+.app-header > .logo {
+  width: 128px;
+}
+.app-header .header-search {
+  max-width: 360px;
+}
+.app-shell .sidebar {
+  padding: 18px 8px;
+}
+.app-shell .sidebar nav {
+  gap: 4px;
+}
+.app-shell .sidebar button {
+  min-height: 44px;
+  padding: 10px 12px;
+  font-size: 13px;
+  gap: 10px;
+}
+.app-shell .sidebar button > svg {
+  width: 19px;
+  height: 19px;
+}
+.app-header .header-actions {
+  gap: 6px;
+}
+.app-header .profile-trigger {
+  width: auto;
+  min-width: 58px;
+  height: 44px;
+  padding: 4px;
+  gap: 6px;
+  border-radius: 8px;
+}
+.app-header .profile-trigger .avatar {
+  width: 34px;
+  height: 34px;
+  font-size: 12px;
+}
+.app-header .profile-trigger > svg {
+  color: var(--muted);
+}
+.app-shell .header-popover {
+  top: calc(var(--header) + 8px);
+}
+.app-shell .dashboard-main {
+  padding: 28px 32px 48px;
+}
+.report-session-label {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.repeat-training-control {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.repeat-training-control .error-note {
+  max-width: 36ch;
+  font-size: 12px;
+  margin: 0;
+}
+.repeat-training-control .button {
+  white-space: nowrap;
+}
+.card-meta > span {
+  line-height: 1.6;
+}
+@media (max-width: 760px) {
+  .app-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .app-shell .app-header {
+    padding-inline: 14px;
+    gap: 6px;
+  }
+  .app-header > .logo {
+    width: 100px;
+  }
+  .app-shell .sidebar.open {
+    top: var(--header);
+    width: 220px;
+    height: calc(100dvh - var(--header));
+  }
+  .app-shell .dashboard-main {
+    padding: 24px 20px 40px;
+  }
+  .app-header .header-actions {
+    gap: 2px;
+  }
+  .app-header .profile-trigger {
+    min-width: 54px;
+    padding-inline: 2px;
+    gap: 4px;
+  }
+}
+@media (max-width: 480px) {
+  .app-shell .app-header {
+    padding-inline: 12px;
+    gap: 4px;
+  }
+  .app-header > .logo {
+    width: 88px;
+  }
+  .app-header .header-actions {
+    gap: 0;
+  }
+}
+@media (max-width: 360px) {
+  .app-shell .app-header {
+    padding-inline: 8px;
+  }
+  .app-header > .logo {
+    width: 72px;
+  }
+  .app-header .profile-trigger {
+    min-width: 48px;
+  }
+  .app-header .profile-trigger .avatar {
+    width: 30px;
+    height: 30px;
+  }
+}

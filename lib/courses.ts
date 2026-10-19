@@ -49,7 +49,7 @@ export function createCourse(
   pages: Page[],
   accessDays: number,
   autoAnswer: boolean,
-  id = randomUUID(),
+  id: string = randomUUID(),
 ) {
   let code: string;
   do {
@@ -94,7 +94,13 @@ export function stateFor(course: Course, user: User): CourseState {
   return {
     course: owner
       ? course
-      : { ...course, ownerId: "", displayKey: "", report: undefined },
+      : {
+          ...course,
+          ownerId: "",
+          displayKey: "",
+          report: undefined,
+          slides: course.slides.map(({ notes: _notes, ...slide }) => slide),
+        },
     questions: questionsOf(course.id)
       .filter((q) => owner || q.userId === user.id)
       .map((q) => (owner ? q : participantQuestion(q))),

@@ -1,0 +1,418 @@
+.app-header .header-search {
+  margin-left: 60px;
+}
+.app-header .profile-trigger {
+  min-width: 64px;
+}
+.app-header .profile-trigger .avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 13px;
+}
+.app-header .early-access-trigger {
+  background: #d9f4e5;
+  color: #23503d;
+  border-color: transparent;
+}
+.app-header .early-access-trigger:hover {
+  background: #cbead9;
+}
+.app-shell .sidebar {
+  overflow-y: auto;
+}
+.sidebar-integrations {
+  margin: auto 4px 0;
+  padding-top: 28px;
+}
+.sidebar-integrations > span {
+  display: block;
+  padding: 0 6px 10px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.sidebar-integrations > div {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2px;
+}
+.app-shell .sidebar .sidebar-integrations button {
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px;
+}
+.sidebar-integrations img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+.app-shell .sidebar-bottom {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.app-shell .sidebar-bottom > button:last-child {
+  color: var(--ink);
+}
+.library-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.library-toolbar label {
+  margin: 0;
+  font-size: 12px;
+}
+.library-group-filter {
+  min-width: 180px;
+}
+.library-date-filter {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.library-date-filter > label {
+  min-width: 140px;
+}
+.library-date-filter > label:first-child {
+  min-width: 165px;
+}
+.library-toolbar select,
+.library-toolbar input {
+  background: var(--bg);
+  min-height: 44px;
+  font-size: 13px;
+}
+.library-manage-groups {
+  margin-left: auto;
+  font-size: 13px;
+}
+.training-card {
+  position: relative;
+}
+.training-card-open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  text-align: left;
+}
+.training-card-content .card-meta small {
+  display: block;
+  color: var(--lilac-ink);
+  margin-top: 6px;
+  font-size: 12px;
+}
+.training-card .training-card-menu-trigger {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 36px;
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--bg);
+}
+.training-card-menu {
+  position: fixed;
+  margin: 0;
+  right: auto;
+  bottom: auto;
+  width: 240px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--ink);
+}
+.training-card-menu label {
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.training-card-menu select {
+  font-size: 13px;
+}
+.group-create-form {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  margin-block: 24px;
+}
+.group-create-form label {
+  flex: 1;
+  margin: 0;
+}
+.group-manager-list form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding-block: 12px;
+  border-top: 1px solid var(--line);
+}
+.group-manager-list input {
+  flex: 1;
+  min-width: 0;
+  width: 50%;
+}
+.group-manager-list .error-note {
+  width: 100%;
+}
+.trash-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--line);
+}
+.trash-list > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+.trash-list strong,
+.trash-list span {
+  display: block;
+}
+.trash-list span {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.account-settings-modal {
+  width: min(860px, calc(100vw - 32px));
+}
+.account-settings-layout {
+  display: grid;
+  grid-template-columns: 184px minmax(0, 1fr);
+  gap: 32px;
+  min-height: 400px;
+  margin-top: 24px;
+}
+.account-settings-layout > nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-right: 1px solid var(--line);
+  padding-right: 16px;
+}
+.account-settings-layout > nav button {
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 7px;
+  text-align: left;
+  font-size: 13px;
+}
+.account-settings-layout > nav button[aria-current] {
+  background: var(--workspace);
+  color: var(--ink);
+  font-weight: 600;
+}
+.account-settings-layout > nav button:hover {
+  background: var(--workspace);
+}
+.account-settings-content h3 {
+  margin: 0 0 24px;
+  font-size: 19px;
+  line-height: 1.4;
+}
+.account-settings-content p {
+  font-size: 13px;
+  line-height: 1.75;
+}
+.account-settings-content form > .button {
+  margin-top: 8px;
+}
+.settings-profile-avatar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.settings-profile-avatar > .avatar {
+  width: 52px;
+  height: 52px;
+  font-size: 20px;
+}
+.settings-profile-avatar strong,
+.settings-profile-avatar div > span {
+  display: block;
+}
+.settings-profile-avatar div > span {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 5px;
+}
+.settings-billing > div {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+}
+.settings-billing > div > span {
+  color: var(--muted);
+  font-size: 12px;
+}
+.settings-billing strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 26px;
+}
+.settings-billing h4 {
+  margin-top: 32px;
+}
+.workspace-help-topics details {
+  padding-block: 20px;
+  border-top: 1px solid var(--line);
+}
+.workspace-help-topics summary {
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.workspace-help-topics p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.workspace-help-topics .text-button {
+  min-height: 44px;
+}
+.editable-training-name {
+  min-width: 0;
+}
+.editable-training-name h1 > button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  padding: 4px 0;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+  text-align: left;
+}
+.editable-training-name h1 > button > svg {
+  color: var(--muted);
+  flex-shrink: 0;
+  opacity: 0;
+}
+.editable-training-name h1 > button:hover > svg,
+.editable-training-name h1 > button:focus-visible > svg {
+  opacity: 1;
+}
+.editable-training-name form {
+  margin: 0;
+}
+.editable-training-name input {
+  max-width: min(500px, 40vw);
+  min-height: 40px;
+  padding: 6px 10px;
+  font-size: 17px;
+  font-weight: 600;
+}
+.editable-training-name .error-note {
+  font-size: 11px;
+  margin: 4px 0 0;
+}
+.slide-notes {
+  width: 100%;
+  max-width: 1050px;
+  flex-shrink: 0;
+  margin-top: 16px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+.slide-notes > div:first-child {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.slide-notes label {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+.slide-notes > div:first-child > span {
+  font-size: 11px;
+  color: var(--muted);
+}
+.slide-notes > div:first-child > span:last-child {
+  margin-left: auto;
+}
+.slide-notes textarea {
+  width: 100%;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  min-height: 86px;
+  resize: vertical;
+  padding: 8px 0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.slide-notes textarea:focus {
+  background: var(--bg);
+  border-color: var(--line);
+  padding-inline: 10px;
+  box-shadow: none;
+}
+@media (max-width: 760px) {
+  .app-header .header-search {
+    margin-left: 0;
+  }
+  .library-manage-groups {
+    margin-left: 0;
+  }
+  .account-settings-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    min-height: 0;
+  }
+  .account-settings-layout > nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding: 0 0 12px;
+  }
+  .account-settings-layout > nav button {
+    flex: 1 1 40%;
+  }
+  .editable-training-name input {
+    max-width: 100%;
+    font-size: 15px;
+  }
+  .slide-notes > div:first-child > span:last-child {
+    margin-left: 0;
+  }
+}
+@media (max-width: 480px) {
+  .account-settings-modal {
+    padding: 22px;
+  }
+  .app-header .profile-trigger {
+    min-width: 62px;
+  }
+  .app-header .profile-trigger .avatar {
+    width: 40px;
+    height: 40px;
+  }
+  .group-create-form {
+    flex-wrap: wrap;
+  }
+}
+
+.library-group-heading {
+  grid-column: 1 / -1;
+  padding: 8px 0 0;
+}
+.library-group-heading h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}

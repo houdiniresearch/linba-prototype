@@ -1,5 +1,17 @@
 import { randomUUID } from "node:crypto";
 import { saveFeedback } from "@/lib/feedback";
+import { repeatTraining } from "@/lib/repeat-training";
+import {
+  trainingGroups,
+  saveTrainingGroup,
+  removeTrainingGroup,
+  updateTrainingLibrary,
+} from "@/lib/workspace-library";
+import {
+  accountSettings,
+  updateProfile,
+  updateAccountPassword,
+} from "@/lib/account-settings";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { localAddresses, joinOrigin } from "@/lib/network";
@@ -185,7 +197,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
     }
     if (parts[0] === "presentation" && method === "GET") {
       const c = get<Course>("course", parts[1]);
-      if (!c || url.searchParams.get("key") !== c.displayKey)
+      if (!c || c.trashedAt || url.searchParams.get("key") !== c.displayKey)
         throw new AppError("The presentation link is invalid.", 404);
       return json({
         course: {
@@ -193,6 +205,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
           ownerId: "",
           displayKey: "",
           report: undefined,
+          slides: c.slides.map(({ notes: _notes, ...slide }) => slide),
           pages: c.pages.map((p) => ({ ...p, text: "" })),
         },
         joinOrigin: joinOrigin(request),
@@ -206,7 +219,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
       url.searchParams.has("key")
     ) {
       const c = get<Course>("course", parts[1]);
-      if (!c || url.searchParams.get("key") !== c.displayKey)
+      if (!c || c.trashedAt || url.searchParams.get("key") !== c.displayKey)
         throw new AppError("The presentation link is invalid.", 404);
       const page = c.pages.find((p) => p.number === Number(parts[3]));
       if (!page) throw new AppError("Slide not found.", 404);
@@ -236,6 +249,34 @@ async function handle(request: Request, context: Context): Promise<Response> {
       return json({ ok: true });
     }
     const user = await requireUser();
+    if (parts[0] === "account" && parts.length === 1) {
+      if (method === "GET") return json(accountSettings(user));
+      if (method === "PATCH")
+        return json({ user: updateProfile(user, await request.json()) });
+      if (method === "POST") {
+        updateAccountPassword(user, await request.json());
+        await setSession(user);
+        return json({ ok: true });
+      }
+      throw new AppError("This action is not supported.", 405);
+    }
+    if (parts[0] === "groups" && parts.length <= 2) {
+      if (method === "GET" && parts.length === 1)
+        return json({ groups: trainingGroups(user) });
+      if (method === "POST" && parts.length === 1)
+        return json({
+          group: saveTrainingGroup(user, (await request.json()).name),
+        });
+      if (method === "PATCH" && parts.length === 2)
+        return json({
+          group: saveTrainingGroup(user, (await request.json()).name, parts[1]),
+        });
+      if (method === "DELETE" && parts.length === 2) {
+        removeTrainingGroup(user, parts[1]);
+        return json({ ok: true });
+      }
+      throw new AppError("This action is not supported.", 405);
+    }
     if (parts[0] === "feedback" && parts.length === 1) {
       if (method !== "POST")
         throw new AppError("This action is not supported.", 405);
@@ -279,7 +320,11 @@ async function handle(request: Request, context: Context): Promise<Response> {
       const course = all<Course>("course").find(
         (c) => c.code === text(body.code, 6),
       );
-      if (!course || (!canChat(course) && course.status !== "draft"))
+      if (
+        !course ||
+        course.trashedAt ||
+        (!canChat(course) && course.status !== "draft")
+      )
         throw new AppError(
           "Training was not found or access has expired.",
           404,
@@ -300,7 +345,7 @@ async function handle(request: Request, context: Context): Promise<Response> {
             .filter((c) =>
               user.role === "teacher"
                 ? c.ownerId === user.id
-                : memberOf(c.id, user.id),
+                : !c.trashedAt && memberOf(c.id, user.id),
             )
             .map((c) => ({
               ...c,
@@ -357,6 +402,22 @@ async function handle(request: Request, context: Context): Promise<Response> {
       course = get<Course>("course", id);
     if (!course) throw new AppError("Training not found.", 404);
     const owner = course.ownerId === user.id;
+    if (
+      ["group", "trash", "restore"].includes(parts[2]) &&
+      parts.length === 3 &&
+      method === "POST"
+    ) {
+      const body = parts[2] === "group" ? await request.json() : {};
+      updateTrainingLibrary(
+        user,
+        id,
+        parts[2] as "group" | "trash" | "restore",
+        body.groupId,
+      );
+      return json({ ok: true });
+    }
+    if (course.trashedAt)
+      throw new AppError("Restore this training from Trash first.", 410);
     if (parts[2] === "page" && method === "GET") {
       if (
         !owner &&
@@ -476,6 +537,12 @@ async function handle(request: Request, context: Context): Promise<Response> {
       });
     }
     courseForOwner(id, user);
+    if (parts[2] === "repeat" && parts.length === 3) {
+      if (method !== "POST")
+        throw new AppError("This action is not supported.", 405);
+      const body = await request.json();
+      return json({ course: await repeatTraining(user, id, body.requestId) });
+    }
     if (parts[2] === "rehearsal") {
       if (method === "POST") {
         const body = await request.json(),
@@ -721,7 +788,26 @@ async function handle(request: Request, context: Context): Promise<Response> {
     }
     if (parts.length === 2 && method === "PATCH") {
       const body = await request.json();
-      if (body.action === "select") {
+      const course = courseForOwner(id, user);
+      if (course.trashedAt)
+        throw new AppError("Restore this training from Trash first.", 410);
+      if (body.action === "rename") {
+        if (
+          typeof body.name !== "string" ||
+          !body.name.trim() ||
+          body.name.trim().length > 120
+        )
+          throw new AppError(
+            "Enter a training name between 1 and 120 characters.",
+          );
+        course.name = body.name.trim();
+      } else if (body.action === "notes") {
+        const slide = course.slides.find((slide) => slide.id === body.slideId);
+        if (!slide) throw new AppError("Slide not found.", 404);
+        if (typeof body.notes !== "string" || body.notes.length > 10000)
+          throw new AppError("Notes must be no longer than 10,000 characters.");
+        slide.notes = body.notes;
+      } else if (body.action === "select") {
         if (!course.slides.some((s) => s.id === body.slideId))
           throw new AppError("Slide not found.");
         course.activeSlideId = body.slideId;

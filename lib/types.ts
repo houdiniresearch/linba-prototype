@@ -25,9 +25,14 @@ export type Slide = {
   kind: "document" | "activity";
   pageId?: string;
   activity?: Activity;
+  notes?: string;
 };
 export type Course = {
   id: string;
+  trainingId?: string;
+  sessionNumber?: number;
+  groupId?: string;
+  trashedAt?: string;
   ownerId: string;
   name: string;
   originalName: string;
