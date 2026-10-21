@@ -50,9 +50,12 @@ async function main() {
     });
     userId = registered.user.id;
     const first = await request("feedback", input);
-    assert.equal(get<FeedbackEntry>("feedback", first.id)?.userId, userId);
     assert.equal(
-      get<FeedbackEntry>("feedback", first.id)?.message,
+      (await get<FeedbackEntry>("feedback", first.id))?.userId,
+      userId,
+    );
+    assert.equal(
+      (await get<FeedbackEntry>("feedback", first.id))?.message,
       input.message,
     );
     assert.deepEqual(await request("feedback", input), first);
@@ -60,25 +63,30 @@ async function main() {
     await request("feedback", input, 403, "https://unrelated.example");
     await request("feedback", undefined, 405);
     assert.equal(
-      all<FeedbackEntry>("feedback").filter((entry) => entry.userId === userId)
-        .length,
+      (await all<FeedbackEntry>("feedback")).filter(
+        (entry) => entry.userId === userId,
+      ).length,
       1,
     );
     console.log(
       "Feedback API: authentication, persistence, retry, validation and origin checks passed.",
     );
   } finally {
-    userId ||= all<User>("user").find((user) => user.email === email)?.id || "";
+    userId ||=
+      (await all<User>("user")).find((user) => user.email === email)?.id || "";
     if (userId) {
-      for (const entry of all<FeedbackEntry>("feedback").filter(
+      for (const entry of (await all<FeedbackEntry>("feedback")).filter(
         (entry) => entry.userId === userId,
       ))
-        remove("feedback", entry.id);
-      for (const entry of all<{ id: string; userId: string }>("session").filter(
-        (entry) => entry.userId === userId,
-      ))
-        remove("session", entry.id);
-      remove("user", userId);
+        await remove("feedback", entry.id);
+      for (const entry of (
+        await all<{
+          id: string;
+          userId: string;
+        }>("session")
+      ).filter((entry) => entry.userId === userId))
+        await remove("session", entry.id);
+      await remove("user", userId);
     }
   }
 }

@@ -1,4 +1,5 @@
 "use client";
+import { ProductSelect } from "./product-select";
 import { useEffect, useRef, useState } from "react";
 import {
   InstagramLogo,
@@ -7,7 +8,7 @@ import {
   YoutubeLogo,
 } from "@phosphor-icons/react";
 import { AgentMark } from "./agent-identity";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 import { api, ErrorNote, Icon, Modal } from "./ui";
 
 const updates = [
@@ -43,10 +44,14 @@ export type HomeFeature = (typeof updates)[number]["id"];
 
 export function HomeUpdates({
   onExplore,
-  hasDraft,
+  draftCount,
+  ready,
+  paused = false,
 }: {
-  onExplore: (feature: HomeFeature) => void;
-  hasDraft: boolean;
+  onExplore: (feature: HomeFeature, trigger: HTMLElement) => void;
+  draftCount: number;
+  ready: boolean;
+  paused?: boolean;
 }) {
   const { t, locale } = useLocale();
   const [active, setActive] = useState(0);
@@ -76,19 +81,26 @@ export function HomeUpdates({
     };
   }, []);
   useEffect(() => {
-    if (!canRotate || hovered || focused || allOpen || feedbackOpen) return;
+    if (!canRotate || hovered || focused || allOpen || feedbackOpen || paused)
+      return;
     const timer = window.setTimeout(
       () => setActive((current) => (current + 1) % updates.length),
       6000,
     );
     return () => window.clearTimeout(timer);
-  }, [active, canRotate, hovered, focused, allOpen, feedbackOpen]);
+  }, [active, canRotate, hovered, focused, allOpen, feedbackOpen, paused]);
   function actionLabel(feature: HomeFeature) {
     return feature === "reports"
       ? t("View reports")
-      : hasDraft
-        ? t("Open your workspace")
-        : t("Create training");
+      : draftCount > 1
+        ? t("Choose training")
+        : draftCount === 1
+          ? t(
+              feature === "practice"
+                ? "Open practice room"
+                : "Open your workspace",
+            )
+          : t("Create training");
   }
   async function sendFeedback() {
     if (busy || !message.trim()) return;
@@ -135,11 +147,7 @@ export function HomeUpdates({
             <Icon name="right" size={15} />
           </button>
         </div>
-        <article
-          key={update.id}
-          aria-live={hovered || focused ? "polite" : "off"}
-          aria-atomic="true"
-        >
+        <article key={update.id}>
           <div className={`home-news-art home-news-art-${update.id}`}>
             <div className="home-news-brand">
               <AgentMark size={22} />
@@ -153,7 +161,8 @@ export function HomeUpdates({
             <p>{t(update.description)}</p>
             <button
               className="text-button home-news-action"
-              onClick={() => onExplore(update.id)}
+              disabled={!ready}
+              onClick={(event) => onExplore(update.id, event.currentTarget)}
             >
               {actionLabel(update.id)}
               <Icon name="arrow" size={17} />
@@ -253,9 +262,13 @@ export function HomeUpdates({
                 <p>{t(item.description)}</p>
                 <button
                   className="text-button"
-                  onClick={() => {
+                  disabled={!ready}
+                  onClick={(event) => {
                     setAllOpen(false);
-                    onExplore(item.id);
+                    onExplore(
+                      item.id,
+                      allTrigger.current || event.currentTarget,
+                    );
                   }}
                 >
                   {actionLabel(item.id)}
@@ -298,18 +311,20 @@ export function HomeUpdates({
           >
             <label>
               {t("Feedback type")}
-              <select
+              <ProductSelect
+                label={t("Feedback type")}
                 value={category}
                 disabled={busy}
-                onChange={(event) => {
-                  setCategory(event.target.value);
+                onChange={(value) => {
+                  setCategory(value);
                   requestId.current = "";
                 }}
-              >
-                <option value="idea">{t("An idea")}</option>
-                <option value="issue">{t("Something isn’t working")}</option>
-                <option value="other">{t("Something else")}</option>
-              </select>
+                options={[
+                  { value: "idea", label: t("An idea") },
+                  { value: "issue", label: t("Something isn’t working") },
+                  { value: "other", label: t("Something else") },
+                ]}
+              />
             </label>
             <label>
               {t("Your feedback")}

@@ -117,8 +117,8 @@
   background: var(--bg);
 }
 .activity-library-choices > button[aria-pressed="true"] {
-  background: var(--lilac-soft);
-  border-color: var(--lilac-ink);
+  background: var(--selection);
+  border-color: var(--muted);
 }
 .activity-library-choices > button > span:not(.activity-library-glyph) {
   display: flex;
@@ -417,6 +417,90 @@
   font-size: 13px;
   font-weight: 600;
 }
+.activity-question-fields {
+  margin-top: 24px;
+}
+.activity-preview-disclosure {
+  margin-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.activity-preview-disclosure > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 13px;
+  font-weight: 500;
+}
+.activity-preview-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+.activity-preview-disclosure > summary svg:last-child {
+  margin-left: auto;
+}
+.activity-preview-disclosure[open] > summary svg:last-child {
+  transform: rotate(180deg);
+}
+.activity-preview-disclosure .activity-participant-preview {
+  margin-top: 4px;
+}
+.activity-discard {
+  flex-wrap: wrap;
+}
+.activity-library-footer .activity-discard > span {
+  flex-basis: 100%;
+  color: var(--ink);
+  font-size: 13px;
+}
+.activity-ai-proposal {
+  margin-top: 24px;
+  padding-block: 18px;
+  border-block: 1px solid var(--line);
+}
+.activity-ai-proposal > header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.activity-ai-proposal h4 {
+  font-size: 14px;
+  margin: 0;
+}
+.activity-ai-proposal header > span {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+}
+.activity-ai-proposal > p {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 10px 0 16px;
+}
+.activity-ai-proposal > strong {
+  display: block;
+  font-size: 14px;
+  line-height: 1.7;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.activity-ai-proposal ol {
+  font-size: 13px;
+  line-height: 1.8;
+  padding-left: 20px;
+}
+.activity-ai-proposal > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.activity-ai-proposal .button {
+  min-height: 44px;
+  font-size: 12px;
+}
 .activity-question-fields textarea {
   font-size: 13px;
   min-height: 98px;
@@ -591,10 +675,7 @@
     padding: 16px;
   }
   .activity-library-footer {
-    position: sticky;
-    bottom: 0;
     padding: 12px 16px;
-    z-index: 2;
   }
   .activity-library-footer > div:last-child {
     flex-wrap: wrap;
@@ -655,4 +736,64 @@
   .activity-preview-options > span {
     padding: 6px;
   }
+}
+
+.activity-upcoming {
+  padding: 16px 0 0;
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.activity-upcoming h3 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.activity-upcoming ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.activity-upcoming li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.activity-upcoming li > span {
+  flex: 1;
+}
+.activity-upcoming small {
+  font-size: 10px;
+  white-space: nowrap;
+}
+.activity-boolean-options {
+  display: flex;
+  gap: 10px;
+}
+.activity-boolean-options > span {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 13px;
+  background: var(--workspace);
+}
+.glyph-true-false {
+  align-items: center;
+  gap: 1px;
+  padding: 6px 4px;
+}
+.glyph-true-false > svg {
+  flex-shrink: 0;
+  width: 12px;
+}
+.activity-preview-kind .glyph-true-false {
+  gap: 0;
+  padding: 3px;
+}
+.activity-preview-kind .glyph-true-false > svg {
+  width: 8px;
 }

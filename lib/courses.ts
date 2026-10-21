@@ -1,6 +1,8 @@
+import { limitLearningAccessDays } from "./training-access";
 import { randomUUID, randomBytes } from "node:crypto";
-import { get, all, put } from "./db";
+import { get, all, find, put } from "./db";
 import { AppError } from "./auth";
+import { canReadReport, canManagePresentation } from "./teams";
 import type {
   Course,
   User,
@@ -11,38 +13,52 @@ import type {
   CourseState,
 } from "./types";
 import { aiReady, modelName } from "./ai";
-
-export function courseForOwner(id: string, user: User) {
-  const course = get<Course>("course", id);
-  if (!course || course.ownerId !== user.id)
+import { recoverPendingQuestion } from "./ai-state";
+export async function courseForOwner(id: string, user: User) {
+  const course = await get<Course>("course", id);
+  if (!course || !(await canManagePresentation(user, course)))
     throw new AppError("Training not found.", 404);
-  return course;
+  return { ...course, accessDays: limitLearningAccessDays(course.accessDays) };
 }
 export function canChat(course: Course, now = Date.now()) {
   return (
     course.status === "live" ||
     (course.status === "ended" &&
       !!course.endedAt &&
-      now < Date.parse(course.endedAt) + course.accessDays * 86400000)
+      now <
+        Date.parse(course.endedAt) +
+          limitLearningAccessDays(course.accessDays) * 86400000)
   );
 }
-export function memberOf(courseId: string, userId: string) {
-  return !!get("member", `${courseId}:${userId}`);
+export async function memberOf(courseId: string, userId: string) {
+  return !!(await get("member", `${courseId}:${userId}`));
 }
-export function questionsOf(id: string) {
-  return all<Question>("question")
-    .filter((q) => q.courseId === id)
-    .reverse();
+export async function questionsOf(id: string, includeConversation = false) {
+  return (
+    await Promise.all(
+      (await find<Question>("question", { courseId: id }))
+        .filter((q) => includeConversation || !q.conversationOnly)
+        .map(async (q) => {
+          const recovered = recoverPendingQuestion(q);
+          if (recovered !== q) await put("question", recovered);
+          return recovered;
+        }),
+    )
+  ).sort(
+    (a, b) =>
+      a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id),
+  );
 }
-export function responsesOf(id: string) {
-  return all<ActivityResponse>("response")
-    .filter((q) => q.courseId === id)
-    .reverse();
+export async function responsesOf(id: string) {
+  return (await find<ActivityResponse>("response", { courseId: id })).sort(
+    (a, b) =>
+      a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id),
+  );
 }
-export function rehearsalsOf(id: string) {
-  return all<Rehearsal>("rehearsal").filter((q) => q.courseId === id);
+export async function rehearsalsOf(id: string) {
+  return find<Rehearsal>("rehearsal", { courseId: id });
 }
-export function createCourse(
+export async function createCourse(
   ownerId: string,
   name: string,
   originalName: string,
@@ -50,11 +66,12 @@ export function createCourse(
   accessDays: number,
   autoAnswer: boolean,
   id: string = randomUUID(),
+  folderId?: string,
 ) {
   let code: string;
   do {
     code = String(Math.floor(100000 + Math.random() * 900000));
-  } while (all<Course>("course").some((c) => c.code === code));
+  } while ((await all<Course>("course")).some((c) => c.code === code));
   const slides = pages.map((page) => ({
     id: randomUUID(),
     kind: "document" as const,
@@ -68,32 +85,49 @@ export function createCourse(
     pages,
     slides,
     code,
-    accessDays,
+    accessDays: limitLearningAccessDays(accessDays),
     autoAnswer,
     createdAt: new Date().toISOString(),
     status: "draft",
     displayKey: randomBytes(24).toString("hex"),
     activeSlideId: slides[0].id,
     slideVersion: 0,
+    ...(folderId ? { groupId: folderId } : {}),
   };
-  return put("course", course);
+  return await put("course", course);
 }
 export function participantQuestion(question: Question): Question {
   return { ...question, groupId: "", groupTitle: "" };
 }
-export function stateFor(course: Course, user: User): CourseState {
-  const owner = course.ownerId === user.id;
-  if (!owner && !memberOf(course.id, user.id))
+export async function stateFor(
+  course: Course,
+  user: User,
+): Promise<CourseState> {
+  course = {
+    ...course,
+    accessDays: limitLearningAccessDays(course.accessDays),
+  };
+  const owner = await canManagePresentation(user, course);
+  if (!owner && !(await memberOf(course.id, user.id)))
     throw new AppError("Join using the training code first.", 403);
-  const participants = all<{
-    id: string;
-    courseId: string;
-    userId: string;
-    name: string;
-  }>("member").filter((m) => m.courseId === course.id);
+  const [participants, creator, questions, responses, rehearsals] =
+    await Promise.all([
+      owner
+        ? find<{ userId: string; name: string }>("member", {
+            courseId: course.id,
+          })
+        : [],
+      owner ? get<User>("user", course.ownerId) : undefined,
+      questionsOf(course.id, !owner),
+      responsesOf(course.id),
+      owner ? rehearsalsOf(course.id) : [],
+    ]);
   return {
     course: owner
-      ? course
+      ? {
+          ...course,
+          createdBy: creator?.name || "",
+        }
       : {
           ...course,
           ownerId: "",
@@ -101,19 +135,26 @@ export function stateFor(course: Course, user: User): CourseState {
           report: undefined,
           slides: course.slides.map(({ notes: _notes, ...slide }) => slide),
         },
-    questions: questionsOf(course.id)
+    questions: questions
       .filter((q) => owner || q.userId === user.id)
       .map((q) => (owner ? q : participantQuestion(q))),
-    responses: responsesOf(course.id).filter(
-      (r) => owner || r.userId === user.id,
-    ),
+    responses: responses.filter((r) => owner || r.userId === user.id),
     participants: owner
       ? participants.map((m) => ({ id: m.userId, name: m.name }))
       : [],
-    rehearsals: owner ? rehearsalsOf(course.id) : [],
+    rehearsals: rehearsals,
     aiReady: aiReady(),
     model: modelName(),
   };
+}
+/** Reports use the same workspace permissions as their presentation. */
+export async function stateForReport(
+  course: Course,
+  user: User,
+): Promise<CourseState> {
+  if (!(await canReadReport(user, course)))
+    throw new AppError("Report not found.", 404);
+  return { ...(await stateFor(course, user)), canManage: true };
 }
 export function activeSlide(course: Course) {
   return (

@@ -5,6 +5,7 @@ export type User = {
   email: string;
   role: Role;
   demo?: boolean;
+  guest?: boolean;
 };
 export type Page = {
   id: string;
@@ -15,7 +16,7 @@ export type Page = {
   ratio: number;
 };
 export type Activity = {
-  type: "poll" | "open" | "scenario";
+  type: "poll" | "true-false" | "open" | "scenario";
   question: string;
   options: string[];
   aiGenerated?: boolean;
@@ -29,6 +30,16 @@ export type Slide = {
 };
 export type Course = {
   id: string;
+  showcase?: {
+    pack: "bigg-v1";
+    key: "customer" | "market";
+    theme: "light" | "dark";
+  };
+  reportTeamId?: string;
+  /** List projection flag; a shared report grants no presentation editing rights. */
+  sharedReport?: boolean;
+  reportAuthorName?: string;
+  createdBy?: string;
   trainingId?: string;
   sessionNumber?: number;
   groupId?: string;
@@ -45,6 +56,9 @@ export type Course = {
   status: "draft" | "live" | "ended";
   startedAt?: string;
   endedAt?: string;
+  /** A break pauses the clock without ending the presentation. */
+  pausedAt?: string;
+  pausedDurationMs?: number;
   pages: Page[];
   slides: Slide[];
   activeSlideId: string;
@@ -54,6 +68,11 @@ export type Course = {
     recommendations: string[];
     updatedAt: string;
     ai: boolean;
+    source?: "showcase";
+    status?: "pending" | "ready" | "error";
+    generationId?: string;
+    generationStartedAt?: string;
+    inputKey?: string;
   };
 };
 export type Question = {
@@ -71,6 +90,8 @@ export type Question = {
   createdAt: string;
   stage: "live" | "followup";
   addressed?: boolean;
+  /** Private conversational replies never enter instructor questions or analytics. */
+  conversationOnly?: boolean;
 };
 export type ActivityResponse = {
   id: string;
@@ -97,6 +118,7 @@ export type Rehearsal = {
   id: string;
   courseId: string;
   audience: string;
+  voiceExpiresAt?: string;
   promptVersion?: string;
   personas: Persona[];
   createdAt: string;
@@ -107,6 +129,7 @@ export type Rehearsal = {
   feedback?: { summary: string; suggestions: string[]; questions: string[] };
 };
 export type CourseState = {
+  canManage?: boolean;
   course: Course;
   questions: Question[];
   responses: ActivityResponse[];

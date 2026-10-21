@@ -13,7 +13,6 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { visibleTrainingSessions } from "../lib/training-sessions";
 import type { Course, User } from "../lib/types";
-
 test("reusable training keeps every session, report and audience independent", async (t) => {
   const directory = await mkdtemp(path.join(tmpdir(), "linba-sessions-"));
   process.env.LINBA_DATA_DIR = directory;
@@ -32,7 +31,7 @@ test("reusable training keeps every session, report and audience independent", a
     path.join(directory, "files", "first", "page.svg"),
     "fixture-original-image",
   );
-  const first = createCourse(
+  const first = await createCourse(
     owner.id,
     "Reusable training",
     "source.pdf",
@@ -68,14 +67,14 @@ test("reusable training keeps every session, report and audience independent", a
     updatedAt: first.endedAt,
     ai: false,
   };
-  put("course", first);
-  put("member", {
+  await put("course", first);
+  await put("member", {
     id: "first:learner",
     courseId: first.id,
     userId: "learner",
     name: "Learner",
   });
-  put("question", {
+  await put("question", {
     id: "question",
     courseId: first.id,
     userId: "learner",
@@ -83,14 +82,14 @@ test("reusable training keeps every session, report and audience independent", a
     createdAt: first.endedAt,
     sources: [],
   });
-  put("response", {
+  await put("response", {
     id: "response",
     courseId: first.id,
     slideId: "activity",
     userId: "learner",
     value: "A",
   });
-  put("report-turn", {
+  await put("report-turn", {
     id: "turn",
     courseId: first.id,
     ownerId: owner.id,
@@ -99,12 +98,12 @@ test("reusable training keeps every session, report and audience independent", a
     answer: "Old answer",
     sources: [],
   });
-  put("rehearsal", {
+  await put("rehearsal", {
     id: "practice",
     courseId: first.id,
     audience: "Original practice",
   });
-  const before = JSON.stringify(get("course", first.id));
+  const before = JSON.stringify(await get("course", first.id));
   let second: Course;
   try {
     await t.test(
@@ -144,15 +143,15 @@ test("reusable training keeps every session, report and audience independent", a
     );
     await t.test(
       "new audiences and report conversations start empty while earlier records stay intact",
-      () => {
-        const fresh = stateFor(second, owner);
+      async () => {
+        const fresh = await stateFor(second, owner);
         assert.equal(fresh.questions.length, 0);
         assert.equal(fresh.responses.length, 0);
         assert.equal(fresh.participants.length, 0);
         assert.equal(fresh.rehearsals.length, 0);
-        assert.equal(stateFor(first, owner).questions.length, 1);
-        assert.equal(reportChat(owner, first.id).turns.length, 1);
-        assert.equal(JSON.stringify(get("course", first.id)), before);
+        assert.equal((await stateFor(first, owner)).questions.length, 1);
+        assert.equal((await reportChat(owner, first.id)).turns.length, 1);
+        assert.equal(JSON.stringify(await get("course", first.id)), before);
       },
     );
     await t.test(
@@ -162,23 +161,23 @@ test("reusable training keeps every session, report and audience independent", a
         second.status = "ended";
         second.startedAt = "2026-10-19T08:00:00.000Z";
         second.endedAt = "2026-10-19T09:00:00.000Z";
-        put("course", second);
+        await put("course", second);
         const third = await repeatTraining(owner, second.id, randomUUID());
         assert.equal(third.trainingId, first.id);
         assert.equal(third.sessionNumber, 3);
         assert.equal(third.slides[1].activity?.question, "New group question");
         assert.equal(
-          get<Course>("course", first.id)?.slides[1].activity?.question,
+          (await get<Course>("course", first.id))?.slides[1].activity?.question,
           "Original question",
         );
-        assert.equal(reportChat(owner, second.id).turns.length, 0);
-        const reports = reportList(owner);
+        assert.equal((await reportChat(owner, second.id)).turns.length, 0);
+        const reports = await reportList(owner);
         assert.equal(reports.length, 2);
         assert.equal(reports[0].id, second.id);
         assert.equal(reports[0].startedAt, "2026-10-19T08:00:00.000Z");
         assert.equal(reports[1].startedAt, "2026-10-19T06:00:00.000Z");
         assert.deepEqual(
-          visibleTrainingSessions(all<Course>("course")).map((c) => c.id),
+          visibleTrainingSessions(await all<Course>("course")).map((c) => c.id),
           [third.id],
         );
       },
@@ -197,7 +196,9 @@ test("reusable training keeps every session, report and audience independent", a
           ),
         );
         await assert.rejects(repeatTraining(owner, first.id, "bad"));
-        const draft = all<Course>("course").find((c) => c.status === "draft")!;
+        const draft = (await all<Course>("course")).find(
+          (c) => c.status === "draft",
+        )!;
         await assert.rejects(repeatTraining(owner, draft.id, randomUUID()));
         const key = randomUUID();
         await repeatTraining(owner, first.id, key);
@@ -213,7 +214,7 @@ test("reusable training keeps every session, report and audience independent", a
         ]);
         assert.notEqual(results[0].sessionNumber, results[1].sessionNumber);
         assert.notEqual(results[0].code, results[1].code);
-        const visible = visibleTrainingSessions(all<Course>("course"));
+        const visible = visibleTrainingSessions(await all<Course>("course"));
         for (const result of results)
           assert.ok(visible.some((c) => c.id === result.id));
       },
@@ -226,11 +227,11 @@ test("reusable training keeps every session, report and audience independent", a
           id: "missing",
           pages: [{ ...first.pages[0], image: "missing.svg" }],
         };
-        put("course", broken);
-        const count = all<Course>("course").length;
+        await put("course", broken);
+        const count = (await all<Course>("course")).length;
         const folders = await readdir(path.join(directory, "files"));
         await assert.rejects(repeatTraining(owner, broken.id, randomUUID()));
-        assert.equal(all<Course>("course").length, count);
+        assert.equal((await all<Course>("course")).length, count);
         assert.deepEqual(await readdir(path.join(directory, "files")), folders);
       },
     );

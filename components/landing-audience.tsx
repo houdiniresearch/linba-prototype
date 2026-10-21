@@ -1,4 +1,5 @@
 "use client";
+import { useLandingNavigation } from "./landing-navigation";
 
 import { useEffect, useId, useRef, useState } from "react";
 import { useLocale } from "./locale-provider";
@@ -729,6 +730,8 @@ function AudiencePanel({
 
 export function LandingAudience() {
   const { t } = useLocale();
+  const { navigating, isNavigating, subscribeToSettled } =
+    useLandingNavigation();
   const [selected, setSelected] = useState(0);
   const [paused, setPaused] = useState(false);
   const [visible, setVisible] = useState(true);
@@ -778,7 +781,7 @@ export function LandingAudience() {
     measure();
     const paint = () => {
       frame = 0;
-      if (!inView) return;
+      if (!inView || isNavigating()) return;
       if (enhanced) {
         const top = container.getBoundingClientRect().top;
         const padding = parseFloat(getComputedStyle(container).paddingTop);
@@ -806,7 +809,8 @@ export function LandingAudience() {
       }
     };
     const schedule = () => {
-      if (inView && !frame) frame = window.requestAnimationFrame(paint);
+      if (inView && !frame && !isNavigating())
+        frame = window.requestAnimationFrame(paint);
     };
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -816,17 +820,19 @@ export function LandingAudience() {
       { rootMargin: "100px" },
     );
     observer.observe(container);
+    const unsubscribe = subscribeToSettled(schedule);
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
     return () => {
       observer.disconnect();
+      unsubscribe();
       sizeObserver.disconnect();
       container.style.removeProperty("--audience-shell-height");
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
       window.cancelAnimationFrame(frame);
     };
-  }, [enhanced]);
+  }, [enhanced, isNavigating, subscribeToSettled]);
 
   return (
     <section
@@ -891,7 +897,7 @@ export function LandingAudience() {
               paused={paused}
               onPause={() => setPaused((current) => !current)}
               reduced={reduced}
-              visible={visible}
+              visible={visible && !navigating}
             />
           ))}
         </div>

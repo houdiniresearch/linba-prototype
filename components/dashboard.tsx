@@ -1,7 +1,24 @@
 "use client";
+import { clientResources } from "@/lib/client-resource-cache";
+import { RouteProgress, useWorkspaceNavigation } from "./route-progress";
+import { slideSource } from "@/lib/slide-source";
+import { AccessDurationSelect } from "./access-duration-select";
+import { useTimeGreeting } from "./use-time-greeting";
+import { ProductSelect } from "./product-select";
 import { OperationProgress } from "./operation-progress";
 import { ThemeMenu } from "./theme-menu";
 import { ReportAssistantLink } from "./report-assistant-link";
+import { useLibraryContext } from "./use-library-context";
+import type { TeamState } from "@/lib/teams";
+import {
+  TeamWorkspace,
+  CreateTeamDialog,
+  InviteTeamDialog,
+  MemberAvatar,
+} from "./team-workspace";
+import { SessionReports } from "./session-reports";
+import { TrainingPicker } from "./training-picker";
+import { ResponsiveSidebar } from "./responsive-sidebar";
 import { Report } from "./training-report";
 import { HomeUpdates } from "./home-updates";
 import { AccountSettings, WorkspaceHelp } from "./account-settings";
@@ -15,6 +32,7 @@ import { ALL_TIME, withinLibraryPeriod } from "@/lib/library-filters";
 import type { TrainingGroup } from "@/lib/workspace-library";
 import {
   trainingFamily,
+  trainingCollections,
   visibleTrainingSessions,
 } from "@/lib/training-sessions";
 import {
@@ -23,7 +41,7 @@ import {
   ParticipantListSkeleton,
   ReportTableSkeleton,
 } from "./skeletons";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { learningAccess } from "@/lib/training-access";
@@ -52,7 +70,7 @@ function TrainingCover({ course }: { course: Course }) {
     <div className="training-cover training-cover-preview">
       {coverPage && !failed ? (
         <img
-          src={`/api/courses/${course.id}/page/${coverPage}`}
+          src={slideSource(course, coverPage)}
           alt=""
           loading="lazy"
           onError={() => setFailed(true)}
@@ -71,20 +89,77 @@ export function CreateTraining({
   open,
   onClose,
   onCreated,
+  folders = [],
+  initialFolderId = "",
+  onFoldersChanged,
+  returnFocusRef,
 }: {
   open: boolean;
   onClose: () => void;
   onCreated: (course: Course) => void;
+  folders?: TrainingGroup[];
+  initialFolderId?: string;
+  onFoldersChanged?: () => Promise<unknown>;
+  returnFocusRef?: React.RefObject<HTMLElement | null>;
 }) {
   const { t } = useLocale();
 
   const [file, setFile] = useState<File>(),
+    [folderId, setFolderId] = useState(initialFolderId),
     [name, setName] = useState(""),
     [days, setDays] = useState(7),
     [auto, setAuto] = useState(true),
     [busy, setBusy] = useState(false),
     [dragging, setDragging] = useState(false),
     [error, setError] = useState("");
+  const [addedFolders, setAddedFolders] = useState<TrainingGroup[]>([]);
+  const [creatingFolder, setCreatingFolder] = useState(false),
+    [folderName, setFolderName] = useState(""),
+    [folderBusy, setFolderBusy] = useState(false);
+  const folderChoices = [
+    ...folders,
+    ...addedFolders.filter((item) => !folders.some((f) => f.id === item.id)),
+  ];
+  const [discard, setDiscard] = useState(false);
+  const keepEditing = useRef<HTMLButtonElement>(null);
+  const trainingName = useRef<HTMLInputElement>(null);
+  const wasDiscarding = useRef(false);
+  useEffect(() => {
+    if (discard) keepEditing.current?.focus();
+    else if (wasDiscarding.current) trainingName.current?.focus();
+    wasDiscarding.current = discard;
+  }, [discard]);
+  async function createFolder() {
+    if (folderBusy || !folderName.trim()) return;
+    setFolderBusy(true);
+    setError("");
+    try {
+      const result = await api<{ group: TrainingGroup }>("groups", {
+        name: folderName,
+      });
+      setAddedFolders((prior) => [...prior, result.group]);
+      setFolderId(result.group.id);
+      setCreatingFolder(false);
+      setFolderName("");
+      await onFoldersChanged?.();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setFolderBusy(false);
+    }
+  }
+  function requestClose() {
+    if (busy || folderBusy) return;
+    if (
+      file ||
+      name.trim() ||
+      days !== 7 ||
+      !auto ||
+      folderId !== initialFolderId
+    )
+      setDiscard(true);
+    else onClose();
+  }
   function selectFile(selected?: File) {
     if (!selected) return;
     if (
@@ -95,24 +170,62 @@ export function CreateTraining({
       return;
     }
     setError("");
+    setName((previous) =>
+      !previous || previous === file?.name.replace(/\.[^.]+$/, "")
+        ? selected.name.replace(/\.[^.]+$/, "")
+        : previous,
+    );
     setFile(selected);
-    setName(selected.name.replace(/\.[^.]+$/, ""));
   }
   async function create(demo = false) {
-    if (busy) return;
+    if (busy || folderBusy) return;
     setError("");
     setBusy(true);
     try {
       let body: FormData | object;
-      if (demo) body = { demo: true, accessDays: days, autoAnswer: auto };
+      if (demo)
+        body = {
+          demo: true,
+          name,
+          folderId,
+          accessDays: days,
+          autoAnswer: auto,
+        };
       else {
         if (!file) throw new Error(t("Choose your presentation file."));
-        const form = new FormData();
-        form.set("file", file);
-        form.set("name", name);
-        form.set("accessDays", String(days));
-        form.set("autoAnswer", String(auto));
-        body = form;
+        const upload = await api<{
+          direct: boolean;
+          uploadId?: string;
+          signedUrl?: string;
+        }>("uploads", { name: file.name, size: file.size });
+        if (upload.direct && upload.signedUrl && upload.uploadId) {
+          const transferred = await fetch(upload.signedUrl, {
+            method: "PUT",
+            headers: {
+              "Content-Type": file.type || "application/octet-stream",
+            },
+            body: file,
+          });
+          if (!transferred.ok)
+            throw new Error(
+              t("The file could not be uploaded. Please try again."),
+            );
+          body = {
+            uploadId: upload.uploadId,
+            name,
+            accessDays: days,
+            autoAnswer: auto,
+            folderId,
+          };
+        } else {
+          const form = new FormData();
+          form.set("file", file);
+          form.set("name", name);
+          form.set("accessDays", String(days));
+          form.set("autoAnswer", String(auto));
+          form.set("folderId", folderId);
+          body = form;
+        }
       }
       const result = await api("courses", body);
       onCreated(result.course);
@@ -125,117 +238,186 @@ export function CreateTraining({
   return (
     <Modal
       open={open}
-      onClose={() => !busy && onClose()}
+      onClose={requestClose}
       closeDisabled={busy}
       title={t("Create new training")}
       description={t("Upload your presentation and set participant access.")}
+      returnFocusRef={returnFocusRef}
+      className="create-training-modal"
     >
       {busy && <OperationProgress kind="training" />}
+      {discard && !busy && (
+        <div className="creation-discard" role="alert">
+          <strong>{t("Discard this training setup?")}</strong>
+          <p>
+            {t(
+              "Your file has not been uploaded. Keep editing or discard this setup.",
+            )}
+          </p>
+          <div className="modal-actions">
+            <button
+              className="button"
+              ref={keepEditing}
+              onClick={() => setDiscard(false)}
+            >
+              {t("Keep editing")}
+            </button>
+            <button className="button danger" onClick={onClose}>
+              {t("Discard changes")}
+            </button>
+          </div>
+        </div>
+      )}
       <form
-        hidden={busy}
+        hidden={busy || discard}
         onSubmit={(e) => {
           e.preventDefault();
           void create();
         }}
       >
-        <label
-          className={`upload-zone ${file ? "has-file" : ""} ${dragging ? "is-dragging" : ""}`}
-          onDragOver={(event) => {
-            event.preventDefault();
-            setDragging(true);
-          }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={(event) => {
-            event.preventDefault();
-            setDragging(false);
-            if (!busy) selectFile(event.dataTransfer.files[0]);
-          }}
-        >
-          <Icon name={file ? "file" : "upload"} size={32} />
-          <strong>
-            {file
-              ? file.name
-              : t("Drop your presentation here or choose a file")}
-          </strong>
-          <span>
-            {file
-              ? `${file.name.split(".").pop()?.toUpperCase()} · ${(file.size / 1024 / 1024).toFixed(1)} MB`
-              : t("PDF or PPTX · Up to 30 MB · 80 slides")}
-          </span>
-          {file && (
-            <span className="file-replace">{t("Choose a different file")}</span>
-          )}
-          <input
-            type="file"
-            accept=".pdf,.pptx"
-            aria-label={t("Presentation file")}
-            disabled={busy}
-            onChange={(e) => {
-              selectFile(e.target.files?.[0]);
-              e.target.value = "";
+        <div className="create-training-fields">
+          <label
+            className={`upload-zone ${file ? "has-file" : ""} ${dragging ? "is-dragging" : ""}`}
+            onDragOver={(event) => {
+              event.preventDefault();
+              setDragging(true);
             }}
-          />
-        </label>
-        <label>
-          {t("Training name")}
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder={t("The file name is used automatically")}
-            maxLength={120}
-          />
-        </label>
-        <details className="training-access-settings">
-          <summary>
+            onDragLeave={() => setDragging(false)}
+            onDrop={(event) => {
+              event.preventDefault();
+              setDragging(false);
+              if (!busy) selectFile(event.dataTransfer.files[0]);
+            }}
+          >
+            <Icon name={file ? "file" : "upload"} size={32} />
+            <strong>
+              {file
+                ? file.name
+                : t("Drop your presentation here or choose a file")}
+            </strong>
             <span>
-              <Icon name="agent" size={18} />
-              {t("Learning agent settings")}
+              {file
+                ? `${file.name.split(".").pop()?.toUpperCase()} · ${(file.size / 1024 / 1024).toFixed(1)} MB`
+                : t("PDF or PPTX · Up to 30 MB · 80 slides")}
             </span>
-            <span>
-              {days} {t("days")}
-            </span>
-          </summary>
-          <div>
-            <label>
-              {t("Learning agent access after training")}
-              <div className="input-unit">
-                <input
-                  type="number"
-                  value={days}
-                  onChange={(e) => setDays(Number(e.target.value))}
-                  min={0}
-                  max={365}
-                  required
-                />
-                <span>{t("days")}</span>
-              </div>
-              <small>
-                {t(
-                  "Access starts when training ends. Choose 0 days to close it with the session.",
-                )}
-              </small>
-            </label>
-            <label className="toggle-field">
-              <span>
-                <strong>
-                  {t("Automatic AI answers during live training")}
-                </strong>
-                <small>
-                  {t(
-                    "Questions are answered from your document. Unanswered questions are forwarded to you.",
-                  )}
-                </small>
+            {file && (
+              <span className="file-replace">
+                {t("Choose a different file")}
               </span>
-              <input
-                type="checkbox"
-                role="switch"
-                checked={auto}
-                onChange={(e) => setAuto(e.target.checked)}
+            )}
+            <input
+              type="file"
+              accept=".pdf,.pptx"
+              aria-label={t("Presentation file")}
+              disabled={busy}
+              onChange={(e) => {
+                selectFile(e.target.files?.[0]);
+                e.target.value = "";
+              }}
+            />
+          </label>
+          <label>
+            {t("Training name")}
+            <input
+              ref={trainingName}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={t("The file name is used automatically")}
+              maxLength={120}
+            />
+          </label>
+          <label>
+            {t("Folder")}
+            <ProductSelect
+              label={t("Folder")}
+              value={folderId}
+              onChange={setFolderId}
+              disabled={busy || folderBusy}
+              options={[
+                { value: "", label: t("All presentations") },
+                ...folderChoices.map((f) => ({ value: f.id, label: f.name })),
+              ]}
+              action={{
+                label: t("Create new folder"),
+                onSelect: () => setCreatingFolder(true),
+              }}
+            />
+          </label>
+          {creatingFolder && (
+            <div className="create-folder-inline">
+              <label>
+                {t("Folder name")}
+                <input
+                  autoFocus
+                  value={folderName}
+                  onChange={(e) => setFolderName(e.target.value)}
+                  maxLength={60}
+                  disabled={folderBusy}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      void createFolder();
+                    }
+                  }}
+                />
+              </label>
+              <button
+                type="button"
+                className="button"
+                disabled={folderBusy || !folderName.trim()}
+                onClick={createFolder}
+              >
+                {t("Create folder")}
+              </button>
+              <button
+                type="button"
+                className="icon-button"
+                aria-label={t("Cancel")}
+                disabled={folderBusy}
+                onClick={() => setCreatingFolder(false)}
+              >
+                <Icon name="close" />
+              </button>
+            </div>
+          )}
+          <details className="training-access-settings">
+            <summary>
+              <span>
+                <Icon name="agent" size={18} />
+                {t("Learning agent settings")}
+              </span>
+              <span>
+                {days} {t("days")}
+              </span>
+            </summary>
+            <div>
+              <AccessDurationSelect
+                value={days}
+                onChange={setDays}
+                disabled={busy}
               />
-            </label>
-          </div>
-        </details>
-        <ErrorNote message={error} />
+              <label className="toggle-field">
+                <span>
+                  <strong>
+                    {t("Automatic AI answers during live training")}
+                  </strong>
+                  <small>
+                    {t(
+                      "Questions are answered from your document. Unanswered questions are forwarded to you.",
+                    )}
+                  </small>
+                </span>
+                <input
+                  type="checkbox"
+                  role="switch"
+                  checked={auto}
+                  onChange={(e) => setAuto(e.target.checked)}
+                />
+              </label>
+            </div>
+          </details>
+          <ErrorNote message={error} />
+        </div>
         <div className="modal-actions">
           <button
             type="button"
@@ -245,7 +427,10 @@ export function CreateTraining({
           >
             {t("Use sample presentation")}
           </button>
-          <button className="button primary" disabled={busy}>
+          <button
+            className="button primary"
+            disabled={busy || folderBusy || !file}
+          >
             <Icon name="plus" />
             {t("Create training")}
           </button>
@@ -257,8 +442,20 @@ export function CreateTraining({
 
 export function Dashboard() {
   const { t, locale } = useLocale();
+  const greeting = useTimeGreeting();
 
   const router = useRouter();
+  const { pending: navigating, navigate } = useWorkspaceNavigation();
+  function preparePresentation(course: Course) {
+    router.prefetch(
+      `/training/${course.id}${course.status === "live" ? "/live" : ""}`,
+    );
+    if (course.status === "draft")
+      void clientResources
+        .read(`courses/${course.id}`, () => api(`courses/${course.id}`))
+        .catch(() => {});
+  }
+
   const auth = useResource<{ user?: User; aiReady: boolean; model: string }>(
     "auth",
   );
@@ -272,11 +469,48 @@ export function Dashboard() {
     0,
     auth.data?.user?.role === "teacher",
   );
+  const [view, setView] = useState("home");
+  const team = useResource<TeamState>(
+    `team?account=${auth.data?.user?.id || ""}`,
+    10000,
+    auth.data?.user?.role === "teacher",
+  );
+  const [createTeamOpen, setCreateTeamOpen] = useState(false),
+    [inviteTeamOpen, setInviteTeamOpen] = useState(false);
+  const teamTrigger = useRef<HTMLElement | null>(null);
+  async function refreshTeam() {
+    await Promise.all([team.refresh(), courses.refresh()]);
+  }
+  function inviteTeam(trigger: HTMLElement) {
+    setMobile(false);
+    teamTrigger.current = trigger;
+    if (team.data?.team) setInviteTeamOpen(true);
+    else setCreateTeamOpen(true);
+  }
   const [accountOpen, setAccountOpen] = useState(false),
     [helpOpen, setHelpOpen] = useState(false),
     [groupOpen, setGroupOpen] = useState(false),
-    [waitlistRequest, setWaitlistRequest] = useState(0),
-    [groupFilter, setGroupFilter] = useState("all");
+    [waitlistRequest, setWaitlistRequest] = useState(0);
+  const {
+    search,
+    setSearch,
+    groupFilter,
+    setGroupFilter,
+    trainingPeriod,
+    setTrainingPeriod,
+    reportPeriod,
+    setReportPeriod,
+  } = useLibraryContext(auth.data?.user?.id);
+  useEffect(() => {
+    if (groupFilter === "ungrouped") setGroupFilter("all");
+  }, [groupFilter, setGroupFilter]);
+  const [featurePicker, setFeaturePicker] = useState<
+    "practice" | "activities" | null
+  >(null);
+  const [createDestination, setCreateDestination] = useState<
+    "practice" | "activities" | null
+  >(null);
+  const featureTrigger = useRef<HTMLElement | null>(null);
   const activeGroup = useRef<HTMLButtonElement>(null),
     newTrainingTrigger = useRef<HTMLButtonElement>(null);
   const [libraryNotice, setLibraryNotice] = useState<{
@@ -284,8 +518,6 @@ export function Dashboard() {
     groupId?: string;
     trash?: boolean;
   } | null>(null);
-  const [trainingPeriod, setTrainingPeriod] = useState(ALL_TIME),
-    [reportPeriod, setReportPeriod] = useState(ALL_TIME);
   const settingsTrigger = useRef<HTMLElement | null>(null),
     helpTrigger = useRef<HTMLElement | null>(null),
     groupTrigger = useRef<HTMLElement | null>(null);
@@ -296,23 +528,10 @@ export function Dashboard() {
       : trigger || (document.activeElement as HTMLElement);
     setAccountOpen(true);
   }
-  const [view, setView] = useState("home"),
-    [search, setSearch] = useState(""),
-    [create, setCreate] = useState(false),
+  const [create, setCreate] = useState(false),
     [report, setReport] = useState(""),
     [mobile, setMobile] = useState(false);
   const mobileMenuTrigger = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    if (!mobile) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setMobile(false);
-        mobileMenuTrigger.current?.focus();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [mobile]);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("view") === "settings") {
@@ -351,7 +570,7 @@ export function Dashboard() {
         </header>
         <div>
           <h1>
-            {t("Hello,")} {user.name.split(" ")[0]}.
+            {t(greeting)}, {user.name.split(" ")[0]}.
           </h1>
           <p className="muted">
             {t("Join with the code shared by your instructor.")}
@@ -371,7 +590,7 @@ export function Dashboard() {
               <button
                 className="joined-course"
                 key={c.id}
-                onClick={() => router.push(`/join?training=${c.id}`)}
+                onClick={() => navigate(`/join?training=${c.id}`)}
               >
                 <Icon name="presentation" />
                 <span>
@@ -401,19 +620,28 @@ export function Dashboard() {
       .sort((a, b) =>
         (b.endedAt || b.createdAt).localeCompare(a.endedAt || a.createdAt),
       ),
-    trainingList = visibleTrainingSessions(list)
-      .filter(
-        (course) =>
-          view !== "courses" ||
-          (withinLibraryPeriod(
-            course.startedAt || course.createdAt,
-            trainingPeriod,
-          ) &&
-            (groupFilter === "all" ||
-              (groupFilter === "ungrouped"
-                ? !course.groupId
-                : course.groupId === groupFilter))),
-      )
+    allCollections = trainingCollections(
+      (courses.data?.courses || []).filter(
+        (course) => !course.trashedAt && !course.sharedReport,
+      ),
+    ),
+    trainingList = trainingCollections(
+      list
+        .filter((course) => !course.sharedReport)
+        .filter(
+          (course) =>
+            view !== "courses" ||
+            (withinLibraryPeriod(
+              course.startedAt || course.createdAt,
+              trainingPeriod,
+            ) &&
+              (groupFilter === "all" ||
+                (groupFilter === "ungrouped"
+                  ? !course.groupId
+                  : course.groupId === groupFilter))),
+        ),
+    )
+      .map((collection) => collection.current)
       .sort((a, b) =>
         view === "courses" && groupFilter === "all"
           ? (a.groupId || "").localeCompare(b.groupId || "") ||
@@ -421,9 +649,7 @@ export function Dashboard() {
           : b.createdAt.localeCompare(a.createdAt),
       );
   const groupCounts: Record<string, number> = { all: 0, ungrouped: 0 };
-  for (const course of visibleTrainingSessions(
-    (courses.data?.courses || []).filter((course) => !course.trashedAt),
-  )) {
+  for (const { current: course } of allCollections) {
     groupCounts.all++;
     const key = course.groupId || "ungrouped";
     groupCounts[key] = (groupCounts[key] || 0) + 1;
@@ -438,6 +664,22 @@ export function Dashboard() {
     !!search ||
     (view === "courses" &&
       (groupFilter !== "all" || trainingPeriod.period !== "all"));
+  const drafts = (courses.data?.courses || [])
+    .filter((course) => course.status === "draft" && !course.trashedAt)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const destinationFolder =
+    view === "courses"
+      ? groups.data?.groups.find((folder) => folder.id === groupFilter)?.id ||
+        ""
+      : "";
+  function openCreation(
+    trigger: HTMLElement,
+    feature: "practice" | "activities" | null = null,
+  ) {
+    featureTrigger.current = trigger;
+    setCreateDestination(feature);
+    setCreate(true);
+  }
   function change(next: string) {
     setLibraryNotice(null);
     setView(next);
@@ -452,6 +694,7 @@ export function Dashboard() {
   }
   return (
     <div className="app-shell">
+      <RouteProgress pending={navigating} />
       <header className="app-header">
         <button
           ref={mobileMenuTrigger}
@@ -467,8 +710,8 @@ export function Dashboard() {
         <label className="header-search">
           <Icon name="search" />
           <input
-            aria-label={t("Search training")}
-            placeholder={t("Search your training…")}
+            aria-label={t("Search presentations")}
+            placeholder={t("Search your presentations…")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -494,21 +737,40 @@ export function Dashboard() {
           }}
         />
       </header>
-      <aside
+      <ResponsiveSidebar
+        open={mobile}
+        onOpenChange={setMobile}
+        returnFocusRef={mobileMenuTrigger}
+        label={t("Workspace navigation")}
+        restoreFocus={!accountOpen && !helpOpen}
+        overlayClassName="workspace-nav-overlay"
         id="workspace-navigation"
         className={`sidebar ${mobile ? "open" : ""}`}
       >
+        <button
+          className="icon-button workspace-sidebar-close"
+          aria-label={t("Close menu")}
+          onClick={() => setMobile(false)}
+        >
+          <Icon name="close" />
+        </button>
         <nav>
           {[
             ["home", "home", t("Home")],
-            ["courses", "folder", t("My training")],
+            ["courses", "folder", t("My presentations")],
             ["reports", "chart", t("Reports")],
+            ["team", "users", t(team.data?.team ? "My team" : "Create team")],
           ].map(([v, icon, label]) => (
             <button
               key={v}
               className={view === v ? "active" : ""}
               aria-current={view === v ? "page" : undefined}
-              onClick={() => change(v)}
+              disabled={v === "team" && !team.data && !team.error}
+              onClick={(event) => {
+                if (v === "team" && !team.data?.team && !team.error)
+                  inviteTeam(event.currentTarget);
+                else change(v);
+              }}
             >
               <Icon name={icon as "home"} />
               {label}
@@ -516,7 +778,6 @@ export function Dashboard() {
           ))}
         </nav>
         <div className="sidebar-integrations" aria-label={t("Integrations")}>
-          <span>{t("Integrations")}</span>
           <div>
             {[
               ["Google Meet", "/integrations/google-meet.svg"],
@@ -530,7 +791,10 @@ export function Dashboard() {
                 key={name}
                 aria-label={t("Join the waitlist for {name}", { name })}
                 title={name}
-                onClick={() => setWaitlistRequest((current) => current + 1)}
+                onClick={() => {
+                  setMobile(false);
+                  setWaitlistRequest((current) => current + 1);
+                }}
               >
                 <img src={src} alt="" width={26} height={26} />
               </button>
@@ -562,9 +826,20 @@ export function Dashboard() {
             {t("Help")}
           </button>
         </div>
-      </aside>
+      </ResponsiveSidebar>
       <main className={`dashboard-main dashboard-view-${view}`}>
-        {view === "trash" ? (
+        {view === "team" ? (
+          <TeamWorkspace
+            key={team.data?.team?.id || "none"}
+            data={team.data}
+            error={team.error}
+            user={user}
+            onChanged={refreshTeam}
+            onCreate={inviteTeam}
+            onInvite={inviteTeam}
+            onReport={openReport}
+          />
+        ) : view === "trash" ? (
           <TrainingTrash
             courses={courses.data?.courses}
             error={courses.error}
@@ -580,30 +855,28 @@ export function Dashboard() {
                   <h1>{t("Reports")}</h1>
                   <p className="muted">
                     {t(
-                      "Questions and activity results from your completed training.",
+                      "Understand your audience and find the next step for each presentation.",
                     )}
                   </p>
                 </div>
                 <ReportAssistantLink />
               </div>
               <div className="library-toolbar report-library-toolbar">
-                <span className="library-result-count" role="status">
-                  {courses.data
-                    ? t("{count} sessions", { count: reports.length })
-                    : t("Loading…")}
-                </span>
+                <button
+                  data-inactive={
+                    (!search && reportPeriod.period === "all") || undefined
+                  }
+                  disabled={!search && reportPeriod.period === "all"}
+                  aria-hidden={!search && reportPeriod.period === "all"}
+                  className="text-button library-clear"
+                  onClick={() => {
+                    setSearch("");
+                    setReportPeriod(ALL_TIME);
+                  }}
+                >
+                  {t("Clear filters")}
+                </button>
                 <DateFilter value={reportPeriod} onChange={setReportPeriod} />
-                {(search || reportPeriod.period !== "all") && (
-                  <button
-                    className="text-button library-clear"
-                    onClick={() => {
-                      setSearch("");
-                      setReportPeriod(ALL_TIME);
-                    }}
-                  >
-                    {t("Clear filters")}
-                  </button>
-                )}
               </div>
               {!courses.data ? (
                 courses.error ? (
@@ -615,61 +888,13 @@ export function Dashboard() {
                   <ReportTableSkeleton />
                 )
               ) : reports.length ? (
-                <div className="table-wrap session-report-table">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>{t("Training")}</th>
-                        <th>{t("Started")}</th>
-                        <th>{t("Completed")}</th>
-                        <th>{t("Learning agent access")}</th>
-                        <th />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {reports.map((c) => (
-                        <tr key={c.id} onClick={() => openReport(c.id)}>
-                          <td>
-                            <button
-                              className="table-link"
-                              onClick={() => openReport(c.id)}
-                            >
-                              {c.name}
-                              <small className="report-session-label">
-                                {t("Session {number}", {
-                                  number: c.sessionNumber || 1,
-                                })}
-                              </small>
-                            </button>
-                          </td>
-                          <td>
-                            {c.startedAt ? (
-                              <ReportDate value={c.startedAt} />
-                            ) : (
-                              "—"
-                            )}
-                          </td>
-                          <td>
-                            {c.endedAt && <ReportDate value={c.endedAt} />}
-                          </td>
-                          <td>
-                            {learningAccess(c).canAsk
-                              ? t("{days} days remaining", {
-                                  days: learningAccess(c).remainingDays,
-                                })
-                              : t("Access ended")}
-                          </td>
-                          <td>
-                            <Icon name="arrow" />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                <SessionReports courses={reports} onOpen={openReport} />
               ) : (
                 <Empty
                   icon="chart"
+                  illustration={
+                    search || reportPeriod.period !== "all" ? false : "reports"
+                  }
                   title={t(
                     search || reportPeriod.period !== "all"
                       ? "No reports match your filters"
@@ -680,7 +905,27 @@ export function Dashboard() {
                       ? "Adjust the search or date range to find a session."
                       : "Questions, AI answers and activities are brought together automatically.",
                   )}
-                />
+                >
+                  <button
+                    className={
+                      search || reportPeriod.period !== "all"
+                        ? "button"
+                        : "button primary"
+                    }
+                    onClick={() => {
+                      if (search || reportPeriod.period !== "all") {
+                        setSearch("");
+                        setReportPeriod(ALL_TIME);
+                      } else change("courses");
+                    }}
+                  >
+                    {t(
+                      search || reportPeriod.period !== "all"
+                        ? "Clear filters"
+                        : "Open my presentations",
+                    )}
+                  </button>
+                </Empty>
               )}
             </>
           )
@@ -694,10 +939,10 @@ export function Dashboard() {
                   <h1>
                     {view === "home" ? (
                       <>
-                        {t("Hello,")} <span>{user.name.split(" ")[0]}.</span>
+                        {t(greeting)}, <span>{user.name.split(" ")[0]}.</span>
                       </>
                     ) : (
-                      t("My training")
+                      t("My presentations")
                     )}
                   </h1>
                   <p className="muted">
@@ -715,29 +960,30 @@ export function Dashboard() {
                 <button
                   ref={newTrainingTrigger}
                   className="button primary"
-                  onClick={() => setCreate(true)}
+                  onClick={(event) => openCreation(event.currentTarget)}
                 >
                   <Icon name="plus" />
                   {t("New training")}
                 </button>
                 {view === "courses" && (
                   <div className="library-toolbar">
+                    <button
+                      data-inactive={!hasTrainingFilters || undefined}
+                      disabled={!hasTrainingFilters}
+                      aria-hidden={!hasTrainingFilters}
+                      className="text-button library-clear"
+                      onClick={() => {
+                        setSearch("");
+                        setGroupFilter("all");
+                        setTrainingPeriod(ALL_TIME);
+                      }}
+                    >
+                      {t("Clear filters")}
+                    </button>
                     <DateFilter
                       value={trainingPeriod}
                       onChange={setTrainingPeriod}
                     />
-                    {hasTrainingFilters && (
-                      <button
-                        className="text-button library-clear"
-                        onClick={() => {
-                          setSearch("");
-                          setGroupFilter("all");
-                          setTrainingPeriod(ALL_TIME);
-                        }}
-                      >
-                        {t("Clear filters")}
-                      </button>
-                    )}
                   </div>
                 )}
               </div>
@@ -764,7 +1010,9 @@ export function Dashboard() {
               <section
                 className="training-section"
                 aria-label={t(
-                  view === "home" ? "Recent training" : "Training library",
+                  view === "home"
+                    ? "Recent presentations"
+                    : "Presentation library",
                 )}
               >
                 <div
@@ -778,16 +1026,18 @@ export function Dashboard() {
                     {search
                       ? t("Search results")
                       : view === "home"
-                        ? t("Recent training")
+                        ? t("Recent presentations")
                         : groupFilter !== "all"
                           ? groups.data?.groups.find(
                               (group) => group.id === groupFilter,
-                            )?.name || t("Ungrouped")
-                          : t("All training")}
+                            )?.name || t("All presentations")
+                          : t("All presentations")}
                   </h2>
                   {view === "courses" && courses.data && (
                     <span className="library-result-count" role="status">
-                      {t("{count} training", { count: trainingList.length })}
+                      {t("{count} presentations", {
+                        count: trainingList.length,
+                      })}
                     </span>
                   )}
                   {view === "home" && (
@@ -817,6 +1067,7 @@ export function Dashboard() {
                         <Fragment key={c.id}>
                           {view === "courses" &&
                             groupFilter === "all" &&
+                            !!c.groupId &&
                             !!groups.data?.groups.length &&
                             (cardIndex === 0 ||
                               trainingList[cardIndex - 1].groupId !==
@@ -825,100 +1076,102 @@ export function Dashboard() {
                                 <h3>
                                   {groups.data.groups.find(
                                     (group) => group.id === c.groupId,
-                                  )?.name || t("Ungrouped")}
+                                  )?.name || t("All presentations")}
                                 </h3>
                               </div>
                             )}
                           <article className="training-card" key={c.id}>
-                            <button
-                              className="training-card-open"
-                              onClick={() =>
-                                router.push(
-                                  `/training/${c.id}${c.status === "live" ? "/live" : ""}`,
-                                )
-                              }
-                            >
-                              <TrainingCover course={c} />
-                              <div className="training-card-content">
-                                <Status status={c.status} />
-                                <h3>{c.name}</h3>
-                                <div className="card-meta">
-                                  <span>
-                                    {(c.sessionNumber || 1) > 1 && (
-                                      <>
-                                        {t("Session {number}", {
-                                          number: c.sessionNumber || 1,
-                                        })}{" "}
-                                        ·{" "}
-                                      </>
-                                    )}
-                                    {dateTime(
-                                      c.startedAt || c.createdAt,
-                                      locale,
-                                    )}
-                                    {c.groupId && view === "home" && (
-                                      <small>
-                                        {
-                                          groups.data?.groups.find(
-                                            (group) => group.id === c.groupId,
-                                          )?.name
-                                        }
-                                      </small>
-                                    )}
-                                  </span>
-                                </div>
-                                <div className="training-card-next">
-                                  <span>
-                                    {t(
-                                      c.status === "ended"
-                                        ? "Prepare another session"
-                                        : c.status === "live"
-                                          ? "Return to live training"
-                                          : "Continue preparing",
-                                    )}
-                                  </span>
-                                  <Icon name="arrow" size={17} />
-                                </div>
+                            <TrainingCover course={c} />
+                            <div className="training-card-content">
+                              <div className="training-card-heading">
+                                <h3>
+                                  <button
+                                    className="training-card-open"
+                                    onPointerEnter={() =>
+                                      preparePresentation(c)
+                                    }
+                                    onFocus={() => preparePresentation(c)}
+                                    onClick={() =>
+                                      navigate(
+                                        `/training/${c.id}${c.status === "live" ? "/live" : ""}`,
+                                      )
+                                    }
+                                  >
+                                    <span>{c.name}</span>
+                                  </button>
+                                </h3>
+                                <TrainingCardMenu
+                                  course={c}
+                                  groups={groups.data?.groups || []}
+                                  onChanged={async (change) => {
+                                    await courses.refresh();
+                                    setLibraryNotice({
+                                      message:
+                                        change.action === "trash"
+                                          ? t("{name} moved to Trash.", {
+                                              name: change.name,
+                                            })
+                                          : t("Moved to {folder}.", {
+                                              folder:
+                                                groups.data?.groups.find(
+                                                  (group) =>
+                                                    group.id === change.groupId,
+                                                )?.name ||
+                                                t("All presentations"),
+                                            }),
+                                      groupId:
+                                        change.action === "group"
+                                          ? change.groupId || "ungrouped"
+                                          : undefined,
+                                      trash: change.action === "trash",
+                                    });
+                                    if (view === "courses")
+                                      activeGroup.current?.focus();
+                                    else newTrainingTrigger.current?.focus();
+                                  }}
+                                />
                               </div>
-                            </button>
-                            <TrainingCardMenu
-                              course={c}
-                              groups={groups.data?.groups || []}
-                              onChanged={async (change) => {
-                                await courses.refresh();
-                                setLibraryNotice({
-                                  message:
-                                    change.action === "trash"
-                                      ? t("{name} moved to Trash.", {
-                                          name: change.name,
-                                        })
-                                      : t("Moved to {group}.", {
-                                          group:
-                                            groups.data?.groups.find(
-                                              (group) =>
-                                                group.id === change.groupId,
-                                            )?.name || t("Ungrouped"),
-                                        }),
-                                  groupId:
-                                    change.action === "group"
-                                      ? change.groupId || "ungrouped"
-                                      : undefined,
-                                  trash: change.action === "trash",
-                                });
-                                if (view === "courses")
-                                  activeGroup.current?.focus();
-                                else newTrainingTrigger.current?.focus();
-                              }}
-                            />
+                              <div className="card-meta">
+                                <span>
+                                  {dateTime(c.startedAt || c.createdAt, locale)}
+                                  {c.groupId && view === "home" && (
+                                    <small>
+                                      {
+                                        groups.data?.groups.find(
+                                          (group) => group.id === c.groupId,
+                                        )?.name
+                                      }
+                                    </small>
+                                  )}
+                                </span>
+                                {c.status !== "ended" && (
+                                  <Status status={c.status} />
+                                )}
+                              </div>
+                              <div className="training-card-next">
+                                <MemberAvatar
+                                  name={c.createdBy || t("Unknown creator")}
+                                />
+                                <span className="created-by">
+                                  <small>{t("Created by")}</small>
+                                  <strong>
+                                    {c.createdBy || t("Unknown creator")}
+                                  </strong>
+                                </span>
+                              </div>
+                            </div>
                           </article>
                         </Fragment>
                       ))}
                   </div>
                 ) : (
                   <Empty
+                    illustration={
+                      hasTrainingFilters && !emptyGroup ? false : "training"
+                    }
                     title={
                       emptyGroup
-                        ? t("This group is ready for your training")
+                        ? t("This folder is ready for your training")
                         : hasTrainingFilters
                           ? t("No matching training found")
                           : t("Create your first training")
@@ -926,16 +1179,24 @@ export function Dashboard() {
                     description={
                       emptyGroup
                         ? t(
-                            "Move training here from the options menu on a training card.",
+                            "Create training here or move existing training from its options menu.",
                           )
                         : hasTrainingFilters
-                          ? t("Adjust your search, group or date filters.")
+                          ? t("Adjust your search, folder or date filters.")
                           : t(
                               "Upload your presentation. Activities and voice practice await in your training workspace.",
                             )
                     }
                   >
-                    {hasTrainingFilters ? (
+                    {emptyGroup ? (
+                      <button
+                        className="button primary"
+                        onClick={(event) => openCreation(event.currentTarget)}
+                      >
+                        <Icon name="plus" />
+                        {t("Create training in this folder")}
+                      </button>
+                    ) : hasTrainingFilters ? (
                       <button
                         className="button"
                         onClick={() => {
@@ -948,8 +1209,8 @@ export function Dashboard() {
                       </button>
                     ) : (
                       <button
-                        className="button"
-                        onClick={() => setCreate(true)}
+                        className="button primary"
+                        onClick={(event) => openCreation(event.currentTarget)}
                       >
                         <Icon name="plus" />
                         {t("Create training")}
@@ -988,24 +1249,33 @@ export function Dashboard() {
             </div>
             {view === "home" && (
               <HomeUpdates
-                hasDraft={
-                  !!courses.data?.courses.some(
-                    (course) => course.status === "draft" && !course.trashedAt,
-                  )
+                paused={
+                  accountOpen ||
+                  helpOpen ||
+                  groupOpen ||
+                  create ||
+                  createTeamOpen ||
+                  inviteTeamOpen ||
+                  !!featurePicker
                 }
-                onExplore={(feature) => {
+                draftCount={drafts.length}
+                ready={!!courses.data}
+                onExplore={(feature, trigger) => {
                   if (feature === "reports") {
                     change("reports");
                     return;
                   }
-                  const course = courses.data?.courses.find(
-                    (course) => course.status === "draft" && !course.trashedAt,
-                  );
-                  if (!course) {
-                    setCreate(true);
+                  featureTrigger.current = trigger;
+                  if (drafts.length > 1) {
+                    setFeaturePicker(feature);
                     return;
                   }
-                  router.push(
+                  const course = drafts[0];
+                  if (!course) {
+                    openCreation(trigger, feature);
+                    return;
+                  }
+                  navigate(
                     `/training/${course.id}${feature === "practice" ? "/practice" : ""}`,
                   );
                 }}
@@ -1029,7 +1299,7 @@ export function Dashboard() {
               setLibraryNotice(null);
             }}
           >
-            {t(libraryNotice.trash ? "Open Trash" : "View group")}
+            {t(libraryNotice.trash ? "Open Trash" : "View folder")}
           </button>
           <button
             className="icon-button"
@@ -1075,28 +1345,55 @@ export function Dashboard() {
         }}
       />
 
-      <CreateTraining
-        open={create}
-        onClose={() => setCreate(false)}
-        onCreated={(c) => router.push(`/training/${c.id}`)}
-      />
+      {createTeamOpen && (
+        <CreateTeamDialog
+          returnFocusRef={teamTrigger}
+          onClose={() => setCreateTeamOpen(false)}
+          onCreated={(data) => {
+            team.setData(data);
+            setCreateTeamOpen(false);
+            change("team");
+          }}
+        />
+      )}
+      {inviteTeamOpen && team.data?.team && (
+        <InviteTeamDialog
+          teamName={team.data.team.name}
+          returnFocusRef={teamTrigger}
+          onClose={() => setInviteTeamOpen(false)}
+          onChanged={refreshTeam}
+        />
+      )}
+      {featurePicker && (
+        <TrainingPicker
+          feature={featurePicker}
+          courses={drafts}
+          returnFocusRef={featureTrigger}
+          onClose={() => setFeaturePicker(null)}
+          onPick={(course) => {
+            navigate(
+              `/training/${course.id}${featurePicker === "practice" ? "/practice" : ""}`,
+            );
+            setFeaturePicker(null);
+          }}
+        />
+      )}
+      {create && (
+        <CreateTraining
+          onFoldersChanged={groups.refresh}
+          open
+          folders={groups.data?.groups || []}
+          initialFolderId={destinationFolder}
+          returnFocusRef={featureTrigger}
+          onClose={() => setCreate(false)}
+          onCreated={(c) =>
+            navigate(
+              `/training/${c.id}${createDestination === "practice" ? "/practice" : ""}`,
+            )
+          }
+        />
+      )}
     </div>
-  );
-}
-function ReportDate({ value }: { value: string }) {
-  const { locale } = useLocale();
-  return (
-    <time dateTime={value} className="report-date">
-      <span>{date(value, locale)}</span>
-      <strong>
-        {new Intl.DateTimeFormat(locale, {
-          hour: "2-digit",
-          minute: "2-digit",
-          hourCycle: "h23",
-          timeZone: "Europe/Istanbul",
-        }).format(new Date(value))}
-      </strong>
-    </time>
   );
 }
 function TrainingTrash({
@@ -1183,9 +1480,11 @@ function TrainingTrash({
 export function JoinForm({
   onJoin,
   initialCode = "",
+  participantScope = false,
 }: {
   onJoin?: (id: string) => void;
   initialCode?: string;
+  participantScope?: boolean;
 }) {
   const { t } = useLocale();
 
@@ -1201,7 +1500,10 @@ export function JoinForm({
         setBusy(true);
         setError("");
         try {
-          const result = await api("join", { code });
+          const result = await api(
+            participantScope ? "participant/join" : "join",
+            { code },
+          );
           onJoin
             ? onJoin(result.id)
             : router.push(`/join?training=${result.id}`);

@@ -10,11 +10,21 @@ export const ACTIVITY_LIBRARY: {
 }[] = [
   {
     type: "poll",
-    title: "Poll",
+    title: "Multiple choice",
     description: "Collect answers from a set of options.",
     response: "Single-choice response",
     sample: "Which topic should we explore in more detail?",
-    keywords: "poll vote choice",
+    keywords: "poll vote choice anket çoktan seçmeli",
+  },
+  {
+    type: "true-false",
+    title: "True or false",
+    description:
+      "Ask participants to decide whether a statement is true or false.",
+    response: "Two fixed options",
+    sample:
+      "A customer’s positive feedback always means they will buy the product.",
+    keywords: "true false correct incorrect doğru yanlış dogru yanlis",
   },
   {
     type: "open",
@@ -24,16 +34,21 @@ export const ACTIVITY_LIBRARY: {
     sample: "What is one idea you will put into practice?",
     keywords: "open ended text written question",
   },
-  {
-    type: "scenario",
-    title: "Scenario",
-    description: "Practice with a real-world situation.",
-    response: "Written response",
-    sample:
-      "A colleague interprets the same finding differently. How would you explain your reasoning?",
-    keywords: "scenario situation case application",
-  },
 ];
+
+export const UPCOMING_ACTIVITIES = [
+  {
+    id: "scenario",
+    title: "Scenario",
+    keywords: "scenario situation case senaryo",
+  },
+  { id: "roleplay", title: "Roleplay", keywords: "roleplay role play rol" },
+  {
+    id: "devils-advocate",
+    title: "Devil’s advocate",
+    keywords: "devil advocate karşıt görüş karsit gorus",
+  },
+] as const;
 
 export function searchActivityLibrary(
   query: string,

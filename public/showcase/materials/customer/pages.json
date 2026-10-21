@@ -1,0 +1,58 @@
+[
+  {
+    "number": 1,
+    "title": "Müşteriyi Anlamak",
+    "text": "Müşteriyi\nAnlamak\nDaha iyi sorularla gerçek ihtiyaçları keşfetmek",
+    "image": "page-1.png",
+    "ratio": 1.777795275590552
+  },
+  {
+    "number": 2,
+    "title": "Varsayım ve kanıt",
+    "text": "Varsayım ve kanıt\nBir fikre verilen olumlu tepki, satın alma davranışıyla aynı şey değildir.\nDuyduğumuz ifade | Henüz bilmediğimiz | Arayacağımız kanıt\n‘Böyle bir araç güzel olur.’ | Problem ne kadar sık yaşanıyor? | Son yaşanan olay ve iş akışı\n‘Ekibimiz çok zaman kaybediyor.’ | Hangi işte, ne kadar? | Somut bir işin süresi ve etkisi\n‘Buna bütçe ayırabiliriz.’ | Kararı kim, nasıl veriyor? | Benzer bir satın almanın hikâyesi",
+    "image": "page-2.png",
+    "ratio": 1.777795275590552
+  },
+  {
+    "number": 3,
+    "title": "Geçmiş davranışı sor",
+    "text": "Geçmiş davranışı sor\nGörüşme, ürününü onaylatmak için değil müşterinin dünyasını anlamak içindir.\nYönlendiren soru | Daha iyi bir soru\nBu uygulamayı kullanır mıydın? | Bu işi en son nasıl yaptın?\nOtomasyon size zaman kazandırır mı? | Son seferde en çok nerede zorlandın?\nAylık ödeme yapar mıydın? | Bu problem için daha önce ne denedin?",
+    "image": "page-3.png",
+    "ratio": 1.777795275590552
+  },
+  {
+    "number": 4,
+    "title": "Müşteri problemini somutlaştır",
+    "text": "Müşteri problemini somutlaştır\nBağlam: haftalık takip  ·  Davranış: dosyaları birleştirmek  ·  Etki: kaçan müşteri isteği\n‘Her cuma farklı dosyalardaki müşteri notlarını birleştiriyorum. Geçen hafta bir isteği gözden kaçırdık.’\nKurgusal müşteri görüşmesinden örnek alıntı.",
+    "image": "page-4.png",
+    "ratio": 1.777795275590552
+  },
+  {
+    "number": 5,
+    "title": "Görüşme notlarında örüntü ara",
+    "text": "Görüşme notlarında örüntü ara\nAynı müşteri grubuyla yapılan 8 kurgusal görüşmenin özeti.\nNotları farklı dosyalarda tutma: 8\nHaftalık birleştirme işi: 6\nTakip edilemeyen müşteri isteği: 5\nYeni bir araç için bütçe araştırma: 3\nÖrnek atölye verileri. Sayılar 8 görüşmede konuyu dile getiren kişi sayısıdır; pazar oranı değildir.",
+    "image": "page-5.png",
+    "ratio": 1.777795275590552
+  },
+  {
+    "number": 6,
+    "title": "Bir haftalık doğrulama denemesi",
+    "text": "Bir haftalık doğrulama denemesi\nDenemeden önce hangi gözlemin kararını değiştireceğini yaz.\nVarsayım | Deneme | Karar için aranan gözlem\nHaftalık takip işi önemli bir yük. | Aynı segmentten 5 kişiyle son iş akışını incele. | Tekrarlayan iş ve somut bir kayıp anlatılıyor mu?\nTek yerde takip etmek işe yarar. | 2 ekiple basit bir takip tablosu dene. | Ekip bir hafta boyunca kendiliğinden kullanıyor mu?\nSorun için kaynak ayrılıyor. | Mevcut çözümün satın alma sürecini sor. | Karar sahibi, ayrılan süre ve bütçe netleşiyor mu?\nBunlar bu vaka için tasarlanmış örnek deneylerdir; evrensel başarı eşikleri değildir.",
+    "image": "page-6.png",
+    "ratio": 1.777795275590552
+  },
+  {
+    "number": 7,
+    "title": "Bugünkü alternatifi anlamak",
+    "text": "Bugünkü alternatifi anlamak\nRakip her zaman başka bir yazılım değildir.\nMevcut alternatif | Neden tercih ediliyor? | Değişmenin maliyeti\nPaylaşılan hesap tablosu | Herkes biliyor, hemen açılıyor. | Eski notları taşımak ve alışkanlığı değiştirmek\nE-posta ve mesajlaşma | Ekibin mevcut iletişim kanalı | Sohbetten düzenli takibe geçmek\nİşi ertelemek | Sorun henüz öncelikli görünmüyor. | Başka bir işe ayrılan zaman",
+    "image": "page-7.png",
+    "ratio": 1.777795275590552
+  },
+  {
+    "number": 8,
+    "title": "Bir sonraki müşteri görüşmen",
+    "text": "Bir sonraki müşteri görüşmen\nBir müşteri seç. Son yaşadığı durumu sor. Kararını değiştirecek kanıtı not et.\nGörüşmeden bir övgüyle değil, yeni bir ayrıntıyla çık.\nAtölye çıktısı: bir problem cümlesi, üç görüşme sorusu ve bir deneme planı.",
+    "image": "page-8.png",
+    "ratio": 1.777795275590552
+  }
+]

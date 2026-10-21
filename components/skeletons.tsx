@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, type ReactNode } from "react";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 import { Logo } from "./ui";
 const SkeletonContext = createContext(false);
 
@@ -283,12 +283,24 @@ export function RehearsalSkeleton() {
           <Logo />
         </div>
       </header>
-      <main className="rehearsal-setup sk-rehearsal">
-        <Skeleton className="sk-avatar" />
-        <Title />
-        <Lines count={2} />
-        <Skeleton className="sk-textarea" />
-        <Skeleton className="sk-button" />
+      <main className="practice-preparation">
+        <section
+          className="practice-preparation-form sk-rehearsal"
+          aria-hidden="true"
+        >
+          <div className="practice-introduction">
+            <Skeleton className="sk-avatar" />
+            <Title />
+          </div>
+          <Lines count={2} />
+          <Skeleton className="sk-textarea" />
+          <Skeleton className="sk-button" />
+        </section>
+        <aside className="practice-history sk-rehearsal" aria-hidden="true">
+          <Skeleton className="sk-subtitle" />
+          <Lines />
+          <Lines />
+        </aside>
       </main>
     </Region>
   );
@@ -444,6 +456,19 @@ export function ReportWorkspaceSkeleton() {
         </header>
         <ReportConversationSkeleton />
       </main>
+    </Region>
+  );
+}
+
+export function TeamWorkspaceSkeleton() {
+  return (
+    <Region className="team-workspace">
+      <Title />
+      <div className="team-tabs" aria-hidden="true">
+        <Skeleton className="sk-subtitle" />
+        <Skeleton className="sk-button" />
+      </div>
+      <ParticipantListSkeleton />
     </Region>
   );
 }

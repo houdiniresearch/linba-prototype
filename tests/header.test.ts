@@ -3,7 +3,6 @@ import { randomUUID } from "node:crypto";
 import test from "node:test";
 import { all, remove } from "../lib/db";
 import { translate } from "../lib/translations";
-
 const base = process.env.LINBA_TEST_URL || "http://localhost:3000";
 test("language catalog translates UI and preserves training content", () => {
   assert.equal(translate("Eğitimlerim", "en"), "My training");
@@ -17,7 +16,6 @@ test("language catalog translates UI and preserves training content", () => {
     "A user’s original training title",
   );
 });
-
 test("waitlist persists per account, validates input and rejects cross-origin writes", async () => {
   const ids: string[] = [];
   function client() {
@@ -87,7 +85,11 @@ test("waitlist persists per account, validates input and rejects cross-origin wr
       "header-second@linba.test",
     );
     assert.equal(
-      all<{ id: string }>("waitlist").filter((e) => e.id === ids[0]).length,
+      (
+        await all<{
+          id: string;
+        }>("waitlist")
+      ).filter((e) => e.id === ids[0]).length,
       1,
     );
     await first(
@@ -107,11 +109,14 @@ test("waitlist persists per account, validates input and rejects cross-origin wr
     ).text();
     assert.match(english, /<html[^>]*lang="en"/);
   } finally {
-    for (const session of all<{ id: string; userId: string }>("session"))
-      if (ids.includes(session.userId)) remove("session", session.id);
+    for (const session of await all<{
+      id: string;
+      userId: string;
+    }>("session"))
+      if (ids.includes(session.userId)) await remove("session", session.id);
     for (const id of ids) {
-      remove("waitlist", id);
-      remove("user", id);
+      await remove("waitlist", id);
+      await remove("user", id);
     }
   }
 });

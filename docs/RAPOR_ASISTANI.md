@@ -6,10 +6,10 @@ Rapor ajanının üstündeki **Open report / Raporu aç** düğmesi raporu aynı
 
 ## Veri ve model
 
-- Yapılandırılmış mevcut model bağlantısı `modelJson` üzerinden kullanılır; ikinci model, embedding servisi veya ayrı sağlayıcı eklenmez.
+- `groundedAnalysis` üzerinden şemalı Responses API üretimi ve bağımsız kanıt denetimi kullanılır. Denetim başarısızsa bir kez düzeltme yapılır; doğrulanmayan yanıt kaydedilmez. Metin ve ses modelleri ayrıdır. Ayrıntı: `docs/AI_QUALITY.md`.
 - Her mesajda seçili eğitimin güncel katılımcı, soru ve aktivite kayıtlarından yeni bir bağlam hazırlanır. Eski otomatik rapor özeti sayısal doğruluk kaynağı sayılmaz.
 - Toplamlar ve anket dağılımları sunucuda tüm kayıtlardan hesaplanır. Model yüzde başarı, tamamlanma veya öğrenme gelişimi uydurmaması için açıkça yönlendirilir. Görüş anketi sınav gibi değerlendirilmez.
-- Metin ayrıntıları bağlamı sınırlamak için son 60 soru / 80 aktivite yanıtından, sırasıyla 24.000 / 18.000 karakter bütçesi içinde alınır. Kapsama bilgisi modele aktarılır; toplamlar değişmez. En fazla 60 aktivite, 20 soru grubu ve etkileşim sayısına göre sıralanan ilk 100 katılımcı ayrıntısı sağlanır.
+- Metin ayrıntıları bağlamı sınırlamak için sorguyla ilgili kayıtlar ve konu/aktivite çeşitliliği korunarak en fazla 60 soru / 80 aktivite yanıtından, sırasıyla 24.000 / 18.000 karakter bütçesi içinde alınır. Kapsama bilgisi modele aktarılır; toplamlar değişmez. En fazla 60 aktivite, 20 soru grubu ve etkileşim sayısına göre sıralanan ilk 100 katılımcı ayrıntısı sağlanır.
 - Önceki konuşmanın son 10 soru/yanıt çifti modele aktarılır; arayüzde tüm kayıtlı geçmiş görünür. Geçmişteki asistan yanıtları kanıt sayılmaz.
 - Kaynaklar yalnız sunucunun izin verdiği rapor özeti, sorular ve aktivite sonuçları bölümlerine bağlanır. Modelin ürettiği bilinmeyen kaynak kimlikleri ayıklanır.
 - Başka bir raporun verileri aynı isteğe eklenmez. Raporlar arası karşılaştırma bu sürümün kapsamı değildir.

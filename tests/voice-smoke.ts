@@ -43,7 +43,9 @@ async function main() {
         audience:
           "Dijital pazarlamayı yeni öğrenen kurgusal iki kadın ve bir erkek küçük işletme sahibi. Gerçek kişi isimleri kullanma.",
       })
-    ).json()) as { rehearsal: Rehearsal };
+    ).json()) as {
+      rehearsal: Rehearsal;
+    };
     assert.ok(rehearsal.personas.some((p) => p.gender === "female"));
     assert.ok(rehearsal.personas.some((p) => p.gender === "male"));
     const voices =
@@ -224,22 +226,25 @@ async function main() {
   } finally {
     await pc.close();
     if (courseId) {
-      for (const r of all<Rehearsal>("rehearsal").filter(
+      for (const r of (await all<Rehearsal>("rehearsal")).filter(
         (r) => r.courseId === courseId,
       ))
-        remove("rehearsal", r.id);
-      remove("course", courseId);
+        await remove("rehearsal", r.id);
+      await remove("course", courseId);
       await rm(`${DATA_DIR}/files/${courseId}`, {
         recursive: true,
         force: true,
       });
     }
     if (userId) {
-      for (const s of all<{ id: string; userId: string }>("session").filter(
-        (s) => s.userId === userId,
-      ))
-        remove("session", s.id);
-      remove("user", userId);
+      for (const s of (
+        await all<{
+          id: string;
+          userId: string;
+        }>("session")
+      ).filter((s) => s.userId === userId))
+        await remove("session", s.id);
+      await remove("user", userId);
     }
   }
 }

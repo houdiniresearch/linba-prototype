@@ -5,7 +5,6 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { ALL_TIME, withinLibraryPeriod } from "../lib/library-filters";
 import type { Course, User } from "../lib/types";
-
 test("time filters use Istanbul calendar boundaries and reject reversed ranges", () => {
   const now = Date.parse("2026-10-19T10:00:00Z");
   const range = {
@@ -50,7 +49,6 @@ test("time filters use Istanbul calendar boundaries and reject reversed ranges",
     false,
   );
 });
-
 test("workspace groups, recoverable trash, notes and account settings preserve ownership", async (t) => {
   const directory = mkdtempSync(path.join(tmpdir(), "linba-workspace-"));
   process.env.LINBA_DATA_DIR = directory;
@@ -75,9 +73,9 @@ test("workspace groups, recoverable trash, notes and account settings preserve o
   const other: User = { ...owner, id: "other", email: "other@linba.test" };
   const learner: User = { ...owner, id: "learner", role: "participant" };
   const originalPassword = "original-test-password";
-  put("user", { ...owner, password: hashPassword(originalPassword) });
-  put("user", other);
-  const root = createCourse(
+  await put("user", { ...owner, password: hashPassword(originalPassword) });
+  await put("user", other);
+  const root = await createCourse(
     owner.id,
     "Repeated training",
     "source.pdf",
@@ -98,7 +96,7 @@ test("workspace groups, recoverable trash, notes and account settings preserve o
   root.status = "ended";
   root.endedAt = new Date().toISOString();
   root.slides[0].notes = "Private instructor reminder";
-  put("course", root);
+  await put("course", root);
   const second = {
     ...root,
     id: "second",
@@ -106,8 +104,8 @@ test("workspace groups, recoverable trash, notes and account settings preserve o
     sessionNumber: 2,
     status: "draft" as const,
   };
-  put("course", second);
-  put("member", {
+  await put("course", second);
+  await put("member", {
     id: "root:learner",
     courseId: root.id,
     userId: learner.id,
@@ -116,111 +114,139 @@ test("workspace groups, recoverable trash, notes and account settings preserve o
   try {
     await t.test(
       "groups validate names, ownership, duplicates and assign all sessions together",
-      () => {
-        const group = saveTrainingGroup(owner, "Sales");
-        const foreign = saveTrainingGroup(other, "Other");
-        assert.equal(trainingGroups(owner).length, 1);
-        assert.throws(() => saveTrainingGroup(owner, " sales "));
-        assert.throws(() => saveTrainingGroup(learner, "Private"));
-        assert.throws(() =>
-          updateTrainingLibrary(other, root.id, "group", group.id),
+      async () => {
+        const group = await saveTrainingGroup(owner, "Sales");
+        const foreign = await saveTrainingGroup(other, "Other");
+        assert.equal((await trainingGroups(owner)).length, 1);
+        await assert.rejects(
+          async () => await saveTrainingGroup(owner, " sales "),
         );
-        assert.throws(() =>
-          updateTrainingLibrary(owner, root.id, "group", foreign.id),
+        await assert.rejects(
+          async () => await saveTrainingGroup(learner, "Private"),
         );
-        updateTrainingLibrary(owner, root.id, "group", group.id);
-        assert.equal(get<Course>("course", root.id)?.groupId, group.id);
-        assert.equal(get<Course>("course", second.id)?.groupId, group.id);
+        await assert.rejects(
+          async () =>
+            await updateTrainingLibrary(other, root.id, "group", group.id),
+        );
+        await assert.rejects(
+          async () =>
+            await updateTrainingLibrary(owner, root.id, "group", foreign.id),
+        );
+        await updateTrainingLibrary(owner, root.id, "group", group.id);
+        assert.equal((await get<Course>("course", root.id))?.groupId, group.id);
         assert.equal(
-          saveTrainingGroup(owner, "Sales team", group.id).name,
+          (await get<Course>("course", second.id))?.groupId,
+          group.id,
+        );
+        assert.equal(
+          (await saveTrainingGroup(owner, "Sales team", group.id)).name,
           "Sales team",
         );
-        removeTrainingGroup(owner, group.id);
-        assert.equal(get<Course>("course", root.id)?.groupId, undefined);
-        assert.equal(trainingGroups(other).length, 1);
+        await removeTrainingGroup(owner, group.id);
+        assert.equal(
+          (await get<Course>("course", root.id))?.groupId,
+          undefined,
+        );
+        assert.equal((await trainingGroups(other)).length, 1);
       },
     );
     await t.test(
       "Trash preserves every session and restores the complete family",
-      () => {
+      async () => {
         const live: Course = {
-          ...get<Course>("course", second.id)!,
+          ...(await get<Course>("course", second.id))!,
           status: "live" as const,
         };
-        put("course", live);
-        assert.throws(() => updateTrainingLibrary(owner, root.id, "trash"));
+        await put("course", live);
+        await assert.rejects(
+          async () => await updateTrainingLibrary(owner, root.id, "trash"),
+        );
         live.status = "draft";
-        put("course", live);
-        const count = all<Course>("course").length;
-        updateTrainingLibrary(owner, root.id, "trash");
-        assert.ok(get<Course>("course", root.id)?.trashedAt);
-        assert.ok(get<Course>("course", second.id)?.trashedAt);
-        assert.equal(reportList(owner).length, 0);
-        assert.equal(all<Course>("course").length, count);
-        updateTrainingLibrary(owner, second.id, "restore");
-        assert.equal(get<Course>("course", root.id)?.trashedAt, undefined);
-        assert.equal(reportList(owner).length, 1);
+        await put("course", live);
+        const count = (await all<Course>("course")).length;
+        await updateTrainingLibrary(owner, root.id, "trash");
+        assert.ok((await get<Course>("course", root.id))?.trashedAt);
+        assert.ok((await get<Course>("course", second.id))?.trashedAt);
+        assert.equal((await reportList(owner)).length, 0);
+        assert.equal((await all<Course>("course")).length, count);
+        await updateTrainingLibrary(owner, second.id, "restore");
+        assert.equal(
+          (await get<Course>("course", root.id))?.trashedAt,
+          undefined,
+        );
+        assert.equal((await reportList(owner)).length, 1);
       },
     );
     await t.test(
       "instructor notes never enter participant course state",
-      () => {
+      async () => {
         assert.equal(
-          stateFor(root, owner).course.slides[0].notes,
+          (await stateFor(root, owner)).course.slides[0].notes,
           "Private instructor reminder",
         );
-        assert.equal(stateFor(root, learner).course.slides[0].notes, undefined);
         assert.equal(
-          get<Course>("course", root.id)?.slides[0].notes,
+          (await stateFor(root, learner)).course.slides[0].notes,
+          undefined,
+        );
+        assert.equal(
+          (await get<Course>("course", root.id))?.slides[0].notes,
           "Private instructor reminder",
         );
       },
     );
     await t.test(
       "profile validation and password updates are account scoped",
-      () => {
-        assert.throws(() =>
-          updateProfile(owner, { name: "", email: owner.email }),
+      async () => {
+        await assert.rejects(
+          async () =>
+            await updateProfile(owner, { name: "", email: owner.email }),
         );
-        assert.throws(() =>
-          updateProfile(owner, { name: "Owner", email: other.email }),
+        await assert.rejects(
+          async () =>
+            await updateProfile(owner, { name: "Owner", email: other.email }),
         );
-        const updated = updateProfile(owner, {
+        const updated = await updateProfile(owner, {
           name: "Updated owner",
           email: "new@linba.test",
         });
         assert.equal(updated.name, "Updated owner");
-        assert.equal(get<User>("user", other.id)?.email, other.email);
-        assert.equal(accountSettings(owner).hasPassword, true);
-        put("session", { id: "owner-session", userId: owner.id });
-        put("session", { id: "other-session", userId: other.id });
-        assert.throws(() =>
-          updateAccountPassword(owner, {
-            currentPassword: "bad",
-            newPassword: "new-test-password",
-          }),
+        assert.equal((await get<User>("user", other.id))?.email, other.email);
+        assert.equal((await accountSettings(owner)).hasPassword, true);
+        await put("session", { id: "owner-session", userId: owner.id });
+        await put("session", { id: "other-session", userId: other.id });
+        await assert.rejects(
+          async () =>
+            await updateAccountPassword(owner, {
+              currentPassword: "bad",
+              newPassword: "new-test-password",
+            }),
         );
-        assert.ok(get("session", "owner-session"));
-        updateAccountPassword(owner, {
+        assert.ok(await get("session", "owner-session"));
+        await updateAccountPassword(owner, {
           currentPassword: originalPassword,
           newPassword: "new-test-password",
         });
-        assert.equal(get("session", "owner-session"), undefined);
-        assert.ok(get("session", "other-session"));
+        assert.equal(await get("session", "owner-session"), undefined);
+        assert.ok(await get("session", "other-session"));
         assert.ok(
           verifyPassword(
             "new-test-password",
-            get<User & { password: string }>("user", owner.id)!.password,
+            (await get<
+              User & {
+                password: string;
+              }
+            >("user", owner.id))!.password,
           ),
         );
-        assert.throws(() =>
-          updateAccountPassword(
-            { ...owner, demo: true },
-            {
-              currentPassword: "new-test-password",
-              newPassword: "other-password",
-            },
-          ),
+        await assert.rejects(
+          async () =>
+            await updateAccountPassword(
+              { ...owner, demo: true },
+              {
+                currentPassword: "new-test-password",
+                newPassword: "other-password",
+              },
+            ),
         );
       },
     );

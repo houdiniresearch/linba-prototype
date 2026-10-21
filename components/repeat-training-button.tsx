@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowsClockwise } from "@phosphor-icons/react";
 import type { Course } from "@/lib/types";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 import { api, ErrorNote, Icon } from "./ui";
 
 export function RepeatTrainingButton({
@@ -46,7 +46,9 @@ export function RepeatTrainingButton({
         ) : (
           <ArrowsClockwise size={18} aria-hidden="true" />
         )}
-        <span>{t(busy ? "Preparing new session…" : "Use training again")}</span>
+        <span>
+          {t(busy ? "Preparing presentation…" : "Use presentation again")}
+        </span>
       </button>
       <ErrorNote message={error} />
     </div>

@@ -1,8 +1,17 @@
 "use client";
-import { useLocale } from "./locale-provider";
+import { clientResources } from "@/lib/client-resource-cache";
+import { useProductLocale as useLocale } from "./product-locale";
 import { AgentMark } from "./agent-identity";
+import { EmptyArtwork, type EmptyArtworkKind } from "./empty-artwork";
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   House,
@@ -139,6 +148,7 @@ export function Logo() {
         width={700}
         height={214}
         unoptimized
+        loading="eager"
       />
       <Image
         className="logo-image logo-image-dark"
@@ -148,6 +158,7 @@ export function Logo() {
         width={700}
         height={214}
         unoptimized
+        loading="eager"
       />
     </span>
   );
@@ -157,6 +168,8 @@ export async function api<T = any>(
   body?: unknown,
   method?: string,
 ): Promise<T> {
+  if ((method || (body ? "POST" : "GET")).toUpperCase() !== "GET")
+    clientResources.invalidateForMutation(url, body);
   const response = await fetch(`/api/${url}`, {
     method: method || (body ? "POST" : "GET"),
     headers:
@@ -170,19 +183,35 @@ export async function api<T = any>(
     cache: "no-store",
   });
   const result = await response.json();
+  if ((method || (body ? "POST" : "GET")).toUpperCase() !== "GET")
+    clientResources.invalidateForMutation(url, body);
+  if (
+    response.ok &&
+    (method || (body ? "POST" : "GET")).toUpperCase() !== "GET"
+  )
+    clientResources.commit(url, result);
   if (!response.ok)
-    throw new Error(result.error || "The action could not be completed.");
+    throw Object.assign(
+      new Error(result.error || "The action could not be completed."),
+      { status: response.status },
+    );
   return result;
 }
 export function useResource<T>(url: string, interval = 0, enabled = true) {
-  const [record, setRecord] = useState<{ url: string; value: T }>();
+  const data = useSyncExternalStore(
+    clientResources.subscribe,
+    () => (enabled ? clientResources.peek<T>(url, true) : undefined),
+    () => undefined,
+  );
   const [failure, setFailure] = useState<{ url: string; message: string }>();
   const currentUrl = useRef(url);
   currentUrl.current = enabled ? url : "";
   const setData = useCallback(
     (value: T | undefined) => {
-      if (currentUrl.current === url)
-        setRecord(value === undefined ? undefined : { url, value });
+      if (currentUrl.current === url) {
+        if (value === undefined) clientResources.remove(url);
+        else clientResources.set(url, value);
+      }
     },
     [url],
   );
@@ -190,18 +219,32 @@ export function useResource<T>(url: string, interval = 0, enabled = true) {
     async (clearError = true) => {
       if (!enabled) return;
       if (clearError && currentUrl.current === url) setFailure(undefined);
+      const session = clientResources.sessionVersion;
       try {
-        const result = await api<T>(url);
-        if (currentUrl.current !== url) return;
-        setData(result);
+        const result = await clientResources.read(
+          url,
+          () => api<T>(url),
+          clearError,
+        );
+        if (
+          currentUrl.current !== url ||
+          session !== clientResources.sessionVersion
+        )
+          return;
         setFailure(undefined);
         return result;
       } catch (e) {
-        if (currentUrl.current === url)
+        if (
+          currentUrl.current === url &&
+          session === clientResources.sessionVersion
+        ) {
+          if ([401, 403, 404, 410].includes((e as { status: number }).status))
+            clientResources.remove(url);
           setFailure({ url, message: (e as Error).message });
+        }
       }
     },
-    [url, setData, enabled],
+    [url, enabled],
   );
   useEffect(() => {
     if (!enabled) return;
@@ -209,17 +252,22 @@ export function useResource<T>(url: string, interval = 0, enabled = true) {
     let timer: ReturnType<typeof setTimeout>;
     const tick = async () => {
       if (stopped) return;
-      await refresh(false);
+      if (document.visibilityState !== "hidden") await refresh(false);
       if (interval && !stopped) timer = setTimeout(tick, interval);
     };
+    const recover = () => {
+      if (document.visibilityState === "visible") void refresh(url === "auth");
+    };
+    document.addEventListener("visibilitychange", recover);
     void tick();
     return () => {
+      document.removeEventListener("visibilitychange", recover);
       stopped = true;
       clearTimeout(timer);
     };
   }, [refresh, interval, enabled]);
   return {
-    data: enabled && record?.url === url ? record.value : undefined,
+    data,
     setData,
     error: enabled && failure?.url === url ? failure.message : "",
     refresh,
@@ -247,22 +295,48 @@ export function Modal({
   returnFocusRef?: React.RefObject<HTMLElement | null>;
 }) {
   const { t } = useLocale();
-
+  const descriptionId = useId();
+  const opener = useRef<HTMLElement | null>(null);
   return (
     <Dialog.Root open={open} onOpenChange={(v) => !v && onClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="modal-overlay" />
         <Dialog.Content
+          aria-modal="true"
           className={`modal ${wide ? "wide" : ""} ${className}`}
-          aria-describedby={description ? "modal-description" : undefined}
-          onCloseAutoFocus={
-            returnFocusRef
-              ? (event) => {
-                  event.preventDefault();
-                  returnFocusRef.current?.focus();
-                }
-              : undefined
-          }
+          aria-describedby={description ? descriptionId : undefined}
+          onOpenAutoFocus={() => {
+            opener.current =
+              document.activeElement instanceof HTMLElement
+                ? document.activeElement
+                : null;
+          }}
+          onEscapeKeyDown={(event) => {
+            const selectMenu =
+              event.currentTarget instanceof Element
+                ? event.currentTarget.querySelector<HTMLElement>(
+                    ".product-select-menu:popover-open",
+                  )
+                : document.querySelector<HTMLElement>(
+                    ".product-select-menu:popover-open",
+                  );
+            if (selectMenu) {
+              event.preventDefault();
+              selectMenu.hidePopover();
+            } else if (closeDisabled) event.preventDefault();
+          }}
+          onInteractOutside={(event) => {
+            if (closeDisabled) event.preventDefault();
+          }}
+          onCloseAutoFocus={(event) => {
+            const target = [returnFocusRef?.current, opener.current].find(
+              (element) => element?.isConnected,
+            );
+            if (target?.isConnected) {
+              event.preventDefault();
+              target.focus({ preventScroll: true });
+            }
+          }}
         >
           <div className="modal-heading">
             <Dialog.Title>{title}</Dialog.Title>
@@ -275,7 +349,7 @@ export function Modal({
             </Dialog.Close>
           </div>
           {description && (
-            <Dialog.Description id="modal-description" className="muted">
+            <Dialog.Description id={descriptionId} className="muted">
               {description}
             </Dialog.Description>
           )}
@@ -357,20 +431,37 @@ export function Empty({
   title,
   description,
   children,
+  illustration,
+  compact = false,
 }: {
   icon?: keyof typeof icons;
   title: string;
   description: string;
   children?: React.ReactNode;
+  illustration?: EmptyArtworkKind | false;
+  compact?: boolean;
 }) {
   const { t } = useLocale();
+  const artwork =
+    illustration === false
+      ? null
+      : illustration ||
+        (icon === "chart"
+          ? "reports"
+          : icon === "chat" || icon === "activity"
+            ? "conversation"
+            : "training");
   return (
-    <div className="empty">
-      <span className="empty-icon">
-        <Icon name={icon} size={30} />
-      </span>
+    <div className={`empty${compact ? " is-compact" : ""}`}>
+      {artwork ? (
+        <EmptyArtwork kind={artwork} compact={compact} />
+      ) : (
+        <span className="empty-icon">
+          <Icon name={icon} size={30} />
+        </span>
+      )}
       <h3>{t(title)}</h3>
-      <p>{t(description)}</p>
+      {description && <p>{t(description)}</p>}
       {children}
     </div>
   );

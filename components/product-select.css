@@ -1,0 +1,120 @@
+.product-select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+.product-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 44px;
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: left;
+}
+.product-select-trigger > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.product-select-trigger > svg {
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.product-select-trigger:hover:not(:disabled) {
+  border-color: var(--muted);
+}
+.product-select-trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.product-select-trigger[aria-expanded="true"] {
+  border-color: var(--accent);
+}
+.product-select-trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.product-select-menu {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--bg);
+  color: var(--ink);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  font-size: 13px;
+}
+.product-select-menu:popover-open {
+  display: block;
+}
+.product-select-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  min-height: 40px;
+  border-radius: 5px;
+  line-height: 1.5;
+  cursor: pointer;
+}
+.product-select-option > span {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.product-select-option > svg {
+  flex-shrink: 0;
+}
+.product-select-option[data-active="true"] {
+  background: var(--selection);
+}
+.product-select-option[aria-selected="true"] {
+  font-weight: 600;
+}
+.product-select-option[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.product-select-option.is-action {
+  border-top: 1px solid var(--line);
+  margin-top: 5px;
+  border-radius: 0 0 5px 5px;
+  padding-top: 13px;
+  color: var(--lilac-ink);
+}
+.settings-preference-row > .product-select {
+  width: 170px;
+}
+.create-folder-inline {
+  margin-top: 14px;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+.create-folder-inline label {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+.create-folder-inline .button {
+  min-height: 44px;
+}
+@media (max-width: 480px) {
+  .settings-preference-row > .product-select {
+    width: 150px;
+  }
+  .create-folder-inline {
+    flex-wrap: wrap;
+  }
+}

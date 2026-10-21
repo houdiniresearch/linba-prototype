@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState, type RefObject } from "react";
 import type { Slide } from "@/lib/types";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 import { api, ErrorNote, Icon } from "./ui";
 export function SlideNotes({
   courseId,
@@ -77,7 +77,7 @@ export function SlideNotes({
       <div>
         <label htmlFor="instructor-slide-notes">{t("Instructor notes")}</label>
         {pending[slide.id] && <span role="status">{t("Saving…")}</span>}
-        <span>{t("Only visible to you")}</span>
+        <span>{t("Hidden from participants")}</span>
       </div>
       <textarea
         id="instructor-slide-notes"

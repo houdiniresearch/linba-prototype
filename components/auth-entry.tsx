@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { Auth } from "./auth";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 import { ThemeMenu } from "./theme-menu";
 import { api, ErrorNote, Icon, Logo } from "./ui";
 import "./access-entry.css";
@@ -146,10 +146,18 @@ export function AuthEntry({ login = false }: { login?: boolean }) {
                 ? "Preparing your experience…"
                 : "Experience LİNBA agents",
             )}
-            <Icon name={experiencing ? "spinner" : "arrow"} size={19} />
+            <Icon
+              name={experiencing ? "spinner" : "arrow"}
+              size={19}
+              className={experiencing ? "spin" : undefined}
+            />
           </button>
           <p className="access-experience-note">
             {t("A private workspace will be created for you.")}
+          </p>
+          <p className="access-experience-note">
+            {t("Free to explore. No account needed.")}{" "}
+            {t("Access lasts up to 7 days in this browser.")}
           </p>
         </section>
       </main>

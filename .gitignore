@@ -16,3 +16,7 @@ output/design-v2/
 tmp/
 docs/LINBA_URUN_BILGISI.md
 docs/ACIK_KARARLAR.md
+
+# Generated screenshots, QA results and local handoff artifacts
+output/
+.vercel/

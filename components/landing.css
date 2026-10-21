@@ -644,11 +644,34 @@ html:has(.landing-page) {
 .landing-integrations h2 {
   margin-bottom: 14px;
 }
-.landing-integrations > p {
+.landing-integration-content > p {
   margin-bottom: 38px;
   color: var(--muted);
   font-size: 15px;
   line-height: 1.7;
+}
+.landing-integrations[data-scroll-enhanced="true"] {
+  padding-top: var(--integration-pin-top, 88px);
+  min-height: calc(
+    var(--integration-content-height, 650px) + 90vh +
+      var(--integration-pin-top, 88px) + 16px
+  );
+  scroll-margin-top: 0;
+}
+.landing-integrations[data-scroll-enhanced="true"]
+  .landing-integration-content {
+  position: sticky;
+  top: var(--integration-pin-top, 88px);
+}
+.landing-page[data-navigating="true"]
+  :is(
+    .landing-stage-card,
+    .landing-integration-group,
+    .landing-integration-hub,
+    .integration-progress-path,
+    .landing-faq-content
+  ) {
+  transition: none;
 }
 .landing-integration-map {
   display: grid;
@@ -963,6 +986,24 @@ html:has(.landing-page) {
   max-width: 1040px;
   padding-block: 80px 96px;
   scroll-margin-top: 96px;
+}
+.landing-questions[data-centered="true"] {
+  padding-block: var(--faq-block-space, 80px);
+  scroll-margin-top: var(--faq-header-height, 96px);
+}
+.landing-faq-content {
+  opacity: calc(0.84 + var(--faq-reveal, 1) * 0.16);
+  transform: translateY(calc((1 - var(--faq-reveal, 1)) * 14px));
+}
+.landing-faq-content:focus-within {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-faq-content {
+    opacity: 1;
+    transform: none;
+  }
 }
 .landing-faq-intro {
   margin-bottom: 36px;

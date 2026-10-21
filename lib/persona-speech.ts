@@ -1,5 +1,6 @@
 import WebSocket from "ws";
-import { aiReady, modelName, type UsageCallback } from "./ai";
+import { speechMatchesLine } from "./practice-quality";
+import { aiReady, speechModelName, type UsageCallback } from "./ai";
 import type { VoiceId } from "./voices";
 import {
   SPEECH_RENDER_PROMPT,
@@ -32,7 +33,7 @@ export async function personaSpeech(
   if (isParticipantRoleLeak(text)) throw new Error("PARTICIPANT_ROLE_LEAK");
   return new Promise<Buffer>((resolve, reject) => {
     const socket = new WebSocket(
-      `wss://api.openai.com/v1/realtime?model=${encodeURIComponent(modelName())}`,
+      `wss://api.openai.com/v1/realtime?model=${encodeURIComponent(speechModelName())}`,
       { headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` } },
     );
     const chunks: Buffer[] = [];
@@ -48,7 +49,7 @@ export async function personaSpeech(
     };
     const timer = setTimeout(() => finish(new Error("SPEECH_TIMEOUT")), 45000);
     const instructions = SPEECH_RENDER_PROMPT;
-    socket.on("message", (buffer) => {
+    socket.on("message", async (buffer) => {
       try {
         const event = JSON.parse(buffer.toString());
         if (event.type === "session.created")
@@ -98,10 +99,15 @@ export async function personaSpeech(
           transcript += event.delta || "";
         if (event.type === "response.done") {
           if (event.response?.usage)
-            onUsage(event.response.id, event.response.usage);
+            await onUsage(
+              event.response.id,
+              event.response.usage,
+              speechModelName(),
+            );
           finish(
             event.response?.status !== "completed" ||
               !chunks.length ||
+              !speechMatchesLine(text, transcript) ||
               isParticipantRoleLeak(transcript)
               ? new Error("SPEECH_FAILED")
               : undefined,

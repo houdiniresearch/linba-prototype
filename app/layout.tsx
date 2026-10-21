@@ -12,14 +12,25 @@ import "@/components/agent-identity.css";
 import "@/components/practice-workspace.css";
 import "@/components/activity-editor.css";
 import "@/components/editor-workspace.css";
+import "@/components/ai-orbit-button.css";
 import "@/components/slide-rail.css";
 import "@/components/report-preview.css";
+import "@/components/participant-source.css";
+import "@/components/participant-entry.css";
+import "@/components/live-experience.css";
 import "@/components/home-updates.css";
 import "@/components/workspace-chrome.css";
 import "@/components/workspace-library.css";
+import "@/components/session-experience.css";
+import "@/components/workspace-pattern.css";
+import "@/components/team-workspace.css";
+import "@/components/product-select.css";
+import "@/components/report-detail.css";
+import "@/components/presentation-agents.css";
+import "@/components/live-control-center.css";
 
 export const metadata: Metadata = {
-  title: "LİNBA — Training workspace",
+  title: "LİNBA — Presentation workspace",
   description:
     "AI agents for practice, participant engagement and learning insights.",
 };

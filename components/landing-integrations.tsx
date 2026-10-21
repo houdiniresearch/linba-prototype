@@ -11,6 +11,7 @@ import {
 } from "react";
 import { integrations, type IntegrationId } from "@/lib/integrations";
 import { useLocale } from "./locale-provider";
+import { useLandingNavigation } from "./landing-navigation";
 import { api, ErrorNote, Icon, Logo, Modal } from "./ui";
 
 function IntegrationLogo({
@@ -170,11 +171,18 @@ export function LandingWaitlistProvider({ children }: { children: ReactNode }) {
 
 export function LandingIntegrations() {
   const section = useRef<HTMLElement>(null);
+  const content = useRef<HTMLDivElement>(null);
+  const [enhanced, setEnhanced] = useState(false);
+  const { isNavigating, subscribeToSettled } = useLandingNavigation();
   useEffect(() => {
     const element = section.current;
+    const shell = content.current;
     const map = element?.querySelector<HTMLElement>(".landing-integration-map");
-    if (!element || !map) return;
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (!element || !shell || !map) return;
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const viewport = window.matchMedia(
+      "(min-width: 1000px) and (min-height: 800px)",
+    );
     const hub = map.querySelector<HTMLElement>(".landing-integration-hub")!;
     const groups = ["presentations", "meetings", "assistants"].map((id) => ({
       id,
@@ -183,6 +191,8 @@ export function LandingIntegrations() {
     const targets = [hub, ...groups.map((group) => group.target)];
     let frame = 0;
     let nearby = false;
+    let pinned = false;
+    const clamp = (value: number) => Math.max(0, Math.min(1, value));
     const reset = () => {
       targets.forEach((target) =>
         target.style.removeProperty("--integration-reveal"),
@@ -193,20 +203,39 @@ export function LandingIntegrations() {
     };
     const paint = () => {
       frame = 0;
-      if (media.matches) {
+      if (isNavigating()) return;
+      if (motion.matches) {
         reset();
         return;
       }
-      // offsetTop/offsetHeight ignore the transform we paint, preventing feedback.
-      const mapTop = map.getBoundingClientRect().top;
-      const height = window.innerHeight;
-      const progress = targets.map((target) => {
-        const distance = Math.min(target.offsetHeight, height * 0.45) + 96;
-        return Math.max(
-          0,
-          Math.min(1, (height - 64 - mapTop - target.offsetTop) / distance),
+      let progress: number[];
+      if (pinned) {
+        const styles = getComputedStyle(element);
+        const padding = parseFloat(styles.paddingTop);
+        const travel =
+          element.offsetHeight -
+          padding -
+          parseFloat(styles.paddingBottom) -
+          shell.offsetHeight;
+        const pin = parseFloat(getComputedStyle(shell).top) || 88;
+        const position = clamp(
+          (pin - element.getBoundingClientRect().top - padding) /
+            Math.max(1, travel),
         );
-      });
+        progress = [
+          [0, 0.12],
+          [0.08, 0.4],
+          [0.27, 0.65],
+          [0.5, 0.85],
+        ].map(([start, end]) => clamp((position - start) / (end - start)));
+      } else {
+        const mapTop = map.getBoundingClientRect().top;
+        const height = window.innerHeight;
+        progress = targets.map((target) => {
+          const distance = Math.min(target.offsetHeight, height * 0.45) + 96;
+          return clamp((height - 64 - mapTop - target.offsetTop) / distance);
+        });
+      }
       targets.forEach((target, index) =>
         target.style.setProperty(
           "--integration-reveal",
@@ -221,11 +250,29 @@ export function LandingIntegrations() {
       );
     };
     const schedule = () => {
-      if (nearby && !frame && !media.matches)
-        frame = window.requestAnimationFrame(paint);
+      if (nearby && !frame && !isNavigating())
+        frame = requestAnimationFrame(paint);
     };
-    const motion = () => {
-      if (media.matches) reset();
+    const measure = () => {
+      const headerHeight =
+        document.querySelector<HTMLElement>(".landing-header-shell")
+          ?.offsetHeight || 68;
+      const pinTop = Math.max(
+        headerHeight + 20,
+        headerHeight +
+          (window.innerHeight - headerHeight - shell.offsetHeight) / 2,
+      );
+      pinned =
+        viewport.matches &&
+        !motion.matches &&
+        shell.offsetHeight <= window.innerHeight - headerHeight - 40;
+      setEnhanced(pinned);
+      element.style.setProperty("--integration-pin-top", `${pinTop}px`);
+      element.style.setProperty(
+        "--integration-content-height",
+        `${shell.offsetHeight}px`,
+      );
+      if (motion.matches) reset();
       else schedule();
     };
     const observer = new IntersectionObserver(
@@ -235,19 +282,29 @@ export function LandingIntegrations() {
       },
       { rootMargin: "240px 0px" },
     );
-    observer.observe(map);
+    observer.observe(element);
+    const sizes = new ResizeObserver(measure);
+    sizes.observe(shell);
+    measure();
+    const unsubscribe = subscribeToSettled(schedule);
     window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
-    media.addEventListener("change", motion);
+    window.addEventListener("resize", measure);
+    motion.addEventListener("change", measure);
+    viewport.addEventListener("change", measure);
     return () => {
       observer.disconnect();
+      sizes.disconnect();
+      unsubscribe();
       window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      media.removeEventListener("change", motion);
-      window.cancelAnimationFrame(frame);
+      window.removeEventListener("resize", measure);
+      motion.removeEventListener("change", measure);
+      viewport.removeEventListener("change", measure);
+      cancelAnimationFrame(frame);
+      element.style.removeProperty("--integration-content-height");
+      element.style.removeProperty("--integration-pin-top");
       reset();
     };
-  }, []);
+  }, [isNavigating, subscribeToSettled]);
   const { t } = useLocale();
   const openWaitlist = useWaitlist();
   const groups = [
@@ -276,81 +333,84 @@ export function LandingIntegrations() {
       ref={section}
       className="landing-integrations landing-container"
       aria-labelledby="integrations-title"
+      data-scroll-enhanced={enhanced}
     >
-      <h2 id="integrations-title">
-        {t("Bring training into the tools you use.")}
-      </h2>
-      <p>{t("Integrations with the tools you use are on the way.")}</p>
-      <div className="landing-integration-map">
-        <svg
-          className="landing-integration-paths"
-          viewBox="0 0 1080 480"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <path
-            className="integration-path-presentations"
-            d="M450 130C360 130 360 130 280 130"
-          />
-          <path
-            className="integration-path-meetings"
-            d="M630 130C720 130 720 130 800 130"
-          />
-          <path className="integration-path-assistants" d="M540 220V286" />
-          <path
-            className="integration-progress-path integration-progress-presentations"
-            pathLength={1}
-            d="M450 130C360 130 360 130 280 130"
-          />
-          <path
-            className="integration-progress-path integration-progress-meetings"
-            pathLength={1}
-            d="M630 130C720 130 720 130 800 130"
-          />
-          <path
-            className="integration-progress-path integration-progress-assistants"
-            pathLength={1}
-            d="M540 220V286"
-          />
-          <circle cx="280" cy="130" r="4" />
-          <circle cx="800" cy="130" r="4" />
-          <circle cx="540" cy="286" r="4" />
-        </svg>
-        <div className="landing-integration-hub">
-          <Logo />
-        </div>
-        {groups.map((group) => (
-          <div
-            className={`landing-integration-group integration-group-${group.id}`}
-            key={group.id}
+      <div className="landing-integration-content" ref={content}>
+        <h2 id="integrations-title">
+          {t("Bring training into the tools you use.")}
+        </h2>
+        <p>{t("Integrations with the tools you use are on the way.")}</p>
+        <div className="landing-integration-map">
+          <svg
+            className="landing-integration-paths"
+            viewBox="0 0 1080 480"
+            preserveAspectRatio="none"
+            aria-hidden="true"
           >
-            <h3>
-              <Icon name={group.icon} size={17} />
-              <span>{t(group.title)}</span>
-            </h3>
-            <div>
-              {group.tools.map((id) => {
-                const item = integrations.find((tool) => tool.id === id)!;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    aria-haspopup="dialog"
-                    aria-label={t("{name} integration", {
-                      name: item.name,
-                    })}
-                    onClick={(event) => {
-                      openWaitlist(item, event.currentTarget);
-                    }}
-                  >
-                    <IntegrationLogo id={item.id} />
-                    <span>{item.name}</span>
-                  </button>
-                );
-              })}
-            </div>
+            <path
+              className="integration-path-presentations"
+              d="M450 130C360 130 360 130 280 130"
+            />
+            <path
+              className="integration-path-meetings"
+              d="M630 130C720 130 720 130 800 130"
+            />
+            <path className="integration-path-assistants" d="M540 220V286" />
+            <path
+              className="integration-progress-path integration-progress-presentations"
+              pathLength={1}
+              d="M450 130C360 130 360 130 280 130"
+            />
+            <path
+              className="integration-progress-path integration-progress-meetings"
+              pathLength={1}
+              d="M630 130C720 130 720 130 800 130"
+            />
+            <path
+              className="integration-progress-path integration-progress-assistants"
+              pathLength={1}
+              d="M540 220V286"
+            />
+            <circle cx="280" cy="130" r="4" />
+            <circle cx="800" cy="130" r="4" />
+            <circle cx="540" cy="286" r="4" />
+          </svg>
+          <div className="landing-integration-hub">
+            <Logo />
           </div>
-        ))}
+          {groups.map((group) => (
+            <div
+              className={`landing-integration-group integration-group-${group.id}`}
+              key={group.id}
+            >
+              <h3>
+                <Icon name={group.icon} size={17} />
+                <span>{t(group.title)}</span>
+              </h3>
+              <div>
+                {group.tools.map((id) => {
+                  const item = integrations.find((tool) => tool.id === id)!;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      aria-haspopup="dialog"
+                      aria-label={t("{name} integration", {
+                        name: item.name,
+                      })}
+                      onClick={(event) => {
+                        openWaitlist(item, event.currentTarget);
+                      }}
+                    >
+                      <IntegrationLogo id={item.id} />
+                      <span>{item.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

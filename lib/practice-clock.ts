@@ -1,3 +1,19 @@
+/** Internal conversation budget, not a user-facing countdown. */
+export const PRACTICE_LIMIT_SECONDS = 90;
+
+export function practiceBudgetReached(
+  seconds: number,
+  expiresAt?: string | number,
+  now = Date.now(),
+) {
+  const expiry =
+    typeof expiresAt === "number" ? expiresAt : Date.parse(expiresAt || "");
+  return (
+    seconds >= PRACTICE_LIMIT_SECONDS ||
+    (Number.isFinite(expiry) && expiry > 0 && now >= expiry)
+  );
+}
+
 /** Connected practice time; preparation, disconnections and feedback are excluded. */
 export class PracticeClock {
   private accumulated = 0;

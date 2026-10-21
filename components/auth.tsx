@@ -1,7 +1,7 @@
 "use client";
 import { ThemeMenu } from "./theme-menu";
 import Link from "next/link";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 import { useState } from "react";
 import type { User } from "@/lib/types";
 import { Logo, Icon, ErrorNote, api } from "./ui";
@@ -9,30 +9,32 @@ import { Logo, Icon, ErrorNote, api } from "./ui";
 export function Auth({
   onDone,
   participant = false,
-  initialRegister = true,
+  initialRegister = participant,
+  onBack,
 }: {
   onDone: (user: User) => void;
   participant?: boolean;
   initialRegister?: boolean;
+  onBack?: () => void;
 }) {
   const { t } = useLocale();
 
   const [register, setRegister] = useState(initialRegister),
-    [role, setRole] = useState(participant ? "participant" : "teacher"),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (busy) return;
     setBusy(true);
     setError("");
     const form = new FormData(event.currentTarget);
     try {
-      const data = await api("auth", {
+      const data = await api(participant ? "participant/auth" : "auth", {
         action: register ? "register" : "login",
         name: form.get("name"),
         email: form.get("email"),
         password: form.get("password"),
-        role,
+        role: participant ? "participant" : "teacher",
       });
       onDone(data.user);
     } catch (e) {
@@ -42,6 +44,8 @@ export function Auth({
     }
   }
   async function demo() {
+    if (busy) return;
+    setError("");
     setBusy(true);
     try {
       const data = await api("auth", { action: "demo" });
@@ -65,37 +69,48 @@ export function Auth({
           <ThemeMenu />
         </div>
       </header>
-      <div className="auth-layout">
+      <main className="auth-layout">
         <div className="auth-copy">
-          <h1>
-            {t("Your AI agents.")}
+          <p className="auth-statement">
+            {t(participant ? "Your training." : "Your AI agents.")}
             <br />
-            {t("At every step")}
+            {t(participant ? "Your questions." : "At every step")}
             <br />
-            <span>{t("of your training.")}</span>
-          </h1>
+            <span>
+              {t(participant ? "Your learning." : "of your training.")}
+            </span>
+          </p>
         </div>
         <section className="auth-form">
-          <h2>{register ? t("Welcome to LİNBA") : t("Welcome back")}</h2>
-          <p className="muted">
-            {register
-              ? t("Create an account and open your workspace.")
-              : t("Pick up where you left off.")}
-          </p>
-          {register && (
-            <div className="segmented">
-              {["teacher", "participant"].map((r) => (
-                <button
-                  key={r}
-                  className={role === r ? "active" : ""}
-                  onClick={() => setRole(r)}
-                >
-                  <Icon name={r === "teacher" ? "presentation" : "users"} />
-                  {r === "teacher" ? t("Instructor") : t("Participant")}
-                </button>
-              ))}
-            </div>
+          {participant && onBack && (
+            <button
+              type="button"
+              className="text-button"
+              onClick={onBack}
+              disabled={busy}
+            >
+              <Icon name="back" size={16} />
+              {t("Join without an account")}
+            </button>
           )}
+          <h1>
+            {t(
+              participant
+                ? register
+                  ? "Join your training"
+                  : "Sign in to join training"
+                : "Beta tester sign-in",
+            )}
+          </h1>
+          <p className="muted">
+            {t(
+              participant
+                ? register
+                  ? "Create a participant account to join with your instructor’s code."
+                  : "Sign in with your participant account. Your training link stays here."
+                : "Sign in with your existing beta account to return to your workspace.",
+            )}
+          </p>
           <form onSubmit={submit}>
             {register && (
               <label>
@@ -106,6 +121,7 @@ export function Auth({
                   placeholder={t("Your full name")}
                   required
                   maxLength={80}
+                  disabled={busy}
                 />
               </label>
             )}
@@ -117,6 +133,8 @@ export function Auth({
                 autoComplete="email"
                 placeholder={t("you@example.com")}
                 required
+                maxLength={254}
+                disabled={busy}
               />
             </label>
             <label>
@@ -129,6 +147,7 @@ export function Auth({
                 minLength={8}
                 maxLength={128}
                 required
+                disabled={busy}
               />
             </label>
             <ErrorNote message={error} />
@@ -145,9 +164,19 @@ export function Auth({
             {register
               ? t("Already have an account?")
               : t("Don’t have an account?")}{" "}
-            <button onClick={() => setRegister(!register)}>
-              {register ? t("Log in") : t("Create account")}
-            </button>
+            {participant ? (
+              <button
+                disabled={busy}
+                onClick={() => {
+                  setError("");
+                  setRegister(!register);
+                }}
+              >
+                {t(register ? "Log in" : "Create participant account")}
+              </button>
+            ) : (
+              <Link href="/login">{t("Join the waitlist")}</Link>
+            )}
           </p>
           {!participant && (
             <>
@@ -156,15 +185,15 @@ export function Auth({
               </div>
               <button className="button full" disabled={busy} onClick={demo}>
                 <Icon name="eye" />
-                {t("Try a sample training")}
+                {t("Experience LİNBA agents")}
               </button>
               <p className="small muted center">
-                {t("A private workspace will be created for you.")}
+                {t("Free to explore. No account needed.")}
               </p>
             </>
           )}
         </section>
-      </div>
+      </main>
     </div>
   );
 }

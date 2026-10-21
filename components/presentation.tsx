@@ -1,50 +1,43 @@
 "use client";
+import { isChoiceActivity } from "@/lib/activities";
 import { AgentIllustration } from "./agent-identity";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 import { PreviewSkeleton, ProjectionSkeleton } from "./skeletons";
 import { useEffect, useState } from "react";
-import { QRCodeSVG } from "qrcode.react";
+import { LiveConnection } from "./live-connection";
+import { useLiveResource } from "./use-live-resource";
 import type { Course, CourseState } from "@/lib/types";
-import { api, Icon, Logo, ResourceFailure, useResource } from "./ui";
+import { Icon, Logo, ResourceFailure, useResource } from "./ui";
 import { SlideView } from "./slides";
 import { learningAccess } from "@/lib/training-access";
 
 export function Projection({ id }: { id: string }) {
   const { t } = useLocale();
 
-  const [data, setData] = useState<Course>(),
-    [key, setKey] = useState(""),
-    [error, setError] = useState(""),
-    [host, setHost] = useState("");
+  const [key, setKey] = useState<string | null>(null);
+  const [host, setHost] = useState("");
   useEffect(() => {
-    const k = new URLSearchParams(location.search).get("key") || "";
-    setKey(k);
+    setKey(new URLSearchParams(location.search).get("key") || "");
     setHost(location.origin);
-    let stopped = false,
-      timer: ReturnType<typeof setTimeout>;
-    async function tick() {
-      try {
-        const result = await api(
-          `presentation/${id}?key=${encodeURIComponent(k)}`,
-        );
-        if (!stopped) {
-          setData(result.course);
-          setHost(result.joinOrigin || window.location.origin);
-        }
-      } catch (e) {
-        if (!stopped) setError((e as Error).message);
-      }
-      if (!stopped) timer = setTimeout(tick, 1000);
-    }
-    void tick();
-    return () => {
-      stopped = true;
-      clearTimeout(timer);
-    };
-  }, [id]);
+  }, []);
+  const {
+    data: result,
+    error,
+    refresh,
+    checking,
+    lastUpdated,
+  } = useLiveResource<{
+    course: Course;
+    joinOrigin?: string;
+  }>(
+    `presentation/${id}?key=${encodeURIComponent(key || "")}`,
+    1000,
+    key !== null,
+  );
+  const data = result?.course;
   if (!data)
     return error ? (
-      <ResourceFailure error={error} onRetry={() => location.reload()} />
+      <ResourceFailure error={error} onRetry={() => void refresh()} />
     ) : (
       <ProjectionSkeleton />
     );
@@ -54,12 +47,25 @@ export function Projection({ id }: { id: string }) {
     <main className="projection">
       <header>
         <span>
-          {t("Join:")} <strong>{host}/join</strong> {t("· Code")}{" "}
-          <b>{data.code}</b>
+          {t("Join:")} <strong>{result?.joinOrigin || host}/join</strong>{" "}
+          {t("· Code")} <b>{data.code}</b>
         </span>
         <Logo />
       </header>
-      {data.status === "ended" ? (
+      <LiveConnection
+        error={error}
+        checking={checking}
+        lastUpdated={lastUpdated}
+        onRetry={() => void refresh()}
+        projection
+      />
+      {data.status === "draft" ? (
+        <div className="projection-end projection-waiting">
+          <Icon name="clock" size={40} />
+          <h1>{t("Waiting for your instructor")}</h1>
+          <p>{t("The presentation will appear when training starts.")}</p>
+        </div>
+      ) : data.status === "ended" ? (
         <div className="projection-end">
           <Icon name="success" size={58} />
           <h1>{t("Thank you for taking part.")}</h1>
@@ -73,12 +79,18 @@ export function Projection({ id }: { id: string }) {
           </p>
         </div>
       ) : (
-        <SlideView course={data} slide={slide} displayKey={key} />
+        <SlideView course={data} slide={slide} displayKey={key || undefined} />
       )}
       <footer>
         <span>{data.name}</span>
         <span>
-          {data.slides.indexOf(slide) + 1} / {data.slides.length}
+          {data.status === "live"
+            ? `${data.slides.indexOf(slide) + 1} / ${data.slides.length}`
+            : t(
+                data.status === "draft"
+                  ? "Training has not started"
+                  : "Training completed",
+              )}
         </span>
         <button
           className="icon-button"
@@ -179,7 +191,7 @@ export function Preview({ id }: { id: string }) {
               <div className="preview-activity">
                 <span className="activity-label">{t("ACTIVE ACTIVITY")}</span>
                 <h3>{slide.activity.question}</h3>
-                {slide.activity.type === "poll" ? (
+                {isChoiceActivity(slide.activity.type) ? (
                   slide.activity.options.map((o, i) => (
                     <div className="preview-option" key={i}>
                       <span>{String.fromCharCode(65 + i)}</span>

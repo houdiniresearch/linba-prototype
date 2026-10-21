@@ -1,0 +1,16 @@
+.git
+.next
+.linba
+.vercel
+.codex
+.agents
+.env
+.env.*
+node_modules
+output
+tests
+docs
+tmp
+*.log
+*.tsbuildinfo
+.DS_Store

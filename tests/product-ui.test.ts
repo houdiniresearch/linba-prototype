@@ -21,6 +21,9 @@ test("learning agent access distinguishes waiting, live, follow-up and expiry", 
   assert.equal(learningAccess(ended, now + 6.5 * 86400000).remainingDays, 1);
   assert.equal(learningAccess(ended, now + 7 * 86400000).phase, "expired");
   assert.equal(learningAccess({ ...ended, accessDays: 0 }, now).canAsk, false);
+  const legacy = { ...ended, accessDays: 365 };
+  assert.equal(learningAccess(legacy, now).remainingDays, 30);
+  assert.equal(learningAccess(legacy, now + 30 * 86400000).canAsk, false);
   assert.equal(
     learningAccess({ status: "ended", accessDays: 7 }, now).phase,
     "expired",
@@ -79,5 +82,23 @@ test("English source strings preserve Turkish UI and historical message compatib
   assert.equal(
     translate("Your own training content", "tr"),
     "Your own training content",
+  );
+});
+
+test("library folder terminology stays distinct from participant groups in both languages", () => {
+  assert.equal(translate("Training folders", "tr"), "Eğitim klasörleri");
+  assert.equal(translate("Move to folder", "tr"), "Klasöre taşı");
+  assert.equal(translate("No folder", "tr"), "Klasörsüz");
+  assert.equal(
+    translate("Moved to {folder}.", "tr", { folder: "Satış" }),
+    "Satış klasörüne taşındı.",
+  );
+  assert.equal(
+    translate("Moved to {folder}.", "en", { folder: "Sales" }),
+    "Moved to Sales.",
+  );
+  assert.equal(
+    translate("Use these materials with another group.", "tr"),
+    "Bu içerikle yeni bir gruba eğitim ver.",
   );
 });

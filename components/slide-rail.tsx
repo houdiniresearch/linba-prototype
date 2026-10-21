@@ -25,7 +25,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import type { Course, Slide } from "@/lib/types";
 import { moveActivityInOrder } from "@/lib/slide-order";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 import { SlideView, slideTitle } from "./slides";
 import { Icon, Logo } from "./ui";
 

@@ -2,7 +2,7 @@
 import { useEffect, useState, type RefObject } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Report } from "./training-report";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 import { Icon } from "./ui";
 
 export function ReportPreview({

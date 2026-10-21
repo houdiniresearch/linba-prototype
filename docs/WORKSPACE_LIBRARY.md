@@ -2,9 +2,11 @@
 
 Completed training can create another session through **Use training again**. Source material, activities and instructor notes are copied into a fresh draft with a new participation code, display key and slide IDs. Participants, answers, reports, rehearsals and report conversations remain with the original session. Concurrent retries use the same request ID; separate requests produce separate sessions. The library shows active sessions, or the latest completed session when none are active. Reports list every completed session with session number and Istanbul start/completion times.
 
-Training groups belong to the signed-in instructor. Create, rename and remove them through **Manage groups**; removing a group keeps its training. A training card menu assigns the whole session family to a group or moves it to recoverable Trash. Live families must be ended first. Restore returns the complete family, including its reports and original group. There is no permanent-delete control.
+Training folders belong to the signed-in instructor. Create, rename and remove them through **Manage folders**; removing a folder keeps its training. A training card menu assigns the whole session family to a folder or moves it to recoverable Trash. New training offers a folder selector and defaults to the folder currently open in My training; the server validates ownership before processing materials and again before saving. Live families must be ended first. Restore returns the complete family, including its reports and original folder. There is no permanent-delete control.
 
-My training and Reports support all time, recent seven days, this month, this year and inclusive custom calendar dates. Calendar boundaries use Europe/Istanbul. My training filters the displayed session date; Reports filters the completed date. Search and date/group filters compose.
+The library lists All training and the named folders only. Unfiled training stays in All training without a separate No folder category or heading; an older saved unfiled filter returns to All training. The creation and move controls retain their explicit unfiled option.
+
+My training and Reports support all time, recent seven days, this month, this year and inclusive custom calendar dates. Calendar boundaries use Europe/Istanbul. My training filters the displayed session date; Reports filters the completed date. Search and date/folder filters compose. Existing `groupId`, group endpoints and SQLite records remain compatible; only the interface vocabulary changes to folder/klasör.
 
 ## Editor
 
@@ -22,3 +24,11 @@ Billing shows the current Free plan and empty invoice state. No payment provider
 - `npm run test:workspace`: Istanbul time filters, group ownership, family-wide assignment, recoverable Trash, notes privacy, profile validation and account-scoped password changes.
 - `npm run test:workspace:integration`: temporary local HTTP accounts exercise notes and concurrent slide selection, rename, participant/projection privacy, groups, repeated sessions, reports, Trash, profile and password/session rotation. Fixtures are removed afterward. Completion timestamps are generated in owned fixtures without paid model requests.
 - Browser verification covers actual repeat, rename, saved notes after reload, group reassignment, Trash restore, integration waitlist, session timestamps and custom date filtering, settings, 390 px layout, theme and search alignment. UI proof fixtures are separate from existing training and removed after capture.
+
+Final activation and modal review: [ACTIVATION_QUALITY.md](ACTIVATION_QUALITY.md).
+
+## Presentation card and filter refinement — 20 October 2026
+
+Presentation cards keep the source cover clear, put their options menu beside the title, and show the creator's shared profile avatar beside attribution. Completed cards omit the redundant completion badge; draft and live states remain visible. The title button extends across the card while the separate menu retains its own keyboard and pointer action.
+
+The clear-filters action appears to the left of the fixed-width date control in both presentations and reports. Its layout footprint is reserved while inactive, without being focusable or announced, so selections and clearing do not shift the dropdown. Narrow screens keep both controls together with a smaller date trigger. Browser checks compare trigger rectangles before and after selection/clearing, cover/menu interaction, TR/EN and light/dark layouts, including 320 px screens.

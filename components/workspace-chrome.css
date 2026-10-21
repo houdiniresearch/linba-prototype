@@ -30,8 +30,57 @@
   width: 19px;
   height: 19px;
 }
+.app-shell .sidebar .workspace-sidebar-close,
+.workspace-nav-overlay {
+  display: none;
+}
+@media (max-width: 760px) {
+  .workspace-nav-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: oklch(0.12 0.003 285 / 0.45);
+    z-index: calc(var(--z-modal) - 1);
+  }
+  .app-shell .sidebar.open {
+    top: 0;
+    height: 100dvh;
+    z-index: var(--z-modal);
+    padding-top: 12px;
+    outline: none;
+  }
+  .app-shell .sidebar .workspace-sidebar-close {
+    display: inline-flex;
+    align-self: flex-end;
+    width: 44px;
+    min-height: 44px;
+    padding: 10px;
+    margin-bottom: 8px;
+  }
+  .reports-open .report-chat-sidebar {
+    z-index: var(--z-modal);
+    outline: none;
+  }
+  .report-sidebar-overlay {
+    z-index: calc(var(--z-modal) - 1);
+  }
+}
 .app-header .header-actions {
   gap: 6px;
+}
+.notification-trigger {
+  position: relative;
+}
+.notification-unread-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--workspace);
+  border-radius: 50%;
+  background: var(--accent);
+  pointer-events: none;
 }
 .app-header .profile-trigger {
   width: auto;
@@ -162,18 +211,13 @@
   color: var(--accent);
 }
 .sidebar-integrations {
-  margin: auto 4px 0;
-  padding-top: 32px;
-}
-.sidebar-integrations > span {
-  display: block;
-  padding: 0 8px 12px;
-  color: var(--muted);
-  font-size: 12px;
+  margin: auto 0 0;
+  padding: 24px 8px 0;
 }
 .sidebar-integrations > div {
   display: flex;
   gap: 0;
+  justify-content: center;
 }
 .app-shell .sidebar .sidebar-integrations button {
   justify-content: center;
@@ -199,6 +243,9 @@
   .app-header .header-search {
     margin-left: 0;
   }
+  .app-header .early-access-trigger {
+    display: none;
+  }
   .sidebar-integrations > div {
     flex-wrap: wrap;
     gap: 4px;
@@ -206,5 +253,10 @@
   .app-shell .sidebar .sidebar-integrations button {
     width: 44px;
     min-height: 44px;
+  }
+}
+@media (max-width: 480px) {
+  .app-header .language-trigger {
+    display: none;
   }
 }

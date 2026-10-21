@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useId, useLayoutEffect, useRef, useState } from "react";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 import { useTheme } from "./theme-provider";
 import { Icon } from "./ui";
 

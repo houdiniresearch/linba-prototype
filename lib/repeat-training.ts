@@ -1,31 +1,48 @@
+import { workspaceCourses } from "./teams";
 import { randomUUID } from "node:crypto";
 import { copyFile, mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { AppError } from "./auth";
-import { all, DATA_DIR, db, get, put } from "./db";
+import { all, DATA_DIR, transaction, get, put } from "./db";
 import { courseForOwner, createCourse } from "./courses";
 import { trainingFamily } from "./training-sessions";
+import { usesSupabase } from "./supabase-server";
+import { seedShowcaseRecords, isShowcase } from "./showcase";
 import type { Course, User } from "./types";
-
-type RepeatRequest = { id: string; courseId: string; sourceId: string };
+import {
+  copyPresentationAsset,
+  discardPresentationAssets,
+} from "./presentation-storage";
+type RepeatRequest = {
+  id: string;
+  courseId: string;
+  sourceId: string;
+};
 const shared = globalThis as typeof globalThis & {
   trainingRepeatJobs?: Map<
     string,
-    { sourceId: string; promise: Promise<Course> }
+    {
+      sourceId: string;
+      promise: Promise<Course>;
+    }
   >;
 };
 const pending = (shared.trainingRepeatJobs ||= new Map<
   string,
-  { sourceId: string; promise: Promise<Course> }
+  {
+    sourceId: string;
+    promise: Promise<Course>;
+  }
 >());
 export async function repeatTraining(
   user: User,
   sourceId: string,
   requestId: unknown,
+  reuseWorkingCopy = false,
 ): Promise<Course> {
   if (user.role !== "teacher")
     throw new AppError("This area is unavailable for this account type.", 403);
-  const source = courseForOwner(sourceId, user);
+  const source = await courseForOwner(sourceId, user);
   if (source.trashedAt)
     throw new AppError("Restore this training from Trash first.", 409);
   if (source.status !== "ended")
@@ -36,11 +53,11 @@ export async function repeatTraining(
   if (typeof requestId !== "string" || !/^[a-f0-9-]{36}$/i.test(requestId))
     throw new AppError("Refresh the page and try again.");
   const key = `${user.id}:${requestId}`;
-  const existing = get<RepeatRequest>("training-repeat", key);
+  const existing = await get<RepeatRequest>("training-repeat", key);
   if (existing) {
     if (existing.sourceId !== sourceId)
       throw new AppError("Refresh the page and try again.", 409);
-    return courseForOwner(existing.courseId, user);
+    return await courseForOwner(existing.courseId, user);
   }
   const inFlight = pending.get(key);
   if (inFlight) {
@@ -53,16 +70,20 @@ export async function repeatTraining(
     const directory = path.join(DATA_DIR, "files", id);
     try {
       await mkdir(directory, { recursive: true });
-      const copies = await Promise.allSettled(
-        [...new Set(source.pages.map((page) => page.image))].map((image) => {
-          if (path.basename(image) !== image)
-            throw new AppError("The training materials could not be copied.");
-          return copyFile(
-            path.join(DATA_DIR, "files", source.id, image),
-            path.join(directory, image),
-          );
-        }),
-      );
+      const copies =
+        isShowcase(source) && usesSupabase()
+          ? []
+          : await Promise.allSettled(
+              [...new Set(source.pages.map((page) => page.image))].map(
+                (image) => {
+                  if (path.basename(image) !== image)
+                    throw new AppError(
+                      "The training materials could not be copied.",
+                    );
+                  return copyPresentationAsset(source.id, id, image);
+                },
+              ),
+            );
       const failed = copies.find((copy) => copy.status === "rejected");
       if (failed?.status === "rejected") throw failed.reason;
       const pages = source.pages.map((page) => ({ ...page, id: randomUUID() }));
@@ -82,30 +103,31 @@ export async function repeatTraining(
             }
           : {}),
       }));
-      db().exec("BEGIN IMMEDIATE");
-      let course: Course;
+      let course!: Course;
       let redundant = false;
-      try {
-        const committed = get<RepeatRequest>("training-repeat", key);
+      await transaction(async () => {
+        const committed = await get<RepeatRequest>("training-repeat", key);
+        const working = reuseWorkingCopy
+          ? await workingPresentation(user, source)
+          : undefined;
         if (committed) {
           if (committed.sourceId !== sourceId)
             throw new AppError("Refresh the page and try again.", 409);
-          course = courseForOwner(committed.courseId, user);
+          course = await courseForOwner(committed.courseId, user);
+          redundant = true;
+        } else if (working) {
+          course = working;
           redundant = true;
         } else {
           const family = trainingFamily(source);
           const sessionNumber =
             Math.max(
-              ...all<Course>("course")
-                .filter(
-                  (course) =>
-                    course.ownerId === user.id &&
-                    trainingFamily(course) === family,
-                )
+              ...(await workspaceCourses(user))
+                .filter((course) => trainingFamily(course) === family)
                 .map((course) => course.sessionNumber || 1),
             ) + 1;
-          course = createCourse(
-            user.id,
+          course = await createCourse(
+            reuseWorkingCopy ? source.ownerId : user.id,
             source.name,
             source.originalName,
             pages,
@@ -114,29 +136,28 @@ export async function repeatTraining(
             id,
           );
           Object.assign(course, {
+            ...(reuseWorkingCopy ? { createdAt: source.createdAt } : {}),
             trainingId: family,
             groupId: source.groupId,
             sessionNumber,
             slides,
             activeSlideId: slides[0]?.id || "",
             coverPage: source.coverPage,
+            ...(source.showcase ? { showcase: source.showcase } : {}),
           });
-          put("course", course);
-          put("training-repeat", {
+          await put("course", course);
+          if (source.showcase) await seedShowcaseRecords(course);
+          await put("training-repeat", {
             id: key,
             sourceId,
             courseId: id,
           } satisfies RepeatRequest);
         }
-        db().exec("COMMIT");
-      } catch (error) {
-        db().exec("ROLLBACK");
-        throw error;
-      }
-      if (redundant) await rm(directory, { recursive: true, force: true });
+      });
+      if (redundant) await discardPresentationAssets(id);
       return course;
     } catch (error) {
-      await rm(directory, { recursive: true, force: true });
+      await discardPresentationAssets(id);
       if (error instanceof AppError) throw error;
       throw new AppError(
         "The training materials could not be copied. Try again.",
@@ -151,4 +172,42 @@ export async function repeatTraining(
   } finally {
     pending.delete(key);
   }
+}
+async function familyPresentations(user: User, source: Course) {
+  return (await workspaceCourses(user))
+    .filter(
+      (course) =>
+        !course.trashedAt && trainingFamily(course) === trainingFamily(source),
+    )
+    .sort(
+      (a, b) =>
+        (b.sessionNumber || 1) - (a.sessionNumber || 1) ||
+        b.createdAt.localeCompare(a.createdAt),
+    );
+}
+async function workingPresentation(user: User, source: Course) {
+  const family = await familyPresentations(user, source);
+  return (
+    family.find((course) => course.status === "live") ||
+    family.find((course) => course.status === "draft")
+  );
+}
+/** Opening a reusable presentation resumes its workspace; completed reports stay immutable. */
+export async function openPresentationWorkspace(
+  user: User,
+  sourceId: string,
+): Promise<Course> {
+  const source = await courseForOwner(sourceId, user);
+  if (source.trashedAt)
+    throw new AppError("Restore this training from Trash first.", 409);
+  if (source.status !== "ended") return source;
+  const working = await workingPresentation(user, source);
+  if (working) return await courseForOwner(working.id, user);
+  const latest =
+    (await familyPresentations(user, source)).find(
+      (course) => course.status === "ended",
+    ) || source;
+  // The transaction in repeatTraining checks again after material copying, so
+  // simultaneous opens (including by teammates) produce only one workspace.
+  return repeatTraining(user, latest.id, randomUUID(), true);
 }

@@ -1,0 +1,158 @@
+.live-connection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 22px;
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+.live-connection > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.live-connection strong {
+  font-weight: 500;
+}
+.live-connection small {
+  display: block;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-top: 4px;
+  color: var(--muted);
+  max-width: 65ch;
+}
+.live-connection.is-interrupted {
+  padding-block: 14px;
+  background: var(--workspace);
+  border-bottom: 1px solid var(--line);
+  color: var(--warning-ink);
+}
+.live-connection.is-interrupted > div {
+  align-items: flex-start;
+}
+.live-connection.is-interrupted > div > svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.live-connection.is-interrupted strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+.live-connection .button {
+  min-height: 44px;
+  font-size: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.projection > .live-connection {
+  padding-inline: 32px;
+}
+.projection-end {
+  padding: 24px;
+  text-align: center;
+}
+.projection-end h1 {
+  text-wrap: balance;
+}
+.projection-end p {
+  max-width: 60ch;
+  color: var(--muted);
+}
+.editor-stage > .live-connection {
+  padding-inline: 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+.activity-draft-hint {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 14px 0;
+}
+.unsent-activity-drafts {
+  margin-top: 32px;
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+}
+.unsent-activity-drafts h3 {
+  font-size: 15px;
+  margin: 0 0 8px;
+}
+.unsent-activity-drafts > p {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 18px;
+  max-width: 65ch;
+}
+.unsent-activity-drafts details {
+  border-bottom: 1px solid var(--line);
+}
+.unsent-activity-drafts summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  min-height: 48px;
+  padding: 12px 0;
+  cursor: pointer;
+  font-size: 13px;
+  list-style: none;
+}
+.unsent-activity-drafts summary::-webkit-details-marker {
+  display: none;
+}
+.unsent-activity-drafts summary svg {
+  flex-shrink: 0;
+}
+.unsent-activity-drafts details[open] summary svg {
+  transform: rotate(180deg);
+}
+.unsent-activity-drafts details > p {
+  margin: 0 0 18px;
+  font-size: 13px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+.participant-options .selected {
+  border-color: var(--muted);
+  background: var(--selection);
+}
+@media (max-width: 600px) {
+  .live-connection {
+    padding-inline: 16px;
+  }
+  .live-connection.is-interrupted {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .live-connection .button {
+    align-self: flex-start;
+    margin-left: 26px;
+  }
+  .projection > .live-connection {
+    padding-inline: 16px;
+  }
+  .projection-end h1 {
+    font-size: 24px;
+  }
+}
+/* Healthy connectivity stays quiet; only an interruption needs layout space. */
+.live-connection:not(.is-interrupted) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

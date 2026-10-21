@@ -1,7 +1,6 @@
 import { AppError } from "./auth";
 import { get, put } from "./db";
 import type { User } from "./types";
-
 export type FeedbackEntry = {
   id: string;
   userId: string;
@@ -10,7 +9,7 @@ export type FeedbackEntry = {
   locale: "en" | "tr";
   createdAt: string;
 };
-export function saveFeedback(user: User, body: unknown) {
+export async function saveFeedback(user: User, body: unknown) {
   if (!body || typeof body !== "object")
     throw new AppError("Enter your feedback.");
   const { message, category, requestId, locale } = body as Record<
@@ -24,9 +23,9 @@ export function saveFeedback(user: User, body: unknown) {
   if (typeof requestId !== "string" || !/^[a-f0-9-]{36}$/i.test(requestId))
     throw new AppError("Refresh the page and try again.");
   const id = `${user.id}:${requestId}`;
-  const previous = get<FeedbackEntry>("feedback", id);
+  const previous = await get<FeedbackEntry>("feedback", id);
   if (previous) return previous;
-  return put("feedback", {
+  return await put("feedback", {
     id,
     userId: user.id,
     category,

@@ -1,0 +1,58 @@
+[
+  {
+    "number": 1,
+    "title": "Pazar Analizi",
+    "text": "Pazar\nAnalizi\nPazar büyüklüğünden ilk müşteri segmentine",
+    "image": "page-1.png",
+    "ratio": 1.777795275590552
+  },
+  {
+    "number": 2,
+    "title": "Pazarın sınırını tanımla",
+    "text": "Pazarın sınırını tanımla\nÜrün: destek taleplerini tek yerde takip eden bir B2B yazılımı.\nSınır | Bu vakadaki seçim | Doğrulanacak nokta\nMüşteri | 10–50 kişilik destek ekipleri | Talep hacmi ve tekrar eden iş yükü\nCoğrafya | İlk aşamada Türkiye | Satış ve hizmet sunma kapasitesi\nSatın alma | Ekip yöneticisi ve operasyon sorumlusu | Karar süreci ve mevcut bütçe\nKurgusal vaka: kapsam bir araştırma varsayımıdır, doğrulanmış pazar verisi değildir.",
+    "image": "page-2.png",
+    "ratio": 1.777795275590552
+  },
+  {
+    "number": 3,
+    "title": "TAM, SAM ve SOM",
+    "text": "TAM, SAM ve SOM\nAynı pazarı üç farklı kapsamda düşünmek.\nKapsam | Müşteri sayısı varsayımı | Yıllık gelir karşılığı\nTAM · toplam ilgili pazar | 20.000 şirket | 360 milyon TL\nSAM · hizmet verebildiğimiz alan | 6.000 şirket | 108 milyon TL\nSOM · ilk yıl müşteri hedefi | 120 şirket | 2,16 milyon TL\nTamamı kurgusal varsayımdır. Örnek hesap: şirket sayısı × 18.000 TL yıllık ücret. SOM, kapasite ve satış planıyla ayrıca sınanmalıdır.",
+    "image": "page-3.png",
+    "ratio": 1.777795275590552
+  },
+  {
+    "number": 4,
+    "title": "İlk müşteri segmentini seç",
+    "text": "İlk müşteri segmentini seç\nPazarın tamamına aynı anda ulaşmaya çalışmak yerine karşılaştırılabilir bir karar ver.\nSegment | İhtiyaç ve erişim | Öncelik gerekçesi\nE-ticaret destek ekipleri | Yoğun talepler, erişilebilir ekip yöneticileri | İlk görüşmeler için odak\nBüyük kurumsal çağrı merkezleri | Yüksek hacim, uzun entegrasyon süreci | Daha sonraki araştırma grubu\nTek kişilik işletmeler | Daha düşük hacim, farklı bütçe | Bu vaka için öncelik dışı\nÖrnek segment değerlendirmesi; saha görüşmeleriyle doğrulanmalıdır.",
+    "image": "page-4.png",
+    "ratio": 1.777795275590552
+  },
+  {
+    "number": 5,
+    "title": "Rakipler ve bugünkü alternatifler",
+    "text": "Rakipler ve bugünkü alternatifler\nMüşterinin bugün işi nasıl tamamladığını da rekabet analizine dahil et.\nAlternatif | Müşteriye sunduğu değer | Araştıracağımız sınır\nGenel amaçlı destek yazılımı | Hazır takip ve ekip iş akışları | Kurulum ve kullanım karmaşıklığı\nE-posta ve hesap tablosu | Bilinen araçlar, düşük geçiş ihtiyacı | Talep sayısı arttığında takip yükü\nDışarıdan operasyon desteği | İşi ekip dışında tamamlama | Maliyet ve bilgi aktarımı",
+    "image": "page-5.png",
+    "ratio": 1.777795275590552
+  },
+  {
+    "number": 6,
+    "title": "İlk 30 müşteri için satış varsayımı",
+    "text": "İlk 30 müşteri için satış varsayımı\nİlk yıl hedefi: 120 müşteri. İlk çeyrek için örnek bir erişim hesabı.\nErişilen şirket: 2500\nGörüşme yapılan şirket: 250\nPilot başlatan şirket: 100\nÜcretli müşteriye dönüşen: 30\nKurgusal satış hunisi. Oranlar tahmin değil, test edilecek plan varsayımlarıdır; ilk yıl hedefi bu sonuçla doğrulanmış sayılmaz.",
+    "image": "page-6.png",
+    "ratio": 1.777795275590552
+  },
+  {
+    "number": 7,
+    "title": "Varsayımları verilerle sınamak",
+    "text": "Varsayımları verilerle sınamak\nHer kritik sayının kaynağını ve onu değiştirecek gözlemi yaz.\nVarsayım | Araştırma yolu | Kararı etkileyen bulgu\n6.000 şirkete hizmet verebiliriz. | Şirket listesi ve segment taraması | Hedef tanımına gerçekten uyan şirket sayısı\nPilot için ihtiyaç yeterince güçlü. | Müşteri görüşmesi ve pilot daveti | Pilotun başlayıp başlamaması ve kullanılan iş akışı\nSatış planı kapasiteyle uyumlu. | İlk görüşmeler ve satış süresi kaydı | Görüşme sayısı, dönüşüm ve ekip kapasitesi",
+    "image": "page-7.png",
+    "ratio": 1.777795275590552
+  },
+  {
+    "number": 8,
+    "title": "Analizin sonunda verilecek karar",
+    "text": "Analizin sonunda verilecek karar\nÖnce bu segmentin talep takibini incele. Pilot talebini ölç. Satış varsayımını gözlemle güncelle.\nİlk araştırma odağımız:\n10–50 kişilik e-ticaret destek ekipleri.\nAtölye çıktısı: bir segment seçimi, kaynakları belirtilmiş pazar hesabı ve ilk müşteri denemesi.",
+    "image": "page-8.png",
+    "ratio": 1.777795275590552
+  }
+]

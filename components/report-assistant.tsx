@@ -6,14 +6,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type { User } from "@/lib/types";
 import type { ReportChat, ReportItem, ReportTurn } from "@/lib/report-chat";
 import { ReportPreview } from "./report-preview";
+import { ResponsiveSidebar } from "./responsive-sidebar";
 import { Auth } from "./auth";
+import { ThemeMenu } from "./theme-menu";
 import {
   ReportConversationSkeleton,
   ReportListSkeleton,
   ReportWorkspaceSkeleton,
   Skeleton,
 } from "./skeletons";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 import {
   api,
   dateTime,
@@ -41,6 +43,7 @@ export function ReportAssistant() {
         <Logo />
         <Empty
           icon="chart"
+          illustration={false}
           title={t("The report agent is available to instructor accounts.")}
           description=""
         />
@@ -78,51 +81,16 @@ function ReportWorkspace({ user }: { user: User }) {
         .toLocaleLowerCase(locale)
         .includes(search.toLocaleLowerCase(locale)),
     ) || [];
-  const menuButton = useRef<HTMLButtonElement>(null),
-    sidebar = useRef<HTMLElement>(null),
-    wasMobileOpen = useRef(false);
-  useEffect(() => {
-    if (!mobile) {
-      if (wasMobileOpen.current) menuButton.current?.focus();
-      wasMobileOpen.current = false;
-      return;
-    }
-    wasMobileOpen.current = true;
-    sidebar.current
-      ?.querySelector<HTMLButtonElement>(".report-sidebar-close")
-      ?.focus();
-    const close = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setMobile(false);
-        menuButton.current?.focus();
-      }
-    };
-    const resize = () => {
-      if (window.innerWidth > 760) setMobile(false);
-    };
-    window.addEventListener("keydown", close);
-    window.addEventListener("resize", resize);
-    return () => {
-      window.removeEventListener("keydown", close);
-      window.removeEventListener("resize", resize);
-    };
-  }, [mobile]);
+  const menuButton = useRef<HTMLButtonElement>(null);
   return (
     <div className={`report-assistant-shell ${mobile ? "reports-open" : ""}`}>
-      {mobile && (
-        <button
-          className="report-sidebar-overlay"
-          aria-label={t("Close report list")}
-          onClick={() => {
-            setMobile(false);
-            menuButton.current?.focus();
-          }}
-        />
-      )}
-      <aside
-        ref={sidebar}
+      <ResponsiveSidebar
+        open={mobile}
+        onOpenChange={setMobile}
+        returnFocusRef={menuButton}
+        label={t("Your reports")}
         className="report-chat-sidebar"
-        aria-label={t("Your reports")}
+        overlayClassName="report-sidebar-overlay"
       >
         <div className="report-sidebar-brand">
           <a href="/?view=reports" aria-label={t("Back to reports")}>
@@ -132,7 +100,6 @@ function ReportWorkspace({ user }: { user: User }) {
             className="icon-button report-sidebar-close"
             onClick={() => {
               setMobile(false);
-              menuButton.current?.focus();
             }}
             aria-label={t("Close report list")}
           >
@@ -190,11 +157,7 @@ function ReportWorkspace({ user }: { user: User }) {
                 <Icon name="chart" size={18} />
                 <span>
                   <strong>{r.name}</strong>
-                  <small>
-                    {t("Session {number}", { number: r.sessionNumber || 1 })}
-                    {r.endedAt &&
-                      ` · ${dateTime(r.startedAt || r.endedAt, locale)}`}
-                  </small>
+                  <small>{t("Created by")} {r.createdBy} {r.endedAt && ` · ${dateTime(r.endedAt, locale)}`}</small>
                 </span>
               </button>
             ))
@@ -203,7 +166,7 @@ function ReportWorkspace({ user }: { user: User }) {
               {t(
                 search
                   ? "No reports match your search."
-                  : "Your completed training sessions appear here.",
+                  : "Your completed reports appear here.",
               )}
             </p>
           )}
@@ -212,8 +175,8 @@ function ReportWorkspace({ user }: { user: User }) {
           <span className="avatar">{user.name.slice(0, 1)}</span>
           <span>{user.name}</span>
         </div>
-      </aside>
-      <main className="report-chat-main" inert={mobile || undefined}>
+      </ResponsiveSidebar>
+      <main className="report-chat-main">
         <header className="report-chat-header">
           <button
             ref={menuButton}
@@ -233,8 +196,18 @@ function ReportWorkspace({ user }: { user: User }) {
                 selected?.name || t("Let’s explore your reports")
               )}
             </h1>
+            {selected && (
+              <p className="report-selected-session">
+                {selected.endedAt && (
+                  <time dateTime={selected.endedAt}>
+                    {dateTime(selected.endedAt, locale)}
+                  </time>
+                )}
+              </p>
+            )}
           </div>
           <div className="report-header-tools">
+            <ThemeMenu />
             {selected && (
               <button
                 className="button"
@@ -275,6 +248,7 @@ function ReportWorkspace({ user }: { user: User }) {
             <div className="report-chat-fallback">
               <Empty
                 icon="chart"
+                illustration={requested ? false : "reports"}
                 title={t(
                   requested ? "Report not found" : "No completed training yet",
                 )}
@@ -305,7 +279,7 @@ function ReportWorkspace({ user }: { user: User }) {
 
 const suggestions = [
   "What stood out in this training?",
-  "Where did students need the most support?",
+  "Where did participants need the most support?",
   "Summarize the activity responses.",
   "What can we improve in the next training?",
 ];

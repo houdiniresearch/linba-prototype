@@ -403,6 +403,18 @@ label small {
     transform: rotate(360deg);
   }
 }
+:is(
+  .modal-overlay,
+  .participant-source-overlay,
+  .report-preview-overlay,
+  .practice-profile-overlay,
+  .editor-tools-overlay,
+  .report-sidebar-overlay,
+  .workspace-nav-overlay
+) {
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -1074,13 +1086,6 @@ label small {
   color: var(--green);
   background: light-dark(oklch(0.95 0.025 165), oklch(0.28 0.035 165));
 }
-.status.live:before {
-  content: "";
-  width: 5px;
-  height: 5px;
-  background: currentColor;
-  border-radius: 50%;
-}
 .status.ended {
   color: var(--lilac-ink);
   background: var(--lilac-soft);
@@ -1115,8 +1120,36 @@ label small {
   align-items: center;
   text-align: center;
   padding: 54px 28px;
-  border: 1px dashed var(--line);
-  border-radius: 10px;
+  gap: 0;
+}
+.empty-artwork {
+  display: block;
+  width: 224px;
+  height: 150px;
+  flex-shrink: 0;
+  object-fit: contain;
+  margin: 0 0 18px;
+}
+.empty-artwork.is-compact {
+  width: 144px;
+  height: 96px;
+  margin-bottom: 14px;
+}
+.empty.is-compact {
+  padding: 24px 16px;
+}
+.empty.is-compact h3 {
+  font-size: 15px;
+}
+.empty.is-compact p:last-child {
+  margin-bottom: 0;
+}
+.questions-panel .empty-artwork {
+  width: 132px;
+  height: 88px;
+}
+.notification-empty .empty-artwork {
+  margin-inline: auto;
 }
 .empty-icon {
   display: inline-flex;
@@ -1131,12 +1164,15 @@ label small {
 }
 .empty h3 {
   font-size: 18px;
+  max-width: 38ch;
   margin-bottom: 8px;
+  line-height: 1.45;
 }
 .empty p {
   color: var(--muted);
   max-width: 380px;
   font-size: 13px;
+  line-height: 1.75;
   margin-bottom: 24px;
 }
 .settings-section {
@@ -1380,14 +1416,14 @@ tbody tr:hover {
   width: 100%;
   height: 44px;
 }
-.auth-copy h1 {
+.auth-copy .auth-statement {
   font-size: clamp(36px, 4vw, 54px);
   line-height: 1.2;
   margin: 0;
   font-weight: 600;
   letter-spacing: -0.035em;
 }
-.auth-copy h1 span {
+.auth-copy .auth-statement span {
   color: var(--accent);
 }
 .auth-form {
@@ -1396,7 +1432,7 @@ tbody tr:hover {
   border-radius: 14px;
   background: var(--bg);
 }
-.auth-form h2 {
+.auth-form h1 {
   font-size: 24px;
   margin-bottom: 8px;
 }
@@ -1977,14 +2013,6 @@ tbody tr:hover {
   width: 48px;
   height: 48px;
   border-radius: 12px;
-}
-.live-dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: oklch(0.61 0.15 165);
-  margin-right: 5px;
 }
 .live-status-strip {
   max-width: 1050px;
@@ -4550,4 +4578,50 @@ form[hidden],
   gap: 10px;
   font-size: 13px;
   padding: 16px;
+}
+
+.route-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  overflow: hidden;
+  z-index: calc(var(--z-modal) + 2);
+  pointer-events: none;
+  animation: route-progress-appear 180ms ease-out both;
+}
+.route-progress::after {
+  content: "";
+  display: block;
+  width: 35%;
+  height: 100%;
+  background: var(--accent);
+  animation: route-progress-travel 1.1s ease-in-out infinite;
+}
+@keyframes route-progress-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes route-progress-travel {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(390%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .route-progress,
+  .route-progress::after,
+  .access-experience-button .spin {
+    animation: none;
+  }
+  .route-progress::after {
+    width: 100%;
+  }
 }

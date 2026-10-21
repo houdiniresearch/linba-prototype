@@ -5,7 +5,6 @@ import path from "node:path";
 import test from "node:test";
 import { all, DATA_DIR, remove } from "../lib/db";
 const base = process.env.LINBA_TEST_URL || "http://localhost:3000";
-
 test("legacy URLs redirect to canonical English routes and preserve parameters", async () => {
   for (const [oldPath, destination] of [
     ["/giris", "/login"],
@@ -45,7 +44,6 @@ test("legacy URLs redirect to canonical English routes and preserve parameters",
     }
   }
 });
-
 test("English product routes and authenticated thumbnail metadata keep access boundaries", async () => {
   let userId: string | undefined, trainingId: string | undefined;
   try {
@@ -122,16 +120,19 @@ test("English product routes and authenticated thumbnail metadata keep access bo
     );
   } finally {
     if (trainingId) {
-      remove("course", trainingId);
+      await remove("course", trainingId);
       await rm(path.join(DATA_DIR, "files", trainingId), {
         recursive: true,
         force: true,
       });
     }
     if (userId) {
-      for (const session of all<{ id: string; userId: string }>("session"))
-        if (session.userId === userId) remove("session", session.id);
-      remove("user", userId);
+      for (const session of await all<{
+        id: string;
+        userId: string;
+      }>("session"))
+        if (session.userId === userId) await remove("session", session.id);
+      await remove("user", userId);
     }
   }
 });

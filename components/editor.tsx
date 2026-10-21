@@ -1,21 +1,34 @@
 "use client";
+import { RouteProgress, useWorkspaceNavigation } from "./route-progress";
+import { activityTypeLabel } from "@/lib/activities";
+import { AccessDurationSelect } from "./access-duration-select";
+import type { TeamState } from "@/lib/teams";
+import {
+  TeamHeader,
+  CreateTeamDialog,
+  InviteTeamDialog,
+} from "./team-workspace";
+import { LiveConnection } from "./live-connection";
+import { useLiveResource } from "./use-live-resource";
 import { OperationProgress } from "./operation-progress";
 import { ActivityEditor } from "./activity-editor";
 import { EditableTrainingTitle, SlideNotes } from "./slide-notes";
-import { RepeatTrainingButton } from "./repeat-training-button";
+import { AgentMark } from "./agent-identity";
+import { LiveElapsedTime, PresentationAgents } from "./presentation-agents";
+import { LiveAssistant } from "./live-assistant";
 import { EditorSkeleton } from "./skeletons";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
-import type { Course, CourseState } from "@/lib/types";
+import type { Course, CourseState, User } from "@/lib/types";
 import {
   api,
   Icon,
   Logo,
   Modal,
   ErrorNote,
-  Status,
+  ResourceFailure,
   useResource,
   Empty,
 } from "./ui";
@@ -25,9 +38,69 @@ import { SlideRail } from "./slide-rail";
 export function Editor({ id, live = false }: { id: string; live?: boolean }) {
   const { t, locale } = useLocale();
 
-  const router = useRouter(),
-    resource = useResource<CourseState>(`courses/${id}`, live ? 1800 : 0),
-    { data, error, setData, refresh } = resource;
+  const router = useRouter();
+  const { pending: navigating, navigate } = useWorkspaceNavigation();
+  const auth = useResource<{ user?: User }>("auth");
+  const team = useResource<TeamState>(
+    `team?account=${auth.data?.user?.id || ""}`,
+    10000,
+    !live && auth.data?.user?.role === "teacher",
+  );
+  const [createTeamOpen, setCreateTeamOpen] = useState(false),
+    [inviteTeamOpen, setInviteTeamOpen] = useState(false);
+  const teamTrigger = useRef<HTMLElement | null>(null);
+  function inviteTeam(trigger: HTMLElement) {
+    teamTrigger.current = trigger;
+    if (team.data?.team) setInviteTeamOpen(true);
+    else setCreateTeamOpen(true);
+  }
+  const draftResource = useResource<CourseState>(`courses/${id}`, 0, !live);
+  const liveResource = useLiveResource<CourseState>(
+    `courses/${id}`,
+    1800,
+    live,
+  );
+  const resource = live ? liveResource : draftResource;
+  const { data, error, setData, refresh } = resource;
+  const [workspaceFailure, setWorkspaceFailure] = useState("");
+  const [workspaceRequest, setWorkspaceRequest] = useState(0);
+  useEffect(() => {
+    if (data?.course.status !== "ended") return;
+    if (live) {
+      router.replace(`/?view=reports&report=${id}`);
+      return;
+    }
+    let current = true;
+    setWorkspaceFailure("");
+    api<{ course: Course }>(`courses/${id}/workspace`, {})
+      .then(({ course }) => {
+        if (current)
+          router.replace(
+            `/training/${course.id}${course.status === "live" ? "/live" : ""}`,
+          );
+      })
+      .catch((failure) => {
+        if (current) setWorkspaceFailure((failure as Error).message);
+      });
+    return () => {
+      current = false;
+    };
+  }, [id, live, data?.course.status, router, workspaceRequest]);
+  const [optimisticSlide, setOptimisticSlide] = useState<string>();
+  const [draftSlide, setDraftSlide] = useState<{
+    courseId: string;
+    slideId: string;
+  }>();
+  useEffect(() => {
+    try {
+      const slideId = sessionStorage.getItem(`linba:draft-slide:${id}`);
+      setDraftSlide(slideId ? { courseId: id, slideId } : undefined);
+    } catch {
+      setDraftSlide(undefined);
+    }
+  }, [id]);
+  const selectionTail = useRef<Promise<void>>(Promise.resolve());
+  const selectionSequence = useRef(0);
   const latestData = useRef<CourseState | undefined>(data);
   latestData.current = data;
   const [add, setAdd] = useState(false),
@@ -62,9 +135,10 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
     setTool(tool === next ? null : next);
   }
   function openSettings(event: React.MouseEvent<HTMLButtonElement>) {
-    settingsTrigger.current = toolsPanel.current?.contains(event.currentTarget)
-      ? toolsTrigger.current
-      : event.currentTarget;
+    settingsTrigger.current =
+      !live && toolsPanel.current?.contains(event.currentTarget)
+        ? toolsTrigger.current
+        : event.currentTarget;
     setTool(null);
     setSettings(true);
   }
@@ -110,10 +184,28 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [toolsOpen, compactTools]);
   async function mutate(body: unknown) {
+    if (live && error)
+      throw new Error("Reconnect before changing the live training.");
+    await selectionTail.current;
     setNotice("");
     setSaving(true);
     try {
       const result = await api<CourseState>(`courses/${id}`, body, "PATCH");
+      const action = (body as { action?: string }).action;
+      if (
+        result.course.status === "draft" &&
+        (action === "add-activity" ||
+          (draftSlide?.courseId === id &&
+            !result.course.slides.some(
+              (slide) => slide.id === draftSlide.slideId,
+            )))
+      ) {
+        const slideId = result.course.activeSlideId;
+        setDraftSlide({ courseId: id, slideId });
+        try {
+          sessionStorage.setItem(`linba:draft-slide:${id}`, slideId);
+        } catch {}
+      }
       setData(result);
       return result;
     } catch (e) {
@@ -124,9 +216,48 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
     }
   }
   async function select(slideId: string) {
-    try {
-      await mutate({ action: "select", slideId });
-    } catch {}
+    if (!latestData.current || (live && error)) return;
+    if (latestData.current.course.status === "draft") {
+      // A private editor cursor is navigation, not a shared presentation edit.
+      setDraftSlide({ courseId: id, slideId });
+      try {
+        sessionStorage.setItem(`linba:draft-slide:${id}`, slideId);
+      } catch {}
+      return;
+    }
+    if (latestData.current.course.activeSlideId === slideId && !optimisticSlide)
+      return;
+    const sequence = ++selectionSequence.current;
+    setOptimisticSlide(slideId);
+    setNotice("");
+    // Serialize writes; rapid navigation coalesces to the newest requested slide.
+    const job = selectionTail.current.then(async () => {
+      if (sequence !== selectionSequence.current) return;
+      try {
+        const result = await api<{
+          activeSlideId: string;
+          slideVersion: number;
+        }>(
+          `courses/${id}`,
+          { action: "select", slideId, compact: true },
+          "PATCH",
+        );
+        if (sequence === selectionSequence.current) {
+          const current = latestData.current;
+          if (current)
+            setData({ ...current, course: { ...current.course, ...result } });
+          setOptimisticSlide(undefined);
+        }
+      } catch (failure) {
+        if (sequence === selectionSequence.current) {
+          setOptimisticSlide(undefined);
+          setNotice((failure as Error).message);
+          await refresh();
+        }
+      }
+    });
+    selectionTail.current = job;
+    await job;
   }
   if (!data)
     return !error ? (
@@ -143,16 +274,63 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
         </button>
       </div>
     );
-  const c = data.course,
+  if (data.course.status === "ended")
+    return workspaceFailure ? (
+      <main className="editor-loading">
+        <a className="text-button" href="/?view=courses">
+          <Icon name="back" />
+          {t("Back to my presentations")}
+        </a>
+        <ResourceFailure
+          error={workspaceFailure}
+          onRetry={() => setWorkspaceRequest((value) => value + 1)}
+        />
+      </main>
+    ) : (
+      <EditorSkeleton live={false} />
+    );
+  const selectedSlide =
+    data.course.status === "draft" && draftSlide?.courseId === id
+      ? draftSlide.slideId
+      : optimisticSlide;
+  const c =
+      selectedSlide &&
+      data.course.slides.some((slide) => slide.id === selectedSlide)
+        ? { ...data.course, activeSlideId: selectedSlide }
+        : data.course,
     active = c.slides.find((s) => s.id === c.activeSlideId) || c.slides[0],
     index = c.slides.indexOf(active),
     draft = c.status === "draft";
+  async function openPractice() {
+    if (busy || saving) return;
+    setBusy(true);
+    try {
+      await notesFlush.current?.();
+      navigate(`/training/${id}/practice`);
+    } catch {
+      // SlideNotes keeps the save error and retry action visible.
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function openPreview() {
+    if (busy || saving) return;
+    setBusy(true);
+    try {
+      await notesFlush.current?.();
+      navigate(`/training/${id}/preview`);
+    } catch {
+      // Keep unsaved notes and their retry action in the editor.
+    } finally {
+      setBusy(false);
+    }
+  }
   async function start() {
     setBusy(true);
     try {
       await notesFlush.current?.();
       await mutate({ action: "start" });
-      router.push(`/training/${id}/live`);
+      navigate(`/training/${id}/live`);
     } catch {
     } finally {
       setBusy(false);
@@ -161,9 +339,10 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
   async function finish() {
     setBusy(true);
     try {
+      await notesFlush.current?.();
       await mutate({ action: "end" });
       setEnd(false);
-      router.push(`/?view=reports&report=${id}`);
+      navigate(`/?view=reports&report=${id}`);
     } catch {
     } finally {
       setBusy(false);
@@ -178,34 +357,14 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
     return (
       <main className="training-status-page">
         <Logo />
-        <Status status={c.status} />
-        <h1>
-          {t(
-            c.status === "draft"
-              ? "Your training has not started yet"
-              : "This training has ended",
-          )}
-        </h1>
+        <h1>{t("Your training has not started yet")}</h1>
         <p>
           {t(
-            c.status === "draft"
-              ? "Prepare your activities and start the session when you are ready."
-              : "Review the learning report and follow-up questions.",
+            "Prepare your activities and start the session when you are ready.",
           )}
         </p>
-        <a
-          className="button primary"
-          href={
-            c.status === "draft"
-              ? `/training/${id}`
-              : `/?view=reports&report=${id}`
-          }
-        >
-          {t(
-            c.status === "draft"
-              ? "Return to preparation"
-              : "View learning report",
-          )}
+        <a className="button primary" href={`/training/${id}`}>
+          {t("Return to preparation")}
           <Icon name="arrow" />
         </a>
       </main>
@@ -214,11 +373,12 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
     <div
       className={`editor-shell ${live ? "live-shell" : ""} ${toolsOpen ? "tools-open" : ""}`}
     >
+      <RouteProgress pending={navigating} />
       <header className="editor-header">
         <button
           className="icon-button"
           aria-label={t("Back to my training")}
-          onClick={() => router.push("/?view=courses")}
+          onClick={() => navigate("/?view=courses")}
         >
           <Icon name="back" />
         </button>
@@ -248,25 +408,64 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
             <span className="small muted">{t("Instructor controls")}</span>
           ) : null}
         </div>
-        <Status status={c.status} />
         <div className="editor-header-actions">
+          {!live && auth.data?.user && (
+            <TeamHeader
+              data={team.data}
+              user={auth.data.user}
+              onOpen={() =>
+                team.data?.team
+                  ? navigate("/?view=team")
+                  : inviteTeam(document.activeElement as HTMLElement)
+              }
+              onInvite={inviteTeam}
+            />
+          )}
+
           {live ? (
             <>
+              <div className="presentation-timer" data-paused={!!c.pausedAt}>
+                <LiveElapsedTime course={c} />
+                <button
+                  className="presentation-pause-button"
+                  disabled={saving || busy || !!error}
+                  aria-label={t(
+                    c.pausedAt ? "Resume presentation" : "Pause presentation",
+                  )}
+                  title={t(
+                    c.pausedAt ? "Resume presentation" : "Pause presentation",
+                  )}
+                  onClick={() =>
+                    void mutate({
+                      action: c.pausedAt ? "resume" : "pause",
+                    }).catch(() => {})
+                  }
+                >
+                  <Icon name={c.pausedAt ? "play" : "pause"} size={17} />
+                  <span>{t(c.pausedAt ? "Resume" : "Pause")}</span>
+                </button>
+              </div>
               <button className="button" onClick={join}>
                 <Icon name="users" />
                 {t("Join")}
               </button>
               <a
-                className="button"
+                className="button live-projection-button"
                 href={`/present/${id}?key=${c.displayKey}`}
                 target="_blank"
                 rel="noreferrer"
+                aria-label={t("Open presentation screen")}
+                title={t("Open presentation screen")}
               >
                 <Icon name="monitor" />
-                {t("Present")}
+                <span>{t("Open presentation screen")}</span>
               </a>
               {c.status === "live" && (
-                <button className="button danger" onClick={() => setEnd(true)}>
+                <button
+                  className="button danger"
+                  disabled={busy || !!error}
+                  onClick={() => setEnd(true)}
+                >
                   <Icon name="stop" />
                   {t("End training")}
                 </button>
@@ -275,35 +474,38 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           ) : (
             <>
               {draft ? (
-                <button className="button mint" disabled={busy} onClick={start}>
-                  <Icon name="play" />
-                  {t("Start training")}
-                </button>
+                <>
+                  <button
+                    className="button practice-ai-button ai-orbit-button"
+                    disabled={busy || saving}
+                    onClick={openPractice}
+                  >
+                    <AgentMark size={19} />
+                    <span>{t("Practice with AI")}</span>
+                  </button>
+                  <button
+                    className="button primary presentation-start-button"
+                    disabled={busy}
+                    onClick={start}
+                  >
+                    <Icon name="monitor" size={19} />
+                    {t("Present")}
+                    <Icon
+                      name="arrow"
+                      size={16}
+                      className="start-button-arrow"
+                    />
+                  </button>
+                </>
               ) : c.status === "live" ? (
                 <button
                   className="button mint"
-                  onClick={() => router.push(`/training/${id}/live`)}
+                  onClick={() => navigate(`/training/${id}/live`)}
                 >
                   <Icon name="play" />
                   {t("Back to live training")}
                 </button>
-              ) : (
-                <>
-                  <RepeatTrainingButton
-                    id={id}
-                    beforeRepeat={() =>
-                      notesFlush.current?.() || Promise.resolve()
-                    }
-                  />
-                  <button
-                    className="button report"
-                    onClick={() => router.push(`/?view=reports&report=${id}`)}
-                  >
-                    <Icon name="chart" />
-                    {t("Open report")}
-                  </button>
-                </>
-              )}
+              ) : null}
             </>
           )}
         </div>
@@ -311,7 +513,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
       <SlideRail
         course={c}
         editable={draft && !live}
-        disabled={saving || busy}
+        disabled={saving || busy || (live && !!error)}
         onAdd={openActivity}
         onSelect={select}
         onReorder={async (ids) => {
@@ -319,22 +521,38 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
         }}
       />
       <main className="editor-stage">
+        {live && (
+          <LiveConnection
+            error={error}
+            checking={liveResource.checking}
+            lastUpdated={liveResource.lastUpdated}
+            onRetry={() => void refresh()}
+          />
+        )}
         <div className="stage-top">
           <span>
             {live ? (
               <>
-                <span className="live-dot" />
-                {t("Participants can see this slide")}
+                {t(
+                  error
+                    ? "Last received slide"
+                    : "Participants can see this slide",
+                )}
               </>
             ) : (
               t("PRESENTATION WORKSPACE")
             )}
           </span>
-          <span>
-            {live
-              ? t("{count} participants", { count: data.participants.length })
-              : c.originalName}
-          </span>
+          {live ? (
+            <div className="live-stage-meta">
+              <span>
+                <Icon name="users" size={15} />
+                {t("{count} participants", { count: data.participants.length })}
+              </span>
+            </div>
+          ) : (
+            <span>{c.originalName}</span>
+          )}
         </div>
         <div className="presentation-canvas">
           <div className="canvas-join">
@@ -348,7 +566,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
         <div className="slide-controls">
           <button
             className="icon-button"
-            disabled={index === 0}
+            disabled={index === 0 || saving || (live && !!error)}
             aria-label={t("Previous slide")}
             onClick={() => select(c.slides[index - 1].id)}
           >
@@ -359,14 +577,16 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           </span>
           <button
             className="icon-button"
-            disabled={index === c.slides.length - 1}
+            disabled={
+              index === c.slides.length - 1 || saving || (live && !!error)
+            }
             aria-label={t("Next slide")}
             onClick={() => select(c.slides[index + 1].id)}
           >
             <Icon name="right" />
           </button>
         </div>
-        <ErrorNote message={notice || error} />
+        <ErrorNote message={notice || (!live ? error : "")} />
         {live && (
           <div className="live-status-strip">
             <span>
@@ -394,12 +614,11 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           <div className="editor-tool-group">
             <button
               type="button"
-              aria-expanded={tool === "content"}
-              aria-controls="training-tools"
-              onClick={(event) => toggleTool(event, "content")}
+              disabled={busy || saving}
+              onClick={openPreview}
             >
-              <Icon name="presentation" size={23} />
-              <span>{t("Content")}</span>
+              <Icon name="eye" size={23} />
+              <span>{t("Preview")}</span>
             </button>
             <button type="button" disabled={!draft} onClick={openActivity}>
               <Icon name="plus" size={23} />
@@ -418,20 +637,12 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           <div className="editor-tool-group">
             <button
               type="button"
-              onClick={() => router.push(`/training/${id}/practice`)}
+              onClick={openPractice}
+              disabled={busy || saving}
             >
               <Icon name="mic" size={23} />
               <span>{t("Practice")}</span>
             </button>
-            <button
-              type="button"
-              onClick={() => router.push(`/training/${id}/preview`)}
-            >
-              <Icon name="eye" size={23} />
-              <span>{t("Preview")}</span>
-            </button>
-          </div>
-          <div className="editor-tool-group editor-tool-bottom">
             <button type="button" onClick={openSettings}>
               <Icon name="settings" size={23} />
               <span>{t("Settings")}</span>
@@ -465,14 +676,35 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           className={`editor-tools ${live ? "questions-panel" : "editor-context-panel"}`}
         >
           {live ? (
-            <QuestionPanel
+            <LiveAssistant
               data={data}
-              onAddress={async (questionId, value) => {
-                try {
-                  await mutate({ action: "addressed", questionId, value });
-                } catch {}
-              }}
-            />
+              disabled={saving || busy || !!error}
+              disconnected={!!error}
+              lastUpdated={liveResource.lastUpdated}
+              onRefreshShowcase={
+                c.showcase
+                  ? async () => {
+                      try {
+                        await mutate({ action: "refresh-showcase" });
+                      } catch {}
+                    }
+                  : undefined
+              }
+            >
+              {(topicId, clearTopic) => (
+                <QuestionPanel
+                  data={data}
+                  topicId={topicId}
+                  onClearTopic={clearTopic}
+                  disabled={saving || busy || !!error}
+                  onAddress={async (questionId, value) => {
+                    try {
+                      await mutate({ action: "addressed", questionId, value });
+                    } catch {}
+                  }}
+                />
+              )}
+            </LiveAssistant>
           ) : (
             <>
               <header className="editor-context-heading">
@@ -489,42 +721,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                 </button>
               </header>
               {tool === "agents" ? (
-                <div className="editor-context-body">
-                  <div className="editor-context-agent">
-                    <Icon name="agent" size={28} />
-                    <h3>{t("Learning agent")}</h3>
-                  </div>
-                  <p className="muted">
-                    {t(
-                      "Your learning agent answers from the training materials and links to the source.",
-                    )}
-                  </p>
-                  {c.pages.every((p) => !p.text.trim()) && (
-                    <ErrorNote
-                      message={t(
-                        "No readable text was found in this file. The learning agent will forward questions to the instructor.",
-                      )}
-                    />
-                  )}
-                  <dl className="editor-agent-settings">
-                    <div>
-                      <dt>{t("Learning agent access after training")}</dt>
-                      <dd>
-                        {c.accessDays} {t("days")}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>{t("Live answers")}</dt>
-                      <dd>
-                        {c.autoAnswer ? t("Automatic") : t("Instructor review")}
-                      </dd>
-                    </div>
-                  </dl>
-                  <button className="button full" onClick={openSettings}>
-                    <Icon name="settings" size={18} />
-                    {t("Training settings")}
-                  </button>
-                </div>
+                <PresentationAgents />
               ) : (
                 <div className="editor-context-body">
                   <span className="editor-context-label">
@@ -550,13 +747,7 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
                   ) : (
                     <>
                       <p className="muted">
-                        {t(
-                          active.activity?.type === "poll"
-                            ? "Poll"
-                            : active.activity?.type === "scenario"
-                              ? "Scenario"
-                              : "Open question",
-                        )}
+                        {t(activityTypeLabel(active.activity?.type))}
                       </p>
                       {active.activity?.aiGenerated && (
                         <span className="ai-label">
@@ -655,6 +846,14 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
         </p>
         {busy && <OperationProgress kind="report" />}
         <ErrorNote message={notice} />
+        {error && (
+          <LiveConnection
+            error={error}
+            checking={liveResource.checking}
+            lastUpdated={liveResource.lastUpdated}
+            onRetry={() => void refresh()}
+          />
+        )}
         <div className="modal-actions" hidden={busy}>
           <button
             className="button"
@@ -663,7 +862,11 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           >
             {t("Cancel")}
           </button>
-          <button className="button danger" onClick={finish} disabled={busy}>
+          <button
+            className="button danger"
+            onClick={finish}
+            disabled={busy || !!error}
+          >
             {t("End training")}
           </button>
         </div>
@@ -703,6 +906,25 @@ export function Editor({ id, live = false }: { id: string; live?: boolean }) {
           </button>
         </div>
       </Modal>
+      {createTeamOpen && (
+        <CreateTeamDialog
+          returnFocusRef={teamTrigger}
+          onClose={() => setCreateTeamOpen(false)}
+          onCreated={(data) => {
+            team.setData(data);
+            setCreateTeamOpen(false);
+            setInviteTeamOpen(true);
+          }}
+        />
+      )}
+      {inviteTeamOpen && team.data?.team && (
+        <InviteTeamDialog
+          teamName={team.data.team.name}
+          returnFocusRef={teamTrigger}
+          onClose={() => setInviteTeamOpen(false)}
+          onChanged={team.refresh}
+        />
+      )}
     </div>
   );
 }
@@ -754,20 +976,7 @@ function Settings({
             maxLength={120}
           />
         </label>
-        <label>
-          {t("Assistant access after training")}
-          <div className="input-unit">
-            <input
-              type="number"
-              min={0}
-              max={365}
-              value={days}
-              onChange={(e) => setDays(Number(e.target.value))}
-            />
-            <span>{t("days")}</span>
-          </div>
-          <small>{t("Starts when training ends.")}</small>
-        </label>
+        <AccessDurationSelect value={days} onChange={setDays} disabled={busy} />
         <label className="toggle-field">
           <span>
             <strong>{t("Automatic AI answers during live training")}</strong>
@@ -794,18 +1003,25 @@ function Settings({
 }
 function QuestionPanel({
   data,
+  topicId,
+  onClearTopic,
+  disabled,
   onAddress,
 }: {
   data: CourseState;
+  topicId: string | null;
+  onClearTopic: () => void;
+  disabled: boolean;
   onAddress: (id: string, value: boolean) => Promise<void>;
 }) {
   const { t } = useLocale();
 
   const [filter, setFilter] = useState("all");
-  const questions = data.questions.filter(
-      (q) =>
-        filter === "all" ||
-        ((q.status === "escalated" || q.status === "manual") && !q.addressed),
+  const questions = data.questions.filter((q) =>
+      topicId
+        ? q.groupId === topicId
+        : filter === "all" ||
+          ((q.status === "escalated" || q.status === "manual") && !q.addressed),
     ),
     groups = [
       ...new Map(questions.map((q) => [q.groupId, q.groupTitle])).entries(),
@@ -814,22 +1030,37 @@ function QuestionPanel({
     <>
       <div className="tool-title">
         <h2>{t("Participant questions")}</h2>
-        <span className="count">{data.questions.length}</span>
+        <span className="count">{questions.length}</span>
       </div>
-      <div className="segmented compact">
+      {topicId ? (
         <button
-          className={filter === "all" ? "active" : ""}
-          onClick={() => setFilter("all")}
+          className="text-button live-clear-topic"
+          onClick={() => {
+            setFilter("all");
+            onClearTopic();
+          }}
         >
-          {t("All")}
+          <Icon name="back" size={15} />
+          {t("Back to all questions")}
         </button>
-        <button
-          className={filter === "teacher" ? "active" : ""}
-          onClick={() => setFilter("teacher")}
-        >
-          {t("Forwarded to you")}
-        </button>
-      </div>
+      ) : (
+        <div className="segmented compact">
+          <button
+            className={filter === "all" ? "active" : ""}
+            aria-pressed={filter === "all"}
+            onClick={() => setFilter("all")}
+          >
+            {t("All")}
+          </button>
+          <button
+            className={filter === "teacher" ? "active" : ""}
+            aria-pressed={filter === "teacher"}
+            onClick={() => setFilter("teacher")}
+          >
+            {t("Forwarded to you")}
+          </button>
+        </div>
+      )}
       <p className="small muted">
         {t(
           "Similar questions are grouped. Answers are visible only to the participant who asked.",
@@ -840,7 +1071,7 @@ function QuestionPanel({
           <details
             className="question-group"
             key={id}
-            open={filter === "teacher"}
+            open={!!topicId || filter === "teacher"}
           >
             <summary>
               {title}
@@ -875,6 +1106,7 @@ function QuestionPanel({
                       {q.status !== "pending" && (
                         <button
                           className={`text-button ${q.addressed ? "success-text" : ""}`}
+                          disabled={disabled}
                           onClick={() => onAddress(q.id, !q.addressed)}
                         >
                           <Icon name="check" size={16} />

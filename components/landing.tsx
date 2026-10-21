@@ -20,6 +20,11 @@ import { Icon, Logo } from "./ui";
 import { useLocale } from "./locale-provider";
 import { LandingAudience } from "./landing-audience";
 import { LandingHero } from "./landing-hero";
+import { LandingFaq } from "./landing-faq";
+import {
+  LandingNavigationProvider,
+  useLandingNavigation,
+} from "./landing-navigation";
 import {
   LandingIntegrations,
   LandingWaitlistButton,
@@ -67,6 +72,7 @@ const stages = [
 
 function LandingFlow() {
   const { t } = useLocale();
+  const { isNavigating, subscribeToSettled } = useLandingNavigation();
   const stack = useRef<HTMLDivElement>(null);
   const [enhanced, setEnhanced] = useState(false);
 
@@ -90,7 +96,7 @@ function LandingFlow() {
     let inView = false;
     const paint = () => {
       frame = 0;
-      if (!inView) return;
+      if (!inView || isNavigating()) return;
       // Read the stack together before writing compositor-only visual changes.
       const positions = cards.map((card) => ({
         top: card.getBoundingClientRect().top,
@@ -112,7 +118,8 @@ function LandingFlow() {
       });
     };
     const schedule = () => {
-      if (inView && !frame) frame = window.requestAnimationFrame(paint);
+      if (inView && !frame && !isNavigating())
+        frame = window.requestAnimationFrame(paint);
     };
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -122,16 +129,18 @@ function LandingFlow() {
       { rootMargin: "160px" },
     );
     observer.observe(container);
+    const unsubscribe = subscribeToSettled(schedule);
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
     return () => {
       observer.disconnect();
+      unsubscribe();
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
       window.cancelAnimationFrame(frame);
       cards.forEach((card) => card.style.removeProperty("--stack-progress"));
     };
-  }, [enhanced]);
+  }, [enhanced, isNavigating, subscribeToSettled]);
 
   return (
     <div
@@ -283,39 +292,43 @@ function LandingLanguage() {
   );
 }
 
-const questions = [
-  [
-    "What do LİNBA’s AI agents do?",
-    "Before training, practice out loud with agents representing your participants. During training, a learning agent answers participant questions using your training materials. Afterwards, review questions, activity responses and learning needs with the report agent.",
-  ],
-  [
-    "How do practice agents adapt to my audience?",
-    "Describe your audience, their experience and the training context. AI agents created from this brief join your voice practice with questions. Feedback focuses on the clarity of your delivery, your pace and how you respond.",
-  ],
-  [
-    "What does the learning agent base its answers on?",
-    "It uses the training materials you upload and points to relevant slides. Questions without an answer in the materials are passed to the instructor. You can enable or disable automatic answers during live training.",
-  ],
-  [
-    "How does the report agent support learning assessment?",
-    "It helps you examine participant questions and activity responses. Ask which topics participants struggled with and what to improve in future training. Assessment is grounded in the data collected during training; you make the training decisions.",
-  ],
-  [
-    "Can participants keep using the learning agent after training?",
-    "Yes. Participants can keep asking questions for the duration set by their instructor. Post-training questions are added to the same training report.",
-  ],
-  [
-    "How can I try LİNBA, and what is the waitlist for?",
-    "LİNBA is launching soon. Join the waitlist to be among the first to know. In the meantime, you can experience LİNBA’s AI agents for free.",
-    true,
-  ],
-] as const;
-
 function LandingContent() {
   const { t } = useLocale();
+  const { navigating, navigate } = useLandingNavigation();
   const mobileMenuId = useId();
   return (
-    <div className="landing-page">
+    <div
+      className="landing-page"
+      data-navigating={navigating}
+      onClick={(event) => {
+        if (
+          event.defaultPrevented ||
+          event.button !== 0 ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey
+        )
+          return;
+        const anchor = (event.target as Element).closest<HTMLAnchorElement>(
+          'a[href^="#"]',
+        );
+        const hash = anchor?.getAttribute("href");
+        if (
+          !hash ||
+          ![
+            "#how-it-works",
+            "#use-cases",
+            "#integrations",
+            "#faq",
+            "#landing-main",
+          ].includes(hash)
+        )
+          return;
+        event.preventDefault();
+        navigate(hash);
+      }}
+    >
       <a className="landing-skip" href="#landing-main">
         {t("Skip to content")}
       </a>
@@ -433,41 +446,7 @@ function LandingContent() {
 
         <LandingIntegrations />
 
-        <section
-          className="landing-questions landing-container"
-          id="faq"
-          aria-labelledby="questions-title"
-        >
-          <div className="landing-faq-intro">
-            <h2 id="questions-title">{t("Frequently asked questions.")}</h2>
-            <p>
-              {t(
-                "Explore how the agents work, what they rely on and how they support your training.",
-              )}
-            </p>
-          </div>
-          <div className="landing-faq-list">
-            {questions.map(([question, answer, tryLink]) => (
-              <details key={question} name="landing-faq">
-                <summary>
-                  {t(question)}
-                  <Icon name="plus" size={26} />
-                </summary>
-                <p>
-                  {t(answer)}
-                  {tryLink && (
-                    <>
-                      {" "}
-                      <Link className="landing-faq-try" href="/login">
-                        {t("Try Now, For Free!")}
-                      </Link>
-                    </>
-                  )}
-                </p>
-              </details>
-            ))}
-          </div>
-        </section>
+        <LandingFaq />
 
         <section
           className="landing-closing landing-container"
@@ -556,8 +535,10 @@ function LandingContent() {
 
 export function Landing() {
   return (
-    <LandingWaitlistProvider>
-      <LandingContent />
-    </LandingWaitlistProvider>
+    <LandingNavigationProvider>
+      <LandingWaitlistProvider>
+        <LandingContent />
+      </LandingWaitlistProvider>
+    </LandingNavigationProvider>
   );
 }

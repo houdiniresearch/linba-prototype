@@ -4,7 +4,6 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import type { Course, User } from "../lib/types";
-
 test("report conversations isolate owners and reports, count real records and recover safely", async (t) => {
   const directory = mkdtempSync(path.join(tmpdir(), "linba-report-chat-"));
   process.env.LINBA_DATA_DIR = directory;
@@ -42,28 +41,28 @@ test("report conversations isolate owners and reports, count real records and re
     activeSlideId: "poll",
     slideVersion: 0,
   };
-  put("course", base);
-  put("course", { ...base, id: "second", name: "Second" });
-  put("course", {
+  await put("course", base);
+  await put("course", { ...base, id: "second", name: "Second" });
+  await put("course", {
     ...base,
     id: "foreign",
     ownerId: stranger.id,
     name: "FOREIGN_SECRET",
   });
-  put("course", { ...base, id: "draft", status: "draft" });
-  put("member", {
+  await put("course", { ...base, id: "draft", status: "draft" });
+  await put("member", {
     id: "member-1",
     courseId: "first",
     userId: "learner",
     name: "Learner",
   });
   for (let i = 0; i < 70; i++)
-    put("question", {
+    await put("question", {
       id: `q-${i}`,
       courseId: "first",
       userId: "learner",
       userName: "Learner",
-      text: `Question ${i} ${"x".repeat(1000)}`,
+      text: `${i === 0 ? "Kohort bütçesindeki sıra dışı harcama " : ""}Question ${i} ${"x".repeat(1000)}`,
       answer: "Answer " + "y".repeat(1000),
       status: "answered",
       groupId: "group",
@@ -72,12 +71,12 @@ test("report conversations isolate owners and reports, count real records and re
       stage: i < 30 ? "live" : "followup",
       createdAt: new Date(1760000000000 + i).toISOString(),
     });
-  put("question", {
+  await put("question", {
     id: "foreign-q",
     courseId: "foreign",
     text: "FOREIGN_SECRET",
   });
-  put("response", {
+  await put("response", {
     id: "response",
     courseId: "first",
     slideId: "poll",
@@ -104,18 +103,22 @@ test("report conversations isolate owners and reports, count real records and re
     await t.test(
       "server enforces instructor ownership and completed status",
       async () => {
-        assert.deepEqual(
-          reportList(owner)
-            .map((r) => r.id)
-            .sort(),
-          ["first", "second"],
+        assert.deepEqual((await reportList(owner)).map((r) => r.id).sort(), [
+          "first",
+          "second",
+        ]);
+        await assert.rejects(
+          async () => await reportChat(stranger, "first"),
+          /Report not found/,
         );
-        assert.throws(
-          () => reportChat(stranger, "first"),
-          /Training not found/,
+        await assert.rejects(
+          async () => await reportChat(participant, "first"),
+          /account type/,
         );
-        assert.throws(() => reportChat(participant, "first"), /account type/);
-        assert.throws(() => reportChat(owner, "draft"), /when training ends/);
+        await assert.rejects(
+          async () => await reportChat(owner, "draft"),
+          /when training ends/,
+        );
         await assert.rejects(
           sendReportMessage(
             stranger,
@@ -129,8 +132,8 @@ test("report conversations isolate owners and reports, count real records and re
     );
     await t.test(
       "full aggregates stay exact when text evidence is bounded",
-      () => {
-        const context = reportContext(base);
+      async () => {
+        const context = await reportContext(base);
         assert.equal(context.counts.questions, 70);
         assert.equal(context.counts.participants, 1);
         assert.equal(context.counts.liveQuestions, 30);
@@ -140,6 +143,12 @@ test("report conversations isolate owners and reports, count real records and re
         assert(context.coverage.questionsIncluded < 70);
         assert.equal(context.coverage.questionsTotal, 70);
         assert.equal(context.questionGroups[0].count, 70);
+        const focused = await reportContext(
+          base,
+          "Kohort bütçesindeki harcama",
+        );
+        assert(focused.questions.some((question) => question.id === "q-0"));
+        assert.equal(focused.counts.questions, 70);
       },
     );
     await t.test(
@@ -157,7 +166,7 @@ test("report conversations isolate owners and reports, count real records and re
           ["counts"],
         );
         assert.equal(
-          reportChat(owner, "first").turns[0].answer,
+          (await reportChat(owner, "first")).turns[0].answer,
           "Report First",
         );
         const before = calls;
@@ -169,7 +178,7 @@ test("report conversations isolate owners and reports, count real records and re
         );
         assert.equal(retry.turns.length, 1);
         assert.equal(calls, before);
-        assert.equal(reportChat(owner, "second").turns.length, 0);
+        assert.equal((await reportChat(owner, "second")).turns.length, 0);
         await assert.rejects(
           sendReportMessage(
             owner,
@@ -184,7 +193,7 @@ test("report conversations isolate owners and reports, count real records and re
     await t.test(
       "concurrent duplicate requests share one answer and stale histories are rejected",
       async () => {
-        const previous = reportChat(owner, "first").turns.at(-1)!.id;
+        const previous = (await reportChat(owner, "first")).turns.at(-1)!.id;
         await assert.rejects(
           sendReportMessage(
             owner,
@@ -199,15 +208,21 @@ test("report conversations isolate owners and reports, count real records and re
           release = ok;
         });
         let count = 0;
+        let notifyStarted!: () => void;
+        const started = new Promise<void>((resolve) => {
+          notifyStarted = resolve;
+        });
         const delayed = async () => {
           count++;
+          notifyStarted();
           await waiting;
           return { answer: "One answer", sourceIds: ["questions"] };
         };
         const body = message("request-pending-01", previous);
         const first = sendReportMessage(owner, "first", body, delayed);
+        await started;
         assert.equal(
-          reportChat(owner, "first").pending?.requestId,
+          (await reportChat(owner, "first")).pending?.requestId,
           body.requestId,
         );
         const duplicate = sendReportMessage(owner, "first", body, delayed);
@@ -231,14 +246,14 @@ test("report conversations isolate owners and reports, count real records and re
         assert.equal(count, 1);
         assert.equal(one.turns.length, 2);
         assert.equal(two.turns.length, 2);
-        assert.equal(reportChat(owner, "first").pending, null);
-        assert.equal(reportChat(owner, "second").turns.length, 1);
+        assert.equal((await reportChat(owner, "first")).pending, null);
+        assert.equal((await reportChat(owner, "second")).turns.length, 1);
       },
     );
     await t.test(
       "provider failures leave no partial turn and same request can be retried",
       async () => {
-        const history = reportChat(owner, "first").turns;
+        const history = (await reportChat(owner, "first")).turns;
         const body = message("request-recovery-1", history.at(-1)!.id);
         await assert.rejects(
           sendReportMessage(owner, "first", body, async () => {
@@ -246,8 +261,11 @@ test("report conversations isolate owners and reports, count real records and re
           }),
           /could not respond/,
         );
-        assert.equal(reportChat(owner, "first").turns.length, history.length);
-        assert.equal(reportChat(owner, "first").pending, null);
+        assert.equal(
+          (await reportChat(owner, "first")).turns.length,
+          history.length,
+        );
+        assert.equal((await reportChat(owner, "first")).pending, null);
         const result = await sendReportMessage(owner, "first", body, generate);
         assert.equal(result.turns.length, history.length + 1);
       },

@@ -3,7 +3,6 @@ import { randomUUID } from "node:crypto";
 import { all, get, put, remove } from "../lib/db";
 import { assignPortraits } from "../lib/agent-portraits";
 import type { Course, Rehearsal } from "../lib/types";
-
 const base = process.env.LINBA_TEST_URL || "http://localhost:3000";
 const courseId = randomUUID(),
   rehearsalId = randomUUID(),
@@ -44,7 +43,7 @@ async function main() {
     "POST",
   );
   owners.push(user.id);
-  put<Course>("course", {
+  await put<Course>("course", {
     id: courseId,
     ownerId: user.id,
     name: "Practice test",
@@ -76,7 +75,7 @@ async function main() {
       },
     ],
   };
-  put("rehearsal", rehearsal);
+  await put("rehearsal", rehearsal);
   const path = `courses/${courseId}/rehearsal`;
   const portraitId = assignPortraits(rehearsal.personas, rehearsalId)[0]
     .portraitId;
@@ -93,7 +92,10 @@ async function main() {
   assert.equal(changed.rehearsal.personas[0].voice, "cedar");
   for (const durationSeconds of [-1, 1.5, "120", Number.MAX_SAFE_INTEGER + 1]) {
     await request(path, { id: rehearsalId, durationSeconds }, "PATCH", 400);
-    assert.equal(get<Rehearsal>("rehearsal", rehearsalId)?.endedAt, undefined);
+    assert.equal(
+      (await get<Rehearsal>("rehearsal", rehearsalId))?.endedAt,
+      undefined,
+    );
   }
   const saved = await request(
     path,
@@ -128,10 +130,13 @@ main()
     console.error(error);
     process.exitCode = 1;
   })
-  .finally(() => {
-    remove("rehearsal", rehearsalId);
-    remove("course", courseId);
-    for (const session of all<{ id: string; userId: string }>("session"))
-      if (owners.includes(session.userId)) remove("session", session.id);
-    for (const id of owners) remove("user", id);
+  .finally(async () => {
+    await remove("rehearsal", rehearsalId);
+    await remove("course", courseId);
+    for (const session of await all<{
+      id: string;
+      userId: string;
+    }>("session"))
+      if (owners.includes(session.userId)) await remove("session", session.id);
+    for (const id of owners) await remove("user", id);
   });

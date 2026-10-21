@@ -1,0 +1,89 @@
+.participant-entry {
+  min-height: 100dvh;
+  background: var(--bg);
+}
+.participant-entry > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px clamp(20px, 5vw, 64px);
+}
+.participant-entry-content {
+  width: min(100% - 40px, 420px);
+  margin: clamp(36px, 9vh, 100px) auto 0;
+  padding-bottom: 48px;
+}
+.participant-entry-intro {
+  margin-bottom: 28px;
+}
+.participant-entry-intro h1 {
+  font-size: 28px;
+  letter-spacing: -0.025em;
+  margin: 0 0 10px;
+  line-height: 1.2;
+}
+.participant-entry-intro p {
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+.participant-entry-form {
+  display: flex;
+  flex-direction: column;
+}
+.participant-entry-form > label {
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0 0 8px;
+}
+.participant-entry-form > input {
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: 22px;
+}
+.participant-entry-form > .participant-entry-code {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+}
+.participant-entry-form > #participant-name {
+  margin-bottom: 8px;
+}
+.participant-entry-hint {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0 0 24px;
+}
+.participant-entry-form > .button {
+  min-height: 46px;
+}
+.participant-entry-account {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  column-gap: 8px;
+  row-gap: 4px;
+  border-top: 1px solid var(--line);
+  margin-top: 28px;
+  padding-top: 22px;
+  font-size: 13px;
+}
+.participant-entry-account > span {
+  color: var(--muted);
+}
+.participant-entry-account .text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+}
+@media (max-width: 480px) {
+  .participant-entry > header {
+    padding: 18px 20px;
+  }
+  .participant-entry-content {
+    margin-top: 32px;
+  }
+}

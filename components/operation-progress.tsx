@@ -2,7 +2,7 @@
 
 import { Icon } from "./ui";
 import { AgentMark } from "./agent-identity";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 
 type Operation = "training" | "personas" | "report" | "feedback" | "activity";
 
@@ -15,7 +15,7 @@ const operations = {
   },
   personas: {
     icon: "users",
-    title: "Creating your practice participants",
+    title: "Creating your practice agents…",
     description:
       "Participants with different experiences, expectations and questions are being created based on your audience description.",
   },

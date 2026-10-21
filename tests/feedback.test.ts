@@ -4,7 +4,6 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import type { User } from "../lib/types";
-
 test("feedback validates input, persists account ownership and safely retries", async () => {
   const directory = mkdtempSync(path.join(tmpdir(), "linba-feedback-"));
   process.env.LINBA_DATA_DIR = directory;
@@ -24,14 +23,14 @@ test("feedback validates input, persists account ownership and safely retries", 
     userId: "someone-else",
   };
   try {
-    const first = saveFeedback(user, input);
+    const first = await saveFeedback(user, input);
     assert.equal(first.userId, user.id);
     assert.equal(first.message, "Let me organize my training.");
     assert.equal(first.locale, "en");
-    assert.deepEqual(saveFeedback(user, input), first);
-    assert.equal(all("feedback").length, 1);
-    saveFeedback({ ...user, id: "other" }, input);
-    assert.equal(all("feedback").length, 2);
+    assert.deepEqual(await saveFeedback(user, input), first);
+    assert.equal((await all("feedback")).length, 1);
+    await saveFeedback({ ...user, id: "other" }, input);
+    assert.equal((await all("feedback")).length, 2);
     for (const bad of [
       null,
       { ...input, message: "  " },
@@ -40,8 +39,8 @@ test("feedback validates input, persists account ownership and safely retries", 
       { ...input, category: "invalid" },
       { ...input, requestId: "bad" },
     ])
-      assert.throws(() => saveFeedback(user, bad));
-    assert.equal(all("feedback").length, 2);
+      await assert.rejects(async () => await saveFeedback(user, bad));
+    assert.equal((await all("feedback")).length, 2);
   } finally {
     db().close();
     rmSync(directory, { recursive: true, force: true });

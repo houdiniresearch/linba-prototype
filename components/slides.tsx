@@ -1,5 +1,7 @@
 "use client";
-import { useLocale } from "./locale-provider";
+import { slideSource } from "@/lib/slide-source";
+import { isChoiceActivity, activityTypeLabel } from "@/lib/activities";
+import { useProductLocale as useLocale } from "./product-locale";
 import type { Course, Slide, Page } from "@/lib/types";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { SlideSkeleton } from "./skeletons";
@@ -20,13 +22,37 @@ export function SlideView({
   slide,
   displayKey,
   small = false,
+  participant = false,
 }: {
   course: Course;
   slide: Slide;
   displayKey?: string;
   small?: boolean;
+  participant?: boolean;
 }) {
   const { t } = useLocale();
+  useEffect(() => {
+    if (small) return;
+    const index = course.slides.findIndex((item) => item.id === slide.id);
+    for (const next of course.slides.slice(index + 1, index + 3)) {
+      const page = course.pages.find((page) => page.id === next.pageId);
+      if (page) {
+        const image = new window.Image();
+        image.src = slideSource(course, page.number, {
+          participant,
+          displayKey,
+        });
+      }
+    }
+  }, [
+    course.id,
+    course.slides,
+    course.pages,
+    slide.id,
+    small,
+    participant,
+    displayKey,
+  ]);
 
   if (slide.kind === "document") {
     const page = course.pages.find((p) => p.id === slide.pageId);
@@ -36,23 +62,21 @@ export function SlideView({
         key={`${course.id}:${page.number}:${displayKey || ""}`}
         page={page}
         small={small}
-        src={`/api/courses/${course.id}/page/${page.number}${displayKey ? `?key=${displayKey}` : ""}`}
+        src={slideSource(course, page.number, { participant, displayKey })}
       />
     );
   }
   return (
     <div className={`activity-slide ${small ? "small" : ""}`}>
       <div className="activity-slide-label">
-        <Icon name={slide.activity?.type === "poll" ? "chart" : "chat"} />
-        {slide.activity?.type === "poll"
-          ? t("Poll")
-          : slide.activity?.type === "scenario"
-            ? t("Scenario")
-            : t("Open question")}
+        <Icon
+          name={isChoiceActivity(slide.activity?.type) ? "chart" : "chat"}
+        />
+        {t(activityTypeLabel(slide.activity?.type))}
         {slide.activity?.aiGenerated && <span>{t("· Generated with AI")}</span>}
       </div>
       <h2>{slide.activity?.question}</h2>
-      {slide.activity?.type === "poll" ? (
+      {isChoiceActivity(slide.activity?.type) ? (
         <div className="poll-options">
           {slide.activity.options.map((o, i) => (
             <div key={i}>
@@ -93,6 +117,7 @@ function DocumentSlide({
   return (
     <div
       className={`slide-frame ${small ? "small" : ""}`}
+      aria-busy={!ready && !failed}
       style={{ "--slide-ratio": ratio } as CSSProperties}
     >
       {!ready && !failed && <SlideSkeleton small={small} />}

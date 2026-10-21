@@ -3,7 +3,8 @@ import { useEffect, useId, useRef, useState, type RefObject } from "react";
 import type { Course } from "@/lib/types";
 import type { TrainingGroup } from "@/lib/workspace-library";
 import { ALL_TIME, type LibraryPeriod } from "@/lib/library-filters";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
+import { EmptyArtwork } from "./empty-artwork";
 import { api, ErrorNote, Icon, Modal } from "./ui";
 
 function placePopover(trigger: HTMLElement, width: number, height: number) {
@@ -190,15 +191,10 @@ export function TrainingGroups({
   activeRef?: RefObject<HTMLButtonElement | null>;
 }) {
   const { t } = useLocale();
-  const items = [
-    { id: "all", name: t("All training") },
-    ...(groups.length
-      ? [{ id: "ungrouped", name: t("Ungrouped") }, ...groups]
-      : []),
-  ];
+  const items = [{ id: "all", name: t("All presentations") }, ...groups];
   return (
     <div className="library-group-bar">
-      <nav className="library-group-tabs" aria-label={t("Training groups")}>
+      <nav className="library-group-tabs" aria-label={t("Presentation folders")}>
         {items.map((group) => (
           <button
             type="button"
@@ -219,10 +215,10 @@ export function TrainingGroups({
         type="button"
         className="library-organize-button"
         onClick={(event) => onManage(event.currentTarget)}
-        title={t("Manage groups")}
+        title={t("Manage folders")}
       >
         <Icon name="folderPlus" size={18} />
-        <span>{t(groups.length ? "Manage groups" : "Create a group")}</span>
+        <span>{t(groups.length ? "Manage folders" : "Create a folder")}</span>
       </button>
     </div>
   );
@@ -263,7 +259,7 @@ export function GroupManager({
       open={open}
       onClose={() => !busy && onClose()}
       closeDisabled={busy}
-      title={t("Training groups")}
+      title={t("Presentation folders")}
       description={t("Organize your library by topic or team.")}
       className="group-manager-modal"
       returnFocusRef={returnFocusRef}
@@ -275,11 +271,11 @@ export function GroupManager({
           ))
         ) : (
           <div className="group-manager-empty">
-            <Icon name="folder" size={28} />
+            <EmptyArtwork kind="training" compact />
             <strong>{t("A place for every topic")}</strong>
             <p>
               {t(
-                "Keep sales training, onboarding and technical sessions in their own groups.",
+                "Keep sales training, onboarding and technical sessions in their own folders.",
               )}
             </p>
           </div>
@@ -293,7 +289,7 @@ export function GroupManager({
         }}
       >
         <label>
-          {t("New group")}
+          {t("New folder")}
           <input
             maxLength={60}
             placeholder={t("For example: Sales training")}
@@ -305,12 +301,12 @@ export function GroupManager({
         </label>
         <button className="button primary" disabled={busy || !name.trim()}>
           <Icon name="plus" size={18} />
-          {t(busy ? "Adding…" : "Add group")}
+          {t(busy ? "Adding…" : "Add folder")}
         </button>
       </form>
       <ErrorNote message={error} />
       <p className="group-manager-hint">
-        {t("Move training into a group from its options menu.")}
+        {t("Move training into a folder from its options menu.")}
       </p>
     </Modal>
   );
@@ -361,7 +357,7 @@ function GroupRow({
           <div>
             <strong>{t("Remove {name}?", { name: group.name })}</strong>
             <p>
-              {t("Your training stays in your library, without this group.")}
+              {t("Your training stays in your library, without this folder.")}
             </p>
           </div>
           <div>
@@ -377,7 +373,7 @@ function GroupRow({
               disabled={busy}
               onClick={() => void save(true)}
             >
-              {t(busy ? "Removing…" : "Remove group")}
+              {t(busy ? "Removing…" : "Remove folder")}
             </button>
           </div>
         </div>
@@ -392,7 +388,7 @@ function GroupRow({
           {editing ? (
             <input
               autoFocus
-              aria-label={t("Group name")}
+              aria-label={t("Folder name")}
               value={name}
               maxLength={60}
               required
@@ -402,6 +398,7 @@ function GroupRow({
                 if (event.key === "Escape") {
                   event.preventDefault();
                   event.stopPropagation();
+                  restoreFocus.current = true;
                   setEditing(false);
                   setName(group.name);
                 }
@@ -415,7 +412,7 @@ function GroupRow({
               <>
                 <button
                   className="icon-button"
-                  aria-label={t("Save group")}
+                  aria-label={t("Save folder")}
                   disabled={busy || name === group.name || !name.trim()}
                 >
                   <Icon name="check" size={18} />
@@ -537,7 +534,7 @@ export function TrainingCardMenu({
               onClick={() => setMoving(false)}
             >
               <Icon name="back" size={17} />
-              {t("Move to group")}
+              {t("Move to folder")}
             </button>
             <div className="training-group-options">
               <button
@@ -546,7 +543,7 @@ export function TrainingCardMenu({
                 onClick={() => void update("group", "")}
               >
                 <Icon name="folder" size={17} />
-                <span>{t("Ungrouped")}</span>
+                <span>{t("All presentations")}</span>
                 {!course.groupId && <Icon name="check" size={16} />}
               </button>
               {groups.map((group) => (
@@ -569,7 +566,7 @@ export function TrainingCardMenu({
           <>
             <button className="popover-item" onClick={() => setMoving(true)}>
               <Icon name="folder" size={18} />
-              <span>{t("Move to group")}</span>
+              <span>{t("Move to folder")}</span>
               <Icon name="right" size={14} />
             </button>
             <hr />

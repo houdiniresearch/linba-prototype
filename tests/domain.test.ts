@@ -168,6 +168,22 @@ test("cached tokens are priced once and duplicate usage events do not inflate es
   assert.equal(entries.length, 1);
   assert.equal(usageSummary(entries).extra, usageSummary(entries).total);
   assert.equal(usageCost({ ...entry, model: "unknown-model" }), null);
+  assert.ok(
+    usageCost({ ...entry, model: "gpt-realtime-2.1" })! > usageCost(entry)!,
+  );
+  assert.ok(
+    Math.abs(
+      usageCost({
+        ...entry,
+        model: "gpt-5.4-mini-2026-03-17",
+        usage: {
+          input_tokens: 1000,
+          output_tokens: 100,
+          input_token_details: { cached_tokens: 200 },
+        },
+      })! - 0.001065,
+    ) < 1e-10,
+  );
   assert.equal(
     usageCost({ ...entry, usage: { input_tokens: 1, output_tokens: 1 } }),
     null,
@@ -235,6 +251,14 @@ test("access starts at end and expires at the exact boundary", () => {
   assert.equal(canChat(course, end + 7 * 86400000 - 1), true);
   assert.equal(canChat(course, end + 7 * 86400000), false);
   assert.equal(canChat({ ...course, accessDays: 0 }, end), false);
+  assert.equal(
+    canChat({ ...course, accessDays: 90 }, end + 30 * 86400000 - 1),
+    true,
+  );
+  assert.equal(
+    canChat({ ...course, accessDays: 90 }, end + 30 * 86400000),
+    false,
+  );
   assert.equal(canChat({ ...course, status: "draft" }, end), false);
 });
 test("activity can move, document order and permutation integrity remain protected", () => {

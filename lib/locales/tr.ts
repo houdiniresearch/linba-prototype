@@ -1,37 +1,37 @@
 // Turkish UI translations. Application source strings are English.
 export const turkish: Record<string, string> = {
-  "This group is ready for your training": "Bu grup eğitimlerin için hazır",
-  "Move training here from the options menu on a training card.":
-    "Eğitim kartındaki seçenekler menüsünden bu gruba eğitim taşıyabilirsin.",
+  "This folder is ready for your training": "Bu klasör eğitimlerin için hazır",
+  "Create training here or move existing training from its options menu.":
+    "Burada eğitim oluşturabilir veya mevcut bir eğitimi seçenekler menüsünden taşıyabilirsin.",
   "View all training": "Tüm eğitimleri gör",
   "{name} moved to Trash.": "{name} çöp kutusuna taşındı.",
-  "Moved to {group}.": "{group} grubuna taşındı.",
-  "View group": "Grubu aç",
+  "Moved to {folder}.": "{folder} klasörüne taşındı.",
+  "View folder": "Klasörü aç",
   "Open Trash": "Çöp kutusunu aç",
   Dismiss: "Bildirimi kapat",
   "The end date must be on or after the start date.":
     "Bitiş tarihi, başlangıç tarihinden önce olamaz.",
   "Apply range": "Tarihleri uygula",
   "Clear filters": "Filtreleri temizle",
-  "Create a group": "Grup oluştur",
+  "Create a folder": "Klasör oluştur",
   "{count} sessions": "{count} oturum",
   "{count} training": "{count} eğitim",
   "Training library": "Eğitim kütüphanesi",
   "Organize your library by topic or team.":
     "Eğitimlerini konuya veya ekibe göre düzenle.",
-  "A place for every topic": "Her konuya bir grup",
-  "Keep sales training, onboarding and technical sessions in their own groups.":
-    "Satış, oryantasyon ve teknik eğitimlerini ayrı gruplarda bir arada tut.",
-  "Move training into a group from its options menu.":
-    "Eğitim kartındaki seçenekler menüsünden gruba taşıyabilirsin.",
+  "A place for every topic": "Her konuya bir klasör",
+  "Keep sales training, onboarding and technical sessions in their own folders.":
+    "Satış, oryantasyon ve teknik eğitimlerini ayrı klasörlerde bir arada tut.",
+  "Move training into a folder from its options menu.":
+    "Eğitim kartındaki seçenekler menüsünden klasöre taşıyabilirsin.",
   "Adding…": "Ekleniyor…",
-  "Remove {name}?": "{name} grubu kaldırılsın mı?",
-  "Your training stays in your library, without this group.":
-    "Eğitimlerin, bu grup olmadan kütüphanende kalır.",
+  "Remove {name}?": "{name} klasörü kaldırılsın mı?",
+  "Your training stays in your library, without this folder.":
+    "Eğitimlerin, bu klasör olmadan kütüphanende kalır.",
   "Removing…": "Kaldırılıyor…",
-  "Remove group": "Grubu kaldır",
-  "Rename {name}": "{name} grubunu yeniden adlandır",
-  "Remove {name}": "{name} grubunu kaldır",
+  "Remove folder": "Klasörü kaldır",
+  "Rename {name}": "{name} klasörünü yeniden adlandır",
+  "Remove {name}": "{name} klasörünü kaldır",
   "Your name and account details.": "Adın ve hesap bilgilerin.",
   "Keep access to your account secure.": "Hesabına erişimi güvende tut.",
   "Your plan and billing history, in one place.":
@@ -90,11 +90,11 @@ export const turkish: Record<string, string> = {
     "Materyalini yükle, aktiviteler ekle ve pratik yap. Oturum bittikten sonra aynı eğitimi yeniden kullanarak katılımcıları ve raporu ayrı bir oturum hazırlayabilirsin.",
   "Open my training": "Eğitimlerimi aç",
   "Find a session’s report": "Bir oturumun raporunu bul",
-  "Reports are separate for each session. Use the dates and time filters to find the group you are looking for.":
-    "Her oturumun raporu ayrıdır. Aradığın grubu bulmak için tarihleri ve zaman filtrelerini kullanabilirsin.",
-  "Groups and Trash": "Gruplar ve çöp kutusu",
-  "Create groups in My training to organize your library. Moving training to Trash keeps its records; restore it whenever you need it.":
-    "Eğitimlerim bölümünde gruplar oluşturup kütüphaneni düzenleyebilirsin. Çöp kutusuna taşınan eğitimin kayıtları korunur; istediğinde geri yükleyebilirsin.",
+  "Reports are separate for each session. Use the dates and time filters to find the session you are looking for.":
+    "Her oturumun raporu ayrıdır. Aradığın oturumu bulmak için tarihleri ve zaman filtrelerini kullanabilirsin.",
+  "Folders and Trash": "Klasörler ve çöp kutusu",
+  "Create folders in My training to organize your library. Moving training to Trash keeps its records; restore it whenever you need it.":
+    "Eğitimlerim bölümünde klasörler oluşturup kütüphaneni düzenleyebilirsin. Çöp kutusuna taşınan eğitimin kayıtları korunur; istediğinde geri yükleyebilirsin.",
   "Filter by date": "Tarihe göre filtrele",
   "All time": "Tüm zamanlar",
   "Recent · last 7 days": "Son 7 gün",
@@ -103,20 +103,20 @@ export const turkish: Record<string, string> = {
   "Custom range": "Özel tarih aralığı",
   From: "Başlangıç",
   To: "Bitiş",
-  "Training groups": "Eğitim grupları",
+  "Training folders": "Eğitim klasörleri",
   "Organize training by topic, team or any system that works for you.":
-    "Eğitimlerini konuya, ekibe veya sana uygun bir düzene göre grupla.",
-  "New group": "Yeni grup",
+    "Eğitimlerini konuya, ekibe veya sana uygun bir düzene göre klasörlere ayır.",
+  "New folder": "Yeni klasör",
   "For example: Sales training": "Örneğin: Satış eğitimleri",
-  "Add group": "Grup ekle",
-  "Deleting a group keeps its training in your library.":
-    "Grubu sildiğinde eğitimlerin kütüphanende kalır.",
-  "Group name": "Grup adı",
-  "Save group": "Grubu kaydet",
-  "Delete group": "Grubu sil",
+  "Add folder": "Klasör ekle",
+  "Deleting a folder keeps its training in your library.":
+    "Klasörü sildiğinde eğitimlerin kütüphanende kalır.",
+  "Folder name": "Klasör adı",
+  "Save folder": "Klasörü kaydet",
+  "Delete folder": "Klasörü sil",
   "Training options for {name}": "{name} için eğitim seçenekleri",
-  "Move to group": "Gruba taşı",
-  Ungrouped: "Gruplanmamış",
+  "Move to folder": "Klasöre taşı",
+  "No folder": "Klasörsüz",
   "Move to Trash": "Çöp kutusuna taşı",
   "Instructor notes": "Eğitmen notları",
   "Only visible to you": "Yalnızca sen görürsün",
@@ -124,9 +124,9 @@ export const turkish: Record<string, string> = {
     "Bu slayt için bir hatırlatma, anlatım notu veya soru ekle…",
   "Rename training": "Eğitimin adını değiştir",
   "Rename training: {name}": "Eğitimin adını değiştir: {name}",
-  "Training group": "Eğitim grubu",
-  "All groups": "Tüm gruplar",
-  "Manage groups": "Grupları yönet",
+  "Training folder": "Eğitim klasörü",
+  "All folders": "Tüm klasörler",
+  "Manage folders": "Klasörleri yönet",
   Trash: "Çöp kutusu",
   Help: "Yardım",
   "Your training and its session records stay here until you restore them.":
@@ -136,11 +136,11 @@ export const turkish: Record<string, string> = {
   "Trash is empty": "Çöp kutusu boş",
   "Training moved to Trash will appear here.":
     "Çöp kutusuna taşıdığın eğitimler burada görünür.",
-  "Group not found.": "Grup bulunamadı.",
-  "Use a group name between 1 and 60 characters.":
-    "Grup adı 1–60 karakter arasında olmalı.",
-  "A group with this name already exists.": "Bu isimde bir grup zaten var.",
-  "Choose a training group.": "Bir eğitim grubu seç.",
+  "Folder not found.": "Klasör bulunamadı.",
+  "Use a folder name between 1 and 60 characters.":
+    "Klasör adı 1–60 karakter arasında olmalı.",
+  "A folder with this name already exists.": "Bu isimde bir klasör zaten var.",
+  "Choose a training folder.": "Bir eğitim klasörü seç.",
   "End the live session before moving this training to Trash.":
     "Bu eğitimi çöp kutusuna taşımadan önce canlı oturumu bitir.",
   "Account not found.": "Hesap bulunamadı.",
@@ -161,8 +161,8 @@ export const turkish: Record<string, string> = {
   "No reports match your filters": "Filtrelerine uygun rapor bulunamadı",
   "Adjust the search or date range to find a session.":
     "Bir oturum bulmak için aramayı veya tarih aralığını değiştir.",
-  "Adjust your search, group or date filters.":
-    "Arama, grup veya tarih filtrelerini değiştir.",
+  "Adjust your search, folder or date filters.":
+    "Arama, klasör veya tarih filtrelerini değiştir.",
 
   Started: "Başladı",
   "Session {number}": "Oturum {number}",

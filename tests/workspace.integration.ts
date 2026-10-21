@@ -111,11 +111,11 @@ async function main() {
     await teacher(`courses/${course.id}/group`, { groupId: group.id });
     await other(`groups/${group.id}`, { name: "Forbidden" }, "PATCH", 404);
     await learner("groups", undefined, "GET", 403);
-    const initial = get<Course>("course", course.id)!;
+    const initial = (await get<Course>("course", course.id))!;
     initial.status = "ended";
     initial.startedAt = new Date(Date.now() - 2400000).toISOString();
     initial.endedAt = new Date(Date.now() - 1800000).toISOString();
-    put("course", initial);
+    await put("course", initial);
     const key = randomUUID();
     const [first, retry] = await Promise.all([
       teacher(`courses/${course.id}/repeat`, { requestId: key }),
@@ -134,10 +134,10 @@ async function main() {
     assert.equal(secondState.questions.length, 0);
     await teacher(`courses/${repeated.id}`, { action: "start" }, "PATCH");
     await teacher(`courses/${initial.id}/trash`, {}, "POST", 409);
-    const completed = get<Course>("course", repeated.id)!;
+    const completed = (await get<Course>("course", repeated.id))!;
     completed.status = "ended";
     completed.endedAt = new Date().toISOString();
-    put("course", completed);
+    await put("course", completed);
     const reports = await teacher("report-assistant");
     assert.equal(reports.reports.length, 2);
     assert.ok(
@@ -155,7 +155,10 @@ async function main() {
     await teacher(`courses/${initial.id}/restore`, {});
     assert.equal((await teacher("report-assistant")).reports.length, 2);
     await teacher(`groups/${group.id}`, undefined, "DELETE");
-    assert.equal(get<Course>("course", repeated.id)?.groupId, undefined);
+    assert.equal(
+      (await get<Course>("course", repeated.id))?.groupId,
+      undefined,
+    );
     const profile = await teacher(
       "account",
       { name: "Updated QA", email: `updated-${randomUUID()}@linba.test` },
@@ -179,7 +182,7 @@ async function main() {
       "Workspace HTTP checks passed: private notes, rename, groups, isolated repeated sessions, timestamps, Trash, profile and password rotation.",
     );
   } finally {
-    const courses = all<Course>("course").filter((course) =>
+    const courses = (await all<Course>("course")).filter((course) =>
       ids.has(course.ownerId),
     );
     const courseIds = new Set(courses.map((course) => course.id));
@@ -193,7 +196,7 @@ async function main() {
       "training-group",
       "session",
     ]) {
-      for (const item of all<{
+      for (const item of await all<{
         id: string;
         courseId?: string;
         userId?: string;
@@ -206,16 +209,16 @@ async function main() {
           ids.has(item.userId || "") ||
           ids.has(item.ownerId || "")
         )
-          remove(kind, item.id);
+          await remove(kind, item.id);
     }
     for (const course of courses) {
-      remove("course", course.id);
+      await remove("course", course.id);
       await rm(path.join(DATA_DIR, "files", course.id), {
         recursive: true,
         force: true,
       });
     }
-    for (const id of ids) remove("user", id);
+    for (const id of ids) await remove("user", id);
   }
 }
 main().catch((error) => {

@@ -1,16 +1,26 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { isChoiceActivity } from "@/lib/activities";
+import { useEffect, useRef, useState, useId, useCallback } from "react";
+import {
+  reportTabs,
+  reportTabForSection,
+  type ReportTab,
+} from "@/lib/report-navigation";
+import { MemberAvatar } from "./team-workspace";
 import type { CourseState } from "@/lib/types";
+import { ParticipantSourcePreview } from "./participant-source";
 import { learningSignals } from "@/lib/learning-insights";
 import { pollResults } from "@/lib/activities";
 import { ReportAssistantLink } from "./report-assistant-link";
-import { RepeatTrainingButton } from "./repeat-training-button";
+import { formatTrainingDuration } from "@/lib/training-duration";
 import { ReportDetailSkeleton } from "./skeletons";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 import {
   Icon,
+  api,
+  Empty,
+  ErrorNote,
   ResourceFailure,
-  Status,
   date,
   dateTime,
   useResource,
@@ -20,9 +30,19 @@ function scrollReport(
   root: HTMLDivElement | null,
   section: string,
   embedded: boolean,
+  moveFocus = false,
 ) {
   if (!root) return;
-  const target = root.querySelector<HTMLElement>(`#${section}`);
+  const target =
+    section === "report-top"
+      ? root
+      : root.querySelector<HTMLElement>(`#${CSS.escape(section)}`);
+  if (target instanceof HTMLDetailsElement) target.open = true;
+  if (moveFocus)
+    (target instanceof HTMLDetailsElement
+      ? target.querySelector("summary")
+      : target
+    )?.focus({ preventScroll: true });
   if (!embedded) {
     target?.scrollIntoView({ block: "start" });
     return;
@@ -53,26 +73,66 @@ export function Report({
 }) {
   const { t, locale } = useLocale();
   const root = useRef<HTMLDivElement>(null);
+  const [source, setSource] = useState<{
+    questionId: string;
+    page: number;
+  } | null>(null);
+  const sourceTrigger = useRef<HTMLElement | null>(null);
+  const [retryingSummary, setRetryingSummary] = useState(false);
+  const [summaryError, setSummaryError] = useState("");
 
   const { data, error, refresh } = useResource<CourseState>(
-    `courses/${id}`,
+    `reports/${id}`,
     5000,
   );
   const loaded = !!data;
+  const tabId = useId();
+  const [activeTab, setActiveTab] = useState<ReportTab>("report-overview");
+  const [jump, setJump] = useState<{
+    section: string;
+    focus: boolean;
+    request: number;
+  } | null>(null);
+  const navigate = useCallback(
+    (section: string, focus = false, scroll = false) => {
+      const tab = reportTabForSection(section);
+      if (!tab) return;
+      setActiveTab(tab);
+      setJump(scroll ? { section, focus, request: Date.now() } : null);
+      if (!embedded)
+        history.replaceState(
+          history.state,
+          "",
+          `${location.pathname}${location.search}#${section}`,
+        );
+    },
+    [embedded],
+  );
   useEffect(() => {
-    const section = embedded ? focusSection?.section : location.hash.slice(1);
-    if (
-      loaded &&
-      section &&
-      [
-        "report-top",
-        "report-overview",
-        "report-questions",
-        "report-activities",
-      ].includes(section)
-    )
-      scrollReport(root.current, section, embedded);
+    if (!loaded) return;
+    const section = embedded
+      ? focusSection?.section || "report-overview"
+      : location.hash.slice(1) || "report-overview";
+    const tab = reportTabForSection(section);
+    setActiveTab(tab || "report-overview");
+    setJump(
+      tab && section !== "report-overview"
+        ? { section, focus: !!focusSection, request: Date.now() }
+        : null,
+    );
+    setSource(null);
   }, [loaded, id, embedded, focusSection]);
+  useEffect(() => {
+    if (loaded && jump)
+      scrollReport(root.current, jump.section, embedded, jump.focus);
+  }, [loaded, activeTab, jump, embedded]);
+  useEffect(() => {
+    if (embedded) return;
+    const update = () =>
+      navigate(location.hash.slice(1) || "report-overview", false, true);
+    window.addEventListener("hashchange", update);
+    return () => window.removeEventListener("hashchange", update);
+  }, [embedded, navigate]);
   if (!data)
     return error ? (
       <ResourceFailure error={error} onRetry={refresh} />
@@ -81,6 +141,21 @@ export function Report({
     );
   const { course: c, questions, participants, responses } = data;
   const signals = learningSignals(questions);
+  const preparingSummary = c.report?.status === "pending";
+  const summaryFailed = c.report?.status === "error";
+  async function retrySummary() {
+    setRetryingSummary(true);
+    setSummaryError("");
+    try {
+      await api(`reports/${id}/generate`, {});
+      await refresh();
+    } catch (error) {
+      setSummaryError((error as Error).message);
+    } finally {
+      setRetryingSummary(false);
+    }
+  }
+  const sourceQuestion = questions.find((q) => q.id === source?.questionId);
   const groups = [
     ...new Map(questions.map((q) => [q.groupId, q.groupTitle])).entries(),
   ];
@@ -93,9 +168,9 @@ export function Report({
         const link =
           event.target instanceof Element ? event.target.closest("a") : null;
         const href = link?.getAttribute("href");
-        if (embedded && href?.startsWith("#report-")) {
+        if (href?.startsWith("#report-")) {
           event.preventDefault();
-          scrollReport(root.current, href.slice(1), true);
+          navigate(href.slice(1), true, true);
         }
       }}
     >
@@ -107,145 +182,303 @@ export function Report({
       )}
       <div className="page-title">
         <div>
-          <span className="eyebrow">{t("TRAINING REPORT")}</span>
+          <span className="report-kind">{t("Training report")}</span>
           <Heading>{c.name}</Heading>
-          <p className="muted">
-            {t("Session {number}", { number: c.sessionNumber || 1 })}
-            {c.startedAt && (
-              <>
-                {" "}
-                · {t("Started")}: {dateTime(c.startedAt, locale)}
-              </>
-            )}
+          <dl className="report-session-context">
+            <div>
+              <dt>{t("Duration")}</dt>
+              <dd>
+                {formatTrainingDuration(
+                  c.startedAt,
+                  c.endedAt,
+                  locale,
+                  c.pausedDurationMs,
+                ) || t("Not recorded")}
+              </dd>
+            </div>
             {c.endedAt && (
-              <>
-                {" "}
-                · {t("Completed")}: {dateTime(c.endedAt, locale)}
-              </>
-            )}{" "}
-            {t("· Updated with records after training.")}
-          </p>
+              <div>
+                <dt>{t("Completion date")}</dt>
+                <dd>
+                  <time dateTime={c.endedAt}>
+                    {dateTime(c.endedAt, locale)}
+                  </time>
+                </dd>
+              </div>
+            )}
+            <div>
+              <dt>{t("Created by")}</dt>
+              <dd className="report-author">
+                <MemberAvatar name={c.createdBy || t("Unknown creator")} />
+                <span>{c.createdBy || t("Unknown creator")}</span>
+              </dd>
+            </div>
+          </dl>
         </div>
         {!embedded && (
           <div className="report-title-actions">
-            <Status status={c.status} />
-            {c.status === "ended" && <RepeatTrainingButton id={c.id} />}
             <ReportAssistantLink id={c.id} />
           </div>
         )}
       </div>
-      <div className="metrics" id="report-overview">
-        {[
-          [participants.length, t("Participant")],
-          [questions.length, t("Question")],
-          [
-            questions.filter((q) => q.status === "answered").length,
-            t("AI answer"),
-          ],
-          [responses.length, t("Activity response")],
-        ].map(([number, label]) => (
-          <div key={label}>
-            <strong>{number}</strong>
-            <span>{label}</span>
-          </div>
+      <ErrorNote message={error} />
+      <div
+        className="report-section-nav"
+        role="tablist"
+        aria-label={t("Report sections")}
+      >
+        {reportTabs.map((tab, index) => (
+          <button
+            key={tab}
+            type="button"
+            role="tab"
+            id={`${tabId}-${tab}`}
+            aria-controls={tab}
+            aria-selected={activeTab === tab}
+            tabIndex={activeTab === tab ? 0 : -1}
+            onClick={() => navigate(tab)}
+            onKeyDown={(event) => {
+              if (
+                !["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)
+              )
+                return;
+              event.preventDefault();
+              const next =
+                event.key === "Home"
+                  ? 0
+                  : event.key === "End"
+                    ? 2
+                    : (index + (event.key === "ArrowRight" ? 1 : -1) + 3) % 3;
+              root.current
+                ?.querySelector<HTMLButtonElement>(
+                  `[id="${tabId}-${reportTabs[next]}"]`,
+                )
+                ?.focus();
+              navigate(reportTabs[next]);
+            }}
+          >
+            {t(
+              ["Overview", "Questions and answers", "Activity results"][index],
+            )}
+            {index > 0 && (
+              <span className="report-tab-count">
+                {index === 1 ? questions.length : responses.length}
+              </span>
+            )}
+          </button>
         ))}
       </div>
-      <section className="report-section learning-overview">
-        <div className="section-title">
-          <h2>{t("Learning signals")}</h2>
-          <span className="small muted">
-            {t("From this training’s recorded questions and responses")}
-          </span>
+      <div
+        id="report-overview"
+        className="report-tab-panel"
+        role="tabpanel"
+        aria-labelledby={`${tabId}-report-overview`}
+        tabIndex={0}
+        hidden={activeTab !== "report-overview"}
+      >
+        <div className="metrics report-record-totals">
+          {[
+            [participants.length, t("Participant")],
+            [questions.length, t("Question")],
+            [
+              questions.filter((q) => q.status === "answered").length,
+              t("AI answer"),
+            ],
+            [responses.length, t("Activity response")],
+          ].map(([number, label]) => (
+            <div key={label}>
+              <strong>{number}</strong>
+              <span>{label}</span>
+            </div>
+          ))}
         </div>
-        <div className="insight-columns">
-          <div>
-            <h3>{t("Topics prompting questions")}</h3>
-            {signals.topics.length ? (
-              <ul className="topic-signals">
-                {signals.topics.slice(0, 4).map((topic) => (
-                  <li key={topic.id}>
-                    <a
-                      href={`#report-topic-${topic.id}`}
-                      onClick={() => {
-                        const group = document.getElementById(
-                          `report-topic-${topic.id}`,
-                        );
-                        if (group instanceof HTMLDetailsElement)
-                          group.open = true;
-                      }}
-                    >
-                      {topic.title}
-                    </a>
-                    <span>
-                      {topic.count} {t("questions")}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="muted">
-                {t(
-                  "There are not enough sourced answers to identify topics yet.",
-                )}
+        <div
+          className={`report-overview-layout${questions.length || responses.length ? "" : " is-empty"}`}
+        >
+          <section
+            className="report-section report-summary"
+            aria-busy={preparingSummary}
+          >
+            <div className="section-title">
+              <h2>{t("Training summary")}</h2>
+              <span className="small muted">
+                {preparingSummary
+                  ? null
+                  : (questions.length || responses.length) && c.report?.ai
+                    ? t("Prepared by AI")
+                    : t("Compiled from records")}
+                {!preparingSummary &&
+                (questions.length || responses.length) &&
+                c.report
+                  ? ` · ${date(c.report.updatedAt, locale)}`
+                  : null}
+              </span>
+            </div>
+            {preparingSummary ? (
+              <div className="report-preparing" role="status">
+                <p>
+                  <Icon name="spinner" size={17} className="spin" />
+                  {t(
+                    "Your AI report is being prepared. Participant records are ready to explore.",
+                  )}
+                </p>
+                <div className="report-summary-skeleton" aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                </div>
+                <h3>{t("Suggestions for your next presentation")}</h3>
+                <div className="report-summary-skeleton" aria-hidden="true">
+                  <i />
+                  <i />
+                </div>
+              </div>
+            ) : questions.length || responses.length ? (
+              <p>
+                {c.report?.ai || c.report?.source === "showcase"
+                  ? c.report.summary
+                  : t(
+                      "{questions} questions and {responses} activity responses were recorded. {review} questions need instructor review.",
+                      {
+                        questions: questions.length,
+                        responses: responses.length,
+                        review: signals.needsReview.length,
+                      },
+                    )}
               </p>
+            ) : (
+              <Empty
+                icon="chart"
+                compact
+                title={t("No interactions recorded yet")}
+                description={t(
+                  "Participant questions and activity responses will build this report.",
+                )}
+              />
             )}
-          </div>
-          <div>
-            <h3>{t("Questions to review")}</h3>
-            <p>
-              {t("{count} questions still need instructor review.", {
-                count: signals.needsReview.length,
-              })}
-            </p>
-            <p className="small muted">
-              {t(
-                "A question without a sourced answer is not evidence of a learning gap.",
+            {!preparingSummary &&
+              !!(questions.length || responses.length) &&
+              (summaryFailed ||
+                (!c.report?.ai && c.report?.source !== "showcase")) && (
+                <div className="report-summary-retry">
+                  <p>
+                    {t(
+                      summaryFailed
+                        ? "The AI summary could not be prepared. Your participant records are saved."
+                        : "The AI summary is not ready yet. You can already explore participant records.",
+                    )}
+                  </p>
+                  <button
+                    className="button"
+                    disabled={retryingSummary}
+                    onClick={() => void retrySummary()}
+                  >
+                    <Icon
+                      name={retryingSummary ? "spinner" : "arrow"}
+                      size={16}
+                      className={retryingSummary ? "spin" : undefined}
+                    />
+                    {t(summaryFailed ? "Try again" : "Prepare AI summary")}
+                  </button>
+                  <ErrorNote message={summaryError} />
+                </div>
               )}
-            </p>
-            <a className="text-button" href="#report-questions">
-              {t("Review the records")}
-              <Icon name="arrow" size={16} />
-            </a>
-          </div>
+            {!preparingSummary &&
+            (questions.length || responses.length) &&
+            c.report?.recommendations.length ? (
+              <details className="recommendations-panel">
+                <summary>
+                  {t(
+                    c.report.source === "showcase"
+                      ? "Suggestions for your next presentation"
+                      : "AI suggestions for your next training",
+                  )}
+                </summary>
+                <p className="small muted">
+                  {t(
+                    "Review suggestions against the source records before acting on them.",
+                  )}
+                </p>
+                <ul className="recommendations">
+                  {c.report.recommendations.map((suggestion, index) => (
+                    <li key={index}>{suggestion}</li>
+                  ))}
+                </ul>
+              </details>
+            ) : null}
+          </section>
+
+          {!!(questions.length || responses.length) && (
+            <section className="report-section learning-overview">
+              <div className="section-title">
+                <h2>{t("Learning signals")}</h2>
+                <span className="small muted">
+                  {t("From this training’s recorded questions and responses")}
+                </span>
+              </div>
+              <div className="insight-columns">
+                <div>
+                  <h3>{t("Topics prompting questions")}</h3>
+                  {signals.topics.length ? (
+                    <ul className="topic-signals">
+                      {signals.topics.slice(0, 4).map((topic) => (
+                        <li key={topic.id}>
+                          <a
+                            href={`#report-topic-${topic.id}`}
+                            onClick={() => {
+                              const group = root.current?.querySelector(
+                                `#${CSS.escape(`report-topic-${topic.id}`)}`,
+                              );
+                              if (group instanceof HTMLDetailsElement)
+                                group.open = true;
+                            }}
+                          >
+                            {topic.title}
+                          </a>
+                          <span>
+                            {topic.count} {t("questions")}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="muted">
+                      {t(
+                        "There are not enough sourced answers to identify topics yet.",
+                      )}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <h3>{t("Questions to review")}</h3>
+                  <p>
+                    {t("{count} questions still need instructor review.", {
+                      count: signals.needsReview.length,
+                    })}
+                  </p>
+                  <p className="small muted">
+                    {t(
+                      "A question without a sourced answer is not evidence of a learning gap.",
+                    )}
+                  </p>
+                  <a className="text-button" href="#report-questions">
+                    {t("Review the records")}
+                    <Icon name="arrow" size={16} />
+                  </a>
+                </div>
+              </div>
+            </section>
+          )}
         </div>
-      </section>
-      <section className="report-section">
-        <div className="section-title">
-          <h2>{t("Training summary")}</h2>
-          <span className="small muted">
-            {c.report?.ai ? t("Prepared by AI") : t("Compiled from records")}
-            {c.report && ` · ${date(c.report.updatedAt, locale)}`}
-          </span>
-        </div>
-        <p>
-          {c.report?.ai
-            ? c.report.summary
-            : t(
-                "{questions} questions and {responses} activity responses were recorded. {review} questions need instructor review.",
-                {
-                  questions: questions.length,
-                  responses: responses.length,
-                  review: signals.needsReview.length,
-                },
-              )}
-        </p>
-        {c.report?.recommendations.length ? (
-          <details className="recommendations-panel">
-            <summary>{t("AI suggestions for your next training")}</summary>
-            <p className="small muted">
-              {t(
-                "Review suggestions against the source records before acting on them.",
-              )}
-            </p>
-            <ul className="recommendations">
-              {c.report.recommendations.map((suggestion, index) => (
-                <li key={index}>{suggestion}</li>
-              ))}
-            </ul>
-          </details>
-        ) : null}
-      </section>
-      <section className="report-section" id="report-questions">
+      </div>
+      <section
+        className="report-section report-tab-panel report-record-panel"
+        id="report-questions"
+        role="tabpanel"
+        aria-labelledby={`${tabId}-report-questions`}
+        tabIndex={0}
+        hidden={activeTab !== "report-questions"}
+      >
         <h2>
           {t("Questions and answers")}{" "}
           <span className="count">{questions.length}</span>
@@ -273,7 +506,7 @@ export function Report({
                       {q.stage === "followup"
                         ? t("After training")
                         : t("Live training")}{" "}
-                      · {date(q.createdAt, locale)}
+                      · {dateTime(q.createdAt, locale)}
                     </div>
                     <strong>{q.text}</strong>
                     <p>
@@ -288,13 +521,16 @@ export function Report({
                     {q.sources.length > 0 && (
                       <div className="report-source-links">
                         {q.sources.map((number) => (
-                          <a
+                          <button
                             key={number}
                             className="source"
-                            href={`/training/${c.id}/preview?slide=${number}`}
+                            onClick={(event) => {
+                              sourceTrigger.current = event.currentTarget;
+                              setSource({ questionId: q.id, page: number });
+                            }}
                           >
                             {t("Source: Slide")} {number}
-                          </a>
+                          </button>
                         ))}
                       </div>
                     )}
@@ -303,10 +539,24 @@ export function Report({
             </details>
           ))
         ) : (
-          <p className="muted">{t("No questions yet.")}</p>
+          <Empty
+            icon="chat"
+            compact
+            title={t("No participant questions in this session")}
+            description={t(
+              "Questions shared during training are collected here.",
+            )}
+          />
         )}
       </section>
-      <section className="report-section" id="report-activities">
+      <section
+        className="report-section report-tab-panel report-record-panel"
+        id="report-activities"
+        role="tabpanel"
+        aria-labelledby={`${tabId}-report-activities`}
+        tabIndex={0}
+        hidden={activeTab !== "report-activities"}
+      >
         <h2>
           {t("Activity results")}{" "}
           <span className="count">{responses.length}</span>
@@ -321,7 +571,7 @@ export function Report({
                 <p className="small muted">
                   {rs.length} {t("responses")}
                 </p>
-                {s.activity?.type === "poll"
+                {isChoiceActivity(s.activity?.type)
                   ? pollResults(s.activity.options, rs).map(
                       ({ option, count, percentage }) => {
                         return (
@@ -349,9 +599,25 @@ export function Report({
             );
           })}
         {!c.slides.some((s) => s.kind === "activity") && (
-          <p className="muted">{t("This training has no activities.")}</p>
+          <Empty
+            icon="activity"
+            compact
+            title={t("No activity results yet")}
+            description={t("This training has no activities.")}
+          />
         )}
       </section>
+      {source && sourceQuestion && (
+        <ParticipantSourcePreview
+          course={c}
+          question={sourceQuestion}
+          pageNumber={source.page}
+          panelId="report-source-preview"
+          onPage={(page) => setSource({ ...source, page })}
+          onClose={() => setSource(null)}
+          returnFocusRef={sourceTrigger}
+        />
+      )}
     </div>
   );
 }

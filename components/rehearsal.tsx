@@ -1,10 +1,21 @@
 "use client";
 import { AgentMark, AgentIllustration } from "./agent-identity";
 import { PracticeWorkspace } from "./practice-workspace";
-import { PracticeClock } from "@/lib/practice-clock";
+import { PracticeFeedback } from "./practice-feedback";
+import {
+  PracticeClock,
+  formatPracticeDuration,
+  PRACTICE_LIMIT_SECONDS,
+  practiceBudgetReached,
+} from "@/lib/practice-clock";
+import type { PracticeVoiceState } from "@/lib/practice-state";
+import {
+  PracticeTurnTaking,
+  practiceTurnDetection,
+} from "@/lib/practice-turn-taking";
 import { OperationProgress } from "./operation-progress";
 import { RehearsalSkeleton } from "./skeletons";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 import { useEffect, useRef, useState } from "react";
 import type { CourseState, Rehearsal } from "@/lib/types";
 import { api, Icon, Logo, ResourceFailure, ErrorNote, useResource } from "./ui";
@@ -14,7 +25,12 @@ import {
   participantCall,
   feedbackArguments,
 } from "@/lib/rehearsal-prompts";
-import { parsePersonaTurn, type VoiceId, type VoiceStyle } from "@/lib/voices";
+import { parsePersonaTurn } from "@/lib/voices";
+import {
+  parsePracticeFeedback,
+  PRACTICE_GREETING,
+  shouldGreetPractice,
+} from "@/lib/practice-quality";
 import {
   appendUsage,
   usageSummary,
@@ -30,13 +46,12 @@ export function RehearsalView({ id }: { id: string }) {
     [rehearsal, setRehearsal] = useState<Rehearsal>(),
     [busy, setBusy] = useState(false),
     [notice, setNotice] = useState(""),
-    [voice, setVoice] = useState("idle"),
+    [voice, setVoice] = useState<PracticeVoiceState>("idle"),
     [remarks, setRemarks] = useState<string[]>([]),
     [index, setIndex] = useState(0),
     [feedback, setFeedback] = useState<Feedback>();
   const [speakingPersona, setSpeakingPersona] = useState<number | null>(null),
     [previewing, setPreviewing] = useState<number | null>(null),
-    [editingVoice, setEditingVoice] = useState(false),
     [retryLine, setRetryLine] = useState<{
       personaIndex: number;
       text: string;
@@ -46,6 +61,7 @@ export function RehearsalView({ id }: { id: string }) {
     stream = useRef<MediaStream | null>(null),
     speaker = useRef<HTMLAudioElement | null>(null),
     allRemarks = useRef<string[]>([]),
+    completedRemarks = useRef<string[]>([]),
     responseActive = useRef(false),
     pendingFeedback = useRef(false),
     feedbackResolver = useRef<((value: string) => void) | null>(null),
@@ -62,18 +78,68 @@ export function RehearsalView({ id }: { id: string }) {
     text: string;
     started: boolean;
   } | null>(null);
+  const turnTaking = useRef(
+    new PracticeTurnTaking({
+      microphone: (enabled) =>
+        stream.current?.getAudioTracks().forEach((track) => {
+          track.enabled = enabled;
+        }),
+      automaticResponses: (enabled) =>
+        send({
+          type: "session.update",
+          session: {
+            type: "realtime",
+            audio: {
+              input: { turn_detection: practiceTurnDetection(enabled) },
+            },
+          },
+        }),
+      clearInput: () => send({ type: "input_audio_buffer.clear" }),
+    }),
+  );
   const usagePending = useRef(new Set<Promise<unknown>>()),
     speechPending = useRef(new Set<Promise<unknown>>());
   const clock = useRef(new PracticeClock());
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [durationKnown, setDurationKnown] = useState(true);
   const [micMuted, setMicMuted] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const feedbackButton = useRef<HTMLButtonElement>(null);
+  const practiceDeadline = useRef(0);
+  const greetedSessions = useRef(new Set<string>());
+  const finishLatest = useRef(finish);
   useEffect(() => {
-    const tick = setInterval(
-      () => setElapsedSeconds(clock.current.seconds(performance.now())),
-      1000,
-    );
-    return () => clearInterval(tick);
+    finishLatest.current = finish;
+  });
+  async function openFeedback() {
+    // A body-portal dialog cannot appear over the browser's fullscreen subtree.
+    if (document.fullscreenElement) {
+      try {
+        await document.exitFullscreen();
+      } catch {
+        setNotice(t("Exit full screen to view your feedback."));
+        return;
+      }
+    }
+    setFeedbackOpen(true);
+  }
+  useEffect(() => {
+    const check = () => {
+      const seconds = clock.current.seconds(performance.now());
+      setElapsedSeconds(Math.min(seconds, PRACTICE_LIMIT_SECONDS));
+      if (
+        !finishing.current &&
+        peer.current?.connectionState === "connected" &&
+        practiceBudgetReached(seconds, practiceDeadline.current)
+      )
+        void finishLatest.current();
+    };
+    const tick = setInterval(check, 250);
+    document.addEventListener("visibilitychange", check);
+    return () => {
+      clearInterval(tick);
+      document.removeEventListener("visibilitychange", check);
+    };
   }, []);
   function resetClock(session?: Rehearsal) {
     clock.current.reset(session?.durationSeconds || 0);
@@ -84,16 +150,22 @@ export function RehearsalView({ id }: { id: string }) {
     setMicMuted(false);
   }
   function stopClock() {
-    const seconds = clock.current.stop(performance.now());
+    const seconds = Math.min(
+      clock.current.stop(performance.now()),
+      PRACTICE_LIMIT_SECONDS,
+    );
     setElapsedSeconds(seconds);
     return seconds;
   }
   function toggleMic() {
-    const muted = !micMuted;
-    stream.current?.getAudioTracks().forEach((track) => {
-      track.enabled = !muted;
-    });
+    const muted = !turnTaking.current.muted;
+    turnTaking.current.setMuted(muted);
     setMicMuted(muted);
+  }
+  function listen() {
+    if (finishing.current) return;
+    turnTaking.current.listen();
+    setVoice("listening");
   }
   function stopClip() {
     if (clipTurn.current) {
@@ -117,6 +189,7 @@ export function RehearsalView({ id }: { id: string }) {
     setPreviewing(null);
   }
   function close() {
+    turnTaking.current.stop();
     stopClock();
     stopClip();
     activeSession.current++;
@@ -191,6 +264,7 @@ export function RehearsalView({ id }: { id: string }) {
   }
   async function playLine(personaIndex: number, line: string, preview = false) {
     if (!rehearsal) return;
+    turnTaking.current.hold();
     stopClip();
     const version = clipVersion.current;
     if (preview) setPreviewing(personaIndex);
@@ -255,46 +329,66 @@ export function RehearsalView({ id }: { id: string }) {
         if (version === clipVersion.current) {
           if (clipTurn.current) {
             playbackContext(clipTurn.current, "completed");
+            completedRemarks.current.push(clipTurn.current.text);
             clipTurn.current = null;
           }
           stopClip();
-          if (!preview) setVoice("listening");
+          if (!preview) listen();
+          else turnTaking.current.listen();
         }
+      };
+      audio.onerror = () => {
+        if (version !== clipVersion.current) return;
+        setNotice(
+          t("Audio could not be played. Check the browser’s audio permission."),
+        );
+        if (!preview) setRetryLine({ personaIndex, text: line });
+        stopClip();
+        if (!preview) listen();
+        else turnTaking.current.listen();
       };
       await audio.play();
     } catch (e) {
       if (version !== clipVersion.current) return;
+      if (
+        !preview &&
+        ["PARTICIPANT_ROLE_LEAK", "PARTICIPANT_TURN_TOO_LONG"].includes(
+          (e as Error).message,
+        ) &&
+        !roleRepairUsed.current
+      ) {
+        stopClip();
+        roleRepairUsed.current = true;
+        setVoice("thinking");
+        send(
+          roleRepairRequest(
+            rehearsal.audience,
+            rehearsal.personas,
+            (e as Error).message === "PARTICIPANT_TURN_TOO_LONG"
+              ? "length"
+              : "role",
+          ),
+        );
+        return;
+      }
       setNotice(
-        (e as Error).message ||
+        (["PARTICIPANT_ROLE_LEAK", "PARTICIPANT_TURN_TOO_LONG"].includes(
+          (e as Error).message,
+        )
+          ? ""
+          : (e as Error).message) ||
           t("Audio could not be played. Check the browser’s audio permission."),
       );
       if (!preview) setRetryLine({ personaIndex, text: line });
       stopClip();
-      if (!preview) setVoice("listening");
+      if (!preview) listen();
+      else turnTaking.current.listen();
     }
   }
   function speak(personaIndex: number, line: string, preview = false) {
     const job = playLine(personaIndex, line, preview);
     speechPending.current.add(job);
     void job.finally(() => speechPending.current.delete(job));
-  }
-  async function changeVoice(i: number, gender: VoiceStyle, voice: VoiceId) {
-    if (!rehearsal) return;
-    stopClip();
-    setEditingVoice(true);
-    setNotice("");
-    try {
-      const result = await api(
-        `courses/${id}/rehearsal`,
-        { id: rehearsal.id, action: "voice", personaIndex: i, gender, voice },
-        "PATCH",
-      );
-      setRehearsal(result.rehearsal);
-    } catch (e) {
-      setNotice((e as Error).message);
-    } finally {
-      setEditingVoice(false);
-    }
   }
   function contextForSlide(i: number) {
     if (!data) return;
@@ -327,10 +421,12 @@ export function RehearsalView({ id }: { id: string }) {
       const result = await api(`courses/${id}/rehearsal`, { audience });
       setRehearsal(result.rehearsal);
       setFeedback(undefined);
+      setFeedbackOpen(false);
       resetClock(result.rehearsal);
       setIndex(0);
       setRemarks([]);
       allRemarks.current = [];
+      completedRemarks.current = [];
       setVoice("idle");
       setRetryLine(undefined);
     } catch (e) {
@@ -357,6 +453,7 @@ export function RehearsalView({ id }: { id: string }) {
         return;
       }
       stream.current = mic;
+      turnTaking.current.start();
       const pc = new RTCPeerConnection();
       peer.current = pc;
       const output = new Audio();
@@ -381,8 +478,17 @@ export function RehearsalView({ id }: { id: string }) {
         if (attempt !== activeSession.current) return;
         clock.current.start(performance.now());
         setDurationKnown(true);
-        setVoice("listening");
         contextForSlide(index);
+        if (shouldGreetPractice(rehearsal, greetedSessions.current)) {
+          greetedSessions.current.add(rehearsal.id);
+          speak(0, PRACTICE_GREETING);
+        } else listen();
+      };
+      dc.onclose = () => {
+        if (attempt !== activeSession.current || finishing.current) return;
+        setNotice(t("The audio connection was lost. You can reconnect."));
+        close();
+        setVoice("disconnected");
       };
       dc.onmessage = (e) => {
         if (attempt !== activeSession.current) return;
@@ -393,9 +499,8 @@ export function RehearsalView({ id }: { id: string }) {
           return;
         }
         if (event.type === "input_audio_buffer.speech_started") {
-          if (finishing.current) return;
+          if (finishing.current || !turnTaking.current.acceptsSpeech) return;
           roleRepairUsed.current = false;
-          stopClip();
           setVoice("listening");
         }
         if (event.type === "response.created") {
@@ -403,6 +508,12 @@ export function RehearsalView({ id }: { id: string }) {
             feedbackResponseId.current = event.response.id;
             return;
           }
+          if (finishing.current || clipTurn.current || clip.current) {
+            // Ignore a late VAD response from audio queued before the handoff.
+            send({ type: "response.cancel", response_id: event.response.id });
+            return;
+          }
+          turnTaking.current.hold();
           responseActive.current = true;
           turnResponseId.current = event.response.id;
           if (!feedbackResolver.current) setVoice("thinking");
@@ -445,16 +556,26 @@ export function RehearsalView({ id }: { id: string }) {
               const turn = parsePersonaTurn(raw, rehearsal.personas.length);
               if (turn) {
                 speak(turn.personaIndex, turn.text);
-              } else setVoice("listening");
+              } else listen();
             } catch (e) {
               if (
-                ["PARTICIPANT_ROLE_LEAK", "PARTICIPANT_TURN_INVALID"].includes(
-                  (e as Error).message,
-                ) &&
+                [
+                  "PARTICIPANT_ROLE_LEAK",
+                  "PARTICIPANT_TURN_INVALID",
+                  "PARTICIPANT_TURN_TOO_LONG",
+                ].includes((e as Error).message) &&
                 !roleRepairUsed.current
               ) {
                 roleRepairUsed.current = true;
-                send(roleRepairRequest(rehearsal.audience, rehearsal.personas));
+                send(
+                  roleRepairRequest(
+                    rehearsal.audience,
+                    rehearsal.personas,
+                    (e as Error).message === "PARTICIPANT_TURN_TOO_LONG"
+                      ? "length"
+                      : "role",
+                  ),
+                );
                 return;
               }
               setNotice(
@@ -462,9 +583,9 @@ export function RehearsalView({ id }: { id: string }) {
                   "A participant’s response could not be completed. Continue teaching or ask again.",
                 ),
               );
-              setVoice("listening");
+              listen();
             }
-          } else setVoice("listening");
+          } else listen();
         }
         if (event.type === "error") {
           setNotice(
@@ -476,14 +597,19 @@ export function RehearsalView({ id }: { id: string }) {
             feedbackResolver.current("");
             feedbackResolver.current = null;
           }
+          if (!finishing.current && !clipTurn.current && !clip.current) {
+            responseActive.current = false;
+            turnResponseId.current = "";
+            listen();
+          }
         }
       };
       pc.onconnectionstatechange = () => {
-        if (attempt !== activeSession.current) return;
+        if (attempt !== activeSession.current || finishing.current) return;
         if (["failed", "disconnected"].includes(pc.connectionState)) {
           setNotice(t("The audio connection was lost. You can reconnect."));
           close();
-          setVoice("idle");
+          setVoice("disconnected");
         }
       };
       const offer = await pc.createOffer();
@@ -498,9 +624,13 @@ export function RehearsalView({ id }: { id: string }) {
         throw new Error(result.error);
       }
       const sdp = await response.text();
+      practiceDeadline.current =
+        Date.parse(response.headers.get("X-Linba-Practice-Expires-At") || "") ||
+        Date.now() + PRACTICE_LIMIT_SECONDS * 1000;
       if (attempt !== activeSession.current) return;
       await pc.setRemoteDescription({ type: "answer", sdp });
     } catch (e) {
+      if (attempt !== activeSession.current) return;
       close();
       setVoice("idle");
       setNotice(
@@ -514,10 +644,11 @@ export function RehearsalView({ id }: { id: string }) {
     }
   }
   async function finish() {
-    if (!rehearsal) return;
+    if (!rehearsal || finishing.current) return;
     const durationSeconds = stopClock();
     setBusy(true);
     finishing.current = true;
+    turnTaking.current.stop();
     setVoice("feedback");
     setNotice("");
     stopClip();
@@ -544,19 +675,14 @@ export function RehearsalView({ id }: { id: string }) {
         } else requestFeedback();
       });
       if (raw) {
-        const parsed = JSON.parse(
-          raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1),
-        );
-        if (typeof parsed.summary === "string")
-          result = {
-            summary: parsed.summary,
-            suggestions: Array.isArray(parsed.suggestions)
-              ? parsed.suggestions.map(String)
-              : [],
-            questions: Array.isArray(parsed.questions)
-              ? parsed.questions.map(String)
-              : [],
-          };
+        try {
+          result = parsePracticeFeedback(
+            JSON.parse(raw),
+            completedRemarks.current,
+          );
+        } catch {
+          result = undefined;
+        }
       }
       await Promise.allSettled([
         ...usagePending.current,
@@ -574,6 +700,8 @@ export function RehearsalView({ id }: { id: string }) {
       );
       setRehearsal(saved.rehearsal);
       setFeedback(result);
+      // Open only when new feedback is saved, never from a render/timer effect.
+      if (result) await openFeedback();
       if (!result)
         setNotice(
           t(
@@ -596,7 +724,7 @@ export function RehearsalView({ id }: { id: string }) {
     );
   const c = data.course;
   const meter = usageSummary(rehearsal?.usage || []),
-    editable = voice === "idle" && !editingVoice && previewing === null;
+    editable = voice === "idle" && previewing === null;
   return (
     <div className="rehearsal-page">
       <header className="editor-header">
@@ -637,81 +765,111 @@ export function RehearsalView({ id }: { id: string }) {
       </header>
 
       {!rehearsal ? (
-        <main className="rehearsal-setup">
-          <div className="practice-introduction">
-            <AgentIllustration kind="practice" />
-            <div className="practice-introduction-copy">
-              <h2>{t("Prepare with AI participant agents")}</h2>
-              <p>
+        <main className="practice-preparation">
+          <section className="practice-preparation-form">
+            <div className="practice-introduction">
+              <AgentIllustration kind="practice" />
+              <div className="practice-introduction-copy">
+                <h2>{t("Prepare with AI rehearsal agents")}</h2>
+                <p>
+                  {t(
+                    "Who will you teach? Describe their experience, familiarity with the subject and expectations in your own words.",
+                  )}
+                </p>
+              </div>
+            </div>
+            {busy && <OperationProgress kind="personas" />}
+            <form onSubmit={personas} hidden={busy}>
+              <label>
+                {t("Your audience")}
+                <textarea
+                  rows={6}
+                  value={audience}
+                  onChange={(e) => setAudience(e.target.value)}
+                  placeholder={t(
+                    "For example: A group of 10 small-business owners new to digital marketing. Some actively use social media; others are hesitant about allocating a budget…",
+                  )}
+                  minLength={10}
+                  maxLength={3000}
+                  required
+                />
+              </label>
+              <p className="small muted">
                 {t(
-                  "Who will you teach? Describe their experience, familiarity with the subject and expectations in your own words.",
+                  "Your description shapes the AI rehearsal agents. Your microphone is activated only when you start practice.",
                 )}
               </p>
-            </div>
-          </div>
-          {busy && <OperationProgress kind="personas" />}
-          <form onSubmit={personas} hidden={busy}>
-            <label>
-              {t("Your audience")}
-              <textarea
-                rows={6}
-                value={audience}
-                onChange={(e) => setAudience(e.target.value)}
-                placeholder={t(
-                  "For example: A group of 10 small-business owners new to digital marketing. Some actively use social media; others are hesitant about allocating a budget…",
-                )}
-                minLength={10}
-                maxLength={3000}
-                required
-              />
-            </label>
-            <p className="small muted">
-              {t(
-                "Your description shapes the AI participant agents. Your microphone is activated only when you start practice.",
+              <ErrorNote message={notice} />
+              <button
+                className="button primary"
+                disabled={busy || !data.aiReady}
+              >
+                <AgentMark />
+                {busy
+                  ? t("Creating your practice agents…")
+                  : t("Create rehearsal agents")}
+              </button>
+              {!data.aiReady && (
+                <ErrorNote
+                  message={t(
+                    "Configure the model connection before starting voice practice.",
+                  )}
+                />
               )}
-            </p>
-            <ErrorNote message={notice} />
-            <button className="button primary" disabled={busy || !data.aiReady}>
-              <AgentMark />
-              {busy
-                ? t("Preparing participants…")
-                : t("Create participant agents")}
-            </button>
-            {!data.aiReady && (
-              <ErrorNote
-                message={t(
-                  "Configure the model connection before starting voice practice.",
-                )}
-              />
-            )}
-          </form>
+            </form>
+          </section>
           {data.rehearsals.length > 0 && (
-            <section className="rehearsal-history">
+            <section className="practice-history">
               <h2>{t("Your practice sessions")}</h2>
               {data.rehearsals.map((r) => (
                 <button
-                  className="joined-course"
+                  className="practice-history-item"
                   disabled={busy}
                   key={r.id}
                   onClick={() => {
                     setRehearsal(r);
                     resetClock(r);
                     setIndex(0);
-                    setVoice(r.endedAt ? "ended" : "idle");
+                    setVoice(
+                      r.endedAt ||
+                        practiceBudgetReached(
+                          r.durationSeconds || 0,
+                          r.voiceExpiresAt,
+                        )
+                        ? "ended"
+                        : "idle",
+                    );
                     setAudience(r.audience);
                     setFeedback(r.feedback);
+                    setFeedbackOpen(false);
                     setRemarks(r.remarks);
                     allRemarks.current = r.remarks;
+                    completedRemarks.current = [];
                   }}
                 >
                   <Icon name="mic" />
                   <span>
-                    {new Date(r.createdAt).toLocaleDateString(
-                      locale === "en" ? "en-GB" : "tr-TR",
-                    )}
-                    {" · "}
-                    {r.endedAt ? t("Completed") : t("Continue")}
-                    <small>{r.audience.slice(0, 110)}</small>
+                    <time dateTime={r.createdAt}>
+                      {new Date(r.createdAt).toLocaleDateString(
+                        locale === "en" ? "en-GB" : "tr-TR",
+                        { day: "numeric", month: "short", year: "numeric" },
+                      )}
+                      <span>
+                        {new Date(r.createdAt).toLocaleTimeString(
+                          locale === "en" ? "en-GB" : "tr-TR",
+                          { hour: "2-digit", minute: "2-digit", hour12: false },
+                        )}
+                      </span>
+                    </time>
+                    <span className="practice-history-audience">
+                      {r.audience}
+                    </span>
+                    <small>
+                      {r.endedAt ? t("Completed") : t("Continue")}
+                      {typeof r.durationSeconds === "number" && (
+                        <> · {formatPracticeDuration(r.durationSeconds)}</>
+                      )}
+                    </small>
                   </span>
                   <Icon name="right" />
                 </button>
@@ -738,44 +896,86 @@ export function RehearsalView({ id }: { id: string }) {
             onToggleMic={toggleMic}
             onStart={connect}
             onEnd={finish}
+            onCancelConnect={() => {
+              close();
+              setVoice("idle");
+              setNotice("");
+            }}
+            notice={notice}
+            hasFeedback={!!feedback}
+            onOpenFeedback={openFeedback}
+            feedbackButtonRef={feedbackButton}
+            recovery={
+              retryLine && voice === "listening" ? (
+                <div className="practice-replay">
+                  <p>
+                    <strong>
+                      {rehearsal.personas[retryLine.personaIndex].name}:
+                    </strong>{" "}
+                    {retryLine.text}
+                  </p>
+                  <button
+                    className="button"
+                    onClick={() =>
+                      speak(retryLine.personaIndex, retryLine.text)
+                    }
+                  >
+                    <Icon name="play" />
+                    {t("Replay participant’s line")}
+                  </button>
+                </div>
+              ) : undefined
+            }
             onNew={() => {
               close();
               resetClock();
               setRehearsal(undefined);
               setVoice("idle");
               setFeedback(undefined);
+              setFeedbackOpen(false);
               setNotice("");
               setRetryLine(undefined);
             }}
             editable={editable}
             previewing={previewing}
-            editingVoice={editingVoice}
             busy={busy}
-            onChangeVoice={changeVoice}
-            onPreviewVoice={(i) => speak(i, "", true)}
           />
           <main className="practice-session-details">
             {voice === "feedback" && (
               <OperationProgress kind="feedback" compact />
             )}
-            <ErrorNote message={notice} />
-            {retryLine && voice === "listening" && (
-              <div>
-                <p>
-                  <strong>
-                    {rehearsal.personas[retryLine.personaIndex].name}:
-                  </strong>{" "}
-                  {retryLine.text}
-                </p>
-                <button
-                  className="button"
-                  onClick={() => speak(retryLine.personaIndex, retryLine.text)}
-                >
-                  <Icon name="play" />
-                  {t("Replay participant’s line")}
-                </button>
-              </div>
+            {feedback && (
+              <PracticeFeedback
+                open={feedbackOpen}
+                onClose={() => setFeedbackOpen(false)}
+                rehearsal={rehearsal}
+                feedback={feedback}
+                returnFocusRef={feedbackButton}
+              />
             )}
+            <details
+              className="rehearsal-remarks practice-transcript"
+              id="practice-comments"
+              tabIndex={-1}
+            >
+              <summary>
+                {t("Participant comments")} <span>{remarks.length}</span>
+              </summary>
+              {remarks.length ? (
+                remarks.map((r, i) => (
+                  <p key={i}>
+                    <Icon name="chat" />
+                    {r}
+                  </p>
+                ))
+              ) : (
+                <p className="muted">
+                  {t(
+                    "Participants’ questions and comments will appear here when practice starts.",
+                  )}
+                </p>
+              )}
+            </details>
             <details className="rehearsal-cost">
               <summary>{t("Technical usage details")}</summary>
               <div className="usage-figures">
@@ -827,55 +1027,6 @@ export function RehearsalView({ id }: { id: string }) {
                 )}{" "}
                 {PRICE_DATE}.
               </p>
-            </details>
-            {feedback && (
-              <section className="report-section rehearsal-feedback">
-                <span className="ai-label">
-                  <AgentMark />
-                  {t("PRACTICE FEEDBACK")}
-                </span>
-                <h2>{t("For your next session")}</h2>
-                <p>{feedback.summary}</p>
-                {feedback.suggestions.length > 0 && (
-                  <>
-                    <h3>{t("Suggestions for improvement")}</h3>
-                    <ul>
-                      {feedback.suggestions.map((s, i) => (
-                        <li key={i}>{s}</li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-                {feedback.questions.length > 0 && (
-                  <>
-                    <h3>{t("Questions asked in practice")}</h3>
-                    <ul>
-                      {feedback.questions.map((s, i) => (
-                        <li key={i}>{s}</li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-              </section>
-            )}
-            <details className="rehearsal-remarks practice-transcript">
-              <summary>
-                {t("Participant comments")} <span>{remarks.length}</span>
-              </summary>
-              {remarks.length ? (
-                remarks.map((r, i) => (
-                  <p key={i}>
-                    <Icon name="chat" />
-                    {r}
-                  </p>
-                ))
-              ) : (
-                <p className="muted">
-                  {t(
-                    "Participants’ questions and comments will appear here when practice starts.",
-                  )}
-                </p>
-              )}
             </details>
           </main>
         </div>

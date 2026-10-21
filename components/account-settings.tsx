@@ -1,8 +1,10 @@
 "use client";
+import { ProductSelect } from "./product-select";
 import { useEffect, useId, useRef, useState, type RefObject } from "react";
 import type { User } from "@/lib/types";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
 import { useTheme, type Theme } from "./theme-provider";
+import { EmptyArtwork } from "./empty-artwork";
 import {
   api,
   ErrorNote,
@@ -108,7 +110,7 @@ export function AccountSettings({
       tabs.current[
         sections.findIndex((item) => item.id === tab)
       ]?.scrollIntoView({ block: "nearest", inline: "nearest" });
-  }, [tab, compact, open]);
+  }, [tab, compact, open, locale]);
   async function save(action: "profile" | "security") {
     if (busy) return;
     setError("");
@@ -219,9 +221,7 @@ export function AccountSettings({
                 </span>
                 <div>
                   <strong>{user.name}</strong>
-                  <span>
-                    {t(user.demo ? "Experience account" : "Instructor")}
-                  </span>
+                  <span>{t(user.demo ? "Early access" : "Instructor")}</span>
                 </div>
               </div>
               <label>
@@ -241,11 +241,7 @@ export function AccountSettings({
               {user.demo ? (
                 <div className="settings-account-note">
                   <Icon name="shield" size={19} />
-                  <p>
-                    {t(
-                      "You’re exploring with an experience account. Email and password settings are available for registered accounts.",
-                    )}
-                  </p>
+                  <p>{t("Access lasts up to 7 days in this browser.")}</p>
                 </div>
               ) : (
                 <label>
@@ -335,7 +331,7 @@ export function AccountSettings({
             ) : (
               <div className="settings-empty-state">
                 <Icon name="shield" size={30} />
-                <h4>{t("Your experience account is ready")}</h4>
+                <h4>{t("Your early access account is ready")}</h4>
                 <p>
                   {t(
                     "No password is needed to explore. Password settings become available with a registered account.",
@@ -348,14 +344,14 @@ export function AccountSettings({
               <div className="settings-plan">
                 <div>
                   <span>{t("Current plan")}</span>
-                  <strong>{t("Free")}</strong>
+                  <strong>{t("Early access")}</strong>
                   <p>{t("Your account has no active paid subscription.")}</p>
                 </div>
                 <span className="settings-plan-badge">{t("Current plan")}</span>
               </div>
               <div className="settings-invoices">
                 <h4>{t("Invoices")}</h4>
-                <Icon name="creditCard" size={26} />
+                <EmptyArtwork kind="reports" compact />
                 <p>{t("No invoices yet.")}</p>
                 <span>
                   {t(
@@ -382,16 +378,16 @@ export function AccountSettings({
                   <label htmlFor={`${id}-language`}>{t("Language")}</label>
                   <p>{t("The language used across your workspace.")}</p>
                 </div>
-                <select
+                <ProductSelect
                   id={`${id}-language`}
+                  label={t("Language")}
                   value={locale}
-                  onChange={(event) =>
-                    setLocale(event.target.value as "tr" | "en")
-                  }
-                >
-                  <option value="tr">Türkçe</option>
-                  <option value="en">English</option>
-                </select>
+                  onChange={(value) => setLocale(value as "tr" | "en")}
+                  options={[
+                    { value: "tr", label: "Türkçe" },
+                    { value: "en", label: "English" },
+                  ]}
+                />
               </div>
               <fieldset className="settings-appearance">
                 <legend>{t("Appearance")}</legend>
@@ -532,14 +528,14 @@ export function WorkspaceHelp({
               onTraining();
             }}
           >
-            {t("Open my training")}
+            {t("Open my presentations")}
           </button>
         </details>
         <details>
           <summary>{t("Find a session’s report")}</summary>
           <p>
             {t(
-              "Reports are separate for each session. Use the dates and time filters to find the group you are looking for.",
+              "Reports are separate for each session. Use the dates and time filters to find the session you are looking for.",
             )}
           </p>
           <button
@@ -553,10 +549,10 @@ export function WorkspaceHelp({
           </button>
         </details>
         <details>
-          <summary>{t("Groups and Trash")}</summary>
+          <summary>{t("Folders and Trash")}</summary>
           <p>
             {t(
-              "Create groups in My training to organize your library. Moving training to Trash keeps its records; restore it whenever you need it.",
+              "Create folders in My presentations to organize your library. Moving a presentation to Trash keeps its records; restore it whenever you need it.",
             )}
           </p>
         </details>

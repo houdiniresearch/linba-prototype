@@ -1,27 +1,33 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ReactNode,
+  type RefObject,
+} from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import type { Course, Rehearsal } from "@/lib/types";
 import { assignPortraits, portraitSource } from "@/lib/agent-portraits";
 import { formatPracticeDuration } from "@/lib/practice-clock";
+import { assignVoices } from "@/lib/voices";
+import { personaDescription } from "@/lib/practice-description";
 import {
-  assignVoices,
-  voiceStyle,
-  voicesFor,
-  VOICE_STYLE_LABELS,
-  type VoiceId,
-  type VoiceStyle,
-} from "@/lib/voices";
-import { AgentMark } from "./agent-identity";
-import { useLocale } from "./locale-provider";
+  practiceAgentStatus,
+  practiceIsConnected,
+  type PracticeVoiceState,
+} from "@/lib/practice-state";
+import { useProductLocale as useLocale } from "./product-locale";
 import { SlideView, slideTitle } from "./slides";
-import { Icon } from "./ui";
+import { ErrorNote, Icon } from "./ui";
 
 type Props = {
   course: Course;
   rehearsal: Rehearsal;
-  voice: string;
+  voice: PracticeVoiceState;
   slideIndex: number;
   onSlide: (index: number) => void;
   speakingPersona: number | null;
@@ -31,56 +37,93 @@ type Props = {
   onToggleMic: () => void;
   onStart: () => void;
   onEnd: () => void;
+  onCancelConnect: () => void;
+  notice?: string;
+  recovery?: ReactNode;
+  hasFeedback: boolean;
+  onOpenFeedback: () => void;
+  feedbackButtonRef: RefObject<HTMLButtonElement | null>;
   onNew: () => void;
   editable: boolean;
   previewing: number | null;
-  editingVoice: boolean;
   busy: boolean;
-  onChangeVoice: (index: number, style: VoiceStyle, voice: VoiceId) => void;
-  onPreviewVoice: (index: number) => void;
 };
 
 export function PracticeWorkspace(props: Props) {
   const { t, locale } = useLocale();
   const { course, rehearsal, voice, speakingPersona, slideIndex } = props;
   const [selected, setSelected] = useState(0);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [compact, setCompact] = useState(false);
+  const profileId = useId();
+  const returnFocus = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 850px)");
+    const update = () => setCompact(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+  function openProfile(index: number, trigger: HTMLButtonElement) {
+    returnFocus.current = trigger;
+    setSelected(index);
+    setProfileOpen(true);
+  }
   const [fullscreenError, setFullscreenError] = useState(false);
   const room = useRef<HTMLDivElement>(null);
   const personas = assignVoices(
     assignPortraits(rehearsal.personas, rehearsal.id),
   );
   const profile = personas[selected];
-  const profileSummary = profile?.background.split(/(?<=[.!?])\s/)[0];
-  const connected = ["listening", "thinking", "rendering", "speaking"].includes(
-    voice,
-  );
+  const profileSummary = profile ? personaDescription(profile.background) : "";
+  const connected = practiceIsConnected(voice);
   const speakingName = personas[speakingPersona ?? 0]?.name || "";
   const status =
-    voice === "connecting"
-      ? t("Connecting audio…")
-      : voice === "rendering"
-        ? t("{name} is about to speak…", { name: speakingName })
-        : voice === "speaking"
-          ? t("{name} is speaking", { name: speakingName })
-          : voice === "thinking"
-            ? t("Participants are thinking")
-            : voice === "listening"
-              ? props.micMuted
-                ? t("Your microphone is muted")
-                : t("They’re listening")
-              : voice === "feedback"
-                ? t("Reviewing practice…")
-                : voice === "ended"
-                  ? t("Practice completed")
-                  : t("Your participants are ready");
-  const agentStatus = (index: number) => {
-    if (voice === "ended") return t("Session ended");
-    if (voice === "feedback") return t("Session ended");
-    if (speakingPersona === index && voice === "speaking") return t("Speaking");
-    if (speakingPersona === index && voice === "rendering")
-      return t("Preparing to speak");
-    return connected ? t("Listening") : t("Ready");
-  };
+    props.previewing !== null
+      ? t("Previewing {name}’s voice", {
+          name: personas[props.previewing]?.name || "",
+        })
+      : voice === "connecting"
+        ? t("Connecting audio…")
+        : voice === "rendering"
+          ? t("{name} is about to speak…", { name: speakingName })
+          : voice === "speaking"
+            ? t("{name} is speaking", { name: speakingName })
+            : voice === "thinking"
+              ? t("Participants are thinking")
+              : voice === "listening"
+                ? props.micMuted
+                  ? t("Your microphone is muted")
+                  : t("They’re listening")
+                : voice === "feedback"
+                  ? t("Reviewing practice…")
+                  : voice === "ended"
+                    ? t("Practice completed")
+                    : voice === "disconnected"
+                      ? t("Audio disconnected")
+                      : t("Your participants are ready");
+  const hint =
+    voice === "idle"
+      ? props.previewing !== null
+        ? t("Voice preview only. Your microphone is off.")
+        : t("Your microphone turns on when you start.")
+      : voice === "connecting"
+        ? t("Allow microphone access to connect to your agents.")
+        : voice === "disconnected"
+          ? t("Your slides and comments are still here. Reconnect when ready.")
+          : voice === "ended"
+            ? props.hasFeedback
+              ? t("Your feedback and participant comments are ready to review.")
+              : t("Review the participant comments from this practice.")
+            : voice === "feedback"
+              ? t(
+                  "Your microphone is off. Preparing feedback from this practice.",
+                )
+              : props.micMuted
+                ? t("Agents cannot hear you while your microphone is off.")
+                : t("Advance your slides and keep teaching naturally.");
+  const agentStatus = (index: number) =>
+    t(practiceAgentStatus(voice, index, speakingPersona, props.micMuted));
   async function toggleFullscreen() {
     try {
       if (document.fullscreenElement) await document.exitFullscreen();
@@ -91,167 +134,39 @@ export function PracticeWorkspace(props: Props) {
     }
   }
   return (
-    <div className="practice-workbench">
-      <aside className="practice-brief" aria-label={t("Practice brief")}>
-        <div className="practice-section-heading">
-          <AgentMark size={22} />
-          <h2>{t("Your practice audience")}</h2>
-          <span>{personas.length}</span>
-        </div>
-        <details className="practice-audience" open>
-          <summary>{t("Audience brief")}</summary>
-          <p>{rehearsal.audience}</p>
-        </details>
-        <div
-          className="practice-profile-picker"
-          aria-label={t("Agent profiles")}
-        >
-          {personas.map((persona, index) => (
-            <button
-              key={index}
-              type="button"
-              aria-pressed={selected === index}
-              aria-label={t("View {name}’s profile", { name: persona.name })}
-              onClick={() => setSelected(index)}
-            >
-              <Image
-                src={portraitSource(persona.portraitId)}
-                alt=""
-                width={48}
-                height={48}
-                unoptimized
-              />
-              <span>{persona.name.split(" ")[0]}</span>
-            </button>
-          ))}
-        </div>
-        {profile && (
-          <section className="practice-agent-profile" aria-label={profile.name}>
-            <div className="practice-profile-heading">
-              <Image
-                src={portraitSource(profile.portraitId)}
-                alt=""
-                width={88}
-                height={88}
-                unoptimized
-              />
-              <div>
-                <span className="practice-eyebrow">{t("AI participant")}</span>
-                <h3>{profile.name}</h3>
-                <span className="practice-profile-status">
-                  {agentStatus(selected)}
-                </span>
-              </div>
-            </div>
-            <p>{profileSummary}</p>
-            {profile.learningGoal && (
-              <dl>
-                <dt>{t("Learning goal")}</dt>
-                <dd>{profile.learningGoal}</dd>
-              </dl>
-            )}
-            <details className="practice-profile-details">
-              <summary>{t("Approach and prior knowledge")}</summary>
-              {profile.background !== profileSummary && (
-                <p>{profile.background}</p>
-              )}
-              {profile.priorKnowledge && <p>{profile.priorKnowledge}</p>}
-              <p>{profile.behavior}</p>
-              {profile.speakingStyle && <p>{profile.speakingStyle}</p>}
-            </details>
-            <div
-              className="practice-mood"
-              title={t("Emotion signals will be available when configured.")}
-            >
-              <span>{t("Emotion")}</span>
-              <span>{t("Not available yet")}</span>
-            </div>
-            <details className="practice-profile-details practice-voice-settings">
-              <summary>{t("Voice settings")}</summary>
-              <div className="persona-voice-controls">
-                <label>
-                  {t("Voice style")}
-                  <select
-                    aria-label={t("{name} voice style", { name: profile.name })}
-                    value={profile.gender}
-                    disabled={!props.editable || !!rehearsal.endedAt}
-                    onChange={(e) => {
-                      const style = voiceStyle(e.target.value);
-                      props.onChangeVoice(
-                        selected,
-                        style,
-                        voicesFor(style)[0].id,
-                      );
-                    }}
-                  >
-                    {Object.entries(VOICE_STYLE_LABELS).map(
-                      ([value, label]) => (
-                        <option key={value} value={value}>
-                          {t(label)}
-                        </option>
-                      ),
-                    )}
-                  </select>
-                </label>
-                <label>
-                  {t("Voice")}
-                  <select
-                    aria-label={t("{name} voice", { name: profile.name })}
-                    value={profile.voice}
-                    disabled={!props.editable || !!rehearsal.endedAt}
-                    onChange={(e) =>
-                      props.onChangeVoice(
-                        selected,
-                        voiceStyle(profile.gender),
-                        e.target.value as VoiceId,
-                      )
-                    }
-                  >
-                    {voicesFor(voiceStyle(profile.gender)).map((v) => (
-                      <option key={v.id} value={v.id}>
-                        {v.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                {!rehearsal.endedAt && (
-                  <button
-                    className="button"
-                    disabled={!props.editable || props.previewing !== null}
-                    onClick={() => props.onPreviewVoice(selected)}
-                  >
-                    <Icon
-                      name={props.previewing === selected ? "spinner" : "play"}
-                      className={
-                        props.previewing === selected ? "spin" : undefined
-                      }
-                    />
-                    {props.previewing === selected
-                      ? t("Preparing / playing…")
-                      : t("Preview voice")}
-                  </button>
-                )}
-              </div>
-            </details>
-          </section>
-        )}
-        <p className="practice-disclosure">
-          {t(
-            "Fictional AI participants. All agents take part; selecting a profile only changes this panel.",
-          )}
-        </p>
-      </aside>
-      <div className="practice-room" ref={room}>
+    <div
+      className={`practice-workbench ${profileOpen && !compact ? "has-profile" : ""}`}
+      ref={room}
+    >
+      <div className="practice-room">
         <header className="practice-room-header">
           <div>
             <span
               className={`practice-session-dot ${connected ? "is-connected" : ""}`}
               aria-hidden="true"
             />
-            <strong>{t("Practice room")}</strong>
-            <span className="practice-room-course">{course.name}</span>
+            <div className="practice-room-title">
+              <h2>{t("Practice room")}</h2>
+              <span>
+                {t("{count} AI participants", { count: personas.length })}
+              </span>
+            </div>
           </div>
           <div className="practice-room-tools">
+            <button
+              type="button"
+              className="button practice-details-toggle"
+              aria-label={t("Practice details")}
+              aria-expanded={profileOpen}
+              aria-controls={profileId}
+              onClick={(event) => {
+                if (profileOpen) setProfileOpen(false);
+                else openProfile(selected, event.currentTarget);
+              }}
+            >
+              <Icon name="users" size={18} />
+              <span>{t("Practice details")}</span>
+            </button>
             <span
               className="practice-timer"
               role="timer"
@@ -279,16 +194,17 @@ export function PracticeWorkspace(props: Props) {
         </header>
         <div
           className="practice-agent-strip"
-          aria-label={t("AI participant agents")}
+          aria-label={t("AI rehearsal agents")}
         >
           {personas.map((persona, index) => (
             <button
               key={index}
               type="button"
               className={`practice-agent-tile ${speakingPersona === index && voice === "speaking" ? "is-speaking" : ""}`}
-              aria-pressed={selected === index}
+              aria-expanded={profileOpen && selected === index}
+              aria-controls={profileId}
               aria-label={t("View {name}’s profile", { name: persona.name })}
-              onClick={() => setSelected(index)}
+              onClick={(event) => openProfile(index, event.currentTarget)}
             >
               <span className="practice-tile-portrait">
                 <Image
@@ -298,7 +214,6 @@ export function PracticeWorkspace(props: Props) {
                   height={56}
                   unoptimized
                 />
-                <span>AI</span>
               </span>
               <span className="practice-tile-copy">
                 <strong>{persona.name}</strong>
@@ -311,9 +226,6 @@ export function PracticeWorkspace(props: Props) {
                     </span>
                   )}
                   {agentStatus(index)}
-                </span>
-                <span className="practice-tile-mood">
-                  {t("Emotion")} <span>—</span>
                 </span>
               </span>
             </button>
@@ -354,23 +266,21 @@ export function PracticeWorkspace(props: Props) {
             </button>
           </nav>
         </div>
+        {(props.notice || props.recovery) && (
+          <div className="practice-room-notice">
+            <ErrorNote message={props.notice} />
+            {props.recovery}
+          </div>
+        )}
         <footer className="practice-room-controls">
           <div className="practice-connection-copy" role="status">
             <strong>{status}</strong>
-            <span>
-              {voice === "idle"
-                ? t("Start practice and teach aloud.")
-                : voice === "ended"
-                  ? t("Review your feedback below.")
-                  : voice === "feedback"
-                    ? t("Your feedback focuses on your teaching performance.")
-                    : t("Advance your slides and keep teaching naturally.")}
-            </span>
+            <span>{hint}</span>
           </div>
           <div className="practice-room-actions">
             {connected && (
               <button
-                className={`icon-button practice-mute ${props.micMuted ? "is-muted" : ""}`}
+                className={`button practice-mute ${props.micMuted ? "is-muted" : ""}`}
                 aria-pressed={props.micMuted}
                 aria-label={
                   props.micMuted ? t("Unmute microphone") : t("Mute microphone")
@@ -380,24 +290,58 @@ export function PracticeWorkspace(props: Props) {
                 }
                 onClick={props.onToggleMic}
               >
-                <Icon name="mic" />
-                {props.micMuted && (
-                  <span className="practice-mute-slash" aria-hidden="true" />
-                )}
+                <span className="practice-mic-icon">
+                  <Icon name="mic" />
+                  {props.micMuted && (
+                    <span className="practice-mute-slash" aria-hidden="true" />
+                  )}
+                </span>
+                {props.micMuted ? t("Microphone off") : t("Microphone on")}
               </button>
             )}
-            {voice === "idle" ? (
+            {voice === "idle" || voice === "disconnected" ? (
               <button
                 className="button primary"
                 onClick={props.onStart}
-                disabled={props.previewing !== null || props.editingVoice}
+                disabled={props.previewing !== null}
               >
                 <Icon name="mic" />
-                {t("Start practice")}
+                {voice === "disconnected"
+                  ? t("Reconnect")
+                  : t("Start practice")}
               </button>
             ) : voice === "ended" ? (
-              <button className="button" onClick={props.onNew}>
-                {t("New practice")}
+              <>
+                {props.hasFeedback ? (
+                  <button
+                    className="button"
+                    onClick={props.onOpenFeedback}
+                    ref={props.feedbackButtonRef}
+                  >
+                    {t("View feedback")}
+                  </button>
+                ) : (
+                  <a
+                    className="button"
+                    href="#practice-comments"
+                    onClick={() => {
+                      const comments =
+                        document.querySelector<HTMLDetailsElement>(
+                          "#practice-comments",
+                        );
+                      if (comments) comments.open = true;
+                    }}
+                  >
+                    {t("View comments")}
+                  </a>
+                )}
+                <button className="button primary" onClick={props.onNew}>
+                  {t("New practice")}
+                </button>
+              </>
+            ) : voice === "connecting" ? (
+              <button className="button" onClick={props.onCancelConnect}>
+                {t("Cancel connection")}
               </button>
             ) : voice === "feedback" ? (
               <span className="practice-finishing">
@@ -408,7 +352,7 @@ export function PracticeWorkspace(props: Props) {
               <button
                 className="button practice-end"
                 onClick={props.onEnd}
-                disabled={props.busy || voice === "connecting"}
+                disabled={props.busy}
               >
                 <Icon name="stop" />
                 {t("End practice")}
@@ -422,6 +366,65 @@ export function PracticeWorkspace(props: Props) {
           </p>
         )}
       </div>
+      <Dialog.Root
+        open={profileOpen}
+        modal={compact}
+        onOpenChange={setProfileOpen}
+      >
+        {compact && <Dialog.Overlay className="practice-profile-overlay" />}
+        <Dialog.Content
+          id={profileId}
+          className="practice-brief"
+          aria-describedby={undefined}
+          aria-modal={compact || undefined}
+          onInteractOutside={(event) => {
+            if (!compact) event.preventDefault();
+          }}
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            if (returnFocus.current?.isConnected) returnFocus.current.focus();
+          }}
+        >
+          <div className="practice-panel-heading">
+            <Dialog.Title>{t("Practice details")}</Dialog.Title>
+            <Dialog.Close
+              className="icon-button"
+              aria-label={t("Close practice details")}
+            >
+              <Icon name="close" />
+            </Dialog.Close>
+          </div>
+          <div className="practice-panel-content">
+            {profile && (
+              <section
+                className="practice-agent-profile"
+                aria-label={profile.name}
+                key={selected}
+              >
+                <div className="practice-profile-heading">
+                  <Image
+                    src={portraitSource(profile.portraitId)}
+                    alt=""
+                    width={88}
+                    height={88}
+                    unoptimized
+                  />
+                  <div>
+                    <span className="practice-profile-kind">
+                      {t("AI participant")}
+                    </span>
+                    <h3>{profile.name}</h3>
+                    <span className="practice-profile-status">
+                      {agentStatus(selected)}
+                    </span>
+                  </div>
+                </div>
+                <p>{profileSummary}</p>
+              </section>
+            )}
+          </div>
+        </Dialog.Content>
+      </Dialog.Root>
     </div>
   );
 }

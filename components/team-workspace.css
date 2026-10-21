@@ -1,0 +1,557 @@
+.workspace-team-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-right: 10px;
+  margin-right: 4px;
+  border-right: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.team-avatar-stack {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 7px;
+}
+.team-avatar-stack .avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 12px;
+  border: 2px solid var(--bg);
+}
+.team-avatar-stack .avatar + .avatar {
+  margin-left: -9px;
+}
+.team-member-avatar {
+  background: var(--lilac-soft);
+  color: var(--lilac-ink);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.team-avatar-stack .avatar:nth-child(2n) {
+  background: var(--mint-soft);
+  color: var(--mint-soft-ink);
+}
+.team-member-overflow {
+  font-size: 11px;
+  margin-left: 5px;
+  color: var(--muted);
+}
+.team-invite-trigger {
+  display: inline-flex;
+  position: relative;
+  width: 36px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+}
+.team-invite-trigger::before {
+  content: "";
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border: 1px dashed var(--line);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.team-invite-trigger:hover::before {
+  border-color: var(--muted);
+}
+.team-avatar-stack:hover {
+  background: var(--workspace);
+  color: var(--ink);
+}
+.team-invite-trigger:focus-visible,
+.team-avatar-stack:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.team-invite-trigger:disabled,
+.team-avatar-stack:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.team-workspace {
+  max-width: 1100px;
+}
+.team-workspace .page-title h1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.team-workspace .page-title .button {
+  flex-shrink: 0;
+}
+.team-workspace .team-rename {
+  width: 36px;
+  height: 36px;
+  color: var(--muted);
+}
+.team-tabs {
+  display: flex;
+  gap: 28px;
+  border-bottom: 1px solid var(--line);
+  margin: 30px 0;
+}
+.team-tabs button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+}
+.team-tabs button[aria-current] {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+.team-tabs button > span {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  padding: 3px 6px;
+  background: var(--workspace);
+  border-radius: 4px;
+}
+.team-section-heading {
+  margin: 0 0 24px;
+}
+.team-workspace h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+.team-section-heading p,
+.team-report-sharing > p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 0;
+  max-width: 65ch;
+}
+.team-member-list,
+.team-report-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.team-member-list > li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+.team-member-list .avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 13px;
+}
+.team-person {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+.team-person strong {
+  font-size: 14px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.team-person > span,
+.team-person strong > span {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+.team-role {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.team-member-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.team-member-actions .text-button,
+.team-pending .text-button {
+  font-size: 12px;
+}
+.team-pending {
+  margin-top: 40px;
+}
+.team-pending-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.team-leave {
+  margin-top: 32px;
+  color: var(--muted);
+}
+.team-report-list li {
+  border-bottom: 1px solid var(--line);
+}
+.team-report-list button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 0;
+  text-align: left;
+}
+.team-report-list button > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.team-report-list strong {
+  font-size: 14px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.team-report-list span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.team-report-list button > svg {
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.team-report-list button:hover {
+  color: var(--lilac-ink);
+}
+.team-report-sharing {
+  margin-top: 40px;
+}
+.team-share-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+  margin: 0;
+}
+.team-share-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.team-share-row strong {
+  font-size: 14px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.team-share-row > div > span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.team-share-row > span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.team-share-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+.team-name-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.team-name-form input {
+  min-width: 0;
+  max-width: 340px;
+}
+.team-access-note,
+.team-invite-permission {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--muted);
+  margin-block: 22px;
+}
+.team-access-note > svg,
+.team-invite-permission > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.team-access-note p,
+.team-invite-permission p {
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0;
+}
+.team-invite-permission strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.team-invite-result {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+  margin-top: 20px;
+}
+.team-invite-result input {
+  font-size: 12px;
+}
+.team-invite-result .button {
+  margin-top: 12px;
+}
+.team-notice {
+  font-size: 13px;
+  color: var(--green);
+}
+.team-report-sharing .team-share-row:first-of-type {
+  margin-top: 12px;
+}
+.team-invite-page {
+  min-height: 100dvh;
+  background: var(--bg);
+  padding: 28px;
+}
+.team-invite-page > header {
+  max-width: 1120px;
+  margin: auto;
+}
+.team-invite-page > header .logo {
+  width: 135px;
+}
+.team-invite-card {
+  width: min(440px, 100%);
+  margin: 80px auto 40px;
+}
+.team-invite-card h1 {
+  font-size: 28px;
+  line-height: 1.3;
+  margin: 20px 0 16px;
+  overflow-wrap: anywhere;
+}
+.team-invite-card > p {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--muted);
+}
+.team-invite-card .button.full {
+  margin-top: 16px;
+}
+.team-invite-card form label {
+  margin-top: 16px;
+}
+.team-invite-card .team-invite-identity {
+  font-size: 13px;
+  padding-block: 16px;
+  border-block: 1px solid var(--line);
+  overflow-wrap: anywhere;
+}
+.team-invite-card .auth-switch {
+  margin-top: 22px;
+}
+.team-share-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 14px;
+}
+.team-share-control input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+}
+.team-share-control + .error-note {
+  margin-top: 8px;
+  font-size: 12px;
+}
+@media (max-width: 1150px) {
+  .app-header:has(.workspace-team-actions) .early-access-trigger {
+    display: none;
+  }
+}
+@media (max-width: 1000px) {
+  .workspace-team-actions .team-avatar-stack .avatar:not(:first-child),
+  .team-member-overflow {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  .workspace-team-actions {
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+  .workspace-team-actions .team-avatar-stack {
+    display: none;
+  }
+  .team-invite-trigger {
+    width: 36px;
+    height: 36px;
+  }
+  .team-workspace .page-title {
+    flex-wrap: wrap;
+  }
+  .team-workspace .page-title .button {
+    min-height: 44px;
+  }
+  .team-member-list > li {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .team-member-actions {
+    margin-left: 54px;
+    width: calc(100% - 54px);
+  }
+  .team-member-list .team-role {
+    margin-left: auto;
+  }
+  .team-share-row {
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .team-share-row > span {
+    min-height: 36px;
+  }
+  .team-name-form {
+    flex-wrap: wrap;
+  }
+  .team-invite-page {
+    padding: 24px;
+  }
+  .team-invite-card {
+    margin-top: 56px;
+  }
+}
+@media (max-width: 380px) {
+  .app-shell .app-header:has(.workspace-team-actions) {
+    gap: 4px;
+    padding-inline: 8px;
+  }
+  .app-header:has(.workspace-team-actions) > .logo {
+    width: 70px;
+  }
+  .app-header:has(.workspace-team-actions) .header-actions {
+    gap: 2px;
+  }
+}
+
+/* Team dialogs use the same compact rhythm as the workspace forms. */
+.modal:is(.team-create-modal, .team-invite-modal) {
+  width: min(480px, calc(100vw - 32px));
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+:is(.team-create-modal, .team-invite-modal) .modal-heading {
+  gap: 16px;
+  margin-bottom: 8px;
+}
+:is(.team-create-modal, .team-invite-modal) .modal-heading h2 {
+  font-size: 21px;
+  line-height: 1.35;
+  letter-spacing: -0.45px;
+  font-weight: 600;
+}
+:is(.team-create-modal, .team-invite-modal) > .muted {
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 0 28px 24px 0;
+}
+:is(.team-create-modal, .team-invite-modal) form > label {
+  gap: 8px;
+  font-size: 13px;
+}
+:is(.team-create-modal, .team-invite-modal) input {
+  min-height: 44px;
+  font-size: 14px;
+  border-radius: 8px;
+}
+:is(.team-create-modal, .team-invite-modal) input:is(:focus, :focus-visible) {
+  border-color: var(--accent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 16%, transparent);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+:is(.team-create-modal, .team-invite-modal) .modal-actions {
+  padding-top: 20px;
+  margin-top: 24px;
+  border-top: 1px solid var(--line);
+  gap: 10px;
+}
+:is(.team-create-modal, .team-invite-modal) .modal-actions .button {
+  min-height: 40px;
+  padding: 10px 16px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+.team-access-note,
+.team-invite-permission {
+  padding-top: 20px;
+  margin: 20px 0 0;
+  border-top: 1px solid var(--line);
+  gap: 10px;
+}
+.team-access-note p,
+.team-invite-permission p {
+  font-size: 12px;
+  line-height: 1.7;
+}
+.team-invite-permission strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+.team-invite-help {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+.team-invite-help svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.team-invite-result {
+  margin-top: 24px;
+}
+.team-invite-result .button {
+  min-height: 40px;
+  font-size: 13px;
+}
+@media (max-width: 480px) {
+  .modal:is(.team-create-modal, .team-invite-modal) {
+    padding: 22px;
+  }
+  :is(.team-create-modal, .team-invite-modal) .modal-actions {
+    flex-wrap: wrap;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.team-create-modal, .team-invite-modal) .spin {
+    animation: none;
+  }
+}

@@ -1,5 +1,6 @@
 import type { Persona } from "./types";
 import { isParticipantRoleLeak } from "./rehearsal-prompts";
+import { practiceTurnIsConcise } from "./practice-quality";
 
 export type VoiceStyle = "female" | "male" | "neutral";
 export const VOICES = [
@@ -60,18 +61,22 @@ export function parsePersonaTurn(raw: string, count: number) {
     return null;
   if (value.speak === false) return null;
   if (
+    value.speak !== true ||
     !Number.isInteger(value.personaIndex) ||
     value.personaIndex < 0 ||
     value.personaIndex >= count ||
     typeof value.text !== "string" ||
-    !value.text.trim()
+    !value.text.trim() ||
+    value.text.length > 900
   )
     throw new Error("PARTICIPANT_TURN_INVALID");
   if (isParticipantRoleLeak(value.text))
     throw new Error("PARTICIPANT_ROLE_LEAK");
+  if (!practiceTurnIsConcise(value.text))
+    throw new Error("PARTICIPANT_TURN_TOO_LONG");
   return {
     personaIndex: value.personaIndex as number,
-    text: value.text.trim().slice(0, 900),
+    text: value.text.trim(),
   };
 }
 

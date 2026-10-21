@@ -42,7 +42,7 @@ async function main() {
     users.push(user);
     owners.push(user.id);
   }
-  const make = (
+  const make = async (
     ownerId: string,
     name: string,
     status: Course["status"] = "ended",
@@ -76,21 +76,21 @@ async function main() {
       activeSlideId: "activity",
       slideVersion: 0,
     };
-    put("course", course);
+    await put("course", course);
     return course;
   };
-  const first = make(users[0].id, "Kayıt testi"),
-    second = make(users[0].id, "Bağımsız rapor"),
-    foreign = make(users[1].id, "Yabancı rapor"),
-    draft = make(users[0].id, "Taslak", "draft");
+  const first = await make(users[0].id, "Kayıt testi"),
+    second = await make(users[0].id, "Bağımsız rapor"),
+    foreign = await make(users[1].id, "Yabancı rapor"),
+    draft = await make(users[0].id, "Taslak", "draft");
   for (let i = 0; i < 2; i++) {
-    put("member", {
+    await put("member", {
       id: `${first.id}:${i}`,
       courseId: first.id,
       userId: `member-${i}`,
       name: `Kişi ${i + 1}`,
     });
-    put("question", {
+    await put("question", {
       id: randomUUID(),
       courseId: first.id,
       userId: `member-${i}`,
@@ -106,7 +106,7 @@ async function main() {
       stage: "live",
       createdAt: new Date().toISOString(),
     });
-    put("response", {
+    await put("response", {
       id: randomUUID(),
       courseId: first.id,
       slideId: "activity",
@@ -207,14 +207,20 @@ main()
     console.error(error);
     process.exitCode = 1;
   })
-  .finally(() => {
+  .finally(async () => {
     for (const kind of ["member", "question", "response", "report-turn"]) {
-      for (const record of all<{ id: string; courseId?: string }>(kind))
+      for (const record of await all<{
+        id: string;
+        courseId?: string;
+      }>(kind))
         if (record.courseId && courses.includes(record.courseId))
-          remove(kind, record.id);
+          await remove(kind, record.id);
     }
-    for (const id of courses) remove("course", id);
-    for (const session of all<{ id: string; userId: string }>("session"))
-      if (owners.includes(session.userId)) remove("session", session.id);
-    for (const id of owners) remove("user", id);
+    for (const id of courses) await remove("course", id);
+    for (const session of await all<{
+      id: string;
+      userId: string;
+    }>("session"))
+      if (owners.includes(session.userId)) await remove("session", session.id);
+    for (const id of owners) await remove("user", id);
   });

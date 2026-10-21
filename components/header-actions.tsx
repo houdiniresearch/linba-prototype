@@ -2,7 +2,9 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { Course, User } from "@/lib/types";
 import type { WaitlistEntry } from "@/lib/waitlist";
-import { useLocale } from "./locale-provider";
+import { useProductLocale as useLocale } from "./product-locale";
+import { EmptyArtwork } from "./empty-artwork";
+import { ThemeMenu } from "./theme-menu";
 import { api, ErrorNote, Icon, Modal, useResource, dateTime } from "./ui";
 
 export function HeaderActions({
@@ -12,6 +14,7 @@ export function HeaderActions({
   onReport,
   onLogout,
   waitlistRequest = 0,
+  teamActions,
 }: {
   user: User;
   courses: Course[];
@@ -19,6 +22,7 @@ export function HeaderActions({
   onReport: (id: string) => void;
   onLogout: () => Promise<void>;
   waitlistRequest?: number;
+  teamActions?: React.ReactNode;
 }) {
   const { locale, setLocale, t } = useLocale();
   const profileId = useId(),
@@ -46,6 +50,63 @@ export function HeaderActions({
     .filter((c) => c.status === "ended" && c.endedAt && !c.trashedAt)
     .sort((a, b) => b.endedAt!.localeCompare(a.endedAt!))
     .slice(0, 4);
+  const notificationKey = `linba:notifications:seen:${user.id}`;
+  const reportKeys = JSON.stringify(reports.map((c) => `${c.id}:${c.endedAt}`));
+  const [seenNotifications, setSeenNotifications] = useState<{
+    account: string;
+    keys: string[];
+  } | null>(null);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const hasUnread =
+    seenNotifications?.account === user.id &&
+    reports.some(
+      (c) => !seenNotifications.keys.includes(`${c.id}:${c.endedAt}`),
+    );
+
+  useEffect(() => {
+    function readSeen() {
+      let keys: string[] = [];
+      try {
+        const stored: unknown = JSON.parse(
+          localStorage.getItem(notificationKey) || "[]",
+        );
+        if (Array.isArray(stored))
+          keys = stored.filter((key): key is string => typeof key === "string");
+      } catch {
+        // Reading notifications still works when browser storage is unavailable.
+      }
+      setSeenNotifications({ account: user.id, keys });
+    }
+    readSeen();
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === notificationKey || event.key === null) readSeen();
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [notificationKey, user.id]);
+
+  useEffect(() => {
+    if (!notificationsOpen || !hasUnread || !seenNotifications) return;
+    const keys = [
+      ...new Set([
+        ...seenNotifications.keys,
+        ...(JSON.parse(reportKeys) as string[]),
+      ]),
+    ].slice(-200);
+    setSeenNotifications({ account: user.id, keys });
+    try {
+      localStorage.setItem(notificationKey, JSON.stringify(keys));
+    } catch {
+      // Keep the read state for this visit even if persistence is disabled.
+    }
+  }, [
+    notificationsOpen,
+    hasUnread,
+    seenNotifications,
+    reportKeys,
+    notificationKey,
+    user.id,
+  ]);
   function upgrade() {
     profile.current?.hidePopover();
     setError("");
@@ -78,6 +139,7 @@ export function HeaderActions({
   return (
     <>
       <div className="header-actions">
+        {teamActions}
         <button
           className="language-trigger"
           popoverTarget={languageId}
@@ -94,12 +156,18 @@ export function HeaderActions({
         >
           <span>{t("Early access")}</span>
         </button>
+        <ThemeMenu />
         <button
-          className="header-round"
+          className="header-round notification-trigger"
           popoverTarget={notificationsId}
-          aria-label={t("Notifications")}
+          aria-label={t(
+            hasUnread ? "Notifications, unread updates" : "Notifications",
+          )}
         >
           <Icon name="bell" size={21} />
+          {hasUnread && (
+            <span className="notification-unread-dot" aria-hidden="true" />
+          )}
         </button>
         <button
           ref={profileTrigger}
@@ -145,6 +213,7 @@ export function HeaderActions({
         id={notificationsId}
         className="header-popover notifications-popover"
         aria-label={t("Notifications")}
+        onToggle={(event) => setNotificationsOpen(event.newState === "open")}
       >
         <h2>{t("Notifications")}</h2>
         {reports.length ? (
@@ -170,7 +239,7 @@ export function HeaderActions({
           ))
         ) : (
           <div className="notification-empty">
-            <Icon name="bell" size={28} />
+            <EmptyArtwork kind="conversation" compact />
             <strong>{t("No notifications yet")}</strong>
             <p>{t("Updates about your training will appear here.")}</p>
           </div>
@@ -186,9 +255,9 @@ export function HeaderActions({
         <div className="profile-identity">
           <div>
             <strong>{user.name}</strong>
-            <span className="plan-badge">{t("Free")}</span>
+            <span className="plan-badge">{t("Early access")}</span>
           </div>
-          <p>{user.email || t("Demo account")}</p>
+          {user.email && <p>{user.email}</p>}
         </div>
         <div className="profile-upgrade">
           <p>{t("Be among the first to try LİNBA’s new plans.")}</p>
@@ -217,6 +286,7 @@ export function HeaderActions({
           className="popover-item logout-item"
           onClick={async () => {
             profile.current?.hidePopover();
+            setAccountError("");
             try {
               await onLogout();
             } catch (e) {

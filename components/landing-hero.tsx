@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocale } from "./locale-provider";
 import { Icon } from "./ui";
 import { LandingWaitlistButton } from "./landing-integrations";
+import { useLandingNavigation } from "./landing-navigation";
 
 const moments = [
   {
@@ -30,6 +31,7 @@ const moments = [
 
 export function LandingHero() {
   const { t } = useLocale();
+  const { navigating } = useLandingNavigation();
   const [active, setActive] = useState(0);
   const [restart, setRestart] = useState(0);
   const [reduced, setReduced] = useState(true);
@@ -58,13 +60,13 @@ export function LandingHero() {
   }, []);
 
   useEffect(() => {
-    if (reduced || !inView || !visible) return;
+    if (reduced || !inView || !visible || navigating) return;
     const timer = window.setTimeout(
       () => setActive((current) => (current + 1) % moments.length),
       4000,
     );
     return () => window.clearTimeout(timer);
-  }, [active, restart, reduced, inView, visible]);
+  }, [active, restart, reduced, inView, visible, navigating]);
 
   return (
     <section

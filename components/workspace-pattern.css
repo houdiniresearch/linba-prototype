@@ -1,0 +1,34 @@
+/* The landing signature is reserved for the product home. */
+.dashboard-view-home {
+  position: relative;
+  isolation: isolate;
+}
+.dashboard-view-home::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  mask-image: url("/landing/isometric-grid.svg");
+  mask-repeat: repeat;
+  mask-size: 176px 203.23px;
+  background: radial-gradient(
+    ellipse 100% 74% at 85% 0%,
+    light-dark(oklch(0.48 0.1 300 / 0.12), oklch(0.8 0.04 300 / 0.1)),
+    transparent 85%
+  );
+}
+@media (max-width: 760px) {
+  .dashboard-view-home::before {
+    background: radial-gradient(
+      ellipse 110% 420px at 100% 0%,
+      light-dark(oklch(0.48 0.1 300 / 0.1), oklch(0.8 0.04 300 / 0.08)),
+      transparent 90%
+    );
+  }
+}
+@media (forced-colors: active), print {
+  .dashboard-view-home::before {
+    display: none;
+  }
+}

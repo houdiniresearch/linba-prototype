@@ -2,9 +2,7 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import test from "node:test";
 import { all, remove } from "../lib/db";
-
 const base = process.env.LINBA_TEST_URL || "http://localhost:3000";
-
 test("prelaunch welcome and existing login preserve authenticated workspace access", async () => {
   const root = await fetch(base);
   assert.equal(root.status, 200);
@@ -12,7 +10,6 @@ test("prelaunch welcome and existing login preserve authenticated workspace acce
   const preview = await fetch(`${base}/explore`);
   assert.equal(preview.status, 200);
   assert.match(await preview.text(), /class="landing-page"/);
-
   for (const path of ["/login", "/login?mode=signup"]) {
     const welcome = await (await fetch(`${base}${path}`)).text();
     assert.match(welcome, /access-waitlist-form/);
@@ -22,7 +19,6 @@ test("prelaunch welcome and existing login preserve authenticated workspace acce
   const login = await (await fetch(`${base}/login?mode=signin`)).text();
   assert.match(login, /autoComplete="current-password"/i);
   assert.doesNotMatch(login, /autoComplete="name"/i);
-
   let userId: string | undefined;
   try {
     const registered = await fetch(`${base}/api/auth`, {
@@ -65,9 +61,12 @@ test("prelaunch welcome and existing login preserve authenticated workspace acce
     assert.match(await publicAgain.text(), /class="landing-page"/);
   } finally {
     if (userId) {
-      for (const session of all<{ id: string; userId: string }>("session"))
-        if (session.userId === userId) remove("session", session.id);
-      remove("user", userId);
+      for (const session of await all<{
+        id: string;
+        userId: string;
+      }>("session"))
+        if (session.userId === userId) await remove("session", session.id);
+      await remove("user", userId);
     }
   }
 });

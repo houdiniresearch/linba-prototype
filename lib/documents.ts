@@ -1,14 +1,12 @@
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
 import { mkdir, writeFile, rm } from "node:fs/promises";
-import { existsSync } from "node:fs";
-import { homedir } from "node:os";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
 import { DATA_DIR } from "./db";
 import { AppError } from "./auth";
 import type { Page } from "./types";
-const exec = promisify(execFile);
+import { storePresentationDirectory } from "./presentation-storage";
+import { processPdf } from "./pdf-document";
+import { convertPptxToPdf } from "./pptx-document";
 export async function processDocument(id: string, file: File) {
   const extension = path.extname(file.name).toLowerCase();
   if (![".pdf", ".pptx"].includes(extension))
@@ -25,27 +23,17 @@ export async function processDocument(id: string, file: File) {
   await mkdir(directory, { recursive: true });
   const input = path.join(directory, `presentation${extension}`);
   await writeFile(input, bytes);
-  const bundled = path.join(
-    homedir(),
-    ".cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
-  );
-  const python =
-    process.env.LINBA_PYTHON || (existsSync(bundled) ? bundled : "python3");
   try {
-    const { stdout } = await exec(
-      python,
-      [
-        path.join(process.cwd(), "scripts/process_document.py"),
-        input,
-        directory,
-      ],
-      { timeout: 180000, maxBuffer: 10 * 1024 * 1024 },
-    );
-    return (JSON.parse(stdout) as Omit<Page, "id">[]).map((p) => ({
-      ...p,
-      id: randomUUID(),
-    }));
-  } catch {
+    const pdf =
+      extension === ".pptx" ? await convertPptxToPdf(input, directory) : bytes;
+    if (extension === ".pptx")
+      await writeFile(path.join(directory, "presentation.pdf"), pdf);
+    const pages = await processPdf(pdf, directory);
+    await storePresentationDirectory(id, directory);
+    return pages;
+  } catch (error) {
+    if (process.env.LINBA_DOCUMENT_DEBUG === "true")
+      console.error("[linba.document]", error);
     await rm(directory, { recursive: true, force: true });
     throw new AppError(
       "The presentation could not be processed. Check that it is not password protected or export it as a PDF and try again.",
@@ -91,7 +79,7 @@ export async function demoPages(id: string): Promise<Page[]> {
     if (line) lines.push(line);
     return lines;
   };
-  return Promise.all(
+  const pages = await Promise.all(
     content.map(async ([title, subtitle, body], i) => {
       const image = `demo-${i + 1}.svg`;
       const escape = (s: string) =>
@@ -138,4 +126,6 @@ export async function demoPages(id: string): Promise<Page[]> {
       };
     }),
   );
+  await storePresentationDirectory(id, directory);
+  return pages;
 }

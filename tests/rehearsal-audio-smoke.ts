@@ -1,4 +1,5 @@
 import WebSocket from "ws";
+import { PRACTICE_GREETING } from "../lib/practice-quality";
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { personaSpeech } from "../lib/persona-speech";
@@ -30,12 +31,27 @@ const personas = [
 ];
 async function main() {
   let usage: UsageEntry[] = [];
+  const greeting = await personaSpeech(
+    PRACTICE_GREETING,
+    "marin",
+    (id, tokens, usedModel) => {
+      usage = appendUsage(usage, {
+        id,
+        model: usedModel || modelName(),
+        stage: "speech",
+        usage: tokens,
+      });
+    },
+  );
+  assert(greeting.length > 44);
+  await mkdir("output/voice-tests", { recursive: true });
+  await writeFile("output/voice-tests/opening-greeting.wav", greeting);
   const teacher =
     "Selin, e-posta listesi kullandığını söyledin. Atölyeye kayıt olanların seni nereden duyduğunu düzenli soruyor musun?";
-  const wav = await personaSpeech(teacher, "marin", (id, tokens) => {
+  const wav = await personaSpeech(teacher, "marin", (id, tokens, usedModel) => {
     usage = appendUsage(usage, {
       id,
-      model: modelName(),
+      model: usedModel || modelName(),
       stage: "preview",
       usage: tokens,
     });
@@ -129,6 +145,7 @@ async function main() {
     passed: true,
     input: "synthetic Turkish audio",
     microphoneUsed: false,
+    greeting: PRACTICE_GREETING,
     teacher,
     result,
     usage: usageSummary(usage),
